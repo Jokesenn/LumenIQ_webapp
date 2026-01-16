@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Brain, Check } from "lucide-react";
 import {
@@ -202,8 +202,8 @@ export default function ResultsPage() {
                 </div>
               ))}
               {["A", "B", "C"].map((row) => (
-                <>
-                  <div key={`row-${row}`} className="p-2 font-semibold text-sm flex items-center">
+                <Fragment key={row}>
+                  <div className="p-2 font-semibold text-sm flex items-center">
                     {row}
                   </div>
                   {["X", "Y", "Z"].map((col) => {
@@ -238,7 +238,7 @@ export default function ResultsPage() {
                       </div>
                     );
                   })}
-                </>
+                </Fragment>
               ))}
             </div>
             <div className="mt-5 p-3 bg-[var(--bg-surface)] rounded-lg">
