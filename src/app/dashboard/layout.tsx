@@ -1,24 +1,21 @@
-"use client";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { DashboardShell } from "./dashboard-shell";
 
-import { useState } from "react";
-import { Sidebar, Header } from "@/components/dashboard";
-
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const supabase = await createClient();
 
-  return (
-    <div className="flex min-h-screen bg-[var(--bg-primary)]">
-      <Sidebar collapsed={sidebarCollapsed} />
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Header onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)} />
+  if (!user) {
+    redirect("/login");
+  }
 
-        <main className="flex-1 overflow-auto p-8">{children}</main>
-      </div>
-    </div>
-  );
+  return <DashboardShell>{children}</DashboardShell>;
 }
