@@ -1,5 +1,5 @@
 export type JobStatus = 'pending' | 'queued' | 'processing' | 'completed' | 'failed'
-export type PlanType = 'standard' | 'ml' | 'foundation'
+export type PlanType = 'standard' | 'ml' | 'premium'
 
 export interface ForecastJob {
   id: string
@@ -38,6 +38,7 @@ export interface ForecastJobInsert {
 export interface WebhookPayload {
   job_id: string
   user_id: string
+  plan: PlanType
   input_path: string
   filename: string
 }

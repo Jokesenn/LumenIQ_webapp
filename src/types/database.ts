@@ -7,7 +7,7 @@
 export type AbcClass = 'A' | 'B' | 'C'
 export type XyzClass = 'X' | 'Y' | 'Z'
 export type JobStatus = 'pending' | 'queued' | 'processing' | 'completed' | 'failed' | 'cancelled'
-export type PlanType = 'standard' | 'ml' | 'foundation'
+export type PlanType = 'standard' | 'ml' | 'premium'
 export type SynthesisType = 'executive' | 'detailed' | 'inventory' | 'custom'
 
 // ============================================

@@ -31,7 +31,7 @@ type SupabaseClientType = SupabaseClient<Database, 'lumeniq', any>
 export const PLAN_LIMITS: Record<PlanType, { series: number; history: number }> = {
   standard: { series: 50, history: 30 },
   ml: { series: 150, history: 60 },
-  foundation: { series: 300, history: 90 },
+  premium: { series: 300, history: 90 },
 }
 
 // ============================================

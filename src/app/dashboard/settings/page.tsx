@@ -63,7 +63,7 @@ export default function SettingsPage() {
     const quotas: Record<string, number> = {
       standard: 50,
       ml: 200,
-      foundation: 1000,
+      premium: 1000,
     };
     return quotas[plan] || 50;
   };
@@ -73,7 +73,7 @@ export default function SettingsPage() {
     const prices: Record<string, number> = {
       standard: 99,
       ml: 249,
-      foundation: 499,
+      premium: 499,
     };
     return prices[plan] || 99;
   };
@@ -191,9 +191,9 @@ export default function SettingsPage() {
           </div>
           <div className="flex gap-3">
             <Button variant="secondary">Gérer la facturation</Button>
-            {profile?.plan !== "foundation" && (
+            {profile?.plan !== "premium" && (
               <Button variant="ghost">
-                {profile?.plan === "standard" ? "Passer à ML" : "Passer à Foundation"}
+                {profile?.plan === "standard" ? "Passer à ML" : "Passer à Premium"}
               </Button>
             )}
           </div>
@@ -227,18 +227,18 @@ export default function SettingsPage() {
         {/* API (Foundation) */}
         <div
           className={`bg-[var(--bg-secondary)] rounded-xl border border-[var(--border)] p-6 ${
-            profile?.plan !== "foundation" ? "opacity-60" : ""
+            profile?.plan !== "premium" ? "opacity-60" : ""
           }`}
         >
           <div className="flex items-center gap-2 mb-5">
             <h3 className="text-base font-semibold">API</h3>
-            {profile?.plan !== "foundation" && (
+            {profile?.plan !== "premium" && (
               <span className="px-2 py-0.5 bg-[#F59E0B]/20 rounded text-[10px] font-semibold text-[#F59E0B]">
-                FOUNDATION
+                PREMIUM
               </span>
             )}
           </div>
-          {profile?.plan === "foundation" && profile?.api_key ? (
+          {profile?.plan === "premium" && profile?.api_key ? (
             <div className="space-y-3">
               <p className="text-sm text-[var(--text-secondary)]">
                 Votre clé API pour automatiser vos forecasts
@@ -261,10 +261,10 @@ export default function SettingsPage() {
           ) : (
             <>
               <p className="text-sm text-[var(--text-secondary)] mb-4">
-                Passez au plan Foundation pour accéder à l&apos;API REST et
+                Passez au plan Premium pour accéder à l&apos;API REST et
                 automatiser vos forecasts.
               </p>
-              <Button variant="secondary" disabled={profile?.plan !== "foundation"}>
+              <Button variant="secondary" disabled={profile?.plan !== "premium"}>
                 Débloquer l&apos;API
               </Button>
             </>

@@ -77,7 +77,7 @@ export function formatPlanName(plan: string): string {
   const planNames: Record<string, string> = {
     standard: 'Standard',
     ml: 'ML',
-    foundation: 'Foundation',
+    premium: 'Premium',
   }
   return planNames[plan] || plan
 }

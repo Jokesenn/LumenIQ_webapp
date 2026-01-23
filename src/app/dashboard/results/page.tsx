@@ -183,7 +183,7 @@ export default function ResultsPage() {
     if (!categories) return "—";
     const ml = categories.ml ?? 0;
     const stat = categories.statistical ?? 0;
-    const found = categories.foundation ?? 0;
+    const found = categories.premium ?? 0;
     const total = ml + stat + found;
     if (total === 0) return "—";
     return `${stat}S / ${ml}ML / ${found}F`;

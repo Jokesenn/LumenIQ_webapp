@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { createClient } from '@/lib/supabase/client'
-import type { UploadStep, ForecastJobInsert, WebhookPayload } from '@/types/forecast'
+import type { UploadStep, ForecastJobInsert, WebhookPayload, PlanType } from '@/types/forecast'
 
 interface UploadResult {
   jobId: string
@@ -82,6 +82,16 @@ export function useFileUpload(): UseFileUploadReturn {
       const newJobId = uuidv4()
       const filePath = `uploads/${userId}/${newJobId}/${file.name}`
 
+      // Récupérer le plan de l'utilisateur depuis son profil
+      const { data: profile } = await supabase
+        .schema('lumeniq')
+        .from('profiles')
+        .select('plan')
+        .eq('id', userId)
+        .single()
+
+      const userPlan: PlanType = profile?.plan || 'standard'
+
       // Step 1: Upload to Storage
       setStep('uploading')
       
@@ -127,7 +137,7 @@ export function useFileUpload(): UseFileUploadReturn {
         file_size_bytes: file.size,
         status: 'pending',
         progress: 0,
-        plan_at_run: 'standard',
+        plan_at_run: userPlan,
       }
 
       const { error: insertError } = await supabase
@@ -155,6 +165,7 @@ export function useFileUpload(): UseFileUploadReturn {
         const webhookPayload: WebhookPayload = {
           job_id: newJobId,
           user_id: userId,
+          plan: userPlan,
           input_path: filePath,
           filename: file.name,
         }
