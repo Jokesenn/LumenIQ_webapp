@@ -42,7 +42,6 @@ export function useJobStatus(
     try {
       const supabase = createClient()
       const { data, error: fetchError } = await supabase
-        .schema('lumeniq')
         .from('forecast_jobs')
         .select('*')
         .eq('id', jobId)
