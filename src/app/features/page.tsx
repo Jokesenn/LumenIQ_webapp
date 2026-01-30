@@ -7,64 +7,64 @@ const featureSections = [
   {
     title: "Routing ABC/XYZ Intelligent",
     description:
-      "Innovation différenciante : allocation dynamique du budget compute selon la valeur business de chaque série. Classification automatique selon contribution CA (ABC) et volatilité demande (XYZ).",
+      "Innovation diff\u00e9renciante : allocation dynamique du budget compute selon la valeur business de chaque s\u00e9rie. Classification automatique selon contribution CA (ABC) et volatilit\u00e9 demande (XYZ).",
     benefits: [
-      "Classe A (Top 20% CA) : jusqu'à 30 modèles, 5-fold CV",
-      "Classe B (30% suivants) : jusqu'à 20 modèles, 3-fold CV",
-      "Classe C (50% restants) : jusqu'à 10 modèles, 2-fold CV",
-      "Impact : ~60% réduction temps de calcul vs approche naïve",
+      "Classe A (Top 20% CA) : jusqu'\u00e0 30 mod\u00e8les, 5-fold CV",
+      "Classe B (30% suivants) : jusqu'\u00e0 20 mod\u00e8les, 3-fold CV",
+      "Classe C (50% restants) : jusqu'\u00e0 10 mod\u00e8les, 2-fold CV",
+      "Impact : ~60% r\u00e9duction temps de calcul vs approche na\u00efve",
     ],
   },
   {
-    title: "15 Modèles en 3 Packs",
+    title: "15 Mod\u00e8les en 3 Packs",
     description:
-      "Une bibliothèque complète organisée en 3 packs progressifs : Standard (10 modèles stats), ML (+3 modèles batch-vectorisés), Foundation (+TimeGPT). Chaque série est automatiquement associée au modèle champion.",
+      "Une biblioth\u00e8que compl\u00e8te organis\u00e9e en 3 packs progressifs : Standard (10 mod\u00e8les stats), ML (+3 mod\u00e8les batch-vectoris\u00e9s), Foundation (+TimeGPT). Chaque s\u00e9rie est automatiquement associ\u00e9e au mod\u00e8le champion.",
     benefits: [
       "Standard : Naive, SeasonalNaive, Drift, AutoETS, Theta, AutoARIMA, Croston, TSB, ADIDA, Hurdle",
-      "ML : Ridge, LightGBM (75% win-rate séries stables), Hurdle+ (ML-enhanced)",
+      "ML : Ridge, LightGBM (75% win-rate s\u00e9ries stables), Hurdle+ (ML-enhanced)",
       "Foundation : TimeGPT (zero-shot, court historique), EnsembleTop2",
-      "Sélection automatique du champion par cross-validation temporelle",
+      "S\u00e9lection automatique du champion par cross-validation temporelle",
     ],
   },
   {
     title: "Backtesting Multi-Fold",
     description:
-      "Chaque forecast est validé par cross-validation temporelle (jusqu'à 5 folds pour classe A). Mécanisme de Gating : évite de recalculer si les données n'ont pas significativement changé.",
+      "Chaque forecast est valid\u00e9 par cross-validation temporelle (jusqu'\u00e0 5 folds pour classe A). M\u00e9canisme de Gating : \u00e9vite de recalculer si les donn\u00e9es n'ont pas significativement chang\u00e9.",
     benefits: [
-      "Métriques : WAPE (principale), SMAPE, MAPE, MASE, Bias, MAE, RMSE",
-      "Gating : 60-70% plus rapide sur séries stables (runs récurrents)",
-      "Détection de drift automatique entre les runs",
-      "Intervalle de confiance 80% calibré sur l'historique",
+      "M\u00e9triques : WAPE (principale), SMAPE, MAPE, MASE, Bias, MAE, RMSE",
+      "Gating : 60-70% plus rapide sur s\u00e9ries stables (runs r\u00e9currents)",
+      "D\u00e9tection de drift automatique entre les runs",
+      "Intervalle de confiance 80% calibr\u00e9 sur l'historique",
     ],
   },
   {
-    title: "6 Artifacts & Synthèse LLM",
+    title: "6 Artifacts & Synth\u00e8se LLM",
     description:
-      "Export complet pour audit et intégration ERP/BI. Rapport exécutif généré par Claude API traduit les résultats techniques en insights business actionnables.",
+      "Export complet pour audit et int\u00e9gration ERP/BI. Rapport ex\u00e9cutif g\u00e9n\u00e9r\u00e9 par Claude API traduit les r\u00e9sultats techniques en insights business actionnables.",
     benefits: [
-      "forecast.csv : prévisions point + intervalles de confiance",
-      "metrics.json : 10+ métriques par série",
+      "forecast.csv : pr\u00e9visions point + intervalles de confiance",
+      "metrics.json : 10+ m\u00e9triques par s\u00e9rie",
       "model_registry.json : champion + audit trail complet",
-      "insights.json + run_manifest.json + synthèse LLM (2-3 paragraphes)",
+      "insights.json + run_manifest.json + synth\u00e8se LLM (2-3 paragraphes)",
     ],
   },
 ];
 
 export default function FeaturesPage() {
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)]">
+    <div className="min-h-screen bg-zinc-950">
       <Navbar />
 
       <main className="pt-20">
         <section className="py-20 px-6">
           <div className="max-w-[1000px] mx-auto">
             <div className="text-center mb-20">
-              <h1 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-[-0.02em]">
-                Fonctionnalités
+              <h1 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-[-0.02em] text-white">
+                Fonctionnalit\u00e9s
               </h1>
-              <p className="text-lg text-[var(--text-secondary)] max-w-[600px] mx-auto">
-                Une suite complète d&apos;outils de prévision professionnels,
-                conçue pour les PME e-commerce qui veulent des résultats fiables.
+              <p className="text-lg text-zinc-400 max-w-[600px] mx-auto">
+                Une suite compl\u00e8te d&apos;outils de pr\u00e9vision professionnels,
+                con\u00e7ue pour les PME e-commerce qui veulent des r\u00e9sultats fiables.
               </p>
             </div>
 
@@ -76,7 +76,7 @@ export default function FeaturesPage() {
 
             <div className="text-center mt-20">
               <Link href="/dashboard">
-                <Button size="large">
+                <Button size="large" className="bg-indigo-500 hover:bg-indigo-600 text-white">
                   Essayer gratuitement
                   <ArrowRight size={20} />
                 </Button>
@@ -106,8 +106,8 @@ function FeatureSection({ title, description, benefits, reverse }: FeatureSectio
       }`}
     >
       <div className={reverse ? "md:order-2" : ""}>
-        <h3 className="text-2xl md:text-[28px] font-bold mb-4">{title}</h3>
-        <p className="text-[var(--text-secondary)] leading-relaxed mb-6">
+        <h3 className="text-2xl md:text-[28px] font-bold text-white mb-4">{title}</h3>
+        <p className="text-zinc-400 leading-relaxed mb-6">
           {description}
         </p>
         <div className="space-y-3">
@@ -115,17 +115,17 @@ function FeatureSection({ title, description, benefits, reverse }: FeatureSectio
             <div key={i} className="flex items-start gap-3">
               <Check
                 size={18}
-                className="text-[var(--success)] mt-0.5 shrink-0"
+                className="text-emerald-500 mt-0.5 shrink-0"
               />
-              <span className="text-sm text-[var(--text-secondary)]">{b}</span>
+              <span className="text-sm text-zinc-400">{b}</span>
             </div>
           ))}
         </div>
       </div>
       <div className={reverse ? "md:order-1" : ""}>
-        <div className="bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border)] h-[300px] flex items-center justify-center">
-          <div className="w-[120px] h-[120px] rounded-2xl bg-[var(--accent-muted)] flex items-center justify-center">
-            <BarChart3 size={48} className="text-[var(--accent)]" />
+        <div className="bg-zinc-900/50 rounded-2xl border border-white/[0.08] h-[300px] flex items-center justify-center">
+          <div className="w-[120px] h-[120px] rounded-2xl bg-indigo-500/10 flex items-center justify-center">
+            <BarChart3 size={48} className="text-indigo-400" />
           </div>
         </div>
       </div>

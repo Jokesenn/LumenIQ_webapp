@@ -35,15 +35,12 @@ export function FeaturesSection() {
                   <YAxis
                     dataKey="name"
                     type="category"
-                    stroke="var(--text-muted)"
+                    stroke="#71717a"
                     fontSize={12}
                     width={30}
                   />
                   <Tooltip
-                    formatter={(value: number, name: string, props: any) => [
-                      `${value}%`,
-                      props.payload.label,
-                    ]}
+                    formatter={(value) => [`${value}%`, ""]}
                     contentStyle={{
                       backgroundColor: "rgba(24, 24, 27, 0.9)",
                       border: "1px solid rgba(255,255,255,0.08)",

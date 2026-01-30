@@ -16,8 +16,8 @@ export function HeroChart() {
   return (
     <>
       <div className="flex justify-between items-center mb-5">
-        <h3 className="text-base font-semibold">Forecast Q1 2025</h3>
-        <span className="px-3 py-1 bg-[var(--success)]/20 text-[var(--success)] rounded-full text-xs font-semibold">
+        <h3 className="text-base font-semibold text-white">Forecast Q1 2025</h3>
+        <span className="px-3 py-1 bg-emerald-500/20 text-emerald-500 rounded-full text-xs font-semibold">
           SMAPE 8.2%
         </span>
       </div>
@@ -26,54 +26,56 @@ export function HeroChart() {
         <AreaChart data={forecastData}>
           <defs>
             <linearGradient id="colorForecast" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
+              <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
+              <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
           <XAxis
             dataKey="date"
-            stroke="var(--text-muted)"
+            stroke="#71717a"
             fontSize={11}
             tickLine={false}
           />
           <YAxis
-            stroke="var(--text-muted)"
+            stroke="#71717a"
             fontSize={11}
             tickLine={false}
             axisLine={false}
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: "var(--bg-surface)",
-              border: "1px solid var(--border)",
+              backgroundColor: "#18181b",
+              border: "1px solid rgba(255,255,255,0.1)",
               borderRadius: "8px",
               fontSize: "12px",
+              color: "#fff",
             }}
           />
           <Area
             type="monotone"
             dataKey="upper"
             stroke="none"
-            fill="var(--accent-muted)"
+            fill="#6366f1"
+            fillOpacity={0.15}
           />
           <Area
             type="monotone"
             dataKey="lower"
             stroke="none"
-            fill="var(--bg-secondary)"
+            fill="#18181b"
           />
           <Line
             type="monotone"
             dataKey="actual"
-            stroke="var(--text-secondary)"
+            stroke="#a1a1aa"
             strokeWidth={2}
             dot={false}
           />
           <Line
             type="monotone"
             dataKey="forecast"
-            stroke="var(--accent)"
+            stroke="#6366f1"
             strokeWidth={3}
             dot={false}
             strokeDasharray="5 5"
@@ -82,7 +84,7 @@ export function HeroChart() {
       </ResponsiveContainer>
 
       <div className="grid grid-cols-3 gap-4 mt-5">
-        <MetricMini label="Séries" value="47" />
+        <MetricMini label="S\u00e9ries" value="47" />
         <MetricMini label="Champion" value="AutoARIMA" />
         <MetricMini label="Horizon" value="12 sem" />
       </div>
@@ -93,8 +95,8 @@ export function HeroChart() {
 function MetricMini({ label, value }: { label: string; value: string }) {
   return (
     <div className="text-center">
-      <p className="text-[11px] text-[var(--text-muted)] mb-1">{label}</p>
-      <p className="text-sm font-semibold">{value}</p>
+      <p className="text-[11px] text-zinc-500 mb-1">{label}</p>
+      <p className="text-sm font-semibold text-white">{value}</p>
     </div>
   );
 }
