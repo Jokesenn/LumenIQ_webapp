@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { PageTransition } from "@/components/providers/page-transition";
+import { ScrollProgress } from "@/components/shared/scroll-progress";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -30,6 +31,7 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning>
       <body className={`${manrope.variable} font-sans antialiased`}>
+        <ScrollProgress />
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
