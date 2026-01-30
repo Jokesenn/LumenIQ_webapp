@@ -23,7 +23,7 @@ export default function PricingPage() {
                 Tarification
               </h1>
               <p className="text-lg text-zinc-400">
-                Essai gratuit 3 mois. Aucun engagement. Annulez \u00e0 tout moment.
+                Essai gratuit 3 mois. Aucun engagement. Annulez à tout moment.
               </p>
             </div>
 
@@ -36,7 +36,7 @@ export default function PricingPage() {
 
             {/* Comparison Table */}
             <div className="bg-zinc-900/50 rounded-2xl border border-white/[0.08] p-8 mb-8">
-              <h3 className="text-xl font-semibold text-white mb-6">Comparaison d\u00e9taill\u00e9e</h3>
+              <h3 className="text-xl font-semibold text-white mb-6">Comparaison détaillée</h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
@@ -49,12 +49,12 @@ export default function PricingPage() {
                   </thead>
                   <tbody>
                     {[
-                      ["S\u00e9ries / mois", "50", "150", "300"],
-                      ["Mod\u00e8les disponibles", "10 stats", "13 (+ ML)", "15+ (+ Foundation)"],
-                      ["Ridge / LightGBM", "\u274c", "\u2705", "\u2705"],
-                      ["TimeGPT", "\u274c", "\u274c", "\u2705"],
-                      ["EnsembleTop2", "\u274c", "\u274c", "\u2705"],
-                      ["API Access", "\u274c", "\u274c", "\u2705"],
+                      ["Séries / mois", "50", "150", "300"],
+                      ["Modèles disponibles", "10 stats", "13 (+ ML)", "15+ (+ Foundation)"],
+                      ["Ridge / LightGBM", "❌", "✅", "✅"],
+                      ["TimeGPT", "❌", "❌", "✅"],
+                      ["EnsembleTop2", "❌", "❌", "✅"],
+                      ["API Access", "❌", "❌", "✅"],
                       ["Historique", "30 jours", "60 jours", "90 jours"],
                       ["Support", "Email 48h", "Email 24h", "Prioritaire 4h"],
                     ].map(([feature, std, ml, found], i) => (
@@ -73,15 +73,15 @@ export default function PricingPage() {
             {/* Enterprise CTA */}
             <div className="bg-zinc-900/50 rounded-2xl border border-white/[0.08] p-8">
               <h3 className="text-lg font-semibold text-white mb-4">
-                Besoin d&apos;un volume sup\u00e9rieur ?
+                Besoin d&apos;un volume supérieur ?
               </h3>
               <p className="text-zinc-400 mb-4">
-                Pour les entreprises avec plus de 500 s\u00e9ries/mois ou des besoins sp\u00e9cifiques
-                (on-premise, int\u00e9grations custom, SLA), contactez-nous pour un devis personnalis\u00e9.
+                Pour les entreprises avec plus de 500 séries/mois ou des besoins spécifiques
+                (on-premise, intégrations custom, SLA), contactez-nous pour un devis personnalisé.
               </p>
               <Button variant="secondary">
                 <Mail size={18} />
-                Contacter l&apos;\u00e9quipe
+                Contacter l&apos;équipe
               </Button>
             </div>
           </div>
@@ -144,7 +144,7 @@ function PricingCard({ plan, icon }: PricingCardProps) {
       </p>
 
       <div className="mb-6">
-        <span className="text-[44px] font-extrabold text-white">\u20ac{plan.price}</span>
+        <span className="text-[44px] font-extrabold text-white">€{plan.price}</span>
         <span className="text-base text-zinc-500">/mois</span>
       </div>
 

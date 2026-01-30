@@ -30,7 +30,7 @@ export default function ResetPasswordPage() {
     }
 
     if (password.length < 6) {
-      setError("Le mot de passe doit contenir au moins 6 caract\u00e8res");
+      setError("Le mot de passe doit contenir au moins 6 caractères");
       setLoading(false);
       return;
     }
@@ -42,9 +42,9 @@ export default function ResetPasswordPage() {
 
       if (error) throw error;
 
-      setMessage("Mot de passe mis \u00e0 jour avec succ\u00e8s !");
+      setMessage("Mot de passe mis à jour avec succès !");
 
-      // Rediriger vers le dashboard apr\u00e8s 2 secondes
+      // Rediriger vers le dashboard après 2 secondes
       setTimeout(() => {
         router.push("/dashboard");
       }, 2000);
@@ -72,7 +72,7 @@ export default function ResetPasswordPage() {
                 Nouveau mot de passe
               </h1>
               <p className="text-sm text-zinc-400">
-                Choisissez un nouveau mot de passe s\u00e9curis\u00e9
+                Choisissez un nouveau mot de passe sécurisé
               </p>
             </div>
 
@@ -97,7 +97,7 @@ export default function ResetPasswordPage() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"
+                  placeholder="••••••••"
                   required
                   minLength={6}
                   className="w-full px-4 py-3 bg-white/5 border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent"
@@ -113,7 +113,7 @@ export default function ResetPasswordPage() {
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"
+                  placeholder="••••••••"
                   required
                   minLength={6}
                   className="w-full px-4 py-3 bg-white/5 border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent"
@@ -129,10 +129,10 @@ export default function ResetPasswordPage() {
                 {loading ? (
                   <span className="flex items-center gap-2">
                     <span className="animate-spin-slow inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
-                    Mise \u00e0 jour...
+                    Mise à jour...
                   </span>
                 ) : (
-                  "Mettre \u00e0 jour le mot de passe"
+                  "Mettre à jour le mot de passe"
                 )}
               </Button>
             </form>

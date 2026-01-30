@@ -11,7 +11,7 @@ export default function HistoryPage() {
       <div className="mb-8">
         <h1 className="text-[28px] font-bold text-white mb-2">Historique</h1>
         <p className="text-zinc-400">
-          Tous vos forecasts pass\u00e9s
+          Tous vos forecasts passés
         </p>
       </div>
 
@@ -27,7 +27,7 @@ export default function HistoryPage() {
                   Date
                 </th>
                 <th className="px-5 py-4 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wider">
-                  S\u00e9ries
+                  Séries
                 </th>
                 <th className="px-5 py-4 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wider">
                   SMAPE
@@ -80,7 +80,7 @@ export default function HistoryPage() {
       {/* Pagination placeholder */}
       <div className="mt-6 flex justify-center">
         <p className="text-sm text-zinc-500">
-          Affichage de {recentForecasts.length} r\u00e9sultats
+          Affichage de {recentForecasts.length} résultats
         </p>
       </div>
     </div>

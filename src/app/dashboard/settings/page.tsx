@@ -18,7 +18,7 @@ export default function SettingsPage() {
     text: string;
   } | null>(null);
 
-  // Initialiser les valeurs du formulaire quand le profil est charg\u00e9
+  // Initialiser les valeurs du formulaire quand le profil est chargé
   useEffect(() => {
     if (profile) {
       setFullName(profile.full_name ?? "");
@@ -46,7 +46,7 @@ export default function SettingsPage() {
 
       if (error) throw error;
 
-      setSaveMessage({ type: "success", text: "Profil mis \u00e0 jour avec succ\u00e8s" });
+      setSaveMessage({ type: "success", text: "Profil mis à jour avec succès" });
       refetch();
     } catch (err) {
       setSaveMessage({
@@ -58,7 +58,7 @@ export default function SettingsPage() {
     }
   };
 
-  // Calculer le quota de s\u00e9ries bas\u00e9 sur le plan
+  // Calculer le quota de séries basé sur le plan
   const getSeriesQuota = (plan: string) => {
     const quotas: Record<string, number> = {
       standard: 50,
@@ -68,7 +68,7 @@ export default function SettingsPage() {
     return quotas[plan] || 50;
   };
 
-  // Calculer le prix bas\u00e9 sur le plan
+  // Calculer le prix basé sur le plan
   const getPlanPrice = (plan: string) => {
     const prices: Record<string, number> = {
       standard: 99,
@@ -85,9 +85,9 @@ export default function SettingsPage() {
   return (
     <div className="animate-fade">
       <div className="mb-8">
-        <h1 className="text-[28px] font-bold text-white mb-2">Param\u00e8tres</h1>
+        <h1 className="text-[28px] font-bold text-white mb-2">Paramètres</h1>
         <p className="text-zinc-400">
-          G\u00e9rez votre compte et vos pr\u00e9f\u00e9rences
+          Gérez votre compte et vos préférences
         </p>
       </div>
 
@@ -133,7 +133,7 @@ export default function SettingsPage() {
                 className="w-full px-4 py-3 bg-white/5 border border-white/[0.1] rounded-lg text-white text-sm opacity-60 cursor-not-allowed"
               />
               <p className="text-xs text-zinc-500 mt-1">
-                L&apos;email ne peut pas \u00eatre modifi\u00e9
+                L&apos;email ne peut pas être modifié
               </p>
             </div>
             <Button
@@ -159,12 +159,12 @@ export default function SettingsPage() {
                 )}
               </span>
               <span className="text-2xl font-bold text-white">
-                \u20ac{profile ? getPlanPrice(profile.plan) : "--"}
+                €{profile ? getPlanPrice(profile.plan) : "--"}
                 <span className="text-sm font-normal text-zinc-400">/mois</span>
               </span>
             </div>
             <div className="flex justify-between text-sm text-zinc-400">
-              <span>S\u00e9ries utilis\u00e9es ce mois</span>
+              <span>Séries utilisées ce mois</span>
               <span>
                 {seriesUsed} / {seriesQuota}
               </span>
@@ -177,7 +177,7 @@ export default function SettingsPage() {
             </div>
             {profile?.subscription_status && (
               <div className="mt-3 text-xs text-zinc-500">
-                Statut : {profile.subscription_status === "trialing" ? "P\u00e9riode d'essai" : profile.subscription_status}
+                Statut : {profile.subscription_status === "trialing" ? "Période d'essai" : profile.subscription_status}
                 {profile.trial_ends_at && (
                   <span>
                     {" "}
@@ -190,10 +190,10 @@ export default function SettingsPage() {
             )}
           </div>
           <div className="flex gap-3">
-            <Button variant="secondary">G\u00e9rer la facturation</Button>
+            <Button variant="secondary">Gérer la facturation</Button>
             {profile?.plan !== "premium" && (
               <Button variant="ghost">
-                {profile?.plan === "standard" ? "Passer \u00e0 ML" : "Passer \u00e0 Premium"}
+                {profile?.plan === "standard" ? "Passer à ML" : "Passer à Premium"}
               </Button>
             )}
           </div>
@@ -201,7 +201,7 @@ export default function SettingsPage() {
 
         {/* Preferences */}
         <div className="bg-zinc-900/50 rounded-xl border border-white/[0.08] p-6">
-          <h3 className="text-base font-semibold text-white mb-5">Pr\u00e9f\u00e9rences</h3>
+          <h3 className="text-base font-semibold text-white mb-5">Préférences</h3>
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <div>
@@ -216,7 +216,7 @@ export default function SettingsPage() {
               <div>
                 <p className="font-medium text-sm text-white">Rapport hebdomadaire</p>
                 <p className="text-xs text-zinc-500">
-                  R\u00e9sum\u00e9 de vos forecasts chaque lundi
+                  Résumé de vos forecasts chaque lundi
                 </p>
               </div>
               <ToggleSwitch />
@@ -241,7 +241,7 @@ export default function SettingsPage() {
           {profile?.plan === "premium" && profile?.api_key ? (
             <div className="space-y-3">
               <p className="text-sm text-zinc-400">
-                Votre cl\u00e9 API pour automatiser vos forecasts
+                Votre clé API pour automatiser vos forecasts
               </p>
               <div className="flex gap-2">
                 <input
@@ -261,11 +261,11 @@ export default function SettingsPage() {
           ) : (
             <>
               <p className="text-sm text-zinc-400 mb-4">
-                Passez au plan Premium pour acc\u00e9der \u00e0 l&apos;API REST et
+                Passez au plan Premium pour accéder à l&apos;API REST et
                 automatiser vos forecasts.
               </p>
               <Button variant="secondary" disabled={profile?.plan !== "premium"}>
-                D\u00e9bloquer l&apos;API
+                Débloquer l&apos;API
               </Button>
             </>
           )}
@@ -280,8 +280,8 @@ export default function SettingsPage() {
             <div>
               <p className="font-medium text-sm text-white">Supprimer le compte</p>
               <p className="text-xs text-zinc-500">
-                Cette action est irr\u00e9versible. Toutes vos donn\u00e9es seront
-                supprim\u00e9es.
+                Cette action est irréversible. Toutes vos données seront
+                supprimées.
               </p>
             </div>
             <Button variant="destructive">Supprimer mon compte</Button>

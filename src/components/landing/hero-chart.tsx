@@ -84,7 +84,7 @@ export function HeroChart() {
       </ResponsiveContainer>
 
       <div className="grid grid-cols-3 gap-4 mt-5">
-        <MetricMini label="S\u00e9ries" value="47" />
+        <MetricMini label="Séries" value="47" />
         <MetricMini label="Champion" value="AutoARIMA" />
         <MetricMini label="Horizon" value="12 sem" />
       </div>

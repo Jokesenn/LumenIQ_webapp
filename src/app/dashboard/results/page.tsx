@@ -36,7 +36,7 @@ const tabs = [
   { id: "overview", label: "Vue d'ensemble" },
   { id: "charts", label: "Graphiques" },
   { id: "classification", label: "Classification" },
-  { id: "synthesis", label: "Synth\u00e8se IA" },
+  { id: "synthesis", label: "Synthèse IA" },
 ];
 
 // Couleurs pour les classes ABC
@@ -70,7 +70,7 @@ export default function ResultsPage() {
   const [recentJobs, setRecentJobs] = useState<ForecastJob[]>([]);
   const [loadingJobs, setLoadingJobs] = useState(true);
 
-  // Donn\u00e9es du job s\u00e9lectionn\u00e9
+  // Données du job sélectionné
   const [jobData, setJobData] = useState<{
     job: ForecastJob | null;
     summary: JobSummary | null;
@@ -90,7 +90,7 @@ export default function ResultsPage() {
     selectedJobId !== null && jobData?.job?.status !== "completed"
   );
 
-  // Charger les jobs r\u00e9cents
+  // Charger les jobs récents
   useEffect(() => {
     const fetchRecentJobs = async () => {
       if (!user) return;
@@ -101,7 +101,7 @@ export default function ResultsPage() {
       setRecentJobs(jobs);
       setLoadingJobs(false);
 
-      // Si pas de job s\u00e9lectionn\u00e9 et des jobs existent, s\u00e9lectionner le premier compl\u00e9t\u00e9
+      // Si pas de job sélectionné et des jobs existent, sélectionner le premier complété
       if (!selectedJobId && jobs.length > 0) {
         const completedJob = jobs.find((j) => j.status === "completed");
         if (completedJob) {
@@ -115,7 +115,7 @@ export default function ResultsPage() {
     fetchRecentJobs();
   }, [user, selectedJobId]);
 
-  // Charger les donn\u00e9es du job s\u00e9lectionn\u00e9
+  // Charger les données du job sélectionné
   useEffect(() => {
     const fetchJobData = async () => {
       if (!selectedJobId) return;
@@ -137,14 +137,14 @@ export default function ResultsPage() {
     fetchJobData();
   }, [selectedJobId]);
 
-  // Mettre \u00e0 jour les donn\u00e9es quand le job poll\u00e9 change
+  // Mettre à jour les données quand le job pollé change
   useEffect(() => {
     if (polledJob && jobData) {
       setJobData((prev) => (prev ? { ...prev, job: polledJob } : null));
     }
   }, [polledJob]);
 
-  // Recharger les donn\u00e9es quand le job est compl\u00e9t\u00e9
+  // Recharger les données quand le job est complété
   useEffect(() => {
     if (isComplete && selectedJobId) {
       const fetchJobData = async () => {
@@ -174,7 +174,7 @@ export default function ResultsPage() {
 
   // Formater la date
   const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return "\u2014";
+    if (!dateStr) return "—";
     return new Date(dateStr).toLocaleDateString("fr-FR", {
       day: "2-digit",
       month: "short",
@@ -184,7 +184,7 @@ export default function ResultsPage() {
     });
   };
 
-  // Extraire le mod\u00e8le le plus fr\u00e9quent depuis winner_models
+  // Extraire le modèle le plus fréquent depuis winner_models
   const getTopModelFromWinners = (winners: Record<string, number> | null): string => {
     if (!winners) return "";
     const entries = Object.entries(winners);
@@ -193,18 +193,18 @@ export default function ResultsPage() {
     return sorted[0][0];
   };
 
-  // Formater la r\u00e9partition des cat\u00e9gories
+  // Formater la répartition des catégories
   const getCategoryBreakdown = (categories: Record<string, number> | null): string => {
-    if (!categories) return "\u2014";
+    if (!categories) return "—";
     const ml = categories.ml ?? 0;
     const stat = categories.statistical ?? 0;
     const found = categories.premium ?? 0;
     const total = ml + stat + found;
-    if (total === 0) return "\u2014";
+    if (total === 0) return "—";
     return `${stat}S / ${ml}ML / ${found}F`;
   };
 
-  // Si pas de job s\u00e9lectionn\u00e9 et chargement en cours
+  // Si pas de job sélectionné et chargement en cours
   if (loadingJobs && !selectedJobId) {
     return (
       <div className="animate-fade">
@@ -220,7 +220,7 @@ export default function ResultsPage() {
     return (
       <div className="animate-fade">
         <div className="mb-8">
-          <h1 className="text-[28px] font-bold text-white mb-2">R\u00e9sultats forecast</h1>
+          <h1 className="text-[28px] font-bold text-white mb-2">Résultats forecast</h1>
           <p className="text-zinc-400">
             Visualisez et analysez vos forecasts
           </p>
@@ -232,7 +232,7 @@ export default function ResultsPage() {
           </div>
           <h2 className="text-xl font-semibold text-white mb-2">Aucun forecast</h2>
           <p className="text-zinc-400 mb-8">
-            Lancez votre premier forecast pour voir les r\u00e9sultats ici.
+            Lancez votre premier forecast pour voir les résultats ici.
           </p>
           <Link href="/dashboard/forecast">
             <Button className="bg-indigo-500 hover:bg-indigo-600 text-white">
@@ -250,16 +250,16 @@ export default function ResultsPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-8">
         <div>
-          <h1 className="text-[28px] font-bold text-white mb-2">R\u00e9sultats forecast</h1>
+          <h1 className="text-[28px] font-bold text-white mb-2">Résultats forecast</h1>
           {currentJob && (
             <p className="text-zinc-400">
-              {currentJob.filename} &bull; {currentJob.series_count ?? 0} s\u00e9ries &bull;{" "}
+              {currentJob.filename} &bull; {currentJob.series_count ?? 0} séries &bull;{" "}
               {formatDate(currentJob.created_at ?? null)}
             </p>
           )}
         </div>
         <div className="flex gap-3">
-          {/* S\u00e9lecteur de job */}
+          {/* Sélecteur de job */}
           {recentJobs.length > 1 && (
             <select
               value={selectedJobId || ""}
@@ -278,7 +278,7 @@ export default function ResultsPage() {
             className="bg-indigo-500 hover:bg-indigo-600 text-white disabled:opacity-40"
           >
             <Download size={18} />
-            T\u00e9l\u00e9charger ZIP
+            Télécharger ZIP
           </Button>
         </div>
       </div>
@@ -292,7 +292,7 @@ export default function ResultsPage() {
               <h3 className="font-semibold text-white">Traitement en cours...</h3>
               <p className="text-sm text-zinc-500">
                 {getJobStatusLabel(currentJob.status)}
-                {currentJob.current_step && ` \u2022 ${currentJob.current_step}`}
+                {currentJob.current_step && ` • ${currentJob.current_step}`}
               </p>
             </div>
           </div>
@@ -304,14 +304,14 @@ export default function ResultsPage() {
           </div>
           <div className="flex justify-between mt-2 text-sm text-zinc-500">
             <span>
-              {currentJob.series_processed ?? 0}/{currentJob.series_count ?? 0} s\u00e9ries
+              {currentJob.series_processed ?? 0}/{currentJob.series_count ?? 0} séries
             </span>
             <span>{currentJob.progress ?? 0}%</span>
           </div>
         </div>
       )}
 
-      {/* Job \u00e9chou\u00e9 */}
+      {/* Job échoué */}
       {isJobFailed && currentJob && (
         <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6 mb-6">
           <div className="flex items-start gap-3">
@@ -331,7 +331,7 @@ export default function ResultsPage() {
         </div>
       )}
 
-      {/* Tabs - visible seulement si job compl\u00e9t\u00e9 */}
+      {/* Tabs - visible seulement si job complété */}
       {isJobComplete && (
         <>
           <div className="flex gap-1 mb-6 bg-white/5 p-1 rounded-lg w-fit">
@@ -369,7 +369,7 @@ export default function ResultsPage() {
                       ? `${(Number(summary.global_wape) * 100).toFixed(1)}%`
                       : currentJob?.avg_wape != null
                       ? `${Number(currentJob.avg_wape).toFixed(1)}%`
-                      : "\u2014"
+                      : "—"
                   }
                   description="Weighted Absolute Percentage Error"
                   status={
@@ -393,9 +393,9 @@ export default function ResultsPage() {
                   value={
                     summary?.global_bias_pct != null
                       ? `${Number(summary.global_bias_pct).toFixed(1)}%`
-                      : "\u2014"
+                      : "—"
                   }
-                  description="Biais moyen des pr\u00e9visions"
+                  description="Biais moyen des prévisions"
                   status={
                     summary?.global_bias_pct != null
                       ? Math.abs(Number(summary.global_bias_pct)) < 5
@@ -407,18 +407,18 @@ export default function ResultsPage() {
                   }
                 />
                 <MetricCard
-                  label="S\u00e9ries"
+                  label="Séries"
                   value={
                     summary?.n_series_total != null
                       ? `${summary.n_series_success}/${summary.n_series_total}`
                       : currentJob?.series_count != null
                       ? String(currentJob.series_count)
-                      : "\u2014"
+                      : "—"
                   }
                   description={
                     summary?.n_series_failed && summary.n_series_failed > 0
-                      ? `${summary.n_series_failed} \u00e9chec(s)`
-                      : "S\u00e9ries trait\u00e9es avec succ\u00e8s"
+                      ? `${summary.n_series_failed} échec(s)`
+                      : "Séries traitées avec succès"
                   }
                   status={
                     summary?.n_series_failed && summary.n_series_failed > 0
@@ -429,13 +429,13 @@ export default function ResultsPage() {
                   }
                 />
                 <MetricCard
-                  label="Dur\u00e9e"
+                  label="Durée"
                   value={
                     summary?.duration_sec != null
                       ? `${Math.round(Number(summary.duration_sec))}s`
                       : currentJob?.compute_time_seconds
                       ? `${Math.round(currentJob.compute_time_seconds)}s`
-                      : "\u2014"
+                      : "—"
                   }
                   description="Temps de calcul total"
                   status={summary?.duration_sec || currentJob?.compute_time_seconds ? "good" : "neutral"}
@@ -450,7 +450,7 @@ export default function ResultsPage() {
                     value={
                       summary.avg_interval_width_pct != null
                         ? `${Number(summary.avg_interval_width_pct).toFixed(0)}%`
-                        : "\u2014"
+                        : "—"
                     }
                     description="Largeur moyenne intervalle de confiance"
                     status={
@@ -476,15 +476,15 @@ export default function ResultsPage() {
                     }
                   />
                   <MetricCard
-                    label="Top Mod\u00e8le"
-                    value={summary.top_model || getTopModelFromWinners(summary.winner_models) || "\u2014"}
-                    description="Mod\u00e8le champion le plus fr\u00e9quent"
+                    label="Top Modèle"
+                    value={summary.top_model || getTopModelFromWinners(summary.winner_models) || "—"}
+                    description="Modèle champion le plus fréquent"
                     status="good"
                   />
                   <MetricCard
-                    label="Cat\u00e9gories"
+                    label="Catégories"
                     value={getCategoryBreakdown(summary.winner_categories)}
-                    description="R\u00e9partition ML / Statistical / Foundation"
+                    description="Répartition ML / Statistical / Foundation"
                     status="good"
                   />
                 </div>
@@ -493,7 +493,7 @@ export default function ResultsPage() {
               {/* Main Chart */}
               <div className="bg-zinc-900/50 rounded-xl border border-white/[0.08] p-6 mb-6">
                 <h3 className="text-base font-semibold text-white mb-5">
-                  Forecast agr\u00e9g\u00e9 (somme toutes s\u00e9ries)
+                  Forecast agrégé (somme toutes séries)
                 </h3>
                 {jobData?.chartData && jobData.chartData.length > 0 ? (
                   <ResponsiveContainer width="100%" height={350}>
@@ -574,14 +574,14 @@ export default function ResultsPage() {
                   </ResponsiveContainer>
                 ) : (
                   <div className="flex items-center justify-center h-[350px] text-zinc-500">
-                    <p>Aucune donn\u00e9e de graphique disponible</p>
+                    <p>Aucune donnée de graphique disponible</p>
                   </div>
                 )}
               </div>
 
               {/* Model Champions */}
               <div className="bg-zinc-900/50 rounded-xl border border-white/[0.08] p-6">
-                <h3 className="text-base font-semibold text-white mb-5">Mod\u00e8les champions par s\u00e9rie</h3>
+                <h3 className="text-base font-semibold text-white mb-5">Modèles champions par série</h3>
                 {jobData?.modelPerformance && jobData.modelPerformance.length > 0 ? (
                   <ResponsiveContainer width="100%" height={200}>
                     <BarChart data={jobData.modelPerformance.slice(0, 8)}>
@@ -602,10 +602,10 @@ export default function ResultsPage() {
                 ) : (
                   <div className="text-center py-8">
                     <p className="text-zinc-500 mb-2">
-                      Donn\u00e9es de mod\u00e8les non disponibles
+                      Données de modèles non disponibles
                     </p>
                     <p className="text-xs text-zinc-500">
-                      Les statistiques par mod\u00e8le seront disponibles une fois le traitement des r\u00e9sultats termin\u00e9.
+                      Les statistiques par modèle seront disponibles une fois le traitement des résultats terminé.
                     </p>
                   </div>
                 )}
@@ -663,7 +663,7 @@ export default function ResultsPage() {
                             style={{ backgroundColor: ABC_COLORS[item.class] }}
                           />
                           <span className="text-sm text-zinc-300">
-                            Classe {item.class} : {item.count} s\u00e9ries ({item.percentage}%)
+                            Classe {item.class} : {item.count} séries ({item.percentage}%)
                           </span>
                         </div>
                       ))}
@@ -675,7 +675,7 @@ export default function ResultsPage() {
                       Classification ABC non disponible
                     </p>
                     <p className="text-xs text-zinc-500">
-                      La classification sera g\u00e9n\u00e9r\u00e9e lors du prochain traitement complet.
+                      La classification sera générée lors du prochain traitement complet.
                     </p>
                   </div>
                 )}
@@ -684,7 +684,7 @@ export default function ResultsPage() {
               <div className="bg-zinc-900/50 rounded-xl border border-white/[0.08] p-6">
                 <h3 className="text-base font-semibold text-white mb-5">Matrice ABC/XYZ</h3>
                 <p className="text-sm text-zinc-400 mb-5">
-                  Croisement valeur &times; volatilit\u00e9 pour allocation compute
+                  Croisement valeur &times; volatilité pour allocation compute
                 </p>
                 {jobData?.abcXyzMatrix && jobData.abcXyzMatrix.some(m => m.count > 0) ? (
                   <>
@@ -717,9 +717,9 @@ export default function ResultsPage() {
                     </div>
                     <div className="mt-5 p-3 bg-white/5 rounded-lg">
                       <p className="text-xs text-zinc-400">
-                        <strong className="text-white">AX/AY :</strong> Mod\u00e8les
-                        sophistiqu\u00e9s (AutoARIMA, ETS) &bull;
-                        <strong className="text-white"> CZ :</strong> Mod\u00e8les
+                        <strong className="text-white">AX/AY :</strong> Modèles
+                        sophistiqués (AutoARIMA, ETS) &bull;
+                        <strong className="text-white"> CZ :</strong> Modèles
                         rapides (Naive, SMA)
                       </p>
                     </div>
@@ -730,7 +730,7 @@ export default function ResultsPage() {
                       Matrice ABC/XYZ non disponible
                     </p>
                     <p className="text-xs text-zinc-500">
-                      Le croisement ABC/XYZ sera calcul\u00e9 lors du prochain traitement complet.
+                      Le croisement ABC/XYZ sera calculé lors du prochain traitement complet.
                     </p>
                   </div>
                 )}
@@ -746,43 +746,43 @@ export default function ResultsPage() {
                   <Brain size={20} className="text-indigo-400" />
                 </div>
                 <div>
-                  <h3 className="text-base font-semibold text-white">Synth\u00e8se IA</h3>
-                  <p className="text-xs text-zinc-500">G\u00e9n\u00e9r\u00e9e par Claude AI</p>
+                  <h3 className="text-base font-semibold text-white">Synthèse IA</h3>
+                  <p className="text-xs text-zinc-500">Générée par Claude AI</p>
                 </div>
               </div>
 
               <div className="p-6 bg-white/5 rounded-xl border-l-4 border-indigo-500 leading-relaxed space-y-4 text-zinc-300">
                 <p>
                   <strong className="text-white">Vue d&apos;ensemble :</strong> L&apos;analyse de vos{" "}
-                  {currentJob?.series_count ?? 0} s\u00e9ries de donn\u00e9es r\u00e9v\u00e8le une pr\u00e9cision de
-                  pr\u00e9vision{" "}
+                  {currentJob?.series_count ?? 0} séries de données révèle une précision de
+                  prévision{" "}
                   {currentJob?.avg_smape !== null && currentJob?.avg_smape !== undefined
                     ? currentJob.avg_smape < 10
                       ? "excellente"
                       : currentJob.avg_smape < 15
                       ? "bonne"
-                      : "\u00e0 am\u00e9liorer"
-                    : "\u2014"}{" "}
+                      : "à améliorer"
+                    : "—"}{" "}
                   (SMAPE{" "}
                   {currentJob?.avg_smape !== null && currentJob?.avg_smape !== undefined
                     ? `${currentJob.avg_smape.toFixed(1)}%`
-                    : "\u2014"}
+                    : "—"}
                   ).
                   {currentJob?.top_champion_model && (
-                    <> Le mod\u00e8le {currentJob.top_champion_model} s&apos;est impos\u00e9 comme champion
-                    sur la majorit\u00e9 des s\u00e9ries.</>
+                    <> Le modèle {currentJob.top_champion_model} s&apos;est imposé comme champion
+                    sur la majorité des séries.</>
                   )}
                 </p>
                 <p>
-                  <strong className="text-white">Insights cl\u00e9s :</strong> Les r\u00e9sultats montrent une distribution des
-                  mod\u00e8les champions vari\u00e9e, indiquant que diff\u00e9rentes s\u00e9ries ont des
-                  caract\u00e9ristiques distinctes. Le routing ABC/XYZ a permis d&apos;optimiser
+                  <strong className="text-white">Insights clés :</strong> Les résultats montrent une distribution des
+                  modèles champions variée, indiquant que différentes séries ont des
+                  caractéristiques distinctes. Le routing ABC/XYZ a permis d&apos;optimiser
                   l&apos;allocation du budget compute.
                 </p>
                 <p>
                   <strong className="text-white">Recommandations :</strong> Consultez la classification ABC/XYZ pour
-                  identifier les produits strat\u00e9giques n\u00e9cessitant une attention particuli\u00e8re.
-                  Les s\u00e9ries de classe A m\u00e9ritent un suivi plus fr\u00e9quent des pr\u00e9visions.
+                  identifier les produits stratégiques nécessitant une attention particulière.
+                  Les séries de classe A méritent un suivi plus fréquent des prévisions.
                 </p>
               </div>
 
@@ -801,17 +801,17 @@ export default function ResultsPage() {
           {!loadingData && activeTab === "charts" && (
             <div className="bg-zinc-900/50 rounded-xl border border-white/[0.08] p-6">
               <p className="text-zinc-400 text-center py-16">
-                S\u00e9lectionnez une s\u00e9rie dans la liste pour afficher son graphique d\u00e9taill\u00e9
+                Sélectionnez une série dans la liste pour afficher son graphique détaillé
               </p>
             </div>
           )}
         </>
       )}
 
-      {/* Si pas de contenu \u00e0 afficher et job non compl\u00e9t\u00e9 */}
+      {/* Si pas de contenu à afficher et job non complété */}
       {!isJobComplete && !isJobProcessing && !isJobFailed && !loadingData && (
         <div className="bg-zinc-900/50 rounded-xl border border-white/[0.08] p-16 text-center">
-          <p className="text-zinc-500">S\u00e9lectionnez un forecast pour voir les r\u00e9sultats</p>
+          <p className="text-zinc-500">Sélectionnez un forecast pour voir les résultats</p>
         </div>
       )}
     </div>
