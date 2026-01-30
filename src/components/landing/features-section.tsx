@@ -17,7 +17,7 @@ export function FeaturesSection() {
     <section className="py-[120px] px-6">
       <div className="max-w-[1280px] mx-auto">
         <div className="text-center mb-20">
-          <h2 className="text-3xl md:text-[40px] font-bold mb-4 tracking-[-0.01em]">
+          <h2 className="text-3xl md:text-[40px] font-bold mb-4 tracking-[-0.01em] text-gradient">
             Technologie de pointe,<br />simplicité absolue
           </h2>
         </div>
@@ -45,8 +45,8 @@ export function FeaturesSection() {
                       props.payload.label,
                     ]}
                     contentStyle={{
-                      backgroundColor: "var(--bg-surface)",
-                      border: "1px solid var(--border)",
+                      backgroundColor: "rgba(24, 24, 27, 0.9)",
+                      border: "1px solid rgba(255,255,255,0.08)",
                       borderRadius: "8px",
                     }}
                   />
@@ -69,12 +69,12 @@ export function FeaturesSection() {
               {[8.2, 9.1, 7.8, 8.5, 9.4].map((smape, idx) => (
                 <div
                   key={idx}
-                  className="bg-[var(--bg-surface)] rounded-lg p-3 text-center"
+                  className="bg-white/5 rounded-lg p-3 text-center"
                 >
-                  <p className="text-[11px] text-[var(--text-muted)] mb-1">
+                  <p className="text-[11px] text-zinc-500 mb-1">
                     Fold {idx + 1}
                   </p>
-                  <p className="text-base font-semibold text-[var(--success)]">
+                  <p className="text-base font-semibold text-emerald-400">
                     {smape}%
                   </p>
                 </div>
@@ -100,12 +100,12 @@ export function FeaturesSection() {
               ].map((model) => (
                 <span
                   key={model}
-                  className="px-3 py-1.5 bg-[var(--bg-surface)] rounded-md text-xs font-medium text-[var(--text-secondary)]"
+                  className="px-3 py-1.5 bg-white/5 rounded-md text-xs font-medium text-zinc-400"
                 >
                   {model}
                 </span>
               ))}
-              <span className="px-3 py-1.5 bg-[var(--accent-muted)] rounded-md text-xs font-medium text-[var(--accent)]">
+              <span className="px-3 py-1.5 bg-indigo-500/10 rounded-md text-xs font-medium text-indigo-400">
                 +13 autres
               </span>
             </div>
@@ -116,7 +116,7 @@ export function FeaturesSection() {
             title="6 Artifacts & Synthèse LLM"
             description="Rapport exécutif généré par Claude API traduit les résultats techniques en insights business. Export complet avec tous les artifacts pour audit et intégration ERP/BI."
           >
-            <div className="mt-6 bg-[var(--bg-surface)] rounded-lg p-4">
+            <div className="mt-6 bg-white/5 rounded-lg p-4">
               <div className="grid grid-cols-2 gap-2">
                 {[
                   "forecast.csv",
@@ -128,9 +128,9 @@ export function FeaturesSection() {
                 ].map((artifact) => (
                   <div
                     key={artifact}
-                    className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)]"
+                    className="flex items-center gap-1.5 text-xs text-zinc-400"
                   >
-                    <Check size={12} className="text-[var(--success)]" />
+                    <Check size={12} className="text-emerald-400" />
                     {artifact}
                   </div>
                 ))}
@@ -152,12 +152,12 @@ interface FeatureCardProps {
 
 function FeatureCard({ icon, title, description, children }: FeatureCardProps) {
   return (
-    <div className="bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border)] p-7">
-      <div className="w-12 h-12 rounded-xl bg-[var(--accent-muted)] flex items-center justify-center text-[var(--accent)] mb-5">
+    <div className="glass-card p-7 transition-colors duration-200 hover:border-indigo-500/30">
+      <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-5">
         {icon}
       </div>
-      <h3 className="text-lg font-semibold mb-3">{title}</h3>
-      <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+      <h3 className="text-lg font-semibold text-white mb-3">{title}</h3>
+      <p className="text-sm text-zinc-400 leading-relaxed">
         {description}
       </p>
       {children}
