@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { LogoWithText } from "./logo";
-import { Linkedin } from "lucide-react";
+import { Linkedin, Twitter } from "lucide-react";
 
 const footerLinks = {
   product: [
@@ -21,15 +21,20 @@ const footerLinks = {
   ],
 };
 
+const socialLinks = [
+  { icon: Linkedin, href: "#", label: "LinkedIn" },
+  { icon: Twitter, href: "#", label: "X (Twitter)" },
+];
+
 export function Footer() {
   return (
-    <footer className="bg-[var(--bg-secondary)] border-t border-[var(--border)] py-16 px-6">
+    <footer className="bg-zinc-950 border-t border-white/[0.08] py-16 px-6">
       <div className="max-w-[1280px] mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           {/* Brand */}
           <div>
-            <LogoWithText size={32} />
-            <p className="mt-4 text-sm text-[var(--text-secondary)] leading-relaxed max-w-[280px]">
+            <LogoWithText size={32} variant="glow" />
+            <p className="mt-4 text-sm text-zinc-400 leading-relaxed max-w-[280px]">
               Moteur de prévision professionnel pour PME e-commerce.
               Forecasts validés par backtesting, en 5 minutes.
             </p>
@@ -37,13 +42,13 @@ export function Footer() {
 
           {/* Product */}
           <div>
-            <h4 className="font-semibold mb-4">Produit</h4>
+            <h4 className="font-semibold text-white mb-4">Produit</h4>
             <ul className="space-y-3">
               {footerLinks.product.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+                    className="text-sm text-zinc-400 hover:text-white transition-colors duration-200"
                   >
                     {link.label}
                   </Link>
@@ -54,13 +59,13 @@ export function Footer() {
 
           {/* Company */}
           <div>
-            <h4 className="font-semibold mb-4">Entreprise</h4>
+            <h4 className="font-semibold text-white mb-4">Entreprise</h4>
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+                    className="text-sm text-zinc-400 hover:text-white transition-colors duration-200"
                   >
                     {link.label}
                   </Link>
@@ -71,13 +76,13 @@ export function Footer() {
 
           {/* Legal */}
           <div>
-            <h4 className="font-semibold mb-4">Légal</h4>
+            <h4 className="font-semibold text-white mb-4">Légal</h4>
             <ul className="space-y-3">
               {footerLinks.legal.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+                    className="text-sm text-zinc-400 hover:text-white transition-colors duration-200"
                   >
                     {link.label}
                   </Link>
@@ -88,18 +93,21 @@ export function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="pt-8 border-t border-[var(--border)] flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-[var(--text-muted)]">
+        <div className="pt-8 border-t border-white/[0.08] flex flex-col sm:flex-row justify-between items-center gap-4">
+          <p className="text-sm text-zinc-500">
             © 2026 LumenIQ. Tous droits réservés.
           </p>
           <div className="flex gap-4">
-            <a
-              href="#"
-              className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
-              aria-label="LinkedIn"
-            >
-              <Linkedin size={20} />
-            </a>
+            {socialLinks.map((social) => (
+              <a
+                key={social.label}
+                href={social.href}
+                className="text-zinc-500 hover:text-white transition-colors duration-200"
+                aria-label={social.label}
+              >
+                <social.icon size={18} />
+              </a>
+            ))}
           </div>
         </div>
       </div>
