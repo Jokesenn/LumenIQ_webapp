@@ -55,27 +55,31 @@ export default async function DashboardPage() {
         <StatCard
           label="Séries ce mois"
           value={String(stats.seriesThisMonth)}
-          subtext={`/ ${stats.seriesLimit} disponibles`}
+          subtitle={`/ ${stats.seriesLimit} disponibles`}
           icon={BarChart3}
+          delay={0}
         />
         <StatCard
           label="Forecasts"
           value={String(stats.forecastsThisMonth)}
-          subtext="ce mois"
+          subtitle="ce mois"
           icon={TrendingUp}
+          delay={0.1}
         />
         <StatCard
           label="SMAPE moyen"
           value={stats.averageSmape !== null ? `${stats.averageSmape}%` : "—"}
-          subtext={smapeSubtext}
+          subtitle={smapeSubtext}
           icon={Target}
-          positive={stats.averageSmape !== null && stats.averageSmape < 10}
+          trend={stats.averageSmape !== null ? { value: `${stats.averageSmape}%`, direction: stats.averageSmape < 10 ? "up" : "down" } : undefined}
+          delay={0.2}
         />
         <StatCard
           label="Prochain reset"
           value={`${stats.daysUntilReset}j`}
-          subtext="quota mensuel"
+          subtitle="quota mensuel"
           icon={Clock}
+          delay={0.3}
         />
       </div>
 
