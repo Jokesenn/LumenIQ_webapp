@@ -1,10 +1,87 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Mail } from "lucide-react";
+import { useProfile, formatPlanName } from "@/hooks/use-profile";
+import { useSupabase, useUser } from "@/hooks/use-supabase";
 
 export default function SettingsPage() {
+  const { user } = useUser();
+  const { profile, loading, refetch } = useProfile();
+  const supabase = useSupabase();
+
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+
+  // Initialiser les valeurs du formulaire quand le profil est chargé
+  useEffect(() => {
+    if (profile) {
+      setFullName(profile.full_name ?? "");
+      setEmail(profile.email ?? "");
+    } else if (user) {
+      setEmail(user.email ?? "");
+    }
+  }, [profile, user]);
+
+  const handleSaveProfile = async () => {
+    if (!user) return;
+
+    setSaving(true);
+    setSaveMessage(null);
+
+    try {
+      const { error } = await supabase
+        .schema("lumeniq")
+        .from("profiles")
+        .update({
+          full_name: fullName,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", user.id);
+
+      if (error) throw error;
+
+      setSaveMessage({ type: "success", text: "Profil mis à jour avec succès" });
+      refetch();
+    } catch (err) {
+      setSaveMessage({
+        type: "error",
+        text: err instanceof Error ? err.message : "Erreur lors de la sauvegarde",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Calculer le quota de séries basé sur le plan
+  const getSeriesQuota = (plan: string) => {
+    const quotas: Record<string, number> = {
+      standard: 50,
+      ml: 200,
+      premium: 1000,
+    };
+    return quotas[plan] || 50;
+  };
+
+  // Calculer le prix basé sur le plan
+  const getPlanPrice = (plan: string) => {
+    const prices: Record<string, number> = {
+      standard: 99,
+      ml: 249,
+      premium: 499,
+    };
+    return prices[plan] || 99;
+  };
+
+  const seriesQuota = profile ? getSeriesQuota(profile.plan) : 50;
+  const seriesUsed = profile?.series_used_this_period ?? 0;
+  const usagePercent = Math.min((seriesUsed / seriesQuota) * 100, 100);
+
   return (
     <div className="animate-fade">
       <div className="mb-8">
@@ -18,6 +95,19 @@ export default function SettingsPage() {
         {/* Profile */}
         <div className="bg-[var(--bg-secondary)] rounded-xl border border-[var(--border)] p-6">
           <h3 className="text-base font-semibold mb-5">Profil</h3>
+
+          {saveMessage && (
+            <div
+              className={`mb-4 p-3 rounded-lg text-sm ${
+                saveMessage.type === "success"
+                  ? "bg-[var(--success)]/10 text-[var(--success)] border border-[var(--success)]/30"
+                  : "bg-[var(--danger)]/10 text-[var(--danger)] border border-[var(--danger)]/30"
+              }`}
+            >
+              {saveMessage.text}
+            </div>
+          )}
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
@@ -25,8 +115,11 @@ export default function SettingsPage() {
               </label>
               <input
                 type="text"
-                defaultValue="Jean Dupont"
-                className="w-full px-4 py-3 bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="Votre nom"
+                disabled={loading}
+                className="w-full px-4 py-3 bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent disabled:opacity-50"
               />
             </div>
             <div>
@@ -35,11 +128,21 @@ export default function SettingsPage() {
               </label>
               <input
                 type="email"
-                defaultValue="jean@entreprise.com"
-                className="w-full px-4 py-3 bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent"
+                value={email}
+                disabled
+                className="w-full px-4 py-3 bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-sm opacity-60 cursor-not-allowed"
               />
+              <p className="text-xs text-[var(--text-muted)] mt-1">
+                L&apos;email ne peut pas être modifié
+              </p>
             </div>
-            <Button className="mt-2">Sauvegarder</Button>
+            <Button
+              onClick={handleSaveProfile}
+              disabled={saving || loading}
+              className="mt-2"
+            >
+              {saving ? "Sauvegarde..." : "Sauvegarder"}
+            </Button>
           </div>
         </div>
 
@@ -48,25 +151,51 @@ export default function SettingsPage() {
           <h3 className="text-base font-semibold mb-5">Abonnement</h3>
           <div className="p-5 bg-[var(--accent-muted)] rounded-xl mb-5">
             <div className="flex justify-between items-center mb-3">
-              <span className="font-semibold">Plan Standard</span>
+              <span className="font-semibold">
+                {loading ? (
+                  <span className="animate-pulse">Chargement...</span>
+                ) : (
+                  `Plan ${formatPlanName(profile?.plan ?? "standard")}`
+                )}
+              </span>
               <span className="text-2xl font-bold">
-                €99<span className="text-sm font-normal">/mois</span>
+                €{profile ? getPlanPrice(profile.plan) : "--"}
+                <span className="text-sm font-normal">/mois</span>
               </span>
             </div>
             <div className="flex justify-between text-sm text-[var(--text-secondary)]">
               <span>Séries utilisées ce mois</span>
-              <span>12 / 50</span>
+              <span>
+                {seriesUsed} / {seriesQuota}
+              </span>
             </div>
             <div className="mt-3 h-1.5 bg-[var(--bg-surface)] rounded-full overflow-hidden">
               <div
-                className="h-full bg-[var(--accent)] rounded-full"
-                style={{ width: "24%" }}
+                className="h-full bg-[var(--accent)] rounded-full transition-all"
+                style={{ width: `${usagePercent}%` }}
               />
             </div>
+            {profile?.subscription_status && (
+              <div className="mt-3 text-xs text-[var(--text-muted)]">
+                Statut : {profile.subscription_status === "trialing" ? "Période d'essai" : profile.subscription_status}
+                {profile.trial_ends_at && (
+                  <span>
+                    {" "}
+                    (fin le{" "}
+                    {new Date(profile.trial_ends_at).toLocaleDateString("fr-FR")}
+                    )
+                  </span>
+                )}
+              </div>
+            )}
           </div>
           <div className="flex gap-3">
             <Button variant="secondary">Gérer la facturation</Button>
-            <Button variant="ghost">Passer à ML</Button>
+            {profile?.plan !== "premium" && (
+              <Button variant="ghost">
+                {profile?.plan === "standard" ? "Passer à ML" : "Passer à Premium"}
+              </Button>
+            )}
           </div>
         </div>
 
@@ -96,20 +225,50 @@ export default function SettingsPage() {
         </div>
 
         {/* API (Foundation) */}
-        <div className="bg-[var(--bg-secondary)] rounded-xl border border-[var(--border)] p-6 opacity-60">
+        <div
+          className={`bg-[var(--bg-secondary)] rounded-xl border border-[var(--border)] p-6 ${
+            profile?.plan !== "premium" ? "opacity-60" : ""
+          }`}
+        >
           <div className="flex items-center gap-2 mb-5">
             <h3 className="text-base font-semibold">API</h3>
-            <span className="px-2 py-0.5 bg-[#F59E0B]/20 rounded text-[10px] font-semibold text-[#F59E0B]">
-              FOUNDATION
-            </span>
+            {profile?.plan !== "premium" && (
+              <span className="px-2 py-0.5 bg-[#F59E0B]/20 rounded text-[10px] font-semibold text-[#F59E0B]">
+                PREMIUM
+              </span>
+            )}
           </div>
-          <p className="text-sm text-[var(--text-secondary)] mb-4">
-            Passez au plan Foundation pour accéder à l&apos;API REST et
-            automatiser vos forecasts.
-          </p>
-          <Button variant="secondary" disabled>
-            Débloquer l&apos;API
-          </Button>
+          {profile?.plan === "premium" && profile?.api_key ? (
+            <div className="space-y-3">
+              <p className="text-sm text-[var(--text-secondary)]">
+                Votre clé API pour automatiser vos forecasts
+              </p>
+              <div className="flex gap-2">
+                <input
+                  type="password"
+                  value={profile.api_key}
+                  readOnly
+                  className="flex-1 px-4 py-2 bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg text-sm font-mono"
+                />
+                <Button
+                  variant="secondary"
+                  onClick={() => navigator.clipboard.writeText(profile.api_key!)}
+                >
+                  Copier
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <p className="text-sm text-[var(--text-secondary)] mb-4">
+                Passez au plan Premium pour accéder à l&apos;API REST et
+                automatiser vos forecasts.
+              </p>
+              <Button variant="secondary" disabled={profile?.plan !== "premium"}>
+                Débloquer l&apos;API
+              </Button>
+            </>
+          )}
         </div>
 
         {/* Danger Zone */}

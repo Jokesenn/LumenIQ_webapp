@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogoWithText, Logo } from "@/components/shared/logo";
-import { ThemeToggle } from "@/components/shared/theme-toggle";
 import {
   BarChart3,
   Upload,
@@ -16,6 +15,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useState, useEffect } from "react";
+import { useLogout } from "@/hooks/use-supabase";
 
 interface SidebarProps {
   collapsed: boolean;
@@ -33,10 +33,22 @@ export function Sidebar({ collapsed }: SidebarProps) {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const logout = useLogout();
+  const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Logout error:", error);
+      setLoggingOut(false);
+    }
+  };
 
   return (
     <aside
@@ -98,15 +110,20 @@ export function Sidebar({ collapsed }: SidebarProps) {
           )}
         </button>
 
-        <Link
-          href="/"
-          className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] transition-all ${
+        <button
+          onClick={handleLogout}
+          disabled={loggingOut}
+          className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] transition-all disabled:opacity-50 ${
             collapsed ? "justify-center" : ""
           }`}
         >
-          <LogOut size={20} />
-          {!collapsed && <span className="text-sm">Déconnexion</span>}
-        </Link>
+          <LogOut size={20} className={loggingOut ? "animate-pulse" : ""} />
+          {!collapsed && (
+            <span className="text-sm">
+              {loggingOut ? "Déconnexion..." : "Déconnexion"}
+            </span>
+          )}
+        </button>
       </div>
     </aside>
   );

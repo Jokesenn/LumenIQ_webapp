@@ -1,12 +1,46 @@
-"use client";
-
+import { redirect } from "next/navigation";
 import Link from "next/link";
-import { StatCard, RecentForecasts } from "@/components/dashboard";
+import { createClient } from "@/lib/supabase/server";
+import { StatCard, RecentForecasts, EmptyDashboard } from "@/components/dashboard";
 import { Button } from "@/components/ui/button";
 import { BarChart3, TrendingUp, Target, Clock, Upload, FileText } from "lucide-react";
-import { modelPerformance, dashboardStats } from "@/lib/mock-data";
+import {
+  getDashboardStats,
+  getRecentForecasts,
+  getModelPerformance,
+  type ModelPerformanceItem,
+} from "@/lib/queries/dashboard";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  // Fetch toutes les données en parallèle
+  const [stats, recentForecasts, modelPerformance] = await Promise.all([
+    getDashboardStats(supabase, user.id),
+    getRecentForecasts(supabase, user.id),
+    getModelPerformance(supabase, user.id),
+  ]);
+
+  const hasForecasts = recentForecasts.length > 0;
+  const hasModelData = modelPerformance.length > 0;
+
+  // Déterminer le subtext pour SMAPE
+  const smapeSubtext =
+    stats.averageSmape !== null
+      ? stats.averageSmape < 10
+        ? "excellente précision"
+        : stats.averageSmape < 15
+        ? "bonne précision"
+        : "à améliorer"
+      : "pas encore de données";
+
   return (
     <div className="animate-fade">
       <div className="mb-8">
@@ -20,26 +54,26 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
         <StatCard
           label="Séries ce mois"
-          value={String(dashboardStats.seriesThisMonth)}
-          subtext={`/ ${dashboardStats.seriesLimit} disponibles`}
+          value={String(stats.seriesThisMonth)}
+          subtext={`/ ${stats.seriesLimit} disponibles`}
           icon={BarChart3}
         />
         <StatCard
           label="Forecasts"
-          value={String(dashboardStats.forecastsThisMonth)}
+          value={String(stats.forecastsThisMonth)}
           subtext="ce mois"
           icon={TrendingUp}
         />
         <StatCard
           label="SMAPE moyen"
-          value={`${dashboardStats.averageSmape}%`}
-          subtext="excellente précision"
+          value={stats.averageSmape !== null ? `${stats.averageSmape}%` : "—"}
+          subtext={smapeSubtext}
           icon={Target}
-          positive
+          positive={stats.averageSmape !== null && stats.averageSmape < 10}
         />
         <StatCard
           label="Prochain reset"
-          value={`${dashboardStats.daysUntilReset}j`}
+          value={`${stats.daysUntilReset}j`}
           subtext="quota mensuel"
           icon={Clock}
         />
@@ -49,7 +83,11 @@ export default function DashboardPage() {
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Recent Forecasts */}
         <div className="lg:col-span-2">
-          <RecentForecasts />
+          {hasForecasts ? (
+            <RecentForecasts forecasts={recentForecasts} />
+          ) : (
+            <EmptyDashboard />
+          )}
         </div>
 
         {/* Quick Actions & Model Performance */}
@@ -72,35 +110,45 @@ export default function DashboardPage() {
           {/* Model Performance */}
           <div className="bg-[var(--bg-secondary)] rounded-xl border border-[var(--border)] p-6">
             <h2 className="text-base font-semibold mb-4">Performance modèles</h2>
-            <div className="space-y-3">
-              {modelPerformance.slice(0, 4).map((m) => (
-                <div
-                  key={m.model}
-                  className="flex justify-between items-center"
-                >
-                  <span className="text-sm">{m.model}</span>
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs text-[var(--text-muted)]">
-                      {m.series} séries
-                    </span>
-                    <span
-                      className={`text-sm font-semibold ${
-                        m.smape < 8
-                          ? "text-[var(--success)]"
-                          : m.smape < 10
-                          ? "text-[var(--warning)]"
-                          : ""
-                      }`}
-                    >
-                      {m.smape}%
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
+            {hasModelData ? (
+              <ModelPerformanceList models={modelPerformance.slice(0, 4)} />
+            ) : (
+              <p className="text-sm text-[var(--text-muted)]">
+                Les performances apparaîtront après votre premier forecast.
+              </p>
+            )}
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+// Composant interne pour afficher les performances des modèles
+function ModelPerformanceList({ models }: { models: ModelPerformanceItem[] }) {
+  return (
+    <div className="space-y-3">
+      {models.map((m) => (
+        <div key={m.model} className="flex justify-between items-center">
+          <span className="text-sm">{m.model}</span>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-[var(--text-muted)]">
+              {m.series} séries
+            </span>
+            <span
+              className={`text-sm font-semibold ${
+                m.smape < 8
+                  ? "text-[var(--success)]"
+                  : m.smape < 10
+                  ? "text-[var(--warning)]"
+                  : ""
+              }`}
+            >
+              {m.smape}%
+            </span>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

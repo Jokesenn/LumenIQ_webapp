@@ -32,6 +32,10 @@
   --warning: #D97706;
   --danger: #DC2626;
   
+  /* Chart – intervalles de confiance (lisibles en tooltip/légende, mode clair) */
+  --chart-ic-sup: #0284c7;
+  --chart-ic-inf: #c2410c;
+  
   /* Radius */
   --radius: 0.5rem;
   
@@ -77,6 +81,10 @@
   --success: #10B981;
   --warning: #F59E0B;
   --danger: #EF4444;
+  
+  /* Chart – intervalles de confiance (lisibles en tooltip/légende, mode sombre) */
+  --chart-ic-sup: #38bdf8;
+  --chart-ic-inf: #fb923c;
   
   /* shadcn compatibility */
   --background: var(--bg-primary);
