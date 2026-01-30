@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Navbar } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/shared/logo";
+import { Loader2 } from "lucide-react";
 import { useSupabase } from "@/hooks/use-supabase";
 
 type AuthMode = "login" | "signup" | "forgot-password";
@@ -105,62 +106,82 @@ export default function LoginPage() {
     }
   };
 
-  const getSubmitText = () => {
-    if (loading) {
-      return (
-        <span className="flex items-center gap-2">
-          <span className="animate-spin-slow inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
-          {mode === "login"
-            ? "Connexion..."
-            : mode === "signup"
-            ? "Création..."
-            : "Envoi..."}
-        </span>
-      );
-    }
-    switch (mode) {
-      case "login":
-        return "Se connecter";
-      case "signup":
-        return "Créer mon compte";
-      case "forgot-password":
-        return "Envoyer le lien";
-    }
+  const switchMode = (newMode: AuthMode) => {
+    setMode(newMode);
+    setError(null);
+    setMessage(null);
   };
 
+  const inputClass =
+    "w-full px-4 py-3 bg-white/5 border border-white/[0.1] rounded-lg text-white text-sm placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent transition-shadow";
+
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)]">
+    <div className="relative min-h-screen bg-zinc-950 overflow-hidden">
+      {/* Background effects */}
+      <div className="absolute inset-0 bg-grid-pattern opacity-30 pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-5%] w-[500px] h-[500px] rounded-full bg-indigo-500/10 blur-[100px] pointer-events-none" />
+
       <Navbar />
 
-      <main className="pt-20">
+      <main className="relative z-10 pt-20">
         <section className="min-h-[calc(100vh-80px)] flex items-center justify-center py-10 px-6">
-          <div className="w-full max-w-[420px] bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border)] p-10">
+          <div className="w-full max-w-[420px] glass-card p-8">
+            {/* Header */}
             <div className="text-center mb-8">
               <div className="flex justify-center mb-4">
-                <Logo size={48} />
+                <Logo size={48} variant="glow" />
               </div>
-              <h1 className="text-2xl font-bold mb-2">{getTitle()}</h1>
-              <p className="text-sm text-[var(--text-secondary)]">
+              <h1 className="text-2xl font-bold text-white mb-2">{getTitle()}</h1>
+              <p className="text-sm text-zinc-400">
                 {getSubtitle()}
               </p>
             </div>
 
+            {/* Mode tabs */}
+            {mode !== "forgot-password" && (
+              <div className="flex mb-6 border-b border-white/[0.08]">
+                <button
+                  onClick={() => switchMode("login")}
+                  className={`flex-1 pb-3 text-sm font-medium transition-colors duration-200 ${
+                    mode === "login"
+                      ? "text-white border-b-2 border-indigo-500"
+                      : "text-zinc-400 hover:text-white"
+                  }`}
+                >
+                  Connexion
+                </button>
+                <button
+                  onClick={() => switchMode("signup")}
+                  className={`flex-1 pb-3 text-sm font-medium transition-colors duration-200 ${
+                    mode === "signup"
+                      ? "text-white border-b-2 border-indigo-500"
+                      : "text-zinc-400 hover:text-white"
+                  }`}
+                >
+                  Inscription
+                </button>
+              </div>
+            )}
+
+            {/* Error message */}
             {error && (
-              <div className="mb-5 p-3 bg-[var(--danger)]/10 border border-[var(--danger)]/30 rounded-lg text-sm text-[var(--danger)]">
+              <div className="mb-5 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-sm text-red-400">
                 {error}
               </div>
             )}
 
+            {/* Success message */}
             {message && (
-              <div className="mb-5 p-3 bg-[var(--success)]/10 border border-[var(--success)]/30 rounded-lg text-sm text-[var(--success)]">
+              <div className="mb-5 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-sm text-emerald-400">
                 {message}
               </div>
             )}
 
+            {/* Form */}
             <form onSubmit={handleSubmit}>
               {mode === "signup" && (
                 <div className="mb-5">
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="block text-sm font-medium text-zinc-300 mb-2">
                     Nom complet
                   </label>
                   <input
@@ -168,30 +189,44 @@ export default function LoginPage() {
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="Jean Dupont"
-                    className="w-full px-4 py-3 bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent"
+                    className={inputClass}
                     disabled={loading}
                   />
                 </div>
               )}
 
               <div className="mb-5">
-                <label className="block text-sm font-medium mb-2">Email</label>
+                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                  Email
+                </label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="vous@entreprise.com"
                   required
-                  className="w-full px-4 py-3 bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent"
+                  className={inputClass}
                   disabled={loading}
                 />
               </div>
 
               {mode !== "forgot-password" && (
                 <div className="mb-6">
-                  <label className="block text-sm font-medium mb-2">
-                    Mot de passe
-                  </label>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-sm font-medium text-zinc-300">
+                      Mot de passe
+                    </label>
+                    {mode === "login" && (
+                      <button
+                        type="button"
+                        onClick={() => switchMode("forgot-password")}
+                        className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
+                        disabled={loading}
+                      >
+                        Mot de passe oublié ?
+                      </button>
+                    )}
+                  </div>
                   <input
                     type="password"
                     value={password}
@@ -199,7 +234,7 @@ export default function LoginPage() {
                     placeholder="••••••••"
                     required
                     minLength={6}
-                    className="w-full px-4 py-3 bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent"
+                    className={inputClass}
                     disabled={loading}
                   />
                 </div>
@@ -207,51 +242,44 @@ export default function LoginPage() {
 
               <Button
                 type="submit"
-                className="w-full justify-center"
+                className="w-full justify-center bg-indigo-500 hover:bg-indigo-600 text-white"
                 disabled={loading}
               >
-                {getSubmitText()}
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 size={16} className="animate-spin" />
+                    {mode === "login"
+                      ? "Connexion..."
+                      : mode === "signup"
+                      ? "Création..."
+                      : "Envoi..."}
+                  </span>
+                ) : mode === "login" ? (
+                  "Se connecter"
+                ) : mode === "signup" ? (
+                  "Créer mon compte"
+                ) : (
+                  "Envoyer le lien"
+                )}
               </Button>
             </form>
 
+            {/* Footer links */}
             <div className="mt-6 text-center">
               {mode === "login" && (
-                <>
-                  <button
-                    onClick={() => {
-                      setMode("signup");
-                      setError(null);
-                      setMessage(null);
-                    }}
-                    className="text-sm text-[var(--accent)] hover:underline"
-                    disabled={loading}
-                  >
-                    Pas encore de compte ? S&apos;inscrire
-                  </button>
-                  <div className="mt-4">
-                    <button
-                      onClick={() => {
-                        setMode("forgot-password");
-                        setError(null);
-                        setMessage(null);
-                      }}
-                      className="text-sm text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
-                      disabled={loading}
-                    >
-                      Mot de passe oublié ?
-                    </button>
-                  </div>
-                </>
+                <button
+                  onClick={() => switchMode("signup")}
+                  className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
+                  disabled={loading}
+                >
+                  Pas encore de compte ? S&apos;inscrire
+                </button>
               )}
 
               {mode === "signup" && (
                 <button
-                  onClick={() => {
-                    setMode("login");
-                    setError(null);
-                    setMessage(null);
-                  }}
-                  className="text-sm text-[var(--accent)] hover:underline"
+                  onClick={() => switchMode("login")}
+                  className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
                   disabled={loading}
                 >
                   Déjà un compte ? Se connecter
@@ -260,12 +288,8 @@ export default function LoginPage() {
 
               {mode === "forgot-password" && (
                 <button
-                  onClick={() => {
-                    setMode("login");
-                    setError(null);
-                    setMessage(null);
-                  }}
-                  className="text-sm text-[var(--accent)] hover:underline"
+                  onClick={() => switchMode("login")}
+                  className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
                   disabled={loading}
                 >
                   Retour à la connexion
