@@ -1,163 +1,133 @@
 "use client";
 
-import { Cpu, Target, Brain, FileText, Check } from "lucide-react";
+import { motion } from "framer-motion";
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-} from "recharts";
-import { abcDistribution } from "@/lib/mock-data";
+  Zap, Shield, Clock, TrendingUp, BarChart3, Sparkles,
+  Brain, Target, Layers, RefreshCw
+} from "lucide-react";
+import { FadeIn, StaggerChildren, StaggerItem, TiltCard } from "@/components/animations";
+import { AnimatedBackground } from "@/components/backgrounds";
+
+const features = [
+  {
+    icon: Brain,
+    title: "15 modèles ML",
+    description: "ARIMA, Prophet, XGBoost, LightGBM, Theta, CES... Le meilleur modèle est sélectionné automatiquement pour chaque série.",
+    gradient: "from-indigo-500 to-violet-500",
+  },
+  {
+    icon: Shield,
+    title: "Backtesting rigoureux",
+    description: "Chaque prévision est validée sur vos données historiques. Vous connaissez la fiabilité avant de décider.",
+    gradient: "from-emerald-500 to-cyan-500",
+  },
+  {
+    icon: Clock,
+    title: "5 minutes chrono",
+    description: "Upload CSV, cliquez, téléchargez. Pas de configuration complexe, pas de formation requise.",
+    gradient: "from-amber-500 to-orange-500",
+  },
+  {
+    icon: Target,
+    title: "Classification ABC/XYZ",
+    description: "Identifiez automatiquement vos produits stars et vos séries erratiques pour prioriser vos efforts.",
+    gradient: "from-rose-500 to-pink-500",
+  },
+  {
+    icon: BarChart3,
+    title: "Rapports professionnels",
+    description: "Graphiques interactifs, métriques clés, exports Excel. Prêt à présenter en comité de direction.",
+    gradient: "from-blue-500 to-indigo-500",
+  },
+  {
+    icon: Sparkles,
+    title: "Synthèse IA",
+    description: "Claude analyse vos résultats et génère un résumé exécutif en langage business compréhensible.",
+    gradient: "from-violet-500 to-purple-500",
+  },
+];
 
 export function FeaturesSection() {
   return (
-    <section className="py-[120px] px-6">
-      <div className="max-w-[1280px] mx-auto">
+    <section className="relative py-32 overflow-hidden">
+      <AnimatedBackground variant="section" />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-6">
+        {/* Header */}
         <div className="text-center mb-20">
-          <h2 className="text-3xl md:text-[40px] font-bold mb-4 tracking-[-0.01em] text-gradient">
-            Technologie de pointe,<br />simplicité absolue
-          </h2>
+          <FadeIn>
+            <motion.div
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6"
+              whileHover={{ scale: 1.02 }}
+            >
+              <Layers className="w-4 h-4 text-indigo-400" />
+              <span className="text-sm text-zinc-300">Fonctionnalités</span>
+            </motion.div>
+          </FadeIn>
+
+          <FadeIn delay={0.1}>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
+              <span className="text-gradient">Forecasting enterprise,</span>
+              <br />
+              <span className="text-white">accessible aux PME</span>
+            </h2>
+          </FadeIn>
+
+          <FadeIn delay={0.2}>
+            <p className="text-lg text-zinc-400 max-w-2xl mx-auto">
+              Tout ce dont vous avez besoin pour des prévisions fiables,
+              sans la complexité des outils enterprise.
+            </p>
+          </FadeIn>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
-          <FeatureCard
-            icon={<Cpu size={28} />}
-            title="Routing ABC/XYZ Intelligent"
-            description="Innovation différenciante : allocation dynamique du budget compute selon la valeur business de chaque série. Les produits A (top 20% CA) reçoivent jusqu'à 30 modèles avec 5-fold CV. Résultat : ~60% de réduction temps de calcul."
-          >
-            <div className="mt-6">
-              <ResponsiveContainer width="100%" height={120}>
-                <BarChart data={abcDistribution} layout="vertical">
-                  <XAxis type="number" hide />
-                  <YAxis
-                    dataKey="name"
-                    type="category"
-                    stroke="#71717a"
-                    fontSize={12}
-                    width={30}
-                  />
-                  <Tooltip
-                    formatter={(value) => [`${value}%`, ""]}
-                    contentStyle={{
-                      backgroundColor: "rgba(24, 24, 27, 0.9)",
-                      border: "1px solid rgba(255,255,255,0.08)",
-                      borderRadius: "8px",
-                    }}
-                  />
-                  <Bar dataKey="value" radius={[0, 4, 4, 0]}>
-                    {abcDistribution.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </FeatureCard>
-
-          <FeatureCard
-            icon={<Target size={28} />}
-            title="Backtesting Multi-Fold"
-            description="Chaque forecast est validé par cross-validation temporelle (jusqu'à 5 folds pour classe A). Vous savez exactement quelle aurait été la précision sur vos données historiques avant de faire confiance au forecast."
-          >
-            <div className="mt-6 grid grid-cols-5 gap-2">
-              {[8.2, 9.1, 7.8, 8.5, 9.4].map((smape, idx) => (
-                <div
-                  key={idx}
-                  className="bg-white/5 rounded-lg p-3 text-center"
+        {/* Features grid */}
+        <StaggerChildren staggerDelay={0.1} className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {features.map((feature, i) => (
+            <StaggerItem key={i}>
+              <TiltCard className="h-full">
+                <motion.div
+                  className="group relative h-full p-8 rounded-2xl bg-zinc-900/50 border border-white/5 hover:border-white/10 transition-all duration-500 spotlight"
+                  whileHover={{ y: -5 }}
+                  onMouseMove={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const x = ((e.clientX - rect.left) / rect.width) * 100;
+                    const y = ((e.clientY - rect.top) / rect.height) * 100;
+                    e.currentTarget.style.setProperty('--spotlight-x', `${x}%`);
+                    e.currentTarget.style.setProperty('--spotlight-y', `${y}%`);
+                  }}
                 >
-                  <p className="text-[11px] text-zinc-500 mb-1">
-                    Fold {idx + 1}
-                  </p>
-                  <p className="text-base font-semibold text-emerald-400">
-                    {smape}%
-                  </p>
-                </div>
-              ))}
-            </div>
-          </FeatureCard>
-
-          <FeatureCard
-            icon={<Brain size={28} />}
-            title="21 Modèles Statistiques/ML"
-            description="Du classique ARIMA aux modèles ML avancés et foundation models. L'algorithme sélectionne automatiquement le champion pour chaque série selon sa nature (régulière, saisonnière, intermittente...)."
-          >
-            <div className="mt-6 flex flex-wrap gap-2">
-              {[
-                "AutoARIMA",
-                "AutoETS",
-                "Theta",
-                "Croston",
-                "TSB",
-                "ADIDA",
-                "LightGBM",
-                "Ridge",
-              ].map((model) => (
-                <span
-                  key={model}
-                  className="px-3 py-1.5 bg-white/5 rounded-md text-xs font-medium text-zinc-400"
-                >
-                  {model}
-                </span>
-              ))}
-              <span className="px-3 py-1.5 bg-indigo-500/10 rounded-md text-xs font-medium text-indigo-400">
-                +13 autres
-              </span>
-            </div>
-          </FeatureCard>
-
-          <FeatureCard
-            icon={<FileText size={28} />}
-            title="6 Artifacts & Synthèse LLM"
-            description="Rapport exécutif généré par Claude API traduit les résultats techniques en insights business. Export complet avec tous les artifacts pour audit et intégration ERP/BI."
-          >
-            <div className="mt-6 bg-white/5 rounded-lg p-4">
-              <div className="grid grid-cols-2 gap-2">
-                {[
-                  "forecast.csv",
-                  "metrics.json",
-                  "model_registry.json",
-                  "insights.json",
-                  "run_manifest.json",
-                  "Synthèse LLM",
-                ].map((artifact) => (
-                  <div
-                    key={artifact}
-                    className="flex items-center gap-1.5 text-xs text-zinc-400"
-                  >
-                    <Check size={12} className="text-emerald-400" />
-                    {artifact}
+                  {/* Icon */}
+                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.gradient} p-[1px] mb-6`}>
+                    <div className="w-full h-full rounded-2xl bg-zinc-900 flex items-center justify-center">
+                      <feature.icon className="w-6 h-6 text-white" />
+                    </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          </FeatureCard>
-        </div>
+
+                  {/* Content */}
+                  <h3 className="text-xl font-semibold text-white mb-3 group-hover:text-gradient transition-all">
+                    {feature.title}
+                  </h3>
+                  <p className="text-zinc-400 leading-relaxed">
+                    {feature.description}
+                  </p>
+
+                  {/* Hover arrow */}
+                  <motion.div
+                    className="absolute bottom-8 right-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                    initial={{ x: -10 }}
+                    whileHover={{ x: 0 }}
+                  >
+                    <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
+                      <RefreshCw className="w-4 h-4 text-zinc-400" />
+                    </div>
+                  </motion.div>
+                </motion.div>
+              </TiltCard>
+            </StaggerItem>
+          ))}
+        </StaggerChildren>
       </div>
     </section>
-  );
-}
-
-interface FeatureCardProps {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  children?: React.ReactNode;
-}
-
-function FeatureCard({ icon, title, description, children }: FeatureCardProps) {
-  return (
-    <div className="glass-card p-7 transition-colors duration-200 hover:border-indigo-500/30">
-      <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-5">
-        {icon}
-      </div>
-      <h3 className="text-lg font-semibold text-white mb-3">{title}</h3>
-      <p className="text-sm text-zinc-400 leading-relaxed">
-        {description}
-      </p>
-      {children}
-    </div>
   );
 }
