@@ -44,8 +44,8 @@ export default async function DashboardPage() {
   return (
     <div className="animate-fade">
       <div className="mb-8">
-        <h1 className="text-[28px] font-bold mb-2">Dashboard</h1>
-        <p className="text-[var(--text-secondary)]">
+        <h1 className="text-[28px] font-bold text-white mb-2">Dashboard</h1>
+        <p className="text-zinc-400">
           Vue d&apos;ensemble de votre activité forecast
         </p>
       </div>
@@ -93,27 +93,30 @@ export default async function DashboardPage() {
         {/* Quick Actions & Model Performance */}
         <div className="space-y-6">
           {/* Quick Actions */}
-          <div className="bg-[var(--bg-secondary)] rounded-xl border border-[var(--border)] p-6">
-            <h2 className="text-base font-semibold mb-4">Actions rapides</h2>
+          <div className="bg-zinc-900/50 rounded-xl border border-white/[0.08] p-6">
+            <h2 className="text-base font-semibold text-white mb-4">Actions rapides</h2>
             <Link href="/dashboard/forecast">
-              <Button className="w-full justify-center mb-3">
+              <Button className="w-full justify-center mb-3 bg-indigo-500 hover:bg-indigo-600 text-white">
                 <Upload size={18} />
                 Nouveau forecast
               </Button>
             </Link>
-            <Button variant="secondary" className="w-full justify-center">
+            <Button
+              variant="outline"
+              className="w-full justify-center border-white/[0.1] text-zinc-300 hover:bg-white/5 hover:text-white"
+            >
               <FileText size={18} />
               Documentation
             </Button>
           </div>
 
           {/* Model Performance */}
-          <div className="bg-[var(--bg-secondary)] rounded-xl border border-[var(--border)] p-6">
-            <h2 className="text-base font-semibold mb-4">Performance modèles</h2>
+          <div className="bg-zinc-900/50 rounded-xl border border-white/[0.08] p-6">
+            <h2 className="text-base font-semibold text-white mb-4">Performance modèles</h2>
             {hasModelData ? (
               <ModelPerformanceList models={modelPerformance.slice(0, 4)} />
             ) : (
-              <p className="text-sm text-[var(--text-muted)]">
+              <p className="text-sm text-zinc-500">
                 Les performances apparaîtront après votre premier forecast.
               </p>
             )}
@@ -130,18 +133,18 @@ function ModelPerformanceList({ models }: { models: ModelPerformanceItem[] }) {
     <div className="space-y-3">
       {models.map((m) => (
         <div key={m.model} className="flex justify-between items-center">
-          <span className="text-sm">{m.model}</span>
+          <span className="text-sm text-zinc-300">{m.model}</span>
           <div className="flex items-center gap-3">
-            <span className="text-xs text-[var(--text-muted)]">
+            <span className="text-xs text-zinc-500">
               {m.series} séries
             </span>
             <span
               className={`text-sm font-semibold ${
                 m.smape < 8
-                  ? "text-[var(--success)]"
+                  ? "text-emerald-500"
                   : m.smape < 10
-                  ? "text-[var(--warning)]"
-                  : ""
+                  ? "text-amber-500"
+                  : "text-zinc-300"
               }`}
             >
               {m.smape}%

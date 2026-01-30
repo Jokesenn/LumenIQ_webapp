@@ -17,13 +17,13 @@ interface ComparisonCardProps {
 
 export function ComparisonSection() {
   return (
-    <section className="py-[120px] px-6 bg-[var(--bg-secondary)]">
+    <section className="py-[120px] px-6 bg-zinc-950/50">
       <div className="max-w-[1280px] mx-auto">
         <div className="text-center mb-20">
-          <h2 className="text-3xl md:text-[40px] font-bold mb-4 tracking-[-0.01em]">
+          <h2 className="text-3xl md:text-[40px] font-bold mb-4 tracking-[-0.01em] text-gradient">
             Le forecasting professionnel,<br />enfin accessible aux PME
           </h2>
-          <p className="text-lg text-[var(--text-secondary)] max-w-[600px] mx-auto">
+          <p className="text-lg text-zinc-400 max-w-[600px] mx-auto">
             Ni Excel approximatif, ni solutions enterprise à €20k/an.
             LumenIQ comble le gap avec une précision pro à prix PME.
           </p>
@@ -40,7 +40,7 @@ export function ComparisonSection() {
               { text: "Pas de saisonnalité détectée", bad: true },
             ]}
             badge="Gratuit mais risqué"
-            badgeColor="var(--warning)"
+            badgeColor="#f59e0b"
           />
           <ComparisonCard
             title="LumenIQ"
@@ -52,7 +52,7 @@ export function ComparisonSection() {
               { text: "~60% réduction temps calcul", good: true },
             ]}
             badge="€99-249/mois"
-            badgeColor="var(--accent)"
+            badgeColor="#6366f1"
             highlight={true}
           />
           <ComparisonCard
@@ -65,7 +65,7 @@ export function ComparisonSection() {
               { text: "Overkill pour PME", bad: true },
             ]}
             badge="Surdimensionné"
-            badgeColor="var(--text-muted)"
+            badgeColor="#71717a"
           />
         </div>
       </div>
@@ -83,14 +83,14 @@ function ComparisonCard({
 }: ComparisonCardProps) {
   return (
     <div
-      className={`relative rounded-2xl border p-7 ${
+      className={`relative rounded-2xl p-7 ${
         highlight
-          ? "bg-[var(--accent-muted)] border-2 border-[var(--accent)]"
-          : "bg-[var(--bg-surface)] border-[var(--border)]"
+          ? "bg-zinc-900/50 backdrop-blur-xl border-2 border-indigo-500 glow-accent"
+          : "bg-zinc-900/50 backdrop-blur-xl border border-white/[0.08]"
       }`}
     >
       {highlight && (
-        <div className="absolute top-[-12px] left-1/2 -translate-x-1/2 bg-[var(--accent)] text-white px-3 py-1 rounded-full text-xs font-semibold">
+        <div className="absolute top-[-12px] left-1/2 -translate-x-1/2 bg-indigo-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
           RECOMMANDÉ
         </div>
       )}
@@ -100,17 +100,17 @@ function ComparisonCard({
       >
         {badge}
       </span>
-      <h3 className="text-xl font-bold mb-1">{title}</h3>
-      <p className="text-[13px] text-[var(--text-muted)] mb-5">{subtitle}</p>
+      <h3 className="text-xl font-bold text-white mb-1">{title}</h3>
+      <p className="text-[13px] text-zinc-500 mb-5">{subtitle}</p>
       <div className="space-y-3">
         {items.map((item, i) => (
           <div key={i} className="flex items-center gap-2.5">
             {item.good ? (
-              <Check size={16} className="text-[var(--success)]" />
+              <Check size={16} className="text-emerald-500" />
             ) : item.bad ? (
-              <X size={16} className="text-[var(--danger)]" />
+              <X size={16} className="text-red-400" />
             ) : null}
-            <span className="text-[13px] text-[var(--text-secondary)]">
+            <span className="text-[13px] text-zinc-400">
               {item.text}
             </span>
           </div>

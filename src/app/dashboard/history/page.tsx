@@ -9,30 +9,30 @@ export default function HistoryPage() {
   return (
     <div className="animate-fade">
       <div className="mb-8">
-        <h1 className="text-[28px] font-bold mb-2">Historique</h1>
-        <p className="text-[var(--text-secondary)]">
-          Tous vos forecasts passés
+        <h1 className="text-[28px] font-bold text-white mb-2">Historique</h1>
+        <p className="text-zinc-400">
+          Tous vos forecasts pass\u00e9s
         </p>
       </div>
 
-      <div className="bg-[var(--bg-secondary)] rounded-xl border border-[var(--border)] overflow-hidden">
+      <div className="bg-zinc-900/50 rounded-xl border border-white/[0.08] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-[var(--border)]">
-                <th className="px-5 py-4 text-left text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
+              <tr className="border-b border-white/[0.08]">
+                <th className="px-5 py-4 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wider">
                   Fichier
                 </th>
-                <th className="px-5 py-4 text-left text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
+                <th className="px-5 py-4 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wider">
                   Date
                 </th>
-                <th className="px-5 py-4 text-left text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
-                  Séries
+                <th className="px-5 py-4 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+                  S\u00e9ries
                 </th>
-                <th className="px-5 py-4 text-left text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
+                <th className="px-5 py-4 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wider">
                   SMAPE
                 </th>
-                <th className="px-5 py-4 text-left text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
+                <th className="px-5 py-4 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -41,20 +41,20 @@ export default function HistoryPage() {
               {recentForecasts.map((item) => (
                 <tr
                   key={item.id}
-                  className="border-b border-[var(--border)] hover:bg-[var(--bg-surface)] transition-colors"
+                  className="border-b border-white/[0.08] hover:bg-white/5 transition-colors"
                 >
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
-                      <FileText size={18} className="text-[var(--text-muted)]" />
-                      <span className="font-medium">{item.name}</span>
+                      <FileText size={18} className="text-zinc-500" />
+                      <span className="font-medium text-white">{item.name}</span>
                     </div>
                   </td>
-                  <td className="px-5 py-4 text-[var(--text-secondary)]">
+                  <td className="px-5 py-4 text-zinc-400">
                     {item.date}
                   </td>
-                  <td className="px-5 py-4">{item.series}</td>
+                  <td className="px-5 py-4 text-zinc-300">{item.series}</td>
                   <td className="px-5 py-4">
-                    <span className="px-2.5 py-1 bg-[var(--success)]/20 text-[var(--success)] rounded-full text-xs font-semibold">
+                    <span className="px-2.5 py-1 bg-emerald-500/20 text-emerald-500 rounded-full text-xs font-semibold">
                       {item.smape}%
                     </span>
                   </td>
@@ -79,8 +79,8 @@ export default function HistoryPage() {
 
       {/* Pagination placeholder */}
       <div className="mt-6 flex justify-center">
-        <p className="text-sm text-[var(--text-muted)]">
-          Affichage de {recentForecasts.length} résultats
+        <p className="text-sm text-zinc-500">
+          Affichage de {recentForecasts.length} r\u00e9sultats
         </p>
       </div>
     </div>
