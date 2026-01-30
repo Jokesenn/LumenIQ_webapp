@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 interface AnimatedBackgroundProps {
@@ -6,7 +7,17 @@ interface AnimatedBackgroundProps {
 }
 
 export function AnimatedBackground({ variant = "hero" }: AnimatedBackgroundProps) {
-  const orbs = variant === "hero"
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReducedMotion(mql.matches);
+    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+    mql.addEventListener("change", handler);
+    return () => mql.removeEventListener("change", handler);
+  }, []);
+
+  const allOrbs = variant === "hero"
     ? [
         { color: "bg-indigo-500/30", size: "w-[600px] h-[600px]", position: "top-[-200px] left-[-200px]", delay: 0 },
         { color: "bg-violet-500/20", size: "w-[500px] h-[500px]", position: "bottom-[-150px] right-[-150px]", delay: 2 },
@@ -21,6 +32,9 @@ export function AnimatedBackground({ variant = "hero" }: AnimatedBackgroundProps
         { color: "bg-indigo-500/10", size: "w-[300px] h-[300px]", position: "top-[-50px] left-[-50px]", delay: 0 },
       ];
 
+  // Reduce orb count for reduced-motion preference
+  const orbs = reducedMotion ? allOrbs.slice(0, 1) : allOrbs;
+
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {/* Grid pattern */}
@@ -34,13 +48,13 @@ export function AnimatedBackground({ variant = "hero" }: AnimatedBackgroundProps
         <motion.div
           key={i}
           className={`absolute ${orb.size} ${orb.position} ${orb.color} rounded-full blur-[120px]`}
-          animate={{
+          animate={reducedMotion ? undefined : {
             scale: [1, 1.2, 1],
             opacity: [0.3, 0.5, 0.3],
             x: [0, 30, 0],
             y: [0, -20, 0],
           }}
-          transition={{
+          transition={reducedMotion ? undefined : {
             duration: 8,
             delay: orb.delay,
             repeat: Infinity,

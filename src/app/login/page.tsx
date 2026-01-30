@@ -3,6 +3,7 @@
 import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/shared/logo";
@@ -125,26 +126,46 @@ function LoginContent() {
 
       <main className="relative z-10 pt-20">
         <section className="min-h-[calc(100vh-80px)] flex items-center justify-center py-10 px-6">
-          <div className="w-full max-w-[420px] glass-card p-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.21, 0.47, 0.32, 0.98] }}
+            className="w-full max-w-[420px] glass-card p-8"
+          >
             {/* Header */}
-            <div className="text-center mb-8">
+            <motion.div
+              className="text-center mb-8"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
               <div className="flex justify-center mb-4">
                 <Logo size={48} variant="glow" />
               </div>
-              <h1 className="text-2xl font-bold text-white mb-2">{getTitle()}</h1>
-              <p className="text-sm text-zinc-400">
-                {getSubtitle()}
-              </p>
-            </div>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={mode}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <h1 className="text-2xl font-bold text-white mb-2">{getTitle()}</h1>
+                  <p className="text-sm text-zinc-400">
+                    {getSubtitle()}
+                  </p>
+                </motion.div>
+              </AnimatePresence>
+            </motion.div>
 
             {/* Mode tabs */}
             {mode !== "forgot-password" && (
-              <div className="flex mb-6 border-b border-white/[0.08]">
+              <div className="flex mb-6 border-b border-white/[0.08] relative">
                 <button
                   onClick={() => switchMode("login")}
                   className={`flex-1 pb-3 text-sm font-medium transition-colors duration-200 ${
                     mode === "login"
-                      ? "text-white border-b-2 border-indigo-500"
+                      ? "text-white"
                       : "text-zinc-400 hover:text-white"
                   }`}
                 >
@@ -154,149 +175,177 @@ function LoginContent() {
                   onClick={() => switchMode("signup")}
                   className={`flex-1 pb-3 text-sm font-medium transition-colors duration-200 ${
                     mode === "signup"
-                      ? "text-white border-b-2 border-indigo-500"
+                      ? "text-white"
                       : "text-zinc-400 hover:text-white"
                   }`}
                 >
                   Inscription
                 </button>
-              </div>
-            )}
-
-            {/* Error message */}
-            {error && (
-              <div className="mb-5 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-sm text-red-400">
-                {error}
-              </div>
-            )}
-
-            {/* Success message */}
-            {message && (
-              <div className="mb-5 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-sm text-emerald-400">
-                {message}
-              </div>
-            )}
-
-            {/* Form */}
-            <form onSubmit={handleSubmit}>
-              {mode === "signup" && (
-                <div className="mb-5">
-                  <label className="block text-sm font-medium text-zinc-300 mb-2">
-                    Nom complet
-                  </label>
-                  <input
-                    type="text"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Jean Dupont"
-                    className={inputClass}
-                    disabled={loading}
-                  />
-                </div>
-              )}
-
-              <div className="mb-5">
-                <label className="block text-sm font-medium text-zinc-300 mb-2">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="vous@entreprise.com"
-                  required
-                  className={inputClass}
-                  disabled={loading}
+                {/* Animated tab indicator */}
+                <motion.div
+                  className="absolute bottom-0 h-0.5 bg-indigo-500"
+                  animate={{
+                    left: mode === "login" ? "0%" : "50%",
+                    width: "50%",
+                  }}
+                  transition={{ type: "spring", stiffness: 350, damping: 30 }}
                 />
               </div>
+            )}
 
-              {mode !== "forgot-password" && (
-                <div className="mb-6">
-                  <div className="flex justify-between items-center mb-2">
-                    <label className="block text-sm font-medium text-zinc-300">
-                      Mot de passe
-                    </label>
-                    {mode === "login" && (
-                      <button
-                        type="button"
-                        onClick={() => switchMode("forgot-password")}
-                        className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
-                        disabled={loading}
-                      >
-                        Mot de passe oublié ?
-                      </button>
-                    )}
-                  </div>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    required
-                    minLength={6}
-                    className={inputClass}
-                    disabled={loading}
-                  />
-                </div>
-              )}
-
-              <Button
-                type="submit"
-                className="w-full justify-center bg-indigo-500 hover:bg-indigo-600 text-white"
-                disabled={loading}
+            {/* Form content with mode transition */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={mode}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.25, ease: [0.21, 0.47, 0.32, 0.98] }}
               >
-                {loading ? (
-                  <span className="flex items-center gap-2">
-                    <Loader2 size={16} className="animate-spin" />
-                    {mode === "login"
-                      ? "Connexion..."
-                      : mode === "signup"
-                      ? "Création..."
-                      : "Envoi..."}
-                  </span>
-                ) : mode === "login" ? (
-                  "Se connecter"
-                ) : mode === "signup" ? (
-                  "Créer mon compte"
-                ) : (
-                  "Envoyer le lien"
+                {/* Error message */}
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-5 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-sm text-red-400"
+                  >
+                    {error}
+                  </motion.div>
                 )}
-              </Button>
-            </form>
 
-            {/* Footer links */}
-            <div className="mt-6 text-center">
-              {mode === "login" && (
-                <button
-                  onClick={() => switchMode("signup")}
-                  className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
-                  disabled={loading}
-                >
-                  Pas encore de compte ? S&apos;inscrire
-                </button>
-              )}
+                {/* Success message */}
+                {message && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-5 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-sm text-emerald-400"
+                  >
+                    {message}
+                  </motion.div>
+                )}
 
-              {mode === "signup" && (
-                <button
-                  onClick={() => switchMode("login")}
-                  className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
-                  disabled={loading}
-                >
-                  Déjà un compte ? Se connecter
-                </button>
-              )}
+                {/* Form */}
+                <form onSubmit={handleSubmit}>
+                  {mode === "signup" && (
+                    <div className="mb-5">
+                      <label className="block text-sm font-medium text-zinc-300 mb-2">
+                        Nom complet
+                      </label>
+                      <input
+                        type="text"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        placeholder="Jean Dupont"
+                        className={inputClass}
+                        disabled={loading}
+                      />
+                    </div>
+                  )}
 
-              {mode === "forgot-password" && (
-                <button
-                  onClick={() => switchMode("login")}
-                  className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
-                  disabled={loading}
-                >
-                  Retour à la connexion
-                </button>
-              )}
-            </div>
-          </div>
+                  <div className="mb-5">
+                    <label className="block text-sm font-medium text-zinc-300 mb-2">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="vous@entreprise.com"
+                      required
+                      className={inputClass}
+                      disabled={loading}
+                    />
+                  </div>
+
+                  {mode !== "forgot-password" && (
+                    <div className="mb-6">
+                      <div className="flex justify-between items-center mb-2">
+                        <label className="block text-sm font-medium text-zinc-300">
+                          Mot de passe
+                        </label>
+                        {mode === "login" && (
+                          <button
+                            type="button"
+                            onClick={() => switchMode("forgot-password")}
+                            className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
+                            disabled={loading}
+                          >
+                            Mot de passe oublié ?
+                          </button>
+                        )}
+                      </div>
+                      <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="••••••••"
+                        required
+                        minLength={6}
+                        className={inputClass}
+                        disabled={loading}
+                      />
+                    </div>
+                  )}
+
+                  <Button
+                    type="submit"
+                    className="w-full justify-center bg-indigo-500 hover:bg-indigo-600 text-white"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <span className="flex items-center gap-2">
+                        <Loader2 size={16} className="animate-spin" />
+                        {mode === "login"
+                          ? "Connexion..."
+                          : mode === "signup"
+                          ? "Création..."
+                          : "Envoi..."}
+                      </span>
+                    ) : mode === "login" ? (
+                      "Se connecter"
+                    ) : mode === "signup" ? (
+                      "Créer mon compte"
+                    ) : (
+                      "Envoyer le lien"
+                    )}
+                  </Button>
+                </form>
+
+                {/* Footer links */}
+                <div className="mt-6 text-center">
+                  {mode === "login" && (
+                    <button
+                      onClick={() => switchMode("signup")}
+                      className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
+                      disabled={loading}
+                    >
+                      Pas encore de compte ? S&apos;inscrire
+                    </button>
+                  )}
+
+                  {mode === "signup" && (
+                    <button
+                      onClick={() => switchMode("login")}
+                      className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
+                      disabled={loading}
+                    >
+                      Déjà un compte ? Se connecter
+                    </button>
+                  )}
+
+                  {mode === "forgot-password" && (
+                    <button
+                      onClick={() => switchMode("login")}
+                      className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
+                      disabled={loading}
+                    >
+                      Retour à la connexion
+                    </button>
+                  )}
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </motion.div>
         </section>
       </main>
     </div>

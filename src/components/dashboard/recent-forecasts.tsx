@@ -67,7 +67,7 @@ function getStatusIcon(status: ForecastJob["status"]) {
 
 export function RecentForecasts({ forecasts }: RecentForecastsProps) {
   return (
-    <div className="bg-zinc-900/50 rounded-xl border border-white/[0.08] p-6">
+    <div className="bg-zinc-900/50 rounded-2xl border border-white/5 p-6">
       <div className="flex justify-between items-center mb-5">
         <h2 className="text-base font-semibold text-white">Derniers forecasts</h2>
         <Link
