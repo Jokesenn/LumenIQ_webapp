@@ -28,8 +28,8 @@ const socialLinks = [
 
 export function Footer() {
   return (
-    <footer className="bg-zinc-950 border-t border-white/[0.08] py-16 px-6">
-      <div className="max-w-[1280px] mx-auto">
+    <footer className="bg-zinc-950 border-t border-white/5 py-16 px-6">
+      <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           {/* Brand */}
           <div>
@@ -93,7 +93,7 @@ export function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="pt-8 border-t border-white/[0.08] flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-sm text-zinc-500">
             © 2026 LumenIQ. Tous droits réservés.
           </p>

@@ -51,31 +51,35 @@ export default async function DashboardPage() {
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatCard
           label="Séries ce mois"
           value={String(stats.seriesThisMonth)}
-          subtext={`/ ${stats.seriesLimit} disponibles`}
+          subtitle={`/ ${stats.seriesLimit} disponibles`}
           icon={BarChart3}
+          delay={0}
         />
         <StatCard
           label="Forecasts"
           value={String(stats.forecastsThisMonth)}
-          subtext="ce mois"
+          subtitle="ce mois"
           icon={TrendingUp}
+          delay={0.1}
         />
         <StatCard
           label="SMAPE moyen"
           value={stats.averageSmape !== null ? `${stats.averageSmape}%` : "—"}
-          subtext={smapeSubtext}
+          subtitle={smapeSubtext}
           icon={Target}
-          positive={stats.averageSmape !== null && stats.averageSmape < 10}
+          trend={stats.averageSmape !== null ? { value: `${stats.averageSmape}%`, direction: stats.averageSmape < 10 ? "up" : "down" } : undefined}
+          delay={0.2}
         />
         <StatCard
           label="Prochain reset"
           value={`${stats.daysUntilReset}j`}
-          subtext="quota mensuel"
+          subtitle="quota mensuel"
           icon={Clock}
+          delay={0.3}
         />
       </div>
 
@@ -93,7 +97,7 @@ export default async function DashboardPage() {
         {/* Quick Actions & Model Performance */}
         <div className="space-y-6">
           {/* Quick Actions */}
-          <div className="bg-zinc-900/50 rounded-xl border border-white/[0.08] p-6">
+          <div className="bg-zinc-900/50 rounded-2xl border border-white/5 p-6">
             <h2 className="text-base font-semibold text-white mb-4">Actions rapides</h2>
             <Link href="/dashboard/forecast">
               <Button className="w-full justify-center mb-3 bg-indigo-500 hover:bg-indigo-600 text-white">
@@ -111,7 +115,7 @@ export default async function DashboardPage() {
           </div>
 
           {/* Model Performance */}
-          <div className="bg-zinc-900/50 rounded-xl border border-white/[0.08] p-6">
+          <div className="bg-zinc-900/50 rounded-2xl border border-white/5 p-6">
             <h2 className="text-base font-semibold text-white mb-4">Performance modèles</h2>
             {hasModelData ? (
               <ModelPerformanceList models={modelPerformance.slice(0, 4)} />

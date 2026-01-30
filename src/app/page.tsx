@@ -4,7 +4,7 @@ import {
   ComparisonSection,
   FeaturesSection,
   HowItWorks,
-  PricingPreview,
+  PricingSection,
   FAQSection,
   CTASection,
 } from "@/components/landing";
@@ -19,7 +19,7 @@ export default function Home() {
         <ComparisonSection />
         <FeaturesSection />
         <HowItWorks />
-        <PricingPreview />
+        <PricingSection />
         <FAQSection />
         <CTASection />
       </main>

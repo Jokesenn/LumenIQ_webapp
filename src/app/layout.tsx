@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
+import { PageTransition } from "@/components/providers/page-transition";
+import { ScrollProgress } from "@/components/shared/scroll-progress";
 import "./globals.css";
 
 const manrope = Manrope({
   variable: "--font-manrope",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800"],
+  display: "swap",
+  fallback: ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
 });
 
 export const metadata: Metadata = {
@@ -29,13 +33,16 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning>
       <body className={`${manrope.variable} font-sans antialiased`}>
+        <ScrollProgress />
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <PageTransition>
+            {children}
+          </PageTransition>
         </ThemeProvider>
       </body>
     </html>
