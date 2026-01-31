@@ -101,6 +101,11 @@ export function StatCard({
       if (value.includes("%")) return `${v.toFixed(1)}%`;
       if (value.includes("€")) return `${v.toFixed(0).toLocaleString()}€`;
       if (value.includes("min") || value.includes("m ")) return `${Math.floor(v)}m ${Math.round((v % 1) * 60)}s`;
+      // Valeur décimale sans suffixe (ex: CV coefficient 0.26) → conserver les décimales
+      if (value.includes(".")) {
+        const decimals = (value.split(".")[1] || "").length;
+        return v.toFixed(decimals);
+      }
     }
     return Math.round(v).toLocaleString();
   };

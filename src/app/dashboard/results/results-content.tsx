@@ -41,6 +41,7 @@ interface ResultsContentProps {
   metrics: any;
   topPerformers: any[];
   bottomPerformers: any[];
+  allSeries: any[];
   chartData: any[];
   abcXyzData: any[];
   modelPerformance: any[];
@@ -55,6 +56,7 @@ export function ResultsContent({
   metrics,
   topPerformers,
   bottomPerformers,
+  allSeries,
   chartData,
   abcXyzData,
   modelPerformance,
@@ -150,20 +152,24 @@ export function ResultsContent({
                 thresholds={{ good: 10, warning: 20 }}
                 delay={0}
               />
-              <MetricGaugeCard
-                label="SMAPE"
-                value={metrics?.global_smape ?? 0}
-                description="Symmetric MAPE"
-                thresholds={{ good: 10, warning: 20 }}
-                delay={0.1}
-              />
-              <MetricGaugeCard
-                label="MAPE"
-                value={metrics?.global_mape ?? 0}
-                description="Mean Absolute Percentage Error"
-                thresholds={{ good: 15, warning: 25 }}
-                delay={0.2}
-              />
+              {metrics?.global_smape != null && (
+                <MetricGaugeCard
+                  label="SMAPE"
+                  value={metrics.global_smape}
+                  description="Symmetric MAPE"
+                  thresholds={{ good: 10, warning: 20 }}
+                  delay={0.1}
+                />
+              )}
+              {metrics?.global_mape != null && (
+                <MetricGaugeCard
+                  label="MAPE"
+                  value={metrics.global_mape}
+                  description="Mean Absolute Percentage Error"
+                  thresholds={{ good: 15, warning: 25 }}
+                  delay={0.2}
+                />
+              )}
               <MetricGaugeCard
                 label="BIAS"
                 value={Math.abs(metrics?.global_bias_pct ?? 0)}
@@ -267,7 +273,13 @@ export function ResultsContent({
               )}
             </div>
             <SeriesList
-              series={[...topPerformers, ...bottomPerformers]}
+              series={
+                selectedCell
+                  ? allSeries.filter(
+                      (s) => s.abc_class === selectedCell.abc && s.xyz_class === selectedCell.xyz
+                    )
+                  : allSeries
+              }
               jobId={job?.id ?? ""}
               variant="default"
             />

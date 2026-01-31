@@ -28,7 +28,6 @@ export default function ForecastPage() {
   // Hooks pour l'upload réel
   const { user, loading: userLoading } = useUser();
   const {
-    uploading,
     step: uploadStep,
     uploadProgress,
     error: uploadError,
@@ -40,8 +39,6 @@ export default function ForecastPage() {
   // Hook pour poller le statut du job (activé seulement à l'étape 3 après upload)
   const {
     job,
-    loading: jobLoading,
-    error: jobError,
     isComplete,
     isFailed,
     isProcessing,

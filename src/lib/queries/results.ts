@@ -29,6 +29,7 @@ export async function getJobWithSummary(jobId: string, userId: string) {
 }
 
 // Métriques par jauge (WAPE, SMAPE, MAPE, BIAS)
+// Note : les valeurs en DB sont en ratio (0-1), le frontend attend des % (0-100)
 export async function getJobMetrics(jobId: string, userId: string) {
   const supabase = await createClient();
 
@@ -40,7 +41,15 @@ export async function getJobMetrics(jobId: string, userId: string) {
     .eq("user_id", userId)
     .single();
 
-  return data;
+  if (!data) return null;
+
+  return {
+    ...data,
+    global_wape: data.global_wape != null ? Number(data.global_wape) * 100 : null,
+    global_smape: data.global_smape != null ? Number(data.global_smape) * 100 : null,
+    global_mape: data.global_mape != null ? Number(data.global_mape) * 100 : null,
+    global_bias_pct: data.global_bias_pct != null ? Number(data.global_bias_pct) : data.global_bias_pct,
+  };
 }
 
 // Top et bottom performers (séries)
@@ -68,9 +77,16 @@ export async function getTopBottomSeries(jobId: string, userId: string, limit = 
       .limit(limit),
   ]);
 
+  const toPercent = (rows: typeof topResult.data) =>
+    (rows || []).map((r) => ({
+      ...r,
+      wape: r.wape != null ? Number(r.wape) * 100 : r.wape,
+      smape: r.smape != null ? Number(r.smape) * 100 : r.smape,
+    }));
+
   return {
-    top: topResult.data || [],
-    bottom: bottomResult.data || [],
+    top: toPercent(topResult.data),
+    bottom: toPercent(bottomResult.data),
   };
 }
 
@@ -152,7 +168,7 @@ export async function getJobModelPerformance(jobId: string, userId: string) {
       modelStats[model] = { count: 0, totalWape: 0 };
     }
     modelStats[model].count++;
-    modelStats[model].totalWape += row.wape || 0;
+    modelStats[model].totalWape += Number(row.wape || 0) * 100;
   });
 
   const total = data.length;
@@ -206,12 +222,17 @@ export async function getJobSeriesList(
 
   const { data } = await query.order("wape", { ascending: true });
 
-  return data || [];
+  return (data || []).map((r) => ({
+    ...r,
+    wape: r.wape != null ? Number(r.wape) * 100 : r.wape,
+    smape: r.smape != null ? Number(r.smape) * 100 : r.smape,
+  }));
 }
 
 // ========== QUERIES POUR VUE SÉRIE ==========
 
 // Détails d'une série spécifique
+// Note : wape/smape sont en ratio (0-1) en DB, convertis en % (0-100) pour le frontend
 export async function getSeriesDetails(jobId: string, seriesId: string, userId: string) {
   const supabase = await createClient();
 
@@ -224,7 +245,16 @@ export async function getSeriesDetails(jobId: string, seriesId: string, userId: 
     .eq("user_id", userId)
     .single();
 
-  return data;
+  if (!data) return null;
+
+  return {
+    ...data,
+    wape: data.wape != null ? Number(data.wape) * 100 : data.wape,
+    smape: data.smape != null ? Number(data.smape) * 100 : data.smape,
+    cv_coefficient: data.cv_coefficient != null ? Number(data.cv_coefficient) : null,
+    champion_score: data.champion_score != null ? Number(data.champion_score) : null,
+    forecast_sum: data.forecast_sum != null ? Number(data.forecast_sum) : null,
+  };
 }
 
 // Données de forecast mensuelles pour une série
@@ -324,7 +354,7 @@ export async function getSeriesModelComparison(jobId: string, seriesId: string, 
     }
   }
 
-  const championScore = typeof data.champion_score === "number" ? data.champion_score : 0;
+  const championScore = data.champion_score != null ? Number(data.champion_score) : 0;
   const modelRanking = [
     { model: data.champion_model ?? "—", score: championScore, rank: 1 },
     ...Object.entries(challengers)
@@ -334,8 +364,8 @@ export async function getSeriesModelComparison(jobId: string, seriesId: string, 
 
   return {
     champion: data.champion_model,
-    championScore: data.champion_score,
-    modelsTested: data.models_tested,
+    championScore,
+    modelsTested: data.models_tested != null ? Number(data.models_tested) : 0,
     ranking: modelRanking.slice(0, 5),
   };
 }
@@ -373,6 +403,23 @@ export interface AggregatedChartData {
   forecast: number | null;
   lower: number | null;
   upper: number | null;
+}
+
+// Dernier job terminé (pour affichage par défaut sur /dashboard/results)
+export async function getLatestCompletedJob(userId: string): Promise<ForecastJob | null> {
+  const supabase = await createClient();
+
+  const { data } = await supabase
+    .schema("lumeniq")
+    .from("forecast_jobs")
+    .select("*")
+    .eq("user_id", userId)
+    .eq("status", "completed")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .single();
+
+  return (data as ForecastJob) ?? null;
 }
 
 // Derniers jobs (pour la page results)

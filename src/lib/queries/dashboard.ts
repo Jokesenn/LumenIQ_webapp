@@ -41,7 +41,7 @@ export async function getDashboardStats(userId: string) {
 
   const avgWape =
     wapeData?.length
-      ? wapeData.reduce((sum, d) => sum + (d.global_wape || 0), 0) / wapeData.length
+      ? (wapeData.reduce((sum, d) => sum + (Number(d.global_wape) || 0), 0) / wapeData.length) * 100
       : 0;
 
   // Temps moyen de traitement
@@ -113,7 +113,7 @@ export async function getModelPerformance(userId: string): Promise<ModelPerforma
       modelStats[model] = { count: 0, totalWape: 0 };
     }
     modelStats[model].count++;
-    modelStats[model].totalWape += row.wape || 0;
+    modelStats[model].totalWape += Number(row.wape || 0) * 100;
   });
 
   const total = data.length;
@@ -292,9 +292,60 @@ export async function getRecentForecasts(
       createdAt: job.created_at,
       completedAt: job.completed_at,
       seriesCount: job.series_count || 0,
-      wape: summary?.global_wape,
-      smape: summary?.global_smape,
+      wape: summary?.global_wape != null ? Number(summary.global_wape) * 100 : undefined,
+      smape: summary?.global_smape != null ? Number(summary.global_smape) * 100 : undefined,
       duration: summary?.duration_sec,
     };
   });
+}
+
+// Historique complet des jobs pour la page /dashboard/history
+export interface HistoryJob {
+  id: string;
+  filename: string | null;
+  status: string;
+  createdAt: string | null;
+  completedAt: string | null;
+  seriesCount: number;
+  wape: number | null;
+  smape: number | null;
+  duration: number | null;
+  topModel: string | null;
+}
+
+export async function getJobHistory(userId: string): Promise<HistoryJob[]> {
+  const supabase = await createClient();
+
+  const { data: jobs } = await supabase
+    .schema("lumeniq")
+    .from("forecast_jobs")
+    .select(`
+      id,
+      filename,
+      status,
+      created_at,
+      completed_at,
+      series_count,
+      avg_wape,
+      avg_smape,
+      compute_time_seconds,
+      top_champion_model
+    `)
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (!jobs?.length) return [];
+
+  return jobs.map((job) => ({
+    id: job.id,
+    filename: job.filename,
+    status: job.status ?? "pending",
+    createdAt: job.created_at,
+    completedAt: job.completed_at,
+    seriesCount: job.series_count || 0,
+    wape: job.avg_wape != null ? Number(job.avg_wape) * 100 : null,
+    smape: job.avg_smape != null ? Number(job.avg_smape) * 100 : null,
+    duration: job.compute_time_seconds != null ? Number(job.compute_time_seconds) : null,
+    topModel: job.top_champion_model,
+  }));
 }

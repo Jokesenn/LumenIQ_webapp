@@ -32,7 +32,7 @@ function getStatusBadge(status: string, smape: number | null | undefined) {
     case "completed":
       return (
         <span className="px-2.5 py-1 bg-emerald-500/10 text-emerald-500 rounded-full text-xs font-semibold">
-          {smape !== null ? `SMAPE ${smape}%` : "Terminé"}
+          {smape != null ? `SMAPE ${Number(smape).toFixed(1)}%` : "Terminé"}
         </span>
       );
     case "processing":

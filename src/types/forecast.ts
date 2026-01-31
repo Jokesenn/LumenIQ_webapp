@@ -1,4 +1,4 @@
-export type JobStatus = 'pending' | 'queued' | 'processing' | 'completed' | 'failed'
+export type JobStatus = 'pending' | 'queued' | 'processing' | 'completed' | 'failed' | 'cancelled'
 export type PlanType = 'standard' | 'ml' | 'premium'
 
 export interface ForecastJob {
