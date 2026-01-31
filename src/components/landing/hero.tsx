@@ -4,8 +4,8 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, Sparkles, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { AnimatedBackground } from "@/components/backgrounds";
-import { TextReveal, FadeIn, MagneticButton } from "@/components/animations";
+import { AnimatedBackground, FloatingParticles } from "@/components/backgrounds";
+import { TextReveal, FadeIn, MagneticButton, Parallax } from "@/components/animations";
 import { HeroChart } from "./hero-chart";
 
 export function Hero() {
@@ -13,6 +13,47 @@ export function Hero() {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background animé */}
       <AnimatedBackground variant="hero" />
+      <FloatingParticles count={40} className="z-0" />
+
+      {/* Logo arrière-plan avec pulsation */}
+      <motion.div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] z-0 pointer-events-none"
+        animate={{
+          scale: [1, 1.1, 1],
+          opacity: [0.03, 0.06, 0.03],
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      >
+        <svg
+          viewBox="0 0 100 100"
+          fill="none"
+          className="w-full h-full"
+        >
+          {/* Hexagone externe */}
+          <polygon
+            points="50,5 93.3,27.5 93.3,72.5 50,95 6.7,72.5 6.7,27.5"
+            fill="none"
+            stroke="white"
+            strokeWidth="2"
+            strokeLinejoin="round"
+          />
+          {/* Hexagone milieu */}
+          <polygon
+            points="50,20 78.7,35 78.7,65 50,80 21.3,65 21.3,35"
+            fill="white"
+            opacity="0.3"
+          />
+          {/* Hexagone interne */}
+          <polygon
+            points="50,35 64.4,42.5 64.4,57.5 50,65 35.6,57.5 35.6,42.5"
+            fill="white"
+          />
+        </svg>
+      </motion.div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 pt-32 pb-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -46,7 +87,7 @@ export function Hero() {
               <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.1] tracking-tight">
                 <TextReveal
                   text="Prévisions professionnelles"
-                  className="text-gradient block"
+                  className="text-gradient-animated block"
                   delay={0.2}
                 />
                 <TextReveal
@@ -115,37 +156,43 @@ export function Hero() {
 
           {/* Right content - Dashboard preview */}
           <FadeIn delay={0.5} direction="left">
-            <motion.div
-              className="relative"
-              whileHover={{ scale: 1.02, rotateY: 5 }}
-              transition={{ type: "spring", stiffness: 300 }}
-              style={{ transformStyle: "preserve-3d", perspective: 1000 }}
-            >
-              {/* Glow behind */}
-              <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-violet-500/20 blur-3xl" />
-
-              {/* Dashboard card */}
-              <div className="relative glass-card p-6 gradient-border">
-                <HeroChart />
-              </div>
-
-              {/* Floating elements */}
+            <Parallax speed={-0.1}>
               <motion.div
-                className="absolute -top-4 -right-4 px-3 py-1.5 glass rounded-full text-xs font-medium text-emerald-400 border border-emerald-500/20"
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                className="relative"
+                whileHover={{ scale: 1.02, rotateY: 5 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                style={{ transformStyle: "preserve-3d", perspective: 1000 }}
               >
-                WAPE: 8.2%
-              </motion.div>
+                {/* Glow behind */}
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-violet-500/20 blur-3xl" />
 
-              <motion.div
-                className="absolute -bottom-4 -left-4 px-3 py-1.5 glass rounded-full text-xs font-medium text-indigo-400 border border-indigo-500/20"
-                animate={{ y: [0, 10, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-              >
-                847 séries analysées
+                {/* Dashboard card */}
+                <div className="relative glass-card p-6 gradient-border">
+                  <HeroChart />
+                </div>
+
+                {/* Floating elements */}
+                <Parallax speed={0.15} className="absolute -top-4 -right-4">
+                  <motion.div
+                    className="px-3 py-1.5 glass rounded-full text-xs font-medium text-emerald-400 border border-emerald-500/20"
+                    animate={{ y: [0, -10, 0] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    WAPE: 8.2%
+                  </motion.div>
+                </Parallax>
+
+                <Parallax speed={0.25} className="absolute -bottom-4 -left-4">
+                  <motion.div
+                    className="px-3 py-1.5 glass rounded-full text-xs font-medium text-indigo-400 border border-indigo-500/20"
+                    animate={{ y: [0, 10, 0] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                  >
+                    847 séries analysées
+                  </motion.div>
+                </Parallax>
               </motion.div>
-            </motion.div>
+            </Parallax>
           </FadeIn>
         </div>
       </div>

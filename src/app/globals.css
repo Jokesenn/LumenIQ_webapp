@@ -504,6 +504,27 @@
   @keyframes count {
     to { --num: var(--target); }
   }
+
+  /* Gradient animé horizontal pour les titres */
+  .animate-gradient-x {
+    background-size: 200% 100%;
+    animation: gradient-x 8s ease infinite;
+  }
+  
+  @keyframes gradient-x {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+  
+  .text-gradient-animated {
+    background-size: 200% 100%;
+    animation: gradient-x 8s ease infinite;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-200 to-white;
+  }
 }
 
 /* ===== SMOOTH SCROLL ===== */

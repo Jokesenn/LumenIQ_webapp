@@ -2,22 +2,26 @@
 
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
-import { LucideIcon, TrendingUp, TrendingDown } from "lucide-react";
+import { LucideIcon, TrendingUp, TrendingDown, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface StatCardProps {
   label: string;
   value: string | number;
+  previousValue?: number;      // Pour calculer le trend automatiquement
   subtitle?: string;
   icon: LucideIcon;
   trend?: {
     value: string;
     direction: "up" | "down";
+    isGood?: boolean;          // true si "up" est positif (ex: revenue), false si "down" est positif (ex: errors)
   };
+  href?: string;               // Lien vers détail
+  variant?: "default" | "highlight" | "warning" | "success";
   delay?: number;
 }
 
-// Animated counter hook
 function useAnimatedCounter(target: number, duration: number = 2000) {
   const [count, setCount] = useState(0);
 
@@ -28,10 +32,8 @@ function useAnimatedCounter(target: number, duration: number = 2000) {
     const animate = (timestamp: number) => {
       if (!startTime) startTime = timestamp;
       const progress = Math.min((timestamp - startTime) / duration, 1);
-
-      // Easing function
       const eased = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.floor(eased * target));
+      setCount(eased * target);
 
       if (progress < 1) {
         animationFrame = requestAnimationFrame(animate);
@@ -45,7 +47,40 @@ function useAnimatedCounter(target: number, duration: number = 2000) {
   return count;
 }
 
-export function StatCard({ label, value, subtitle, icon: Icon, trend, delay = 0 }: StatCardProps) {
+const variantStyles = {
+  default: {
+    border: "border-white/5 hover:border-white/10",
+    iconBg: "bg-indigo-500/10 group-hover:bg-indigo-500/20",
+    iconColor: "text-indigo-400",
+  },
+  highlight: {
+    border: "border-indigo-500/30 hover:border-indigo-500/50",
+    iconBg: "bg-indigo-500/20 group-hover:bg-indigo-500/30",
+    iconColor: "text-indigo-400",
+  },
+  warning: {
+    border: "border-amber-500/30 hover:border-amber-500/50",
+    iconBg: "bg-amber-500/10 group-hover:bg-amber-500/20",
+    iconColor: "text-amber-400",
+  },
+  success: {
+    border: "border-emerald-500/30 hover:border-emerald-500/50",
+    iconBg: "bg-emerald-500/10 group-hover:bg-emerald-500/20",
+    iconColor: "text-emerald-400",
+  },
+};
+
+export function StatCard({
+  label,
+  value,
+  previousValue,
+  subtitle,
+  icon: Icon,
+  trend,
+  href,
+  variant = "default",
+  delay = 0,
+}: StatCardProps) {
   const ref = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -57,22 +92,24 @@ export function StatCard({ label, value, subtitle, icon: Icon, trend, delay = 0 
   const rotateX = useTransform(ySpring, [-0.5, 0.5], ["5deg", "-5deg"]);
   const rotateY = useTransform(xSpring, [-0.5, 0.5], ["-5deg", "5deg"]);
 
-  // Parse numeric value for animation
-  const numericValue = typeof value === 'string' ? parseFloat(value.replace(/[^0-9.]/g, '')) : value;
+  const numericValue = typeof value === "string" ? parseFloat(value.replace(/[^0-9.-]/g, "")) : value;
   const animatedValue = useAnimatedCounter(numericValue || 0);
-  const displayValue = typeof value === 'string' && value.includes('%')
-    ? `${animatedValue}%`
-    : typeof value === 'string' && value.includes('€')
-    ? `${animatedValue}€`
-    : animatedValue.toString();
+
+  // Format display value
+  const formatValue = (v: number) => {
+    if (typeof value === "string") {
+      if (value.includes("%")) return `${v.toFixed(1)}%`;
+      if (value.includes("€")) return `${v.toFixed(0).toLocaleString()}€`;
+      if (value.includes("min") || value.includes("m ")) return `${Math.floor(v)}m ${Math.round((v % 1) * 60)}s`;
+    }
+    return Math.round(v).toLocaleString();
+  };
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!ref.current) return;
     const rect = ref.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    x.set((e.clientX - centerX) / rect.width);
-    y.set((e.clientY - centerY) / rect.height);
+    x.set((e.clientX - rect.left - rect.width / 2) / rect.width);
+    y.set((e.clientY - rect.top - rect.height / 2) / rect.height);
   };
 
   const handleMouseLeave = () => {
@@ -80,7 +117,9 @@ export function StatCard({ label, value, subtitle, icon: Icon, trend, delay = 0 
     y.set(0);
   };
 
-  return (
+  const styles = variantStyles[variant];
+
+  const CardContent = (
     <motion.div
       ref={ref}
       initial={{ opacity: 0, y: 20 }}
@@ -89,32 +128,41 @@ export function StatCard({ label, value, subtitle, icon: Icon, trend, delay = 0 
       style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="group relative p-6 rounded-2xl bg-zinc-900/50 border border-white/5 hover:border-white/10 transition-all duration-300 spotlight overflow-hidden"
+      className={cn(
+        "group relative p-6 rounded-2xl bg-zinc-900/50 border transition-all duration-300 spotlight overflow-hidden",
+        styles.border,
+        href && "cursor-pointer"
+      )}
       onMouseMoveCapture={(e) => {
         const rect = e.currentTarget.getBoundingClientRect();
         const spotX = ((e.clientX - rect.left) / rect.width) * 100;
         const spotY = ((e.clientY - rect.top) / rect.height) * 100;
-        e.currentTarget.style.setProperty('--spotlight-x', `${spotX}%`);
-        e.currentTarget.style.setProperty('--spotlight-y', `${spotY}%`);
+        e.currentTarget.style.setProperty("--spotlight-x", `${spotX}%`);
+        e.currentTarget.style.setProperty("--spotlight-y", `${spotY}%`);
       }}
     >
-      {/* Background gradient on hover */}
-      <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-
       <div className="relative z-10">
         <div className="flex items-start justify-between mb-4">
           <motion.div
-            className="p-3 rounded-xl bg-indigo-500/10 group-hover:bg-indigo-500/20 transition-colors"
+            className={cn("p-3 rounded-xl transition-colors", styles.iconBg)}
             whileHover={{ scale: 1.1, rotate: 5 }}
           >
-            <Icon className="w-5 h-5 text-indigo-400" />
+            <Icon className={cn("w-5 h-5", styles.iconColor)} />
           </motion.div>
 
           {trend && (
-            <div className={cn(
-              "flex items-center gap-1 text-sm font-medium",
-              trend.direction === "up" ? "text-emerald-400" : "text-red-400"
-            )}>
+            <div
+              className={cn(
+                "flex items-center gap-1 text-sm font-medium",
+                trend.isGood !== false
+                  ? trend.direction === "up"
+                    ? "text-emerald-400"
+                    : "text-red-400"
+                  : trend.direction === "down"
+                    ? "text-emerald-400"
+                    : "text-red-400"
+              )}
+            >
               {trend.direction === "up" ? (
                 <TrendingUp className="w-4 h-4" />
               ) : (
@@ -128,16 +176,29 @@ export function StatCard({ label, value, subtitle, icon: Icon, trend, delay = 0 
         <div className="space-y-1">
           <p className="text-sm text-zinc-400">{label}</p>
           <p className="text-3xl font-bold text-white tabular-nums">
-            {typeof value === 'number' || (typeof value === 'string' && /^\d/.test(value))
-              ? displayValue
-              : value
-            }
+            {typeof value === "number" ||
+            (typeof value === "string" && /^[\d.,€%]/.test(value))
+              ? formatValue(animatedValue)
+              : value}
           </p>
           {subtitle && (
             <p className="text-xs text-zinc-500">{subtitle}</p>
           )}
         </div>
+
+        {/* Link indicator */}
+        {href && (
+          <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+            <ArrowRight className="w-4 h-4 text-zinc-500" />
+          </div>
+        )}
       </div>
     </motion.div>
   );
+
+  if (href) {
+    return <Link href={href}>{CardContent}</Link>;
+  }
+
+  return CardContent;
 }
