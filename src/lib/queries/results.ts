@@ -52,6 +52,36 @@ export async function getJobMetrics(jobId: string, userId: string) {
   };
 }
 
+// Enrichissement sparkline optionnel — requête séparée, ne casse jamais la requête principale
+async function enrichWithSparklines(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  jobId: string,
+  userId: string,
+  rows: Record<string, unknown>[],
+) {
+  if (rows.length === 0) return;
+  const ids = rows.map((r) => r.series_id as string);
+  const { data: sparkData, error } = await supabase
+    .schema("lumeniq")
+    .from("forecast_series")
+    .select("series_id, history_sample, forecast_sample")
+    .eq("job_id", jobId)
+    .eq("user_id", userId)
+    .in("series_id", ids);
+
+  // Si la table est vide ou erreur quelconque → on ne touche à rien
+  if (error || !sparkData) return;
+
+  const sparkMap = new Map(sparkData.map((s: Record<string, unknown>) => [s.series_id, s]));
+  for (const row of rows) {
+    const spark = sparkMap.get(row.series_id as string);
+    if (spark) {
+      row.history_sample = spark.history_sample ?? null;
+      row.forecast_sample = spark.forecast_sample ?? null;
+    }
+  }
+}
+
 // Top et bottom performers (séries)
 export async function getTopBottomSeries(jobId: string, userId: string, limit = 5) {
   const supabase = await createClient();
@@ -84,10 +114,13 @@ export async function getTopBottomSeries(jobId: string, userId: string, limit = 
       smape: r.smape != null ? Number(r.smape) * 100 : r.smape,
     }));
 
-  return {
-    top: toPercent(topResult.data),
-    bottom: toPercent(bottomResult.data),
-  };
+  const top = toPercent(topResult.data);
+  const bottom = toPercent(bottomResult.data);
+
+  // Enrichissement sparkline — échoue silencieusement si colonnes absentes
+  await enrichWithSparklines(supabase, jobId, userId, [...top, ...bottom] as Record<string, unknown>[]);
+
+  return { top, bottom };
 }
 
 // Données graphique agrégé pour un job
@@ -222,11 +255,16 @@ export async function getJobSeriesList(
 
   const { data } = await query.order("wape", { ascending: true });
 
-  return (data || []).map((r) => ({
+  const rows = (data || []).map((r) => ({
     ...r,
     wape: r.wape != null ? Number(r.wape) * 100 : r.wape,
     smape: r.smape != null ? Number(r.smape) * 100 : r.smape,
   }));
+
+  // Enrichissement sparkline — échoue silencieusement si colonnes absentes
+  await enrichWithSparklines(supabase, jobId, userId, rows as Record<string, unknown>[]);
+
+  return rows;
 }
 
 // ========== QUERIES POUR VUE SÉRIE ==========

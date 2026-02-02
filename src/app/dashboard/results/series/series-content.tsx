@@ -201,7 +201,7 @@ export function SeriesContent({
       </FadeIn>
 
       {/* Stats */}
-      <StaggerChildren staggerDelay={0.1} className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <StaggerChildren staggerDelay={0.1} className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
         <StaggerItem>
           <StatCard
             label="WAPE"
@@ -288,7 +288,7 @@ export function SeriesContent({
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
                     className={cn(
-                      "flex items-center justify-between p-4 rounded-xl",
+                      "flex items-center justify-between p-3 sm:p-4 rounded-xl",
                       index === 0
                         ? "bg-indigo-500/10 border border-indigo-500/30"
                         : "bg-white/5"
@@ -305,12 +305,13 @@ export function SeriesContent({
                       >
                         {model.rank}
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <p
                           className={cn(
-                            "font-medium",
+                            "font-medium truncate max-w-[120px] sm:max-w-[200px] md:max-w-none",
                             index === 0 ? "text-indigo-400" : "text-white"
                           )}
+                          title={model.model}
                         >
                           {model.model}
                         </p>

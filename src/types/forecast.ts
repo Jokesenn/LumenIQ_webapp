@@ -67,6 +67,8 @@ export interface SeriesListItem {
   is_first_run?: boolean | null
   previous_champion?: string | null
   cv?: number | null
+  history_sample?: number[] | null
+  forecast_sample?: number[] | null
 }
 
 export interface UploadProgress {

@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { ArrowRight, TrendingUp, TrendingDown } from "lucide-react";
 import type { SeriesListItem } from "@/types/forecast";
 import { SeriesAlertBadges } from "@/components/dashboard/results/SeriesAlertBadges";
+import { Sparkline } from "@/components/ui/sparkline";
 
 interface SeriesListProps {
   series: SeriesListItem[];
@@ -60,12 +61,12 @@ export function SeriesList({
               transition={{ duration: 0.3, delay: index * 0.05 }}
             >
               <Link href={`/dashboard/results/series?job=${jobId}&series=${encodeURIComponent(s.series_id)}`}>
-                <div className="group flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-all">
-                  <div className="flex items-center gap-3 min-w-0">
+                <div className="group flex items-center justify-between p-2 lg:p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-all gap-2">
+                  <div className="flex items-center gap-2 lg:gap-3 min-w-0">
                     {/* Rank indicator */}
                     <div
                       className={cn(
-                        "w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold",
+                        "w-7 h-7 lg:w-8 lg:h-8 rounded-lg flex items-center justify-center text-xs lg:text-sm font-bold shrink-0",
                         variant === "top"
                           ? "bg-emerald-500/20 text-emerald-400"
                           : variant === "bottom"
@@ -78,27 +79,29 @@ export function SeriesList({
 
                     {/* Series info */}
                     <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium text-white truncate group-hover:text-indigo-400 transition-colors">
+                      <div className="flex items-center gap-1 lg:gap-2">
+                        <p className="font-medium text-sm lg:text-base text-white truncate group-hover:text-indigo-400 transition-colors">
                           {s.series_id}
                         </p>
-                        <SeriesAlertBadges
-                          series={{
-                            smape: s.smape,
-                            was_gated: s.was_gated,
-                            drift_detected: s.drift_detected,
-                            is_first_run: s.is_first_run,
-                            previous_champion: s.previous_champion,
-                            champion_model: s.champion_model,
-                          }}
-                          maxBadges={2}
-                          size="sm"
-                        />
+                        <div className="hidden 2xl:flex shrink-0">
+                          <SeriesAlertBadges
+                            series={{
+                              smape: s.smape,
+                              was_gated: s.was_gated,
+                              drift_detected: s.drift_detected,
+                              is_first_run: s.is_first_run,
+                              previous_champion: s.previous_champion,
+                              champion_model: s.champion_model,
+                            }}
+                            maxBadges={2}
+                            size="sm"
+                          />
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2 mt-1">
+                      <div className="flex items-center gap-1.5 mt-0.5">
                         <span
                           className={cn(
-                            "text-xs px-1.5 py-0.5 rounded border",
+                            "text-xs px-1 py-0.5 rounded border",
                             classColors[s.abc_class] ?? "bg-zinc-500/20 text-zinc-400 border-zinc-500/30"
                           )}
                         >
@@ -106,28 +109,36 @@ export function SeriesList({
                         </span>
                         <span
                           className={cn(
-                            "text-xs px-1.5 py-0.5 rounded border",
+                            "text-xs px-1 py-0.5 rounded border",
                             classColors[s.xyz_class] ?? "bg-zinc-500/20 text-zinc-400 border-zinc-500/30"
                           )}
                         >
                           {s.xyz_class}
                         </span>
-                        <span className="text-xs text-zinc-500">
+                        <span className="text-xs text-zinc-500 truncate hidden lg:inline">
                           {s.champion_model}
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Right side: WAPE */}
-                  <div className="flex items-center gap-4">
+                  {/* Right side: Sparkline + WAPE */}
+                  <div className="flex items-center gap-2 lg:gap-4 shrink-0">
+                    <div className="hidden xl:block">
+                      <Sparkline
+                        history={s.history_sample}
+                        forecast={s.forecast_sample}
+                        width={80}
+                        height={24}
+                      />
+                    </div>
                     <div className="text-right">
-                      <p className={cn("font-semibold", getWapeColor(s.wape))}>
+                      <p className={cn("text-sm lg:text-base font-semibold", getWapeColor(s.wape))}>
                         {s.wape != null ? `${s.wape.toFixed(1)}%` : "N/A"}
                       </p>
                       <p className="text-xs text-zinc-500">WAPE</p>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-zinc-600 group-hover:text-zinc-400 transition-colors" />
+                    <ArrowRight className="w-4 h-4 text-zinc-600 group-hover:text-zinc-400 transition-colors hidden lg:block" />
                   </div>
                 </div>
               </Link>

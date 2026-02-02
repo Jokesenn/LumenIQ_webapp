@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -8,7 +8,6 @@ import {
   Calendar,
   Clock,
   FileText,
-  Filter,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,11 +17,15 @@ import {
   AbcXyzMatrix,
 } from "@/components/charts";
 import { SeriesList, SynthesisCard, SeriesSortDropdown } from "@/components/dashboard";
+import { SeriesFiltersDropdown, DEFAULT_FILTERS } from "@/components/dashboard/series-filters-dropdown";
+import type { SeriesFilters, SeriesFilterCounts } from "@/components/dashboard/series-filters-dropdown";
+import { ActiveFiltersBar } from "@/components/dashboard/active-filters-bar";
 import { AlertsSummaryCard } from "@/components/dashboard/AlertsSummaryCard";
 import { RESULTS_TAB_EVENT } from "@/components/dashboard/command-palette";
 import { FadeIn } from "@/components/animations";
 import { cn } from "@/lib/utils";
 import { useSeriesNavigation } from "@/hooks/useSeriesNavigation";
+import { getSeriesAlerts } from "@/lib/series-alerts";
 
 function formatDistanceToNow(date: Date): string {
   const now = new Date();
@@ -69,6 +72,33 @@ export function ResultsContent({
 }: ResultsContentProps) {
   const [activeTab, setActiveTab] = useState<TabType>(initialTab ?? "overview");
   const [selectedCell, setSelectedCell] = useState<{ abc: string; xyz: string } | null>(null);
+  const [modelFilter, setModelFilter] = useState<string | null>(null);
+  const [filters, setFilters] = useState<SeriesFilters>(DEFAULT_FILTERS);
+
+  // Compute filter counts from allSeries
+  const filterCounts = useMemo<SeriesFilterCounts>(() => {
+    const counts: SeriesFilterCounts = {
+      attention: 0,
+      modelChanged: 0,
+      abc: { A: 0, B: 0, C: 0 },
+      xyz: { X: 0, Y: 0, Z: 0 },
+    };
+    for (const s of allSeries) {
+      const alerts = getSeriesAlerts({
+        smape: s.smape,
+        was_gated: s.was_gated,
+        drift_detected: s.drift_detected,
+        is_first_run: s.is_first_run,
+        previous_champion: s.previous_champion,
+        champion_model: s.champion_model,
+      });
+      if (alerts.includes("attention")) counts.attention++;
+      if (alerts.includes("model-changed")) counts.modelChanged++;
+      if (s.abc_class) counts.abc[s.abc_class] = (counts.abc[s.abc_class] ?? 0) + 1;
+      if (s.xyz_class) counts.xyz[s.xyz_class] = (counts.xyz[s.xyz_class] ?? 0) + 1;
+    }
+    return counts;
+  }, [allSeries]);
 
   // Sync tab when navigating from another page via URL (?tab=...)
   useEffect(() => {
@@ -94,6 +124,12 @@ export function ResultsContent({
     allSeries,
     jobId: job?.id ?? "",
   });
+
+  const handleModelClick = (modelName: string) => {
+    setModelFilter(modelName);
+    setSelectedCell(null);
+    setActiveTab("series");
+  };
 
   const tabs: { id: TabType; label: string }[] = [
     { id: "overview", label: "Vue d'ensemble" },
@@ -174,7 +210,7 @@ export function ResultsContent({
         <div className="space-y-6">
           {/* Metric Gauges */}
           <FadeIn delay={0.2}>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 lg:gap-4">
               <MetricGaugeCard
                 label="WAPE"
                 value={metrics?.global_wape ?? 0}
@@ -208,9 +244,9 @@ export function ResultsContent({
                 thresholds={{ good: 5, warning: 10 }}
                 delay={0.3}
               />
-              <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+              <div className="p-4 sm:p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
                 <div className="text-center">
-                  <p className="text-4xl font-bold text-white">
+                  <p className="text-3xl sm:text-4xl font-bold text-white">
                     {metrics?.n_series_success ?? 0}
                     <span className="text-lg text-zinc-500">/{metrics?.n_series_total ?? 0}</span>
                   </p>
@@ -244,8 +280,8 @@ export function ResultsContent({
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Top/Bottom Performers */}
             <FadeIn delay={0.4} className="lg:col-span-2">
-              <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
-                <div className="grid grid-cols-2 gap-6">
+              <div className="p-4 sm:p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <SeriesList
                     series={topPerformers}
                     jobId={job?.id ?? ""}
@@ -291,6 +327,7 @@ export function ResultsContent({
                 selectedCell={selectedCell}
                 onCellClick={(abc, xyz) => {
                   setSelectedCell({ abc, xyz });
+                  setModelFilter(null);
                   setActiveTab("series");
                 }}
               />
@@ -302,35 +339,50 @@ export function ResultsContent({
       <div className={cn(activeTab !== "series" && "hidden")}>
         <FadeIn>
           <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-white">Toutes les séries</h2>
               <div className="flex items-center gap-2">
-                {selectedCell && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setSelectedCell(null)}
-                    className="text-zinc-400"
-                  >
-                    <Filter className="w-4 h-4 mr-2" />
-                    Filtre: {selectedCell.abc}-{selectedCell.xyz}
-                    <span className="ml-2">×</span>
-                  </Button>
-                )}
+                <SeriesFiltersDropdown
+                  filters={filters}
+                  onFiltersChange={setFilters}
+                  counts={filterCounts}
+                />
                 <SeriesSortDropdown
                   value={seriesNav.sortOption}
                   onChange={seriesNav.setSortOption}
                 />
               </div>
             </div>
+            <ActiveFiltersBar
+              filters={filters}
+              onFiltersChange={setFilters}
+              selectedCell={selectedCell}
+              onClearCell={() => setSelectedCell(null)}
+              modelFilter={modelFilter}
+              onClearModel={() => setModelFilter(null)}
+            />
             <SeriesList
-              series={
-                selectedCell
-                  ? seriesNav.sortedSeries.filter(
-                      (s) => s.abc_class === selectedCell.abc && s.xyz_class === selectedCell.xyz
-                    )
-                  : seriesNav.sortedSeries
-              }
+              series={seriesNav.sortedSeries.filter((s) => {
+                // Existing filters (matrix cell, model click)
+                if (selectedCell && (s.abc_class !== selectedCell.abc || s.xyz_class !== selectedCell.xyz)) return false;
+                if (modelFilter && s.champion_model !== modelFilter) return false;
+
+                // Dropdown filters — OR within category, AND between categories
+                const statusChecks: boolean[] = [];
+                if (filters.attention) {
+                  statusChecks.push((s.smape ?? 0) > 15);
+                }
+                if (filters.modelChanged) {
+                  const changed = !s.is_first_run && !!s.previous_champion && s.previous_champion !== s.champion_model;
+                  statusChecks.push(changed);
+                }
+                if (statusChecks.length > 0 && !statusChecks.some(Boolean)) return false;
+
+                if (filters.abcClasses.length > 0 && !filters.abcClasses.includes(s.abc_class as "A" | "B" | "C")) return false;
+                if (filters.xyzClasses.length > 0 && !filters.xyzClasses.includes(s.xyz_class as "X" | "Y" | "Z")) return false;
+
+                return true;
+              })}
               jobId={job?.id ?? ""}
               variant="default"
             />
@@ -344,7 +396,7 @@ export function ResultsContent({
             <h2 className="text-lg font-semibold text-white mb-6">
               Performance des modèles
             </h2>
-            <ModelPerformanceChart data={modelPerformance} />
+            <ModelPerformanceChart data={modelPerformance} onModelClick={handleModelClick} />
           </div>
         </FadeIn>
       </div>

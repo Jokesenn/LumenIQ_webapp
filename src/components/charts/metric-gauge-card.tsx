@@ -73,7 +73,7 @@ export function MetricGaugeCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay }}
       className={cn(
-        "p-6 rounded-2xl bg-zinc-900/50 border border-white/5 hover:border-white/10 transition-all",
+        "p-4 sm:p-6 rounded-2xl bg-zinc-900/50 border border-white/5 hover:border-white/10 transition-all",
         className
       )}
     >
@@ -83,12 +83,12 @@ export function MetricGaugeCard({
           value={value}
           label=""
           unit={unit}
-          size="lg"
+          size="md"
           thresholds={thresholds}
         />
 
         {/* Label */}
-        <h3 className="text-lg font-semibold text-white mt-4">{label}</h3>
+        <h3 className="text-base sm:text-lg font-semibold text-white mt-4">{label}</h3>
 
         {/* Status badge */}
         <span className={cn("text-sm font-medium mt-1", status.color)}>

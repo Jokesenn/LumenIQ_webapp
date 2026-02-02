@@ -12,7 +12,14 @@ interface ModelData {
 
 interface ModelPerformanceChartProps {
   data: ModelData[];
+  onModelClick?: (modelName: string) => void;
   className?: string;
+}
+
+function getModelWapeColor(wape: number): string {
+  if (wape < 5) return "text-emerald-400";
+  if (wape < 15) return "text-amber-400";
+  return "text-red-400";
 }
 
 const modelColors: Record<string, string> = {
@@ -26,7 +33,7 @@ const modelColors: Record<string, string> = {
   default: "from-zinc-500 to-zinc-600",
 };
 
-export function ModelPerformanceChart({ data, className }: ModelPerformanceChartProps) {
+export function ModelPerformanceChart({ data, onModelClick, className }: ModelPerformanceChartProps) {
   const maxPercentage = data.length > 0 ? Math.max(...data.map((d) => d.percentage)) : 0;
 
   if (data.length === 0) {
@@ -49,7 +56,11 @@ export function ModelPerformanceChart({ data, className }: ModelPerformanceChart
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4, delay: index * 0.1 }}
-            className="group"
+            className={cn(
+              "group rounded-xl px-3 py-2 -mx-3 transition-colors",
+              onModelClick && "cursor-pointer hover:bg-white/5"
+            )}
+            onClick={() => onModelClick?.(item.model)}
           >
             <div className="flex items-center justify-between mb-1.5">
               <div className="flex items-center gap-2">
@@ -58,7 +69,7 @@ export function ModelPerformanceChart({ data, className }: ModelPerformanceChart
               </div>
               <div className="flex items-center gap-3">
                 {item.avgWape !== undefined && (
-                  <span className="text-xs text-zinc-400">
+                  <span className={cn("text-xs", getModelWapeColor(item.avgWape))}>
                     WAPE: {item.avgWape.toFixed(1)}%
                   </span>
                 )}
