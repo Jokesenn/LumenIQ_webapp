@@ -3,20 +3,12 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { ArrowRight, TrendingUp, TrendingDown, AlertTriangle } from "lucide-react";
-
-interface Series {
-  series_id: string;
-  wape: number;
-  smape?: number;
-  champion_model: string;
-  abc_class: string;
-  xyz_class: string;
-  alerts?: string[];
-}
+import { ArrowRight, TrendingUp, TrendingDown } from "lucide-react";
+import type { SeriesListItem } from "@/types/forecast";
+import { SeriesAlertBadges } from "@/components/dashboard/results/SeriesAlertBadges";
 
 interface SeriesListProps {
-  series: Series[];
+  series: SeriesListItem[];
   jobId: string;
   variant?: "top" | "bottom" | "default";
   title?: string;
@@ -41,7 +33,8 @@ export function SeriesList({
   emptyMessage = "Aucune série",
   className,
 }: SeriesListProps) {
-  const getWapeColor = (wape: number) => {
+  const getWapeColor = (wape: number | null) => {
+    if (wape == null) return "text-zinc-400";
     if (wape < 10) return "text-emerald-400";
     if (wape < 20) return "text-amber-400";
     return "text-red-400";
@@ -85,9 +78,23 @@ export function SeriesList({
 
                     {/* Series info */}
                     <div className="min-w-0">
-                      <p className="font-medium text-white truncate group-hover:text-indigo-400 transition-colors">
-                        {s.series_id}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium text-white truncate group-hover:text-indigo-400 transition-colors">
+                          {s.series_id}
+                        </p>
+                        <SeriesAlertBadges
+                          series={{
+                            smape: s.smape,
+                            was_gated: s.was_gated,
+                            drift_detected: s.drift_detected,
+                            is_first_run: s.is_first_run,
+                            previous_champion: s.previous_champion,
+                            champion_model: s.champion_model,
+                          }}
+                          maxBadges={2}
+                          size="sm"
+                        />
+                      </div>
                       <div className="flex items-center gap-2 mt-1">
                         <span
                           className={cn(
@@ -112,14 +119,11 @@ export function SeriesList({
                     </div>
                   </div>
 
-                  {/* Right side: WAPE + alerts */}
+                  {/* Right side: WAPE */}
                   <div className="flex items-center gap-4">
-                    {s.alerts && s.alerts.length > 0 && (
-                      <AlertTriangle className="w-4 h-4 text-amber-400" />
-                    )}
                     <div className="text-right">
                       <p className={cn("font-semibold", getWapeColor(s.wape))}>
-                        {s.wape.toFixed(1)}%
+                        {s.wape != null ? `${s.wape.toFixed(1)}%` : "N/A"}
                       </p>
                       <p className="text-xs text-zinc-500">WAPE</p>
                     </div>

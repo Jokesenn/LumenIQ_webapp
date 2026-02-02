@@ -13,6 +13,10 @@ import {
 import { useFileUpload } from "@/hooks/useFileUpload";
 import { useUser } from "@/hooks/use-supabase";
 import { useJobStatus, getJobStatusLabel } from "@/hooks/useJobStatus";
+import { useUserPreferences } from "@/hooks/useUserPreferences";
+import { ForecastOptions } from "@/components/forecast/ForecastOptions";
+import type { ForecastConfigOverride, HorizonMonths, ConfidenceInterval } from "@/types/preferences";
+import { DEFAULT_PREFERENCES } from "@/types/preferences";
 import type { UploadStep } from "@/types/forecast";
 
 export default function ForecastPage() {
@@ -23,6 +27,7 @@ export default function ForecastPage() {
   const [analyzing, setAnalyzing] = useState(false);
   const [analyzeError, setAnalyzeError] = useState<string | null>(null);
   const [activeJobId, setActiveJobId] = useState<string | null>(null);
+  const [forecastOptions, setForecastOptions] = useState<ForecastConfigOverride>(DEFAULT_PREFERENCES);
   const router = useRouter();
 
   // Hooks pour l'upload réel
@@ -35,6 +40,21 @@ export default function ForecastPage() {
     uploadAndCreateJob,
     reset: resetUpload,
   } = useFileUpload();
+
+  // Hook pour les préférences forecast
+  const {
+    preferences,
+    loading: prefsLoading,
+    save: savePreferences,
+    hasChanged: prefsHaveChanged,
+  } = useUserPreferences();
+
+  // Synchroniser les options locales quand les préférences sont chargées
+  useEffect(() => {
+    if (!prefsLoading) {
+      setForecastOptions(preferences);
+    }
+  }, [preferences, prefsLoading]);
 
   // Hook pour poller le statut du job (activé seulement à l'étape 3 après upload)
   const {
@@ -121,6 +141,7 @@ export default function ForecastPage() {
     setAnalysis(null);
     setAnalyzeError(null);
     setActiveJobId(null);
+    setForecastOptions(preferences);
     resetUpload();
   };
 
@@ -130,8 +151,17 @@ export default function ForecastPage() {
       return;
     }
 
+    // Sauvegarder les préférences si modifiées (non-bloquant)
+    if (prefsHaveChanged(forecastOptions)) {
+      try {
+        await savePreferences(forecastOptions);
+      } catch (err) {
+        console.warn("Échec sauvegarde préférences (non-bloquant):", err);
+      }
+    }
+
     setStep(3);
-    await uploadAndCreateJob(file, user.id);
+    await uploadAndCreateJob(file, user.id, forecastOptions);
     // Le useEffect gérera le passage à l'étape suivante via useJobStatus
   };
 
@@ -358,7 +388,7 @@ export default function ForecastPage() {
             Configuration détectée
           </h3>
 
-          <div className="grid grid-cols-3 gap-4 mb-8">
+          <div className="grid grid-cols-3 gap-4 mb-6">
             <ConfigItem
               label="Fréquence"
               value={getFrequencyLabel(analysis.frequency)}
@@ -377,6 +407,24 @@ export default function ForecastPage() {
             <ConfigItem label="Saisonnalité" value={getSeasonalityLabel()} />
             <ConfigItem label="Horizon forecast" value={getDefaultHorizon()} />
             <ConfigItem label="Routing" value="ABC/XYZ auto" />
+          </div>
+
+          {/* Options de calcul */}
+          <div className="mb-6">
+            <ForecastOptions
+              horizonMonths={forecastOptions.horizon_months as HorizonMonths}
+              onHorizonChange={(v) =>
+                setForecastOptions((prev) => ({ ...prev, horizon_months: v }))
+              }
+              gatingEnabled={forecastOptions.gating_enabled}
+              onGatingChange={(v) =>
+                setForecastOptions((prev) => ({ ...prev, gating_enabled: v }))
+              }
+              confidenceInterval={forecastOptions.confidence_interval as ConfidenceInterval}
+              onConfidenceChange={(v) =>
+                setForecastOptions((prev) => ({ ...prev, confidence_interval: v }))
+              }
+            />
           </div>
 
           {/* Warnings if any */}

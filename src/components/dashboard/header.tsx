@@ -4,10 +4,12 @@ import { useState, useRef, useEffect } from "react";
 import { Menu, Settings, LogOut } from "lucide-react";
 import { useProfile, getInitials, formatPlanName } from "@/hooks/use-profile";
 import { useUser, useLogout } from "@/hooks/use-supabase";
+import { CommandPaletteTrigger } from "@/components/dashboard/command-palette";
 import Link from "next/link";
 
 interface HeaderProps {
   onToggleSidebar: () => void;
+  onOpenCommand?: () => void;
 }
 
 const planBadgeStyles: Record<string, string> = {
@@ -16,7 +18,7 @@ const planBadgeStyles: Record<string, string> = {
   premium: "bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-400",
 };
 
-export function Header({ onToggleSidebar }: HeaderProps) {
+export function Header({ onToggleSidebar, onOpenCommand }: HeaderProps) {
   const { user } = useUser();
   const { profile, loading } = useProfile();
   const logout = useLogout();
@@ -44,12 +46,18 @@ export function Header({ onToggleSidebar }: HeaderProps) {
 
   return (
     <header className="px-8 py-4 border-b border-white/[0.08] flex justify-between items-center bg-zinc-950/80 backdrop-blur-xl sticky top-0 z-10">
-      <button
-        onClick={onToggleSidebar}
-        className="p-2 text-zinc-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors duration-200"
-      >
-        <Menu size={20} />
-      </button>
+      <div className="flex items-center gap-3">
+        <button
+          onClick={onToggleSidebar}
+          className="p-2 text-zinc-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors duration-200"
+        >
+          <Menu size={20} />
+        </button>
+
+        {onOpenCommand && (
+          <CommandPaletteTrigger onClick={onOpenCommand} />
+        )}
+      </div>
 
       <div className="flex items-center gap-4">
         {/* Plan badge */}

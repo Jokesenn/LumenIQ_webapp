@@ -41,9 +41,33 @@ export interface WebhookPayload {
   plan: PlanType
   input_path: string
   filename: string
+  config_override?: {
+    horizon_months: number
+    gating_enabled: boolean
+    confidence_interval: number
+  }
 }
 
 export type UploadStep = 'idle' | 'uploading' | 'creating_job' | 'triggering_webhook' | 'complete' | 'error'
+
+// Types pour la navigation inter-séries et le tri
+export type SeriesSortOption = 'alpha' | 'smape' | 'abc'
+
+export interface SeriesListItem {
+  series_id: string
+  abc_class: string
+  xyz_class: string
+  wape: number | null
+  smape: number | null
+  champion_model: string
+  behavior_tags?: string[] | null
+  alerts?: string[] | null
+  was_gated?: boolean | null
+  drift_detected?: boolean | null
+  is_first_run?: boolean | null
+  previous_champion?: string | null
+  cv?: number | null
+}
 
 export interface UploadProgress {
   step: UploadStep

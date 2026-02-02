@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import {
@@ -13,16 +14,23 @@ import {
   Info,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { StatCard } from "@/components/dashboard";
+import { StatCard, SeriesNavigator } from "@/components/dashboard";
 import { AnimatedAreaChart } from "@/components/charts";
 import { FadeIn, StaggerChildren, StaggerItem } from "@/components/animations";
 import { cn } from "@/lib/utils";
+import { useSeriesNavigation } from "@/hooks/useSeriesNavigation";
+import { SeriesAlertBadges } from "@/components/dashboard/results/SeriesAlertBadges";
+import { ExportPdfButton } from "@/components/dashboard/results/ExportPdfButton";
+import type { SeriesListItem } from "@/types/forecast";
+import type { ForecastPoint } from "@/types/export";
 
 interface SeriesContentProps {
   job: any;
   series: any;
   chartData: any[];
   modelComparison: any;
+  allSeries: SeriesListItem[];
+  forecastPoints?: ForecastPoint[];
 }
 
 export function SeriesContent({
@@ -30,7 +38,38 @@ export function SeriesContent({
   series,
   chartData,
   modelComparison,
+  allSeries,
+  forecastPoints = [],
 }: SeriesContentProps) {
+  const chartRef = useRef<HTMLDivElement>(null);
+
+  const seriesNav = useSeriesNavigation({
+    allSeries,
+    currentSeriesId: series.series_id,
+    jobId: job.id,
+  });
+
+  // Raccourcis clavier ← / → pour naviguer entre séries
+  const { hasPrevious, hasNext, goToPrevious, goToNext } = seriesNav;
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignorer si focus dans un input, textarea ou contenteditable
+      const tag = (e.target as HTMLElement).tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement).isContentEditable) return;
+
+      if (e.key === "ArrowLeft" && hasPrevious) {
+        e.preventDefault();
+        goToPrevious();
+      } else if (e.key === "ArrowRight" && hasNext) {
+        e.preventDefault();
+        goToNext();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [hasPrevious, hasNext, goToPrevious, goToNext]);
   const classColors: Record<string, string> = {
     A: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
     B: "bg-amber-500/20 text-amber-400 border-amber-500/30",
@@ -83,13 +122,13 @@ export function SeriesContent({
       <FadeIn>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <Link href={`/dashboard/results?job=${job.id}`}>
+            <Link href={`/dashboard/results?job=${job.id}&sort=${seriesNav.sortOption}`}>
               <Button variant="ghost" size="icon" className="rounded-xl">
                 <ArrowLeft className="w-5 h-5" />
               </Button>
             </Link>
             <div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 flex-wrap">
                 <h1 className="text-2xl font-bold text-white">{series.series_id}</h1>
                 <span
                   className={cn(
@@ -107,9 +146,56 @@ export function SeriesContent({
                 >
                   {xyzClass}
                 </span>
+                <SeriesAlertBadges
+                  series={{
+                    smape: series.smape,
+                    was_gated: series.was_gated,
+                    drift_detected: series.drift_detected,
+                    is_first_run: series.is_first_run,
+                    previous_champion: series.previous_champion,
+                    champion_model: series.champion_model,
+                  }}
+                />
               </div>
               <p className="text-sm text-zinc-400 mt-1">Job: {job.filename}</p>
             </div>
+          </div>
+
+          {/* Navigation inter-séries + Export */}
+          <div className="flex items-center gap-3">
+            <ExportPdfButton
+              series={{
+                series_id: series.series_id,
+                abc_class: abcClass,
+                xyz_class: xyzClass,
+                smape: series.smape ?? 0,
+                wape: series.wape,
+                mape: series.mape,
+                champion_model: series.champion_model ?? "N/A",
+                cv: series.cv ?? series.cv_coefficient,
+                horizon: series.forecast_horizon ?? 12,
+                total_value: series.forecast_sum,
+                was_gated: series.was_gated,
+                drift_detected: series.drift_detected,
+              }}
+              jobName={job.filename}
+              forecasts={forecastPoints}
+              chartRef={chartRef}
+            />
+            <SeriesNavigator
+              sortedSeries={seriesNav.sortedSeries}
+              currentSeriesId={series.series_id}
+              sortOption={seriesNav.sortOption}
+              onSortChange={seriesNav.setSortOption}
+              hasPrevious={seriesNav.hasPrevious}
+              hasNext={seriesNav.hasNext}
+              previousSeries={seriesNav.previousSeries}
+              nextSeries={seriesNav.nextSeries}
+              onPrevious={seriesNav.goToPrevious}
+              onNext={seriesNav.goToNext}
+              onSelectSeries={seriesNav.goToSeries}
+              currentIndex={seriesNav.currentIndex}
+            />
           </div>
         </div>
       </FadeIn>
@@ -161,7 +247,7 @@ export function SeriesContent({
 
       {/* Main Chart */}
       <FadeIn delay={0.3}>
-        <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+        <div ref={chartRef} className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-semibold text-white">Historique & Prévisions</h2>
             <div className="flex items-center gap-4 text-sm">

@@ -215,6 +215,12 @@ export interface Database {
           models_tested: number | null
           alerts: string[] | null
           created_at: string | null
+          was_gated: boolean | null
+          drift_detected: boolean | null
+          gating_reason: string | null
+          previous_champion: string | null
+          is_first_run: boolean | null
+          cv: number | null
         }
         Insert: {
           id?: string
@@ -242,6 +248,12 @@ export interface Database {
           models_tested?: number | null
           alerts?: string[] | null
           created_at?: string | null
+          was_gated?: boolean | null
+          drift_detected?: boolean | null
+          gating_reason?: string | null
+          previous_champion?: string | null
+          is_first_run?: boolean | null
+          cv?: number | null
         }
         Update: {
           id?: string
@@ -269,6 +281,12 @@ export interface Database {
           models_tested?: number | null
           alerts?: string[] | null
           created_at?: string | null
+          was_gated?: boolean | null
+          drift_detected?: boolean | null
+          gating_reason?: string | null
+          previous_champion?: string | null
+          is_first_run?: boolean | null
+          cv?: number | null
         }
       }
       forecast_results_months: {
@@ -617,6 +635,32 @@ export interface Database {
           created_at?: string
         }
       }
+      user_preferences: {
+        Row: {
+          user_id: string
+          horizon_months: number
+          gating_enabled: boolean
+          confidence_interval: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          user_id: string
+          horizon_months?: number
+          gating_enabled?: boolean
+          confidence_interval?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          user_id?: string
+          horizon_months?: number
+          gating_enabled?: boolean
+          confidence_interval?: number
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: Record<string, never>
     Functions: Record<string, never>
@@ -671,3 +715,7 @@ export type JobSummaryInsert = Database['lumeniq']['Tables']['job_summaries']['I
 
 export type JobMonthlyAggregate = Database['lumeniq']['Tables']['job_monthly_aggregates']['Row']
 export type JobMonthlyAggregateInsert = Database['lumeniq']['Tables']['job_monthly_aggregates']['Insert']
+
+export type UserPreferencesRow = Database['lumeniq']['Tables']['user_preferences']['Row']
+export type UserPreferencesInsert = Database['lumeniq']['Tables']['user_preferences']['Insert']
+export type UserPreferencesUpdate = Database['lumeniq']['Tables']['user_preferences']['Update']

@@ -5,6 +5,7 @@ import { Sparkles, RefreshCw, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { SynthesisAccordion } from "./synthesis-accordion";
 
 interface Synthesis {
   type: string;
@@ -15,6 +16,8 @@ interface Synthesis {
 
 interface SynthesisCardProps {
   synthesis: Synthesis | null;
+  jobId?: string;
+  skuList?: string[];
   onRegenerate?: () => void;
   isLoading?: boolean;
   className?: string;
@@ -22,6 +25,8 @@ interface SynthesisCardProps {
 
 export function SynthesisCard({
   synthesis,
+  jobId,
+  skuList,
   onRegenerate,
   isLoading = false,
   className,
@@ -93,11 +98,11 @@ export function SynthesisCard({
 
       {/* Content */}
       {synthesis ? (
-        <div className="prose prose-invert prose-sm max-w-none">
-          <p className="text-zinc-300 leading-relaxed whitespace-pre-wrap">
-            {synthesis.content}
-          </p>
-        </div>
+        <SynthesisAccordion
+          content={synthesis.content}
+          jobId={jobId}
+          skuList={skuList}
+        />
       ) : isLoading ? (
         <div className="space-y-3">
           <div className="h-4 bg-white/5 rounded animate-pulse" />

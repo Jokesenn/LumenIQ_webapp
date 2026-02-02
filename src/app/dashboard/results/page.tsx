@@ -12,11 +12,11 @@ import {
   getJobSeriesList,
   getLatestCompletedJob,
 } from "@/lib/queries/results";
-import { ResultsContent } from "./results-content";
+import { ResultsContent } from "./results-client";
 import { Upload } from "lucide-react";
 
 interface ResultsPageProps {
-  searchParams: Promise<{ job?: string }>;
+  searchParams: Promise<{ job?: string; tab?: string }>;
 }
 
 export default async function ResultsPage({ searchParams }: ResultsPageProps) {
@@ -85,6 +85,9 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
     redirect("/dashboard/history");
   }
 
+  const validTabs = ["overview", "series", "models", "synthesis"];
+  const initialTab = validTabs.includes(params.tab ?? "") ? params.tab as "overview" | "series" | "models" | "synthesis" : undefined;
+
   return (
     <ResultsContent
       job={job}
@@ -97,6 +100,7 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
       abcXyzData={abcXyzData}
       modelPerformance={modelPerformance}
       synthesis={syntheses[0] || null}
+      initialTab={initialTab}
     />
   );
 }

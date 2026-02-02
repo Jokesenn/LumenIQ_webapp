@@ -60,7 +60,7 @@ export async function getTopBottomSeries(jobId: string, userId: string, limit = 
     supabase
       .schema("lumeniq")
       .from("forecast_results")
-      .select("series_id, wape, smape, champion_model, abc_class, xyz_class")
+      .select("series_id, wape, smape, champion_model, abc_class, xyz_class, was_gated, drift_detected, is_first_run, previous_champion, cv")
       .eq("job_id", jobId)
       .eq("user_id", userId)
       .not("wape", "is", null)
@@ -69,7 +69,7 @@ export async function getTopBottomSeries(jobId: string, userId: string, limit = 
     supabase
       .schema("lumeniq")
       .from("forecast_results")
-      .select("series_id, wape, smape, champion_model, abc_class, xyz_class, alerts")
+      .select("series_id, wape, smape, champion_model, abc_class, xyz_class, alerts, was_gated, drift_detected, is_first_run, previous_champion, cv")
       .eq("job_id", jobId)
       .eq("user_id", userId)
       .not("wape", "is", null)
@@ -209,7 +209,7 @@ export async function getJobSeriesList(
   let query = supabase
     .schema("lumeniq")
     .from("forecast_results")
-    .select("series_id, abc_class, xyz_class, wape, smape, champion_model, behavior_tags, alerts")
+    .select("series_id, abc_class, xyz_class, wape, smape, champion_model, behavior_tags, alerts, was_gated, drift_detected, is_first_run, previous_champion, cv")
     .eq("job_id", jobId)
     .eq("user_id", userId);
 
@@ -252,6 +252,7 @@ export async function getSeriesDetails(jobId: string, seriesId: string, userId: 
     wape: data.wape != null ? Number(data.wape) * 100 : data.wape,
     smape: data.smape != null ? Number(data.smape) * 100 : data.smape,
     cv_coefficient: data.cv_coefficient != null ? Number(data.cv_coefficient) : null,
+    cv: data.cv != null ? Number(data.cv) : null,
     champion_score: data.champion_score != null ? Number(data.champion_score) : null,
     forecast_sum: data.forecast_sum != null ? Number(data.forecast_sum) : null,
   };

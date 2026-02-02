@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -17,9 +17,12 @@ import {
   ModelPerformanceChart,
   AbcXyzMatrix,
 } from "@/components/charts";
-import { SeriesList, SynthesisCard } from "@/components/dashboard";
+import { SeriesList, SynthesisCard, SeriesSortDropdown } from "@/components/dashboard";
+import { AlertsSummaryCard } from "@/components/dashboard/AlertsSummaryCard";
+import { RESULTS_TAB_EVENT } from "@/components/dashboard/command-palette";
 import { FadeIn } from "@/components/animations";
 import { cn } from "@/lib/utils";
+import { useSeriesNavigation } from "@/hooks/useSeriesNavigation";
 
 function formatDistanceToNow(date: Date): string {
   const now = new Date();
@@ -35,6 +38,8 @@ function formatDistanceToNow(date: Date): string {
   return date.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
 }
 
+type TabType = "overview" | "series" | "models" | "synthesis";
+
 interface ResultsContentProps {
   job: any;
   summary: any;
@@ -46,9 +51,8 @@ interface ResultsContentProps {
   abcXyzData: any[];
   modelPerformance: any[];
   synthesis: any;
+  initialTab?: TabType;
 }
-
-type TabType = "overview" | "series" | "models" | "synthesis";
 
 export function ResultsContent({
   job,
@@ -61,9 +65,35 @@ export function ResultsContent({
   abcXyzData,
   modelPerformance,
   synthesis,
+  initialTab,
 }: ResultsContentProps) {
-  const [activeTab, setActiveTab] = useState<TabType>("overview");
+  const [activeTab, setActiveTab] = useState<TabType>(initialTab ?? "overview");
   const [selectedCell, setSelectedCell] = useState<{ abc: string; xyz: string } | null>(null);
+
+  // Sync tab when navigating from another page via URL (?tab=...)
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
+
+  // Listen for command palette tab-switch events (same-page, no server round-trip)
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const tab = (e as CustomEvent<string>).detail;
+      const valid: TabType[] = ["overview", "series", "models", "synthesis"];
+      if (valid.includes(tab as TabType)) {
+        setActiveTab(tab as TabType);
+      }
+    };
+    window.addEventListener(RESULTS_TAB_EVENT, handler);
+    return () => window.removeEventListener(RESULTS_TAB_EVENT, handler);
+  }, []);
+
+  const seriesNav = useSeriesNavigation({
+    allSeries,
+    jobId: job?.id ?? "",
+  });
 
   const tabs: { id: TabType; label: string }[] = [
     { id: "overview", label: "Vue d'ensemble" },
@@ -211,9 +241,9 @@ export function ResultsContent({
           </FadeIn>
 
           {/* Bottom Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Top/Bottom Performers */}
-            <FadeIn delay={0.4}>
+            <FadeIn delay={0.4} className="lg:col-span-2">
               <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
                 <div className="grid grid-cols-2 gap-6">
                   <SeriesList
@@ -234,23 +264,38 @@ export function ResultsContent({
               </div>
             </FadeIn>
 
-            {/* ABC/XYZ Matrix */}
-            <FadeIn delay={0.5}>
-              <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
-                <h2 className="text-lg font-semibold text-white mb-6">
-                  Classification ABC/XYZ
-                </h2>
-                <AbcXyzMatrix
-                  data={abcXyzData}
-                  selectedCell={selectedCell}
-                  onCellClick={(abc, xyz) => {
-                    setSelectedCell({ abc, xyz });
-                    setActiveTab("series");
-                  }}
-                />
-              </div>
+            {/* Alerts Summary */}
+            <FadeIn delay={0.45}>
+              <AlertsSummaryCard
+                seriesList={allSeries.map((s: any) => ({
+                  smape: s.smape,
+                  was_gated: s.was_gated,
+                  drift_detected: s.drift_detected,
+                  is_first_run: s.is_first_run,
+                  previous_champion: s.previous_champion,
+                  champion_model: s.champion_model,
+                }))}
+                onFilterAlerts={() => setActiveTab("series")}
+              />
             </FadeIn>
           </div>
+
+          {/* ABC/XYZ Matrix */}
+          <FadeIn delay={0.5}>
+            <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+              <h2 className="text-lg font-semibold text-white mb-6">
+                Classification ABC/XYZ
+              </h2>
+              <AbcXyzMatrix
+                data={abcXyzData}
+                selectedCell={selectedCell}
+                onCellClick={(abc, xyz) => {
+                  setSelectedCell({ abc, xyz });
+                  setActiveTab("series");
+                }}
+              />
+            </div>
+          </FadeIn>
         </div>
       </div>
 
@@ -259,26 +304,32 @@ export function ResultsContent({
           <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-semibold text-white">Toutes les séries</h2>
-              {selectedCell && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSelectedCell(null)}
-                  className="text-zinc-400"
-                >
-                  <Filter className="w-4 h-4 mr-2" />
-                  Filtre: {selectedCell.abc}-{selectedCell.xyz}
-                  <span className="ml-2">×</span>
-                </Button>
-              )}
+              <div className="flex items-center gap-2">
+                {selectedCell && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelectedCell(null)}
+                    className="text-zinc-400"
+                  >
+                    <Filter className="w-4 h-4 mr-2" />
+                    Filtre: {selectedCell.abc}-{selectedCell.xyz}
+                    <span className="ml-2">×</span>
+                  </Button>
+                )}
+                <SeriesSortDropdown
+                  value={seriesNav.sortOption}
+                  onChange={seriesNav.setSortOption}
+                />
+              </div>
             </div>
             <SeriesList
               series={
                 selectedCell
-                  ? allSeries.filter(
+                  ? seriesNav.sortedSeries.filter(
                       (s) => s.abc_class === selectedCell.abc && s.xyz_class === selectedCell.xyz
                     )
-                  : allSeries
+                  : seriesNav.sortedSeries
               }
               jobId={job?.id ?? ""}
               variant="default"
@@ -300,7 +351,11 @@ export function ResultsContent({
 
       <div className={cn(activeTab !== "synthesis" && "hidden")}>
         <FadeIn>
-          <SynthesisCard synthesis={synthesis} />
+          <SynthesisCard
+            synthesis={synthesis}
+            jobId={job?.id}
+            skuList={allSeries.map((s: any) => s.series_id as string)}
+          />
         </FadeIn>
       </div>
     </div>

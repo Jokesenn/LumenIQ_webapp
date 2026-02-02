@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { createClient } from '@/lib/supabase/client'
 import type { UploadStep, ForecastJobInsert, WebhookPayload, PlanType } from '@/types/forecast'
+import type { ForecastConfigOverride } from '@/types/preferences'
 
 interface UploadResult {
   jobId: string
@@ -18,7 +19,7 @@ interface UseFileUploadReturn {
   error: string | null
   uploadedPath: string | null
   jobId: string | null
-  uploadAndCreateJob: (file: File, userId: string) => Promise<UploadResult | null>
+  uploadAndCreateJob: (file: File, userId: string, configOverride?: ForecastConfigOverride) => Promise<UploadResult | null>
   reset: () => void
 }
 
@@ -53,7 +54,7 @@ export function useFileUpload(): UseFileUploadReturn {
     setJobId(null)
   }, [])
 
-  const uploadAndCreateJob = useCallback(async (file: File, userId: string): Promise<UploadResult | null> => {
+  const uploadAndCreateJob = useCallback(async (file: File, userId: string, configOverride?: ForecastConfigOverride): Promise<UploadResult | null> => {
     // Reset state
     setError(null)
     setUploadProgress(0)
@@ -138,6 +139,7 @@ export function useFileUpload(): UseFileUploadReturn {
         status: 'pending',
         progress: 0,
         plan_at_run: userPlan,
+        ...(configOverride && { horizon: configOverride.horizon_months }),
       }
 
       const { error: insertError } = await supabase
@@ -168,6 +170,7 @@ export function useFileUpload(): UseFileUploadReturn {
           plan: userPlan,
           input_path: filePath,
           filename: file.name,
+          ...(configOverride && { config_override: configOverride }),
         }
 
         try {
