@@ -10,9 +10,10 @@ interface AnimatedGaugeProps {
   label: string;
   unit?: string;           // "%", "€", "min", etc.
   size?: "sm" | "md" | "lg";
+  inverted?: boolean;      // true = plus bas est mieux (SMAPE, MAPE), false = plus haut est mieux (Champion Score)
   thresholds?: {
-    good: number;          // En dessous = vert
-    warning: number;       // En dessous = orange, au dessus = rouge
+    good: number;
+    warning: number;
   };
   showTrend?: {
     value: string;
@@ -33,6 +34,7 @@ export function AnimatedGauge({
   label,
   unit = "%",
   size = "md",
+  inverted = true,
   thresholds = { good: 10, warning: 20 },
   showTrend,
   className,
@@ -54,11 +56,19 @@ export function AnimatedGauge({
     return displayValue.on("change", (v) => setDisplayedValue(v));
   }, [clampedPercentage, spring, displayValue]);
 
-  // Couleur basée sur les seuils (en %)
+  // Couleur basée sur les seuils
   const getColor = () => {
-    if (clampedPercentage <= thresholds.good) return { stroke: "stroke-emerald-500", text: "text-emerald-400", bg: "bg-emerald-500" };
-    if (clampedPercentage <= thresholds.warning) return { stroke: "stroke-amber-500", text: "text-amber-400", bg: "bg-amber-500" };
-    return { stroke: "stroke-red-500", text: "text-red-400", bg: "bg-red-500" };
+    if (inverted) {
+      // Plus bas = mieux (SMAPE, MAPE, BIAS)
+      if (clampedPercentage <= thresholds.good) return { stroke: "stroke-emerald-500", text: "text-emerald-400", bg: "bg-emerald-500" };
+      if (clampedPercentage <= thresholds.warning) return { stroke: "stroke-amber-500", text: "text-amber-400", bg: "bg-amber-500" };
+      return { stroke: "stroke-red-500", text: "text-red-400", bg: "bg-red-500" };
+    } else {
+      // Plus haut = mieux (Champion Score)
+      if (clampedPercentage >= thresholds.warning) return { stroke: "stroke-emerald-500", text: "text-emerald-400", bg: "bg-emerald-500" };
+      if (clampedPercentage >= thresholds.good) return { stroke: "stroke-amber-500", text: "text-amber-400", bg: "bg-amber-500" };
+      return { stroke: "stroke-red-500", text: "text-red-400", bg: "bg-red-500" };
+    }
   };
 
   const colors = getColor();

@@ -1,14 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { RotateCcw } from "lucide-react";
 import { useProfile, formatPlanName } from "@/hooks/use-profile";
 import { useSupabase, useUser } from "@/hooks/use-supabase";
+import { resetOnboarding } from "@/lib/onboarding";
 
 export default function SettingsPage() {
   const { user } = useUser();
   const { profile, loading, refetch } = useProfile();
   const supabase = useSupabase();
+  const router = useRouter();
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -76,6 +80,11 @@ export default function SettingsPage() {
       premium: 499,
     };
     return prices[plan] || 99;
+  };
+
+  const handleResetOnboarding = () => {
+    resetOnboarding();
+    router.push("/dashboard/results");
   };
 
   const seriesQuota = profile ? getSeriesQuota(profile.plan) : 50;
@@ -269,6 +278,27 @@ export default function SettingsPage() {
               </Button>
             </>
           )}
+        </div>
+
+        {/* Aide & Onboarding */}
+        <div className="bg-zinc-900/50 rounded-xl border border-white/[0.08] p-6">
+          <h3 className="text-base font-semibold text-white mb-5">Aide</h3>
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="font-medium text-sm text-white">Guide interactif</p>
+              <p className="text-xs text-zinc-500">
+                Relancer le tutoriel de la page résultats
+              </p>
+            </div>
+            <Button
+              variant="secondary"
+              onClick={handleResetOnboarding}
+              className="gap-2"
+            >
+              <RotateCcw className="w-4 h-4" />
+              Revoir le guide
+            </Button>
+          </div>
         </div>
 
         {/* Danger Zone */}

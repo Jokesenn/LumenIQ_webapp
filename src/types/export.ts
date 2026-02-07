@@ -4,6 +4,7 @@ export interface SeriesPdfData {
   xyz_class: string
   smape: number
   wape?: number | null
+  champion_score?: number | null
   mape?: number | null
   champion_model: string
   cv: number | null

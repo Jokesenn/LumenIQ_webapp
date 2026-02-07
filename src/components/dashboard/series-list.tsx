@@ -7,12 +7,17 @@ import { ArrowRight, TrendingUp, TrendingDown } from "lucide-react";
 import type { SeriesListItem } from "@/types/forecast";
 import { SeriesAlertBadges } from "@/components/dashboard/results/SeriesAlertBadges";
 import { Sparkline } from "@/components/ui/sparkline";
+import { HelpTooltip } from "@/components/ui/help-tooltip";
+import { BadgeWithTooltip } from "@/components/ui/badge-with-tooltip";
+import { GLOSSARY } from "@/lib/glossary";
+import { getChampionScoreColor } from "@/lib/metrics";
 
 interface SeriesListProps {
   series: SeriesListItem[];
   jobId: string;
   variant?: "top" | "bottom" | "default";
   title?: string;
+  helpKey?: string;
   emptyMessage?: string;
   className?: string;
 }
@@ -31,15 +36,11 @@ export function SeriesList({
   jobId,
   variant = "default",
   title,
+  helpKey,
   emptyMessage = "Aucune série",
   className,
 }: SeriesListProps) {
-  const getWapeColor = (wape: number | null) => {
-    if (wape == null) return "text-zinc-400";
-    if (wape < 10) return "text-emerald-400";
-    if (wape < 20) return "text-amber-400";
-    return "text-red-400";
-  };
+  const getScoreColor = getChampionScoreColor;
 
   return (
     <div className={className}>
@@ -48,6 +49,7 @@ export function SeriesList({
           {variant === "top" && <TrendingUp className="w-5 h-5 text-emerald-400" />}
           {variant === "bottom" && <TrendingDown className="w-5 h-5 text-red-400" />}
           <h3 className="font-semibold text-white">{title}</h3>
+          {helpKey && <HelpTooltip termKey={helpKey} />}
         </div>
       )}
 
@@ -99,22 +101,26 @@ export function SeriesList({
                         </div>
                       </div>
                       <div className="flex items-center gap-1.5 mt-0.5">
-                        <span
-                          className={cn(
-                            "text-xs px-1 py-0.5 rounded border",
-                            classColors[s.abc_class] ?? "bg-zinc-500/20 text-zinc-400 border-zinc-500/30"
-                          )}
-                        >
-                          {s.abc_class}
-                        </span>
-                        <span
-                          className={cn(
-                            "text-xs px-1 py-0.5 rounded border",
-                            classColors[s.xyz_class] ?? "bg-zinc-500/20 text-zinc-400 border-zinc-500/30"
-                          )}
-                        >
-                          {s.xyz_class}
-                        </span>
+                        <BadgeWithTooltip tooltip={GLOSSARY.abc}>
+                          <span
+                            className={cn(
+                              "text-xs px-1 py-0.5 rounded border",
+                              classColors[s.abc_class] ?? "bg-zinc-500/20 text-zinc-400 border-zinc-500/30"
+                            )}
+                          >
+                            {s.abc_class}
+                          </span>
+                        </BadgeWithTooltip>
+                        <BadgeWithTooltip tooltip={GLOSSARY.xyz}>
+                          <span
+                            className={cn(
+                              "text-xs px-1 py-0.5 rounded border",
+                              classColors[s.xyz_class] ?? "bg-zinc-500/20 text-zinc-400 border-zinc-500/30"
+                            )}
+                          >
+                            {s.xyz_class}
+                          </span>
+                        </BadgeWithTooltip>
                         <span className="text-xs text-zinc-500 truncate hidden lg:inline">
                           {s.champion_model}
                         </span>
@@ -122,7 +128,7 @@ export function SeriesList({
                     </div>
                   </div>
 
-                  {/* Right side: Sparkline + WAPE */}
+                  {/* Right side: Sparkline + Champion Score */}
                   <div className="flex items-center gap-2 lg:gap-4 shrink-0">
                     <div className="hidden xl:block">
                       <Sparkline
@@ -133,10 +139,10 @@ export function SeriesList({
                       />
                     </div>
                     <div className="text-right">
-                      <p className={cn("text-sm lg:text-base font-semibold", getWapeColor(s.wape))}>
-                        {s.wape != null ? `${s.wape.toFixed(1)}%` : "N/A"}
+                      <p className={cn("text-sm lg:text-base font-semibold", getScoreColor(s.champion_score))}>
+                        {s.champion_score != null ? s.champion_score.toFixed(1) : "N/A"}
                       </p>
-                      <p className="text-xs text-zinc-500">WAPE</p>
+                      <p className="text-xs text-zinc-500">Score</p>
                     </div>
                     <ArrowRight className="w-4 h-4 text-zinc-600 group-hover:text-zinc-400 transition-colors hidden lg:block" />
                   </div>

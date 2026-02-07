@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { toChampionScore, toChampionScoreFromSmape, resolveSeriesErrorRatio } from "@/lib/metrics";
 
 const PLAN_LIMITS: Record<string, number> = {
   standard: 50,
@@ -30,18 +31,24 @@ export async function getDashboardStats(userId: string) {
     .eq("status", "completed")
     .gte("created_at", startOfMonth.toISOString());
 
-  // WAPE moyen global
-  const { data: wapeData } = await supabase
+  // Champion Score moyen global (basé sur SMAPE, fallback WAPE)
+  const { data: smapeData } = await supabase
     .schema("lumeniq")
     .from("job_summaries")
-    .select("global_wape")
+    .select("global_smape, global_wape")
     .eq("user_id", userId)
     .order("created_at", { ascending: false })
     .limit(10);
 
-  const avgWape =
-    wapeData?.length
-      ? (wapeData.reduce((sum, d) => sum + (Number(d.global_wape) || 0), 0) / wapeData.length) * 100
+  const avgChampionScore =
+    smapeData?.length
+      ? smapeData.reduce((sum, d) => {
+          const ratio = d.global_smape != null ? Number(d.global_smape)
+            : d.global_wape != null ? Number(d.global_wape)
+            : null;
+          const cs = toChampionScoreFromSmape(ratio);
+          return sum + (cs ?? 0);
+        }, 0) / smapeData.length
       : 0;
 
   // Temps moyen de traitement
@@ -74,7 +81,7 @@ export async function getDashboardStats(userId: string) {
   return {
     totalSeries: totalSeries || 0,
     forecastsThisMonth: forecastsThisMonth || 0,
-    avgWape,
+    avgChampionScore,
     avgDuration,
     daysUntilReset,
     quota: {
@@ -90,7 +97,7 @@ export interface ModelPerformanceItem {
   model: string;
   count: number;
   percentage: number;
-  avgWape?: number;
+  avgChampionScore?: number;
 }
 
 export async function getModelPerformance(userId: string): Promise<ModelPerformanceItem[]> {
@@ -99,21 +106,21 @@ export async function getModelPerformance(userId: string): Promise<ModelPerforma
   const { data } = await supabase
     .schema("lumeniq")
     .from("forecast_results")
-    .select("champion_model, wape")
+    .select("champion_model, champion_score, smape, wape")
     .eq("user_id", userId);
 
   if (!data?.length) return [];
 
   // Agréger par modèle
-  const modelStats: Record<string, { count: number; totalWape: number }> = {};
+  const modelStats: Record<string, { count: number; totalChampionScore: number }> = {};
 
   data.forEach((row) => {
     const model = row.champion_model || "Unknown";
     if (!modelStats[model]) {
-      modelStats[model] = { count: 0, totalWape: 0 };
+      modelStats[model] = { count: 0, totalChampionScore: 0 };
     }
     modelStats[model].count++;
-    modelStats[model].totalWape += Number(row.wape || 0) * 100;
+    modelStats[model].totalChampionScore += toChampionScore(resolveSeriesErrorRatio(row)) ?? 0;
   });
 
   const total = data.length;
@@ -123,7 +130,7 @@ export async function getModelPerformance(userId: string): Promise<ModelPerforma
       model,
       count: stats.count,
       percentage: (stats.count / total) * 100,
-      avgWape: stats.totalWape / stats.count,
+      avgChampionScore: stats.totalChampionScore / stats.count,
     }))
     .sort((a, b) => b.percentage - a.percentage)
     .slice(0, 8); // Top 8 modèles
@@ -245,7 +252,7 @@ export interface RecentForecastItem {
   createdAt: string | null;
   completedAt: string | null;
   seriesCount: number;
-  wape?: number;
+  championScore?: number;
   smape?: number;
   duration?: number;
 }
@@ -285,6 +292,10 @@ export async function getRecentForecasts(
 
   return jobs.map((job) => {
     const summary = summaryMap.get(job.id);
+    const ratio = summary?.global_smape != null ? Number(summary.global_smape)
+      : summary?.global_wape != null ? Number(summary.global_wape)
+      : null;
+
     return {
       id: job.id,
       filename: job.filename,
@@ -292,8 +303,8 @@ export async function getRecentForecasts(
       createdAt: job.created_at,
       completedAt: job.completed_at,
       seriesCount: job.series_count || 0,
-      wape: summary?.global_wape != null ? Number(summary.global_wape) * 100 : undefined,
-      smape: summary?.global_smape != null ? Number(summary.global_smape) * 100 : undefined,
+      championScore: toChampionScoreFromSmape(ratio) ?? undefined,
+      smape: ratio != null ? ratio * 100 : undefined,
       duration: summary?.duration_sec,
     };
   });
@@ -307,7 +318,7 @@ export interface HistoryJob {
   createdAt: string | null;
   completedAt: string | null;
   seriesCount: number;
-  wape: number | null;
+  championScore: number | null;
   smape: number | null;
   duration: number | null;
   topModel: string | null;
@@ -336,16 +347,35 @@ export async function getJobHistory(userId: string): Promise<HistoryJob[]> {
 
   if (!jobs?.length) return [];
 
-  return jobs.map((job) => ({
-    id: job.id,
-    filename: job.filename,
-    status: job.status ?? "pending",
-    createdAt: job.created_at,
-    completedAt: job.completed_at,
-    seriesCount: job.series_count || 0,
-    wape: job.avg_wape != null ? Number(job.avg_wape) * 100 : null,
-    smape: job.avg_smape != null ? Number(job.avg_smape) * 100 : null,
-    duration: job.compute_time_seconds != null ? Number(job.compute_time_seconds) : null,
-    topModel: job.top_champion_model,
-  }));
+  // Enrichir avec job_summaries pour fallback global_wape quand avg_smape est null
+  const jobIds = jobs.map((j) => j.id);
+  const { data: summaries } = await supabase
+    .schema("lumeniq")
+    .from("job_summaries")
+    .select("job_id, global_smape, global_wape")
+    .in("job_id", jobIds);
+
+  const summaryMap = new Map(summaries?.map((s) => [s.job_id, s]));
+
+  return jobs.map((job) => {
+    const summary = summaryMap.get(job.id);
+    const ratio = job.avg_smape != null ? Number(job.avg_smape)
+      : summary?.global_smape != null ? Number(summary.global_smape)
+      : job.avg_wape != null ? Number(job.avg_wape)
+      : summary?.global_wape != null ? Number(summary.global_wape)
+      : null;
+
+    return {
+      id: job.id,
+      filename: job.filename,
+      status: job.status ?? "pending",
+      createdAt: job.created_at,
+      completedAt: job.completed_at,
+      seriesCount: job.series_count || 0,
+      championScore: toChampionScoreFromSmape(ratio),
+      smape: ratio != null ? ratio * 100 : null,
+      duration: job.compute_time_seconds != null ? Number(job.compute_time_seconds) : null,
+      topModel: job.top_champion_model,
+    };
+  });
 }

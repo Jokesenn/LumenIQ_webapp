@@ -15,6 +15,7 @@ import { useUser } from "@/hooks/use-supabase";
 import { useJobStatus, getJobStatusLabel } from "@/hooks/useJobStatus";
 import { useUserPreferences } from "@/hooks/useUserPreferences";
 import { ForecastOptions } from "@/components/forecast/ForecastOptions";
+import { EnrichedWaiting } from "@/components/forecast/enriched-waiting";
 import type { ForecastConfigOverride, HorizonMonths, ConfidenceInterval } from "@/types/preferences";
 import { DEFAULT_PREFERENCES } from "@/types/preferences";
 import type { UploadStep } from "@/types/forecast";
@@ -668,15 +669,18 @@ export default function ForecastPage() {
 
           {/* Info message */}
           {uploadStep === "complete" && !isFailed && (
-            <div className="mt-6 p-4 bg-white/5 rounded-lg border-l-[3px] border-indigo-500">
-              <p className="text-sm text-zinc-400">
-                <strong className="text-white">
-                  Statut : {getJobStatusLabel(job?.status)}
-                </strong>
-                {" - "}
-                Vous pouvez quitter cette page, le traitement continue en arrière-plan.
-              </p>
-            </div>
+            <>
+              <div className="mt-6 p-4 bg-white/5 rounded-lg border-l-[3px] border-indigo-500">
+                <p className="text-sm text-zinc-400">
+                  <strong className="text-white">
+                    Statut : {getJobStatusLabel(job?.status)}
+                  </strong>
+                  {" - "}
+                  Vous pouvez quitter cette page, le traitement continue en arrière-plan.
+                </p>
+              </div>
+              <EnrichedWaiting />
+            </>
           )}
         </div>
       )}

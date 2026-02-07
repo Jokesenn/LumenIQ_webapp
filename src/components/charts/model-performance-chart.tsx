@@ -7,7 +7,7 @@ interface ModelData {
   model: string;
   count: number;
   percentage: number;
-  avgWape?: number;
+  avgChampionScore?: number;
 }
 
 interface ModelPerformanceChartProps {
@@ -16,9 +16,9 @@ interface ModelPerformanceChartProps {
   className?: string;
 }
 
-function getModelWapeColor(wape: number): string {
-  if (wape < 5) return "text-emerald-400";
-  if (wape < 15) return "text-amber-400";
+function getModelScoreColor(score: number): string {
+  if (score >= 90) return "text-emerald-400";
+  if (score >= 70) return "text-amber-400";
   return "text-red-400";
 }
 
@@ -68,9 +68,9 @@ export function ModelPerformanceChart({ data, onModelClick, className }: ModelPe
                 <span className="text-xs text-zinc-500">({item.count})</span>
               </div>
               <div className="flex items-center gap-3">
-                {item.avgWape !== undefined && (
-                  <span className={cn("text-xs", getModelWapeColor(item.avgWape))}>
-                    WAPE: {item.avgWape.toFixed(1)}%
+                {item.avgChampionScore !== undefined && (
+                  <span className={cn("text-xs", getModelScoreColor(item.avgChampionScore))}>
+                    Score: {item.avgChampionScore.toFixed(1)}/100
                   </span>
                 )}
                 <span className="text-sm font-semibold text-white tabular-nums">

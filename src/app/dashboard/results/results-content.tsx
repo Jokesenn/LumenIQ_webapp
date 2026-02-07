@@ -26,6 +26,9 @@ import { FadeIn } from "@/components/animations";
 import { cn } from "@/lib/utils";
 import { useSeriesNavigation } from "@/hooks/useSeriesNavigation";
 import { getSeriesAlerts } from "@/lib/series-alerts";
+import { ResultsTour } from "@/components/onboarding";
+import { useOnboarding } from "@/hooks/useOnboarding";
+import { HelpTooltip } from "@/components/ui/help-tooltip";
 
 function formatDistanceToNow(date: Date): string {
   const now = new Date();
@@ -74,6 +77,7 @@ export function ResultsContent({
   const [selectedCell, setSelectedCell] = useState<{ abc: string; xyz: string } | null>(null);
   const [modelFilter, setModelFilter] = useState<string | null>(null);
   const [filters, setFilters] = useState<SeriesFilters>(DEFAULT_FILTERS);
+  const { showTour, completeTour } = useOnboarding();
 
   // Compute filter counts from allSeries
   const filterCounts = useMemo<SeriesFilterCounts>(() => {
@@ -198,6 +202,7 @@ export function ResultsContent({
                   ? "bg-indigo-500 text-white"
                   : "text-zinc-400 hover:text-white hover:bg-white/5"
               )}
+              {...(tab.id === "synthesis" ? { "data-onboarding": "synthesis-tab" } : {})}
             >
               {tab.label}
             </button>
@@ -211,13 +216,18 @@ export function ResultsContent({
           {/* Metric Gauges */}
           <FadeIn delay={0.2}>
             <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 lg:gap-4">
-              <MetricGaugeCard
-                label="WAPE"
-                value={metrics?.global_wape ?? 0}
-                description="Weighted Absolute Percentage Error"
-                thresholds={{ good: 10, warning: 20 }}
-                delay={0}
-              />
+              <div data-onboarding="champion-score-gauge">
+                <MetricGaugeCard
+                  label="Champion Score"
+                  value={metrics?.championScore ?? 0}
+                  unit="/100"
+                  description="Score de fiabilité du modèle champion"
+                  thresholds={{ good: 70, warning: 90 }}
+                  inverted={false}
+                  delay={0}
+                  helpKey="championScore"
+                />
+              </div>
               {metrics?.global_smape != null && (
                 <MetricGaugeCard
                   label="SMAPE"
@@ -225,6 +235,7 @@ export function ResultsContent({
                   description="Symmetric MAPE"
                   thresholds={{ good: 10, warning: 20 }}
                   delay={0.1}
+                  helpKey="smape"
                 />
               )}
               {metrics?.global_mape != null && (
@@ -234,23 +245,30 @@ export function ResultsContent({
                   description="Mean Absolute Percentage Error"
                   thresholds={{ good: 15, warning: 25 }}
                   delay={0.2}
+                  helpKey="mape"
                 />
               )}
-              <MetricGaugeCard
-                label="BIAS"
-                value={Math.abs(metrics?.global_bias_pct ?? 0)}
-                unit="%"
-                description={(metrics?.global_bias_pct ?? 0) >= 0 ? "Sur-estimation" : "Sous-estimation"}
-                thresholds={{ good: 5, warning: 10 }}
-                delay={0.3}
-              />
+              <div data-onboarding="bias-gauge">
+                <MetricGaugeCard
+                  label="BIAS"
+                  value={Math.abs(metrics?.global_bias_pct ?? 0)}
+                  unit="%"
+                  description={(metrics?.global_bias_pct ?? 0) >= 0 ? "Sur-estimation" : "Sous-estimation"}
+                  thresholds={{ good: 5, warning: 10 }}
+                  delay={0.3}
+                  helpKey="bias"
+                />
+              </div>
               <div className="p-4 sm:p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
                 <div className="text-center">
                   <p className="text-3xl sm:text-4xl font-bold text-white">
                     {metrics?.n_series_success ?? 0}
                     <span className="text-lg text-zinc-500">/{metrics?.n_series_total ?? 0}</span>
                   </p>
-                  <p className="text-sm text-zinc-400 mt-2">Séries réussies</p>
+                  <div className="flex items-center justify-center gap-1 mt-2">
+                    <p className="text-sm text-zinc-400">Séries réussies</p>
+                    <HelpTooltip termKey="series_count" />
+                  </div>
                   {(metrics?.n_series_failed ?? 0) > 0 && (
                     <p className="text-xs text-red-400 mt-1">
                       {metrics.n_series_failed} échecs
@@ -264,9 +282,12 @@ export function ResultsContent({
           {/* Main Chart */}
           <FadeIn delay={0.3}>
             <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
-              <h2 className="text-lg font-semibold text-white mb-6">
-                Forecast vs Réel (agrégé)
-              </h2>
+              <div className="flex items-center gap-1.5 mb-6">
+                <h2 className="text-lg font-semibold text-white">
+                  Forecast vs Réel (agrégé)
+                </h2>
+                <HelpTooltip termKey="forecast_graph" />
+              </div>
               <div className={cn(chartData.length === 0 && "hidden")}>
                 <AnimatedAreaChart data={chartData.length > 0 ? chartData : [{ date: "", actual: 0 }]} height={350} showConfidence />
               </div>
@@ -287,6 +308,7 @@ export function ResultsContent({
                     jobId={job?.id ?? ""}
                     variant="top"
                     title="Top performers"
+                    helpKey="top_performers"
                     emptyMessage="Aucune donnée"
                   />
                   <SeriesList
@@ -294,6 +316,7 @@ export function ResultsContent({
                     jobId={job?.id ?? ""}
                     variant="bottom"
                     title="À surveiller"
+                    helpKey="to_watch"
                     emptyMessage="Aucune donnée"
                   />
                 </div>
@@ -302,26 +325,31 @@ export function ResultsContent({
 
             {/* Alerts Summary */}
             <FadeIn delay={0.45}>
-              <AlertsSummaryCard
-                seriesList={allSeries.map((s: any) => ({
-                  smape: s.smape,
-                  was_gated: s.was_gated,
-                  drift_detected: s.drift_detected,
-                  is_first_run: s.is_first_run,
-                  previous_champion: s.previous_champion,
-                  champion_model: s.champion_model,
-                }))}
-                onFilterAlerts={() => setActiveTab("series")}
-              />
+              <div data-onboarding="alerts-panel">
+                <AlertsSummaryCard
+                  seriesList={allSeries.map((s: any) => ({
+                    smape: s.smape,
+                    was_gated: s.was_gated,
+                    drift_detected: s.drift_detected,
+                    is_first_run: s.is_first_run,
+                    previous_champion: s.previous_champion,
+                    champion_model: s.champion_model,
+                  }))}
+                  onFilterAlerts={() => setActiveTab("series")}
+                />
+              </div>
             </FadeIn>
           </div>
 
           {/* ABC/XYZ Matrix */}
           <FadeIn delay={0.5}>
-            <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
-              <h2 className="text-lg font-semibold text-white mb-6">
-                Classification ABC/XYZ
-              </h2>
+            <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5" data-onboarding="abc-xyz-matrix">
+              <div className="flex items-center gap-1.5 mb-6">
+                <h2 className="text-lg font-semibold text-white">
+                  Classification ABC/XYZ
+                </h2>
+                <HelpTooltip termKey="abcxyz_matrix" />
+              </div>
               <AbcXyzMatrix
                 data={abcXyzData}
                 selectedCell={selectedCell}
@@ -410,6 +438,8 @@ export function ResultsContent({
           />
         </FadeIn>
       </div>
+
+      <ResultsTour enabled={showTour} onComplete={completeTour} />
     </div>
   );
 }

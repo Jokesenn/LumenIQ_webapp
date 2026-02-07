@@ -5,6 +5,7 @@ import { useRef, useEffect, useState } from "react";
 import { LucideIcon, TrendingUp, TrendingDown, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { HelpTooltip } from "@/components/ui/help-tooltip";
 
 interface StatCardProps {
   label: string;
@@ -19,6 +20,7 @@ interface StatCardProps {
   };
   href?: string;               // Lien vers détail
   variant?: "default" | "highlight" | "warning" | "success";
+  helpKey?: string;
   delay?: number;
 }
 
@@ -79,6 +81,7 @@ export function StatCard({
   trend,
   href,
   variant = "default",
+  helpKey,
   delay = 0,
 }: StatCardProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -179,7 +182,10 @@ export function StatCard({
         </div>
 
         <div className="space-y-1">
-          <p className="text-sm text-zinc-400">{label}</p>
+          <div className="flex items-center gap-1">
+            <p className="text-sm text-zinc-400">{label}</p>
+            {helpKey && <HelpTooltip termKey={helpKey} />}
+          </div>
           <p
             className="text-2xl sm:text-3xl font-bold text-white tabular-nums truncate"
             title={typeof value === "string" ? value : undefined}

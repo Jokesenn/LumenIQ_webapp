@@ -78,20 +78,20 @@ function StatusBadge({ status }: { status: string }) {
   }
 }
 
-function WapeBadge({ wape }: { wape: number | null }) {
-  if (wape == null) return <span className="text-zinc-600">—</span>;
+function ChampionScoreBadge({ score }: { score: number | null }) {
+  if (score == null) return <span className="text-zinc-600">—</span>;
   return (
     <span
       className={cn(
         "px-2.5 py-1 rounded-full text-xs font-semibold",
-        wape < 10
+        score >= 90
           ? "bg-emerald-500/10 text-emerald-500"
-          : wape < 20
+          : score >= 70
             ? "bg-amber-500/10 text-amber-400"
             : "bg-red-500/10 text-red-400"
       )}
     >
-      {wape.toFixed(1)}%
+      {score.toFixed(1)}
     </span>
   );
 }
@@ -150,7 +150,7 @@ export function HistoryContent({ jobs }: HistoryContentProps) {
                   Statut
                 </th>
                 <th className="px-5 py-4 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wider">
-                  WAPE
+                  Score
                 </th>
                 <th className="px-5 py-4 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wider">
                   Durée
@@ -184,7 +184,7 @@ export function HistoryContent({ jobs }: HistoryContentProps) {
                     <StatusBadge status={job.status} />
                   </td>
                   <td className="px-5 py-4">
-                    <WapeBadge wape={job.wape} />
+                    <ChampionScoreBadge score={job.championScore} />
                   </td>
                   <td className="px-5 py-4 text-zinc-400 text-sm whitespace-nowrap">
                     {formatDuration(job.duration)}

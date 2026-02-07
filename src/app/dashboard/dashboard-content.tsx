@@ -45,7 +45,7 @@ interface DashboardContentProps {
   stats: {
     totalSeries: number;
     forecastsThisMonth: number;
-    avgWape: number;
+    avgChampionScore: number;
     avgDuration: number;
     quota: {
       used: number;
@@ -57,7 +57,7 @@ interface DashboardContentProps {
     model: string;
     count: number;
     percentage: number;
-    avgWape?: number;
+    avgChampionScore?: number;
   }>;
   abcXyzData: Array<{
     abc: "A" | "B" | "C";
@@ -78,7 +78,7 @@ interface DashboardContentProps {
     status: string;
     createdAt: string | null;
     seriesCount: number;
-    wape?: number;
+    championScore?: number;
   }>;
 }
 
@@ -141,12 +141,12 @@ export function DashboardContent({
             </StaggerItem>
             <StaggerItem>
               <StatCard
-                label="WAPE moyen"
-                value={`${stats.avgWape.toFixed(1)}%`}
+                label="Champion Score"
+                value={stats.avgChampionScore.toFixed(1)}
                 icon={TrendingUp}
-                trend={{ value: "-1.3%", direction: "down", isGood: true }}
-                subtitle="Sur les 10 derniers jobs"
-                variant={stats.avgWape < 10 ? "success" : stats.avgWape < 20 ? "warning" : "default"}
+                trend={{ value: "+1.3", direction: "up", isGood: true }}
+                subtitle="/100 · Sur les 10 derniers jobs"
+                variant={stats.avgChampionScore >= 90 ? "success" : stats.avgChampionScore >= 70 ? "warning" : "default"}
               />
             </StaggerItem>
             <StaggerItem>
@@ -306,20 +306,20 @@ export function DashboardContent({
                       </div>
 
                       <div className="flex items-center gap-4">
-                        {job.wape !== undefined && (
+                        {job.championScore !== undefined && (
                           <div className="text-right">
-                            <p className="text-sm text-zinc-400">WAPE</p>
+                            <p className="text-sm text-zinc-400">Score</p>
                             <p
                               className={cn(
                                 "font-semibold",
-                                job.wape < 10
+                                job.championScore >= 90
                                   ? "text-emerald-400"
-                                  : job.wape < 20
+                                  : job.championScore >= 70
                                     ? "text-amber-400"
                                     : "text-red-400"
                               )}
                             >
-                              {job.wape.toFixed(1)}%
+                              {job.championScore.toFixed(1)}
                             </p>
                           </div>
                         )}

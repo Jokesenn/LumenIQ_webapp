@@ -178,7 +178,7 @@ export function Hero() {
                     animate={{ y: [0, -10, 0] }}
                     transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                   >
-                    WAPE: 8.2%
+                    Score: 91.8/100
                   </motion.div>
                 </Parallax>
 

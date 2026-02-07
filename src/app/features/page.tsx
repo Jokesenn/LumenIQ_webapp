@@ -31,7 +31,7 @@ const featureSections = [
     description:
       "Chaque forecast est validé par cross-validation temporelle (jusqu'à 5 folds pour classe A). Mécanisme de Gating : évite de recalculer si les données n'ont pas significativement changé.",
     benefits: [
-      "Métriques : WAPE (principale), SMAPE, MAPE, MASE, Bias, MAE, RMSE",
+      "Métriques : Champion Score (principal), SMAPE, MAPE, MASE, Bias, MAE, RMSE",
       "Gating : 60-70% plus rapide sur séries stables (runs récurrents)",
       "Détection de drift automatique entre les runs",
       "Intervalle de confiance 80% calibré sur l'historique",

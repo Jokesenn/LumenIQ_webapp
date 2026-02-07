@@ -52,9 +52,9 @@ function sortSeries(series: SeriesListItem[], sortBy: SeriesSortOption): SeriesL
 
     case 'smape':
       return sorted.sort((a, b) => {
-        const aVal = a.smape ?? a.wape ?? Infinity
-        const bVal = b.smape ?? b.wape ?? Infinity
-        return aVal - bVal
+        const aVal = a.champion_score ?? -Infinity
+        const bVal = b.champion_score ?? -Infinity
+        return bVal - aVal
       })
 
     case 'abc': {
@@ -65,7 +65,7 @@ function sortSeries(series: SeriesListItem[], sortBy: SeriesSortOption): SeriesL
         if (abcCmp !== 0) return abcCmp
         const xyzCmp = (xyzOrder[a.xyz_class] ?? 9) - (xyzOrder[b.xyz_class] ?? 9)
         if (xyzCmp !== 0) return xyzCmp
-        return (a.smape ?? a.wape ?? Infinity) - (b.smape ?? b.wape ?? Infinity)
+        return (b.champion_score ?? -Infinity) - (a.champion_score ?? -Infinity)
       })
     }
 

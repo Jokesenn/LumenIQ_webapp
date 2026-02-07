@@ -17,6 +17,9 @@ import { Button } from "@/components/ui/button";
 import { StatCard, SeriesNavigator } from "@/components/dashboard";
 import { AnimatedAreaChart } from "@/components/charts";
 import { FadeIn, StaggerChildren, StaggerItem } from "@/components/animations";
+import { HelpTooltip } from "@/components/ui/help-tooltip";
+import { BadgeWithTooltip } from "@/components/ui/badge-with-tooltip";
+import { GLOSSARY } from "@/lib/glossary";
 import { cn } from "@/lib/utils";
 import { useSeriesNavigation } from "@/hooks/useSeriesNavigation";
 import { SeriesAlertBadges } from "@/components/dashboard/results/SeriesAlertBadges";
@@ -79,15 +82,15 @@ export function SeriesContent({
     Z: "bg-red-500/20 text-red-400 border-red-500/30",
   };
 
-  const getWapeStatus = (wape: number) => {
-    if (wape < 10) return { label: "Excellent", color: "text-emerald-400", Icon: CheckCircle2 };
-    if (wape < 20) return { label: "Acceptable", color: "text-amber-400", Icon: Info };
+  const getScoreStatus = (score: number) => {
+    if (score >= 90) return { label: "Excellent", color: "text-emerald-400", Icon: CheckCircle2 };
+    if (score >= 70) return { label: "Acceptable", color: "text-amber-400", Icon: Info };
     return { label: "À améliorer", color: "text-red-400", Icon: AlertTriangle };
   };
 
-  const wapeValue = series.wape ?? 0;
-  const wapeStatus = getWapeStatus(wapeValue);
-  const WapeIcon = wapeStatus.Icon;
+  const championScoreValue = series.champion_score ?? 0;
+  const scoreStatus = getScoreStatus(championScoreValue);
+  const ScoreIcon = scoreStatus.Icon;
 
   // Parse alerts si c'est une string JSON
   const alerts =
@@ -130,22 +133,26 @@ export function SeriesContent({
             <div>
               <div className="flex items-center gap-3 flex-wrap">
                 <h1 className="text-2xl font-bold text-white">{series.series_id}</h1>
-                <span
-                  className={cn(
-                    "px-2 py-1 rounded-lg border text-sm font-medium",
-                    classColors[abcClass]
-                  )}
-                >
-                  {abcClass}
-                </span>
-                <span
-                  className={cn(
-                    "px-2 py-1 rounded-lg border text-sm font-medium",
-                    classColors[xyzClass]
-                  )}
-                >
-                  {xyzClass}
-                </span>
+                <BadgeWithTooltip tooltip={GLOSSARY.abc}>
+                  <span
+                    className={cn(
+                      "px-2 py-1 rounded-lg border text-sm font-medium",
+                      classColors[abcClass]
+                    )}
+                  >
+                    {abcClass}
+                  </span>
+                </BadgeWithTooltip>
+                <BadgeWithTooltip tooltip={GLOSSARY.xyz}>
+                  <span
+                    className={cn(
+                      "px-2 py-1 rounded-lg border text-sm font-medium",
+                      classColors[xyzClass]
+                    )}
+                  >
+                    {xyzClass}
+                  </span>
+                </BadgeWithTooltip>
                 <SeriesAlertBadges
                   series={{
                     smape: series.smape,
@@ -170,6 +177,7 @@ export function SeriesContent({
                 xyz_class: xyzClass,
                 smape: series.smape ?? 0,
                 wape: series.wape,
+                champion_score: series.champion_score,
                 mape: series.mape,
                 champion_model: series.champion_model ?? "N/A",
                 cv: series.cv ?? series.cv_coefficient,
@@ -204,10 +212,12 @@ export function SeriesContent({
       <StaggerChildren staggerDelay={0.1} className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
         <StaggerItem>
           <StatCard
-            label="WAPE"
-            value={`${wapeValue.toFixed(1)}%`}
+            label="Champion Score"
+            value={championScoreValue.toFixed(1)}
             icon={TrendingUp}
-            variant={wapeValue < 10 ? "success" : wapeValue < 20 ? "warning" : "default"}
+            subtitle="/100"
+            variant={championScoreValue >= 90 ? "success" : championScoreValue >= 70 ? "warning" : "default"}
+            helpKey="championScore"
           />
         </StaggerItem>
         <StaggerItem>
@@ -215,8 +225,9 @@ export function SeriesContent({
             label="Champion"
             value={series.champion_model || "N/A"}
             icon={Award}
-            subtitle={`Score: ${(series.champion_score ?? 0).toFixed(2)}`}
+            subtitle={`Score: ${championScoreValue.toFixed(1)}/100`}
             variant="highlight"
+            helpKey="champion"
           />
         </StaggerItem>
         <StaggerItem>
@@ -224,6 +235,7 @@ export function SeriesContent({
             label="CV Coefficient"
             value={(series.cv_coefficient ?? 0).toFixed(2)}
             icon={Activity}
+            helpKey="cv"
             subtitle={
               (series.cv_coefficient ?? 0) < 0.5
                 ? "Stable"
@@ -238,6 +250,7 @@ export function SeriesContent({
             label="Horizon"
             value={`${series.forecast_horizon ?? 12} mois`}
             icon={Target}
+            helpKey="horizon"
             subtitle={`Total: ${(series.forecast_sum ?? 0).toLocaleString("fr-FR", {
               maximumFractionDigits: 0,
             })}`}
@@ -249,7 +262,10 @@ export function SeriesContent({
       <FadeIn delay={0.3}>
         <div ref={chartRef} className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-white">Historique & Prévisions</h2>
+            <div className="flex items-center gap-1.5">
+              <h2 className="text-lg font-semibold text-white">Historique & Prévisions</h2>
+              <HelpTooltip termKey="forecast_graph" />
+            </div>
             <div className="flex items-center gap-4 text-sm">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-indigo-500" />
@@ -322,7 +338,7 @@ export function SeriesContent({
                     </div>
                     <div className="text-right">
                       <p className="font-semibold text-white">
-                        {model.score != null ? model.score.toFixed(2) : "N/A"}
+                        {model.score != null ? model.score.toFixed(1) : "N/A"}
                       </p>
                       <p className="text-xs text-zinc-500">Score</p>
                     </div>
@@ -349,16 +365,16 @@ export function SeriesContent({
             <div className="space-y-4">
               {/* Status */}
               <div className="flex items-start gap-3 p-4 rounded-xl bg-white/5">
-                <WapeIcon className={cn("w-5 h-5 mt-0.5", wapeStatus.color)} />
+                <ScoreIcon className={cn("w-5 h-5 mt-0.5", scoreStatus.color)} />
                 <div>
-                  <p className={cn("font-medium", wapeStatus.color)}>
-                    Qualité: {wapeStatus.label}
+                  <p className={cn("font-medium", scoreStatus.color)}>
+                    Qualité: {scoreStatus.label}
                   </p>
                   <p className="text-sm text-zinc-400 mt-1">
-                    WAPE de {wapeValue.toFixed(1)}%
-                    {wapeValue < 10
+                    Champion Score de {championScoreValue.toFixed(1)}/100
+                    {championScoreValue >= 90
                       ? " - Excellente précision des prévisions"
-                      : wapeValue < 20
+                      : championScoreValue >= 70
                         ? " - Précision acceptable, surveiller les écarts"
                         : " - Précision insuffisante, analyse recommandée"}
                   </p>

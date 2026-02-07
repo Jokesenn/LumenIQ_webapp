@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { AnimatedGauge } from "./animated-gauge";
 import { cn } from "@/lib/utils";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { HelpTooltip } from "@/components/ui/help-tooltip";
 
 interface MetricGaugeCardProps {
   label: string;
@@ -21,6 +22,7 @@ interface MetricGaugeCardProps {
   inverted?: boolean; // true si plus bas = mieux (WAPE, SMAPE)
   delay?: number;
   className?: string;
+  helpKey?: string;
 }
 
 export function MetricGaugeCard({
@@ -33,6 +35,7 @@ export function MetricGaugeCard({
   inverted = true,
   delay = 0,
   className,
+  helpKey,
 }: MetricGaugeCardProps) {
   // Calculer le status
   const getStatus = () => {
@@ -84,11 +87,15 @@ export function MetricGaugeCard({
           label=""
           unit={unit}
           size="md"
+          inverted={inverted}
           thresholds={thresholds}
         />
 
         {/* Label */}
-        <h3 className="text-base sm:text-lg font-semibold text-white mt-4">{label}</h3>
+        <div className="flex items-center gap-1.5 mt-4">
+          <h3 className="text-base sm:text-lg font-semibold text-white">{label}</h3>
+          {helpKey && <HelpTooltip termKey={helpKey} />}
+        </div>
 
         {/* Status badge */}
         <span className={cn("text-sm font-medium mt-1", status.color)}>

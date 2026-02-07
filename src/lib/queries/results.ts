@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { ForecastJob, JobSummary } from "@/types/database";
+import { toChampionScore, toChampionScoreFromSmape, resolveSeriesErrorRatio } from "@/lib/metrics";
 
 // Récupérer un job par ID avec son summary
 export async function getJobWithSummary(jobId: string, userId: string) {
@@ -49,6 +50,11 @@ export async function getJobMetrics(jobId: string, userId: string) {
     global_smape: data.global_smape != null ? Number(data.global_smape) * 100 : null,
     global_mape: data.global_mape != null ? Number(data.global_mape) * 100 : null,
     global_bias_pct: data.global_bias_pct != null ? Number(data.global_bias_pct) : data.global_bias_pct,
+    championScore: toChampionScoreFromSmape(
+      data.global_smape != null ? Number(data.global_smape)
+        : data.global_wape != null ? Number(data.global_wape)
+        : null
+    ),
   };
 }
 
@@ -86,36 +92,27 @@ async function enrichWithSparklines(
 export async function getTopBottomSeries(jobId: string, userId: string, limit = 5) {
   const supabase = await createClient();
 
-  const [topResult, bottomResult] = await Promise.all([
-    supabase
-      .schema("lumeniq")
-      .from("forecast_results")
-      .select("series_id, wape, smape, champion_model, abc_class, xyz_class, was_gated, drift_detected, is_first_run, previous_champion, cv")
-      .eq("job_id", jobId)
-      .eq("user_id", userId)
-      .not("wape", "is", null)
-      .order("wape", { ascending: true })
-      .limit(limit),
-    supabase
-      .schema("lumeniq")
-      .from("forecast_results")
-      .select("series_id, wape, smape, champion_model, abc_class, xyz_class, alerts, was_gated, drift_detected, is_first_run, previous_champion, cv")
-      .eq("job_id", jobId)
-      .eq("user_id", userId)
-      .not("wape", "is", null)
-      .order("wape", { ascending: false })
-      .limit(limit),
-  ]);
+  // Récupérer toutes les séries avec au moins une métrique d'erreur disponible
+  const { data: allRows } = await supabase
+    .schema("lumeniq")
+    .from("forecast_results")
+    .select("series_id, wape, smape, champion_score, champion_model, abc_class, xyz_class, alerts, was_gated, drift_detected, is_first_run, previous_champion, cv")
+    .eq("job_id", jobId)
+    .eq("user_id", userId);
 
-  const toPercent = (rows: typeof topResult.data) =>
-    (rows || []).map((r) => ({
+  // Convertir en % et calculer le champion_score avec fallback
+  const scored = (allRows || [])
+    .map((r) => ({
       ...r,
       wape: r.wape != null ? Number(r.wape) * 100 : r.wape,
       smape: r.smape != null ? Number(r.smape) * 100 : r.smape,
-    }));
+      champion_score: toChampionScore(resolveSeriesErrorRatio(r)),
+    }))
+    .filter((r) => r.champion_score != null)
+    .sort((a, b) => (b.champion_score ?? 0) - (a.champion_score ?? 0));
 
-  const top = toPercent(topResult.data);
-  const bottom = toPercent(bottomResult.data);
+  const top = scored.slice(0, limit);
+  const bottom = scored.slice(-limit).reverse();
 
   // Enrichissement sparkline — échoue silencieusement si colonnes absentes
   await enrichWithSparklines(supabase, jobId, userId, [...top, ...bottom] as Record<string, unknown>[]);
@@ -187,21 +184,21 @@ export async function getJobModelPerformance(jobId: string, userId: string) {
   const { data } = await supabase
     .schema("lumeniq")
     .from("forecast_results")
-    .select("champion_model, wape")
+    .select("champion_model, champion_score, smape, wape")
     .eq("job_id", jobId)
     .eq("user_id", userId);
 
   if (!data?.length) return [];
 
-  const modelStats: Record<string, { count: number; totalWape: number }> = {};
+  const modelStats: Record<string, { count: number; totalChampionScore: number }> = {};
 
   data.forEach((row) => {
     const model = row.champion_model || "Unknown";
     if (!modelStats[model]) {
-      modelStats[model] = { count: 0, totalWape: 0 };
+      modelStats[model] = { count: 0, totalChampionScore: 0 };
     }
     modelStats[model].count++;
-    modelStats[model].totalWape += Number(row.wape || 0) * 100;
+    modelStats[model].totalChampionScore += toChampionScore(resolveSeriesErrorRatio(row)) ?? 0;
   });
 
   const total = data.length;
@@ -211,7 +208,7 @@ export async function getJobModelPerformance(jobId: string, userId: string) {
       model,
       count: stats.count,
       percentage: (stats.count / total) * 100,
-      avgWape: stats.totalWape / stats.count,
+      avgChampionScore: stats.totalChampionScore / stats.count,
     }))
     .sort((a, b) => b.percentage - a.percentage);
 }
@@ -242,7 +239,7 @@ export async function getJobSeriesList(
   let query = supabase
     .schema("lumeniq")
     .from("forecast_results")
-    .select("series_id, abc_class, xyz_class, wape, smape, champion_model, behavior_tags, alerts, was_gated, drift_detected, is_first_run, previous_champion, cv")
+    .select("series_id, abc_class, xyz_class, wape, smape, champion_score, champion_model, behavior_tags, alerts, was_gated, drift_detected, is_first_run, previous_champion, cv")
     .eq("job_id", jobId)
     .eq("user_id", userId);
 
@@ -253,12 +250,13 @@ export async function getJobSeriesList(
     query = query.eq("xyz_class", filters.xyz);
   }
 
-  const { data } = await query.order("wape", { ascending: true });
+  const { data } = await query.order("series_id", { ascending: true });
 
   const rows = (data || []).map((r) => ({
     ...r,
     wape: r.wape != null ? Number(r.wape) * 100 : r.wape,
     smape: r.smape != null ? Number(r.smape) * 100 : r.smape,
+    champion_score: toChampionScore(resolveSeriesErrorRatio(r)),
   }));
 
   // Enrichissement sparkline — échoue silencieusement si colonnes absentes
@@ -291,7 +289,7 @@ export async function getSeriesDetails(jobId: string, seriesId: string, userId: 
     smape: data.smape != null ? Number(data.smape) * 100 : data.smape,
     cv_coefficient: data.cv_coefficient != null ? Number(data.cv_coefficient) : null,
     cv: data.cv != null ? Number(data.cv) : null,
-    champion_score: data.champion_score != null ? Number(data.champion_score) : null,
+    champion_score: toChampionScore(resolveSeriesErrorRatio(data)),
     forecast_sum: data.forecast_sum != null ? Number(data.forecast_sum) : null,
   };
 }
@@ -371,7 +369,7 @@ export async function getSeriesModelComparison(jobId: string, seriesId: string, 
   const { data } = await supabase
     .schema("lumeniq")
     .from("forecast_results")
-    .select("champion_model, champion_score, challengers, models_tested")
+    .select("champion_model, champion_score, smape, wape, challengers, models_tested")
     .eq("job_id", jobId)
     .eq("series_id", seriesId)
     .eq("user_id", userId)
@@ -393,17 +391,17 @@ export async function getSeriesModelComparison(jobId: string, seriesId: string, 
     }
   }
 
-  const championScore = data.champion_score != null ? Number(data.champion_score) : 0;
+  const championScoreValue = toChampionScore(resolveSeriesErrorRatio(data)) ?? 0;
   const modelRanking = [
-    { model: data.champion_model ?? "—", score: championScore, rank: 1 },
+    { model: data.champion_model ?? "—", score: championScoreValue, rank: 1 },
     ...Object.entries(challengers)
-      .map(([model, score], i) => ({ model, score: Number(score) || 0, rank: i + 2 }))
-      .sort((a, b) => a.score - b.score),
+      .map(([model, score], i) => ({ model, score: toChampionScore(Number(score)) ?? 0, rank: i + 2 }))
+      .sort((a, b) => b.score - a.score),
   ];
 
   return {
     champion: data.champion_model,
-    championScore,
+    championScore: championScoreValue,
     modelsTested: data.models_tested != null ? Number(data.models_tested) : 0,
     ranking: modelRanking.slice(0, 5),
   };
@@ -527,7 +525,7 @@ export async function getJobFullData(jobId: string, userId: string) {
   const modelPerformance: ModelPerformance[] = modelRows.map((r) => ({
     model: r.model,
     count: r.count,
-    avgSmape: r.avgWape ?? 0,
+    avgSmape: r.avgChampionScore ?? 0,
   }));
 
   const chartData: AggregatedChartData[] = chartRows.map((row: { date: string; actual?: number; forecast?: number; forecastLower?: number; forecastUpper?: number }) => {

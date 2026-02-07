@@ -15,3 +15,4 @@ export { ActiveFiltersBar } from "./active-filters-bar";
 export { SeriesQuickSelect } from "./series-quick-select";
 export { AlertsSummaryCard } from "./AlertsSummaryCard";
 export { CommandPalette, CommandPaletteTrigger } from "./command-palette";
+export { AiChatButton, AiChatDrawer } from "./ai-chat";

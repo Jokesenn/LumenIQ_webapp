@@ -1,6 +1,8 @@
 "use client";
 
 import { AlertBadge } from "@/components/ui/alert-badge";
+import { BadgeWithTooltip } from "@/components/ui/badge-with-tooltip";
+import { GLOSSARY } from "@/lib/glossary";
 import {
   getSeriesAlerts,
   sortAlertsByPriority,
@@ -13,6 +15,11 @@ interface SeriesAlertBadgesProps {
   size?: "sm" | "default";
   className?: string;
 }
+
+const ALERT_GLOSSARY_KEY: Record<string, string | undefined> = {
+  attention: "attention",
+  "model-changed": "model_changed",
+};
 
 export function SeriesAlertBadges({
   series,
@@ -30,9 +37,20 @@ export function SeriesAlertBadges({
 
   return (
     <div className={`flex items-center gap-1.5 flex-wrap ${className ?? ""}`}>
-      {displayedAlerts.map((alert) => (
-        <AlertBadge key={alert} type={alert} size={size} />
-      ))}
+      {displayedAlerts.map((alert) => {
+        const glossaryKey = ALERT_GLOSSARY_KEY[alert];
+        const tooltipContent = glossaryKey ? GLOSSARY[glossaryKey] : undefined;
+
+        if (tooltipContent) {
+          return (
+            <BadgeWithTooltip key={alert} tooltip={tooltipContent}>
+              <AlertBadge type={alert} size={size} />
+            </BadgeWithTooltip>
+          );
+        }
+
+        return <AlertBadge key={alert} type={alert} size={size} />;
+      })}
       {hiddenCount > 0 && (
         <span className="text-xs text-zinc-500">+{hiddenCount}</span>
       )}

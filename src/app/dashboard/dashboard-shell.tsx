@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { Sidebar, Header } from "@/components/dashboard";
 import { CommandPalette } from "@/components/dashboard/command-palette";
+import { AiChatButton, AiChatDrawer } from "@/components/dashboard/ai-chat";
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -18,6 +19,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     return () => mql.removeEventListener("change", handleChange);
   }, []);
   const [commandOpen, setCommandOpen] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
 
   return (
     <div className="flex min-h-screen bg-zinc-950">
@@ -35,6 +37,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       <Suspense>
         <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} />
       </Suspense>
+
+      <Suspense>
+        <AiChatDrawer open={chatOpen} onOpenChange={setChatOpen} />
+      </Suspense>
+      <AiChatButton onClick={() => setChatOpen(true)} isOpen={chatOpen} />
     </div>
   );
 }

@@ -59,6 +59,7 @@ export interface SeriesListItem {
   xyz_class: string
   wape: number | null
   smape: number | null
+  champion_score: number | null
   champion_model: string
   behavior_tags?: string[] | null
   alerts?: string[] | null

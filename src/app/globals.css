@@ -4,6 +4,77 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ============================================
+   DRIVER.JS — Dark theme overrides (onboarding)
+   ============================================ */
+
+.lumeniq-tour-popover {
+  background: #18181b !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 12px !important;
+  color: #fafafa !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  backface-visibility: hidden !important;
+  transform: translateZ(0) !important;
+}
+
+.lumeniq-tour-popover .driver-popover-title {
+  color: #fafafa !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+}
+
+.lumeniq-tour-popover .driver-popover-description {
+  color: #a1a1aa !important;
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+}
+
+.lumeniq-tour-popover .driver-popover-progress-text {
+  color: #71717a !important;
+}
+
+.lumeniq-tour-popover .driver-popover-navigation-btns button {
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  padding: 6px 14px !important;
+  -webkit-font-smoothing: antialiased !important;
+  text-rendering: geometricPrecision !important;
+}
+
+.lumeniq-tour-popover .driver-popover-next-btn {
+  background: #6366f1 !important;
+  color: white !important;
+  border: none !important;
+}
+
+.lumeniq-tour-popover .driver-popover-next-btn:hover {
+  background: #4f46e5 !important;
+}
+
+.lumeniq-tour-popover .driver-popover-prev-btn {
+  background: transparent !important;
+  color: #a1a1aa !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.lumeniq-tour-popover .driver-popover-close-btn {
+  color: #71717a !important;
+}
+
+.lumeniq-tour-popover .driver-popover-arrow-side-left .driver-popover-arrow,
+.lumeniq-tour-popover .driver-popover-arrow-side-right .driver-popover-arrow,
+.lumeniq-tour-popover .driver-popover-arrow-side-top .driver-popover-arrow,
+.lumeniq-tour-popover .driver-popover-arrow-side-bottom .driver-popover-arrow {
+  background: #18181b !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.driver-overlay {
+  backdrop-filter: none !important;
+}
+
+/* ============================================
    LUMENIQ DESIGN TOKENS — Dark-first SaaS
    ============================================ */
 

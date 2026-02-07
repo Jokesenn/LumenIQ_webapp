@@ -58,12 +58,10 @@ export function SeriesQuickSelect({
             <CommandGroup>
               {series.map((s) => {
                 const isCurrent = s.series_id === currentSeriesId;
-                const smapeDisplay =
-                  s.smape != null
-                    ? `${s.smape.toFixed(1)}%`
-                    : s.wape != null
-                      ? `${s.wape.toFixed(1)}%`
-                      : "—";
+                const scoreDisplay =
+                  s.champion_score != null
+                    ? s.champion_score.toFixed(1)
+                    : "—";
 
                 return (
                   <CommandItem
@@ -103,7 +101,7 @@ export function SeriesQuickSelect({
                         {s.abc_class}
                       </span>
                       <span className="text-zinc-500 tabular-nums w-12 text-right">
-                        {smapeDisplay}
+                        {scoreDisplay}
                       </span>
                     </div>
                   </CommandItem>
