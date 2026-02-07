@@ -134,13 +134,35 @@ export async function getJobChartData(jobId: string, userId: string) {
 
   if (!data?.length) return [];
 
-  return data.map((row) => ({
-    date: new Date(row.ds).toLocaleDateString("fr-FR", { month: "short", year: "2-digit" }),
-    actual: !row.is_forecast ? row.actual_sum : undefined,
-    forecast: row.is_forecast ? row.forecast_sum : undefined,
-    forecastLower: row.is_forecast ? row.forecast_lower_sum : undefined,
-    forecastUpper: row.is_forecast ? row.forecast_upper_sum : undefined,
-  }));
+  // Find the boundary between actuals and forecast
+  const firstForecastIdx = data.findIndex((r) => r.is_forecast);
+  const lastActualIdx = firstForecastIdx > 0 ? firstForecastIdx - 1 : -1;
+
+  return data.map((row, idx) => {
+    const isBridge = idx === lastActualIdx && firstForecastIdx < data.length;
+    const firstForecast = isBridge ? data[firstForecastIdx] : null;
+
+    return {
+      date: new Date(row.ds).toLocaleDateString("fr-FR", { month: "short", year: "2-digit" }),
+      actual: !row.is_forecast ? row.actual_sum : undefined,
+      // Bridge: the last actual row also carries forecast values so the lines connect
+      forecast: row.is_forecast
+        ? row.forecast_sum
+        : isBridge && firstForecast
+          ? row.actual_sum
+          : undefined,
+      forecastLower: row.is_forecast
+        ? row.forecast_lower_sum
+        : isBridge && firstForecast
+          ? row.actual_sum
+          : undefined,
+      forecastUpper: row.is_forecast
+        ? row.forecast_upper_sum
+        : isBridge && firstForecast
+          ? row.actual_sum
+          : undefined,
+    };
+  });
 }
 
 // Distribution ABC/XYZ pour un job spécifique

@@ -13,9 +13,9 @@ import { Button } from "@/components/ui/button";
 import {
   MetricGaugeCard,
   AnimatedAreaChart,
-  ModelPerformanceChart,
   AbcXyzMatrix,
 } from "@/components/charts";
+import { ReliabilityTab } from "@/components/dashboard/reliability-tab";
 import { SeriesList, SynthesisCard, SeriesSortDropdown } from "@/components/dashboard";
 import { SeriesFiltersDropdown, DEFAULT_FILTERS } from "@/components/dashboard/series-filters-dropdown";
 import type { SeriesFilters, SeriesFilterCounts } from "@/components/dashboard/series-filters-dropdown";
@@ -44,7 +44,7 @@ function formatDistanceToNow(date: Date): string {
   return date.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
 }
 
-type TabType = "overview" | "series" | "models" | "synthesis";
+type TabType = "overview" | "series" | "reliability" | "synthesis";
 
 interface ResultsContentProps {
   job: any;
@@ -115,7 +115,7 @@ export function ResultsContent({
   useEffect(() => {
     const handler = (e: Event) => {
       const tab = (e as CustomEvent<string>).detail;
-      const valid: TabType[] = ["overview", "series", "models", "synthesis"];
+      const valid: TabType[] = ["overview", "series", "reliability", "synthesis"];
       if (valid.includes(tab as TabType)) {
         setActiveTab(tab as TabType);
       }
@@ -138,7 +138,7 @@ export function ResultsContent({
   const tabs: { id: TabType; label: string }[] = [
     { id: "overview", label: "Vue d'ensemble" },
     { id: "series", label: "Séries" },
-    { id: "models", label: "Modèles" },
+    { id: "reliability", label: "Fiabilité" },
     { id: "synthesis", label: "Synthèse IA" },
   ];
 
@@ -418,15 +418,8 @@ export function ResultsContent({
         </FadeIn>
       </div>
 
-      <div className={cn(activeTab !== "models" && "hidden")}>
-        <FadeIn>
-          <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
-            <h2 className="text-lg font-semibold text-white mb-6">
-              Performance des modèles
-            </h2>
-            <ModelPerformanceChart data={modelPerformance} onModelClick={handleModelClick} />
-          </div>
-        </FadeIn>
+      <div className={cn(activeTab !== "reliability" && "hidden")}>
+        <ReliabilityTab allSeries={allSeries} onModelClick={handleModelClick} />
       </div>
 
       <div className={cn(activeTab !== "synthesis" && "hidden")}>

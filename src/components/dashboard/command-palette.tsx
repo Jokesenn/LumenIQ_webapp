@@ -154,9 +154,9 @@ export function CommandPalette({ open: controlledOpen, onOpenChange }: CommandPa
             <List className="mr-2 h-4 w-4" />
             Séries
           </CommandItem>
-          <CommandItem onSelect={() => runCommand(() => goToTab("models"))}>
+          <CommandItem onSelect={() => runCommand(() => goToTab("reliability"))}>
             <BarChart3 className="mr-2 h-4 w-4" />
-            Modèles
+            Fiabilité
           </CommandItem>
           <CommandItem onSelect={() => runCommand(() => goToTab("synthesis"))}>
             <Sparkles className="mr-2 h-4 w-4" />

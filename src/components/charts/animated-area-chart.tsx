@@ -12,7 +12,7 @@ import {
   Legend,
   ReferenceLine,
 } from "recharts";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface DataPoint {
@@ -21,6 +21,8 @@ interface DataPoint {
   forecast?: number;
   forecastLower?: number;
   forecastUpper?: number;
+  /** Upper minus Lower — used for the stacked confidence band */
+  forecastBand?: number;
 }
 
 interface AnimatedAreaChartProps {
@@ -30,13 +32,20 @@ interface AnimatedAreaChartProps {
   className?: string;
 }
 
+const HIDDEN_TOOLTIP_NAMES = new Set(["CI lower", "CI upper", "Intervalle"]);
+
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
+
+  const visible = payload.filter(
+    (e: any) => !HIDDEN_TOOLTIP_NAMES.has(e.name) && e.value != null,
+  );
+  if (visible.length === 0) return null;
 
   return (
     <div className="bg-zinc-900/95 backdrop-blur-sm border border-white/10 rounded-lg p-3 shadow-xl">
       <p className="text-xs text-zinc-400 mb-2">{label}</p>
-      {payload.map((entry: any, i: number) => (
+      {visible.map((entry: any, i: number) => (
         <div key={i} className="flex items-center gap-2 text-sm">
           <div
             className="w-2 h-2 rounded-full"
@@ -62,9 +71,22 @@ export function AnimatedAreaChart({
 }: AnimatedAreaChartProps) {
   const [hoveredArea, setHoveredArea] = useState<string | null>(null);
 
+  // Compute the band delta (upper - lower) for stacked confidence rendering
+  const chartData = useMemo(
+    () =>
+      data.map((d) => ({
+        ...d,
+        forecastBand:
+          d.forecastUpper != null && d.forecastLower != null
+            ? d.forecastUpper - d.forecastLower
+            : undefined,
+      })),
+    [data],
+  );
+
   // Trouver la date de séparation actuals/forecast
-  const splitIndex = data.findIndex((d) => d.forecast !== undefined && d.actual === undefined);
-  const splitDate = splitIndex > 0 ? data[splitIndex - 1]?.date : null;
+  const splitIndex = chartData.findIndex((d) => d.forecast !== undefined && d.actual === undefined);
+  const splitDate = splitIndex > 0 ? chartData[splitIndex - 1]?.date : null;
 
   return (
     <motion.div
@@ -74,7 +96,7 @@ export function AnimatedAreaChart({
       className={cn("w-full", className)}
     >
       <ResponsiveContainer width="100%" height={height}>
-        <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+        <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
           <defs>
             {/* Gradient pour actuals */}
             <linearGradient id="actualGradient" x1="0" y1="0" x2="0" y2="1">
@@ -86,10 +108,10 @@ export function AnimatedAreaChart({
               <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
               <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
             </linearGradient>
-            {/* Gradient pour confidence interval */}
+            {/* Gradient pour confidence interval band */}
             <linearGradient id="confidenceGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.1} />
-              <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+              <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.15} />
+              <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.05} />
             </linearGradient>
           </defs>
 
@@ -137,17 +159,36 @@ export function AnimatedAreaChart({
             />
           )}
 
-          {/* Confidence interval (si activé) */}
+          {/* Confidence interval band (si activé) — lower is invisible base, band fills the gap */}
           {showConfidence && (
-            <Area
-              type="monotone"
-              dataKey="forecastUpper"
-              stroke="none"
-              fill="url(#confidenceGradient)"
-              fillOpacity={1}
-              name="Intervalle"
-              legendType="none"
-            />
+            <>
+              <Area
+                type="monotone"
+                dataKey="forecastLower"
+                stackId="confidence"
+                stroke="none"
+                fill="transparent"
+                fillOpacity={0}
+                legendType="none"
+                name="CI lower"
+                activeDot={false}
+                dot={false}
+                tooltipType="none"
+              />
+              <Area
+                type="monotone"
+                dataKey="forecastBand"
+                stackId="confidence"
+                stroke="none"
+                fill="url(#confidenceGradient)"
+                fillOpacity={1}
+                legendType="none"
+                name="Intervalle"
+                activeDot={false}
+                dot={false}
+                tooltipType="none"
+              />
+            </>
           )}
 
           {/* Actuals */}

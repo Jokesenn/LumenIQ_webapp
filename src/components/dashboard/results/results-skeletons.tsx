@@ -110,30 +110,55 @@ export function SeriesTabSkeleton() {
   );
 }
 
-export function ModelsTabSkeleton() {
+export function ReliabilityTabSkeleton() {
   return (
-    <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
-      <Skeleton className="w-48 h-6 mb-6 rounded" />
-      <div className="space-y-4">
+    <div className="space-y-6">
+      {/* Headline summary */}
+      <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+        <Skeleton className="w-48 h-6 mb-2 rounded" />
+        <Skeleton className="w-3/4 h-4 rounded" />
+      </div>
+
+      {/* Two-column grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <div className="lg:col-span-3 p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+          <Skeleton className="w-full h-[350px] rounded-xl" />
+        </div>
+        <div className="lg:col-span-2 p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+          <div className="flex justify-end gap-2 mb-4">
+            <Skeleton className="w-8 h-8 rounded" />
+            <Skeleton className="w-8 h-8 rounded" />
+          </div>
+          <Skeleton className="w-full h-[280px] rounded-xl" />
+        </div>
+      </div>
+
+      {/* Detail table */}
+      <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+        <Skeleton className="w-40 h-5 mb-4 rounded" />
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i}>
-            <div className="flex items-center justify-between mb-1.5">
-              <div className="flex items-center gap-2">
-                <Skeleton className="w-20 h-4 rounded" />
-                <Skeleton className="w-8 h-3 rounded" />
-              </div>
-              <div className="flex items-center gap-3">
+          <div key={i} className="flex items-center justify-between py-3 border-b border-white/5 last:border-0">
+            <div className="flex items-center gap-3">
+              <Skeleton className="w-3 h-3 rounded-full" />
+              <div>
+                <Skeleton className="w-28 h-4 rounded mb-1" />
                 <Skeleton className="w-20 h-3 rounded" />
-                <Skeleton className="w-10 h-4 rounded" />
               </div>
             </div>
-            <Skeleton className="w-full h-3 rounded-full" />
+            <div className="flex items-center gap-4">
+              <Skeleton className="w-16 h-3 rounded" />
+              <Skeleton className="w-[100px] h-3 rounded" />
+              <Skeleton className="w-12 h-4 rounded" />
+            </div>
           </div>
         ))}
       </div>
     </div>
   );
 }
+
+/** @deprecated Use ReliabilityTabSkeleton instead */
+export const ModelsTabSkeleton = ReliabilityTabSkeleton;
 
 export function SynthesisTabSkeleton() {
   return (

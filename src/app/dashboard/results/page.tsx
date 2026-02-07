@@ -85,8 +85,8 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
     redirect("/dashboard/history");
   }
 
-  const validTabs = ["overview", "series", "models", "synthesis"];
-  const initialTab = validTabs.includes(params.tab ?? "") ? params.tab as "overview" | "series" | "models" | "synthesis" : undefined;
+  const validTabs = ["overview", "series", "reliability", "synthesis"];
+  const initialTab = validTabs.includes(params.tab ?? "") ? params.tab as "overview" | "series" | "reliability" | "synthesis" : undefined;
 
   return (
     <ResultsContent
