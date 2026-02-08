@@ -34,9 +34,9 @@ function TypingIndicator() {
 }
 
 const WELCOME_MESSAGE =
-  "Je suis votre assistant forecast. Posez-moi vos questions sur les résultats de cette analyse, ou choisissez une suggestion ci-dessous.";
+  "Je suis votre assistant prévision. Posez-moi vos questions sur les résultats de cette analyse, ou choisissez une suggestion ci-dessous.";
 const NO_JOB_MESSAGE =
-  "Lancez un forecast pour que je puisse vous aider à analyser vos résultats.";
+  "Lancez une prévision pour que je puisse vous aider à analyser vos résultats.";
 
 export function ChatMessages({
   messages,

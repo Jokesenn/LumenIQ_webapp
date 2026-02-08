@@ -25,8 +25,8 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { href: "/dashboard", icon: BarChart3, label: "Dashboard" },
-  { href: "/dashboard/forecast", icon: Upload, label: "Nouveau forecast" },
+  { href: "/dashboard", icon: BarChart3, label: "Tableau de bord" },
+  { href: "/dashboard/forecast", icon: Upload, label: "Nouvelle prévision" },
   { href: "/dashboard/results", icon: TrendingUp, label: "Résultats" },
   { href: "/dashboard/history", icon: Clock, label: "Historique" },
   { href: "/dashboard/settings", icon: Settings, label: "Paramètres" },

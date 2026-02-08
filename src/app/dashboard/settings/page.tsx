@@ -199,10 +199,14 @@ export default function SettingsPage() {
             )}
           </div>
           <div className="flex gap-3">
-            <Button variant="secondary">Gérer la facturation</Button>
+            <Button variant="secondary" disabled className="opacity-60">
+              Gérer la facturation
+              <span className="ml-2 text-[10px] bg-zinc-700 px-1.5 py-0.5 rounded">Bientôt</span>
+            </Button>
             {profile?.plan !== "premium" && (
-              <Button variant="ghost">
-                {profile?.plan === "standard" ? "Passer à ML" : "Passer à Premium"}
+              <Button variant="ghost" disabled className="opacity-60">
+                {profile?.plan === "standard" ? "Passer au plan ML" : "Passer au plan Premium"}
+                <span className="ml-2 text-[10px] bg-zinc-700 px-1.5 py-0.5 rounded">Bientôt</span>
               </Button>
             )}
           </div>
@@ -225,11 +229,14 @@ export default function SettingsPage() {
               <div>
                 <p className="font-medium text-sm text-white">Rapport hebdomadaire</p>
                 <p className="text-xs text-zinc-500">
-                  Résumé de vos forecasts chaque lundi
+                  Résumé de vos prévisions chaque lundi
                 </p>
               </div>
               <ToggleSwitch />
             </div>
+            <p className="text-[11px] text-zinc-600 italic">
+              Ces préférences seront bientôt sauvegardées automatiquement.
+            </p>
           </div>
         </div>
 
@@ -250,7 +257,7 @@ export default function SettingsPage() {
           {profile?.plan === "premium" && profile?.api_key ? (
             <div className="space-y-3">
               <p className="text-sm text-zinc-400">
-                Votre clé API pour automatiser vos forecasts
+                Votre clé API pour automatiser vos prévisions
               </p>
               <div className="flex gap-2">
                 <input
@@ -271,7 +278,7 @@ export default function SettingsPage() {
             <>
               <p className="text-sm text-zinc-400 mb-4">
                 Passez au plan Premium pour accéder à l&apos;API REST et
-                automatiser vos forecasts.
+                automatiser vos prévisions.
               </p>
               <Button variant="secondary" disabled={profile?.plan !== "premium"}>
                 Débloquer l&apos;API
@@ -314,7 +321,17 @@ export default function SettingsPage() {
                 supprimées.
               </p>
             </div>
-            <Button variant="destructive">Supprimer mon compte</Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (window.confirm("Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible et supprimera toutes vos données.")) {
+                  // TODO: Implémenter la suppression réelle via Supabase
+                  alert("La suppression de compte sera bientôt disponible. Contactez le support pour toute demande.");
+                }
+              }}
+            >
+              Supprimer mon compte
+            </Button>
           </div>
         </div>
       </div>

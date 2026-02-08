@@ -32,7 +32,7 @@ function getStatusBadge(status: string, smape: number | null | undefined) {
     case "completed":
       return (
         <span className="px-2.5 py-1 bg-emerald-500/10 text-emerald-500 rounded-full text-xs font-semibold">
-          {smape != null ? `SMAPE ${Number(smape).toFixed(1)}%` : "Terminé"}
+          {smape != null ? `Fiabilité ${(100 - Number(smape)).toFixed(0)}` : "Terminé"}
         </span>
       );
     case "processing":
@@ -78,7 +78,7 @@ export function RecentForecasts({ forecasts }: RecentForecastsProps) {
   return (
     <div className="bg-zinc-900/50 rounded-2xl border border-white/5 p-6">
       <div className="flex justify-between items-center mb-5">
-        <h2 className="text-base font-semibold text-white">Derniers forecasts</h2>
+        <h2 className="text-base font-semibold text-white">Dernières prévisions</h2>
         <Link
           href="/dashboard/history"
           className="text-indigo-400 text-sm flex items-center gap-1 hover:text-indigo-300 transition-colors"

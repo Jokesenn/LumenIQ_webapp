@@ -161,7 +161,7 @@ export function FileUploadZone({ userId, onUploadComplete, className }: FileUplo
           </div>
           <div>
             <h3 className="text-lg font-semibold text-white">
-              Forecast lancé !
+              Prévision lancée !
             </h3>
             <p className="text-sm text-zinc-400">
               Job ID: <span className="font-mono">{jobId.slice(0, 8)}...</span>
@@ -172,7 +172,7 @@ export function FileUploadZone({ userId, onUploadComplete, className }: FileUplo
         <div className="space-y-2 mb-6">
           <StepIndicator label="Fichier uploadé" status="completed" />
           <StepIndicator label="Job créé" status="completed" />
-          <StepIndicator label="Forecast déclenché" status="completed" />
+          <StepIndicator label="Prévision déclenchée" status="completed" />
         </div>
 
         <div className="p-3 bg-white/5 rounded-lg mb-6">
@@ -187,7 +187,7 @@ export function FileUploadZone({ userId, onUploadComplete, className }: FileUplo
           onClick={handleReset}
           className="w-full text-zinc-300 hover:text-white hover:bg-white/5"
         >
-          Uploader un autre fichier
+          Importer un autre fichier
         </Button>
       </div>
     )
@@ -267,7 +267,7 @@ export function FileUploadZone({ userId, onUploadComplete, className }: FileUplo
           />
 
           <StepIndicator
-            label="Déclenchement du forecast"
+            label="Déclenchement de la prévision"
             status={getStepStatus(step, 'triggering_webhook')}
           />
         </div>
@@ -313,7 +313,7 @@ export function FileUploadZone({ userId, onUploadComplete, className }: FileUplo
             onClick={handleUpload}
             className="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white"
           >
-            Lancer le forecast
+            Lancer la prévision
           </Button>
         </div>
       </div>

@@ -12,7 +12,7 @@ import type { SeriesSortOption } from "@/types/forecast";
 
 const SORT_OPTIONS: { value: SeriesSortOption; label: string; icon: typeof ArrowDownAZ }[] = [
   { value: "alpha", label: "Alphabétique", icon: ArrowDownAZ },
-  { value: "smape", label: "Performance (SMAPE)", icon: TrendingUp },
+  { value: "smape", label: "Performance", icon: TrendingUp },
   { value: "abc", label: "Classe ABC/XYZ", icon: BarChart3 },
 ];
 

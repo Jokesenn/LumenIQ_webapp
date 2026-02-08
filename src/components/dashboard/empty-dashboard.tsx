@@ -16,15 +16,15 @@ export function EmptyDashboard() {
           Bienvenue sur LumenIQ
         </h2>
         <p className="text-zinc-400 mb-6">
-          Lancez votre premier forecast en quelques clics et découvrez la
-          puissance de nos 15 modèles de prévision.
+          Lancez votre première prévision en quelques clics et découvrez la
+          puissance de nos 21 méthodes de prévision.
         </p>
 
         {/* Steps */}
         <div className="text-left space-y-4 mb-8">
           <StepItem
             icon={<Upload size={16} />}
-            title="1. Uploadez votre fichier"
+            title="1. Importez votre fichier"
             description="CSV ou XLSX avec vos données historiques"
           />
           <StepItem
@@ -43,7 +43,7 @@ export function EmptyDashboard() {
         <Link href="/dashboard/forecast">
           <Button className="w-full justify-center bg-indigo-500 hover:bg-indigo-600 text-white">
             <Upload size={18} />
-            Lancer mon premier forecast
+            Lancer ma première prévision
           </Button>
         </Link>
       </div>

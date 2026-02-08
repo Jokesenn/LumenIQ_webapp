@@ -6,28 +6,28 @@ import { Lightbulb } from "lucide-react";
 
 const TIPS = [
   {
-    title: "Classification ABC",
-    body: "Vos séries sont classées par importance : A = 80% du volume, B = 15%, C = 5%. Les séries A bénéficient de plus de modèles candidats.",
+    title: "Vos produits classés par importance",
+    body: "Vos produits sont classés A, B ou C selon leur poids dans votre chiffre d'affaires. Les best-sellers (A) sont analysés avec plus de précision.",
   },
   {
-    title: "Backtesting multi-fold",
-    body: "Chaque modèle est évalué sur plusieurs fenêtres temporelles glissantes pour garantir une performance robuste et pas seulement ponctuelle.",
+    title: "Validation sur vos données réelles",
+    body: "Chaque méthode de calcul est testée sur plusieurs périodes de votre historique pour s'assurer qu'elle prédit correctement vos ventes passées.",
   },
   {
-    title: "21 modèles testés",
-    body: "De la moyenne mobile simple aux réseaux de neurones (N-BEATS, TFT), chaque série est confrontée aux algorithmes les plus adaptés à son profil.",
+    title: "21 méthodes comparées",
+    body: "De la moyenne mobile simple aux algorithmes les plus avancés, chaque produit est confronté aux approches les mieux adaptées à son profil de ventes.",
   },
   {
-    title: "Modèle champion",
-    body: "Le modèle avec le meilleur score SMAPE sur la validation croisée est automatiquement retenu comme « champion » pour chaque série.",
+    title: "Le meilleur modèle retenu",
+    body: "Pour chaque produit, la méthode la plus précise sur vos données historiques est automatiquement retenue comme « champion ». C'est du sur-mesure.",
   },
   {
-    title: "Gating automatique",
-    body: "Si le meilleur modèle a une erreur trop élevée, un filtre de sécurité (gating) ajuste la prévision pour éviter les aberrations.",
+    title: "Garde-fou automatique",
+    body: "Si les prévisions semblent aberrantes, un garde-fou s'active automatiquement pour ajuster les résultats et éviter les erreurs grossières.",
   },
   {
-    title: "Classification XYZ",
-    body: "X = séries stables, Y = variabilité modérée, Z = erratique. Cette classification guide le choix des modèles les plus adaptés.",
+    title: "Prévisibilité de vos produits",
+    body: "Vos produits sont classés X (stables), Y (variables) ou Z (erratiques). Cela vous indique sur quels produits les prévisions sont les plus fiables.",
   },
 ];
 

@@ -443,8 +443,8 @@ export default function ForecastPage() {
                 Mode Express activé :
               </strong>{" "}
               Configuration optimale détectée automatiquement. Jusqu&apos;à 21
-              modèles seront testés selon la classe ABC, avec backtesting
-              multi-fold.
+              méthodes seront testées selon l&apos;importance de chaque produit, avec
+              validation sur votre historique réel.
             </p>
           </div>
 
@@ -708,7 +708,9 @@ export default function ForecastPage() {
           </p>
           {job?.compute_time_seconds && (
             <p className="text-sm text-zinc-500 mb-8">
-              Durée de calcul : {Math.round(job.compute_time_seconds)}s
+              Durée de calcul : {job.compute_time_seconds >= 60
+                ? `${Math.floor(job.compute_time_seconds / 60)} min ${Math.round(job.compute_time_seconds % 60)}s`
+                : `${Math.round(job.compute_time_seconds)}s`}
             </p>
           )}
           {!(job?.compute_time_seconds) && <div className="mb-8" />}

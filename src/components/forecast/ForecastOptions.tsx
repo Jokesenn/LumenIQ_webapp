@@ -56,9 +56,9 @@ export function ForecastOptions({
               <div className="flex items-center gap-3">
                 <Target size={16} className="text-indigo-400" />
                 <div>
-                  <p className="text-sm text-zinc-300">Horizon de forecast</p>
+                  <p className="text-sm text-zinc-300">Horizon de prévision</p>
                   <p className="text-xs text-zinc-500">
-                    Nombre de mois à prédire
+                    Nombre de périodes à prédire
                   </p>
                 </div>
               </div>
@@ -84,9 +84,9 @@ export function ForecastOptions({
               <div className="flex items-center gap-3">
                 <Zap size={16} className="text-amber-400" />
                 <div>
-                  <p className="text-sm text-zinc-300">Gating (mode rapide)</p>
+                  <p className="text-sm text-zinc-300">Mode accéléré</p>
                   <p className="text-xs text-zinc-500">
-                    Pré-filtre les modèles pour accélérer le calcul
+                    Pré-sélectionne les modèles les plus adaptés pour un calcul plus rapide
                   </p>
                 </div>
               </div>

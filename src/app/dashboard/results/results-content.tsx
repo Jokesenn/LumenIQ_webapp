@@ -317,7 +317,7 @@ export function ResultsContent({
             <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
               <div className="flex items-center gap-1.5 mb-6">
                 <h2 className="text-lg font-semibold text-white">
-                  Forecast vs Réel (agrégé)
+                  Prévisions vs Réel (agrégé)
                 </h2>
                 <HelpTooltip termKey="forecast_graph" />
               </div>
@@ -340,7 +340,7 @@ export function ResultsContent({
                     series={topPerformers}
                     jobId={job?.id ?? ""}
                     variant="top"
-                    title="Top performers"
+                    title="Meilleures séries"
                     helpKey="top_performers"
                     emptyMessage="Aucune donnée"
                   />

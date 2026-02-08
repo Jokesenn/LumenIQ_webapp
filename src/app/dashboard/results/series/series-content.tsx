@@ -242,7 +242,7 @@ export function SeriesContent({
         <StaggerItem>
           <StatCard
             label="Horizon"
-            value={`${series.forecast_horizon ?? 12} mois`}
+            value={`${series.forecast_horizon ?? 12} périodes`}
             icon={Target}
             helpKey="horizon"
             subtitle={`Total prévu: ${(series.forecast_sum ?? 0).toLocaleString("fr-FR", {
@@ -419,7 +419,7 @@ export function SeriesContent({
         <FadeIn delay={0.5}>
           <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
             <h2 className="text-lg font-semibold text-white mb-6">
-              Alertes & Insights
+              Alertes et observations
             </h2>
             <div className="space-y-4">
               {/* Status */}
@@ -430,7 +430,7 @@ export function SeriesContent({
                     Qualité: {scoreStatus.label}
                   </p>
                   <p className="text-sm text-zinc-400 mt-1">
-                    Champion Score de {championScoreValue.toFixed(1)}/100
+                    Score de fiabilité de {championScoreValue.toFixed(1)}/100
                     {championScoreValue >= 90
                       ? " - Excellente précision des prévisions"
                       : championScoreValue >= 70

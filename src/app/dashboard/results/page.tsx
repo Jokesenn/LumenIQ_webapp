@@ -44,14 +44,14 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
               Aucun résultat disponible
             </h2>
             <p className="text-zinc-400 mb-8">
-              Lancez votre premier forecast pour voir les résultats ici.
+              Lancez votre première prévision pour voir les résultats ici.
             </p>
             <Link
               href="/dashboard/forecast"
               className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition-colors font-medium"
             >
               <Upload size={18} />
-              Nouveau forecast
+              Nouvelle prévision
             </Link>
           </div>
         </div>

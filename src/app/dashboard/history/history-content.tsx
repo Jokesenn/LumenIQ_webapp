@@ -102,7 +102,7 @@ export function HistoryContent({ jobs }: HistoryContentProps) {
       <div className="animate-fade">
         <div className="mb-8">
           <h1 className="text-[28px] font-bold text-white mb-2">Historique</h1>
-          <p className="text-zinc-400">Tous vos forecasts passés</p>
+          <p className="text-zinc-400">Toutes vos prévisions passées</p>
         </div>
 
         <div className="bg-zinc-900/50 rounded-xl border border-white/[0.08] p-16 text-center">
@@ -110,13 +110,13 @@ export function HistoryContent({ jobs }: HistoryContentProps) {
             <Inbox size={28} className="text-zinc-600" />
           </div>
           <h2 className="text-lg font-semibold text-white mb-2">
-            Aucun forecast
+            Aucune prévision
           </h2>
           <p className="text-zinc-400 mb-6">
-            Lancez votre premier forecast pour le voir apparaître ici.
+            Lancez votre première prévision pour la voir apparaître ici.
           </p>
           <Link href="/dashboard/forecast">
-            <Button>Nouveau forecast</Button>
+            <Button>Nouvelle prévision</Button>
           </Link>
         </div>
       </div>
@@ -128,7 +128,7 @@ export function HistoryContent({ jobs }: HistoryContentProps) {
       <div className="mb-8">
         <h1 className="text-[28px] font-bold text-white mb-2">Historique</h1>
         <p className="text-zinc-400">
-          Tous vos forecasts passés ({jobs.length} job{jobs.length > 1 ? "s" : ""})
+          Toutes vos prévisions passées ({jobs.length} analyse{jobs.length > 1 ? "s" : ""})
         </p>
       </div>
 

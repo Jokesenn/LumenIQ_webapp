@@ -150,10 +150,11 @@ export function DashboardContent({
             <StaggerItem>
               <StatCard
                 label="Séries fiables"
-                value={`${stats.avgChampionScore >= 90 ? "≥ 90" : stats.avgChampionScore >= 70 ? "≥ 70" : "< 70"}`}
+                value={`${stats.avgChampionScore >= 90 ? "Excellent" : stats.avgChampionScore >= 70 ? "Bon" : "À surveiller"}`}
                 icon={CheckCircle2}
-                subtitle="Score moyen du portefeuille"
+                subtitle={`Score moyen : ${stats.avgChampionScore.toFixed(0)}/100`}
                 variant={stats.avgChampionScore >= 90 ? "success" : stats.avgChampionScore >= 70 ? "warning" : "default"}
+                helpKey="reliable_series"
               />
             </StaggerItem>
           </StaggerChildren>
@@ -180,21 +181,9 @@ export function DashboardContent({
               <h2 className="text-lg font-semibold text-white">Prévisions vs Réel</h2>
               <p className="text-sm text-zinc-400">Dernier job - données agrégées</p>
             </div>
-            <div className="flex gap-2">
-              {["3M", "6M", "12M", "All"].map((period) => (
-                <button
-                  key={period}
-                  className={cn(
-                    "px-3 py-1 text-sm rounded-lg transition-colors",
-                    period === "All"
-                      ? "bg-indigo-500/20 text-indigo-400"
-                      : "text-zinc-400 hover:bg-white/5"
-                  )}
-                >
-                  {period}
-                </button>
-              ))}
-            </div>
+            <span className="text-xs text-zinc-500 bg-white/5 px-2.5 py-1 rounded-lg">
+              Toutes les périodes
+            </span>
           </div>
 
           {chartData.length > 0 ? (
