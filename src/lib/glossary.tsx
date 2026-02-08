@@ -5,7 +5,7 @@ export const GLOSSARY: Record<string, ReactNode> = {
     <div>
       <p className="font-medium mb-2">Pouvez-vous faire confiance à ces prévisions ?</p>
       <p className="text-white/70 text-sm mb-3">
-        Score de fiabilité du modèle champion (100 = parfait). Ce score vous dit si vous pouvez utiliser ces chiffres pour passer vos commandes fournisseurs.
+        Score de fiabilité basé sur l&apos;erreur pondérée (100 = parfait). Ce score vous dit si vous pouvez utiliser ces chiffres pour passer vos commandes fournisseurs.
       </p>
       <ul className="text-sm space-y-1.5">
         <li className="flex items-start gap-2">

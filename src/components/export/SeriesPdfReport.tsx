@@ -203,9 +203,9 @@ export function SeriesPdfReport({
   forecasts,
   generatedAt,
 }: SeriesPdfReportProps) {
-  const getSmapeStyle = (smape: number) => {
-    if (smape < 8) return styles.metricValueGood;
-    if (smape < 15) return styles.metricValueWarning;
+  const getWapeStyle = (wape: number) => {
+    if (wape < 10) return styles.metricValueGood;
+    if (wape < 20) return styles.metricValueWarning;
     return styles.metricValueBad;
   };
 
@@ -260,11 +260,11 @@ export function SeriesPdfReport({
           <Text style={styles.sectionTitle}>Métriques clés</Text>
           <View style={styles.metricsGrid}>
             <View style={styles.metricCard}>
-              <Text style={styles.metricLabel}>Écart prévision</Text>
-              <Text style={[styles.metricValue, getSmapeStyle(series.smape)]}>
-                {series.smape.toFixed(1)}%
+              <Text style={styles.metricLabel}>Erreur pondérée (WAPE)</Text>
+              <Text style={[styles.metricValue, getWapeStyle(series.wape ?? series.smape)]}>
+                {(series.wape ?? series.smape).toFixed(1)}%
               </Text>
-              <Text style={styles.metricSubtext}>Précision symétrique</Text>
+              <Text style={styles.metricSubtext}>Pondérée par le volume</Text>
             </View>
             <View style={styles.metricCard}>
               <Text style={styles.metricLabel}>Méthode retenue</Text>

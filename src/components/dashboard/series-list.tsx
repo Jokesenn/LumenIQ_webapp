@@ -89,7 +89,7 @@ export function SeriesList({
                         <div className="hidden 2xl:flex shrink-0">
                           <SeriesAlertBadges
                             series={{
-                              smape: s.smape,
+                              wape: s.wape,
                               was_gated: s.was_gated,
                               drift_detected: s.drift_detected,
                               is_first_run: s.is_first_run,

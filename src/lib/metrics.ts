@@ -1,9 +1,11 @@
 import { CheckCircle2, Info, AlertTriangle, type LucideIcon } from "lucide-react";
 
 /**
- * Convertit un champion_score brut (ratio SMAPE 0-1 depuis la DB) en score affichable (0-100).
+ * Convertit un ratio d'erreur (0-1 depuis la DB) en score affichable (0-100).
  * Formule : (1 - rawScore) * 100, arrondi à 1 décimale.
  * Exemple : rawScore 0.082 → 91.8
+ *
+ * Utilisé avec WAPE (Score de fiabilité = 1 - WAPE).
  */
 export function toChampionScore(rawScore: number | null): number | null {
   if (rawScore == null) return null;
@@ -11,26 +13,18 @@ export function toChampionScore(rawScore: number | null): number | null {
 }
 
 /**
- * Convertit un avg_smape / global_smape (ratio 0-1 depuis la DB) en Champion Score (0-100).
- * Même formule que toChampionScore, nommé explicitement pour le niveau job.
- */
-export function toChampionScoreFromSmape(smapeRatio: number | null): number | null {
-  if (smapeRatio == null) return null;
-  return Math.round((1 - smapeRatio) * 1000) / 10;
-}
-
-/**
- * Résout le ratio d'erreur à utiliser pour le Champion Score d'une série.
- * Fallback : champion_score → smape → wape (tous en ratio 0-1 en DB).
+ * Résout le ratio d'erreur à utiliser pour le Score de fiabilité d'une série.
+ * Priorité : wape → smape (tous en ratio 0-1 en DB).
+ *
+ * Note : champion_score n'est plus utilisé car il contient maintenant la valeur MASE
+ * (non bornée 0-1) qui sert uniquement à la sélection interne du champion.
  */
 export function resolveSeriesErrorRatio(row: {
-  champion_score?: number | null;
-  smape?: number | null;
   wape?: number | null;
+  smape?: number | null;
 }): number | null {
-  if (row.champion_score != null) return Number(row.champion_score);
-  if (row.smape != null) return Number(row.smape);
   if (row.wape != null) return Number(row.wape);
+  if (row.smape != null) return Number(row.smape);
   return null;
 }
 

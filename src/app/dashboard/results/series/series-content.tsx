@@ -159,7 +159,7 @@ export function SeriesContent({
                 </BadgeWithTooltip>
                 <SeriesAlertBadges
                   series={{
-                    smape: series.smape,
+                    wape: series.wape,
                     was_gated: series.was_gated,
                     drift_detected: series.drift_detected,
                     is_first_run: series.is_first_run,
@@ -180,7 +180,7 @@ export function SeriesContent({
                 abc_class: abcClass,
                 xyz_class: xyzClass,
                 smape: series.smape ?? 0,
-                wape: series.wape,
+                wape: series.wape ?? series.smape ?? 0,
                 champion_score: series.champion_score,
                 mape: series.mape,
                 champion_model: series.champion_model ?? "N/A",

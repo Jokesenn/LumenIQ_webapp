@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { ForecastJob, JobSummary } from "@/types/database";
-import { toChampionScore, toChampionScoreFromSmape, resolveSeriesErrorRatio } from "@/lib/metrics";
+import { toChampionScore, resolveSeriesErrorRatio } from "@/lib/metrics";
 
 // Récupérer un job par ID avec son summary
 export async function getJobWithSummary(jobId: string, userId: string) {
@@ -50,9 +50,9 @@ export async function getJobMetrics(jobId: string, userId: string) {
     global_smape: data.global_smape != null ? Number(data.global_smape) * 100 : null,
     global_mape: data.global_mape != null ? Number(data.global_mape) * 100 : null,
     global_bias_pct: data.global_bias_pct != null ? Number(data.global_bias_pct) : data.global_bias_pct,
-    championScore: toChampionScoreFromSmape(
-      data.global_smape != null ? Number(data.global_smape)
-        : data.global_wape != null ? Number(data.global_wape)
+    championScore: toChampionScore(
+      data.global_wape != null ? Number(data.global_wape)
+        : data.global_smape != null ? Number(data.global_smape)
         : null
     ),
   };

@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { toChampionScore, toChampionScoreFromSmape, resolveSeriesErrorRatio } from "@/lib/metrics";
+import { toChampionScore, resolveSeriesErrorRatio } from "@/lib/metrics";
 
 const PLAN_LIMITS: Record<string, number> = {
   standard: 50,
@@ -31,24 +31,24 @@ export async function getDashboardStats(userId: string) {
     .eq("status", "completed")
     .gte("created_at", startOfMonth.toISOString());
 
-  // Champion Score moyen global (basé sur SMAPE, fallback WAPE)
-  const { data: smapeData } = await supabase
+  // Champion Score moyen global (basé sur WAPE, fallback SMAPE)
+  const { data: scoreData } = await supabase
     .schema("lumeniq")
     .from("job_summaries")
-    .select("global_smape, global_wape")
+    .select("global_wape, global_smape")
     .eq("user_id", userId)
     .order("created_at", { ascending: false })
     .limit(10);
 
   const avgChampionScore =
-    smapeData?.length
-      ? smapeData.reduce((sum, d) => {
-          const ratio = d.global_smape != null ? Number(d.global_smape)
-            : d.global_wape != null ? Number(d.global_wape)
+    scoreData?.length
+      ? scoreData.reduce((sum, d) => {
+          const ratio = d.global_wape != null ? Number(d.global_wape)
+            : d.global_smape != null ? Number(d.global_smape)
             : null;
-          const cs = toChampionScoreFromSmape(ratio);
+          const cs = toChampionScore(ratio);
           return sum + (cs ?? 0);
-        }, 0) / smapeData.length
+        }, 0) / scoreData.length
       : 0;
 
   // Temps moyen de traitement
@@ -292,8 +292,8 @@ export async function getRecentForecasts(
 
   return jobs.map((job) => {
     const summary = summaryMap.get(job.id);
-    const ratio = summary?.global_smape != null ? Number(summary.global_smape)
-      : summary?.global_wape != null ? Number(summary.global_wape)
+    const ratio = summary?.global_wape != null ? Number(summary.global_wape)
+      : summary?.global_smape != null ? Number(summary.global_smape)
       : null;
 
     return {
@@ -303,7 +303,7 @@ export async function getRecentForecasts(
       createdAt: job.created_at,
       completedAt: job.completed_at,
       seriesCount: job.series_count || 0,
-      championScore: toChampionScoreFromSmape(ratio) ?? undefined,
+      championScore: toChampionScore(ratio) ?? undefined,
       smape: ratio != null ? ratio * 100 : undefined,
       duration: summary?.duration_sec,
     };
@@ -359,10 +359,10 @@ export async function getJobHistory(userId: string): Promise<HistoryJob[]> {
 
   return jobs.map((job) => {
     const summary = summaryMap.get(job.id);
-    const ratio = job.avg_smape != null ? Number(job.avg_smape)
-      : summary?.global_smape != null ? Number(summary.global_smape)
-      : job.avg_wape != null ? Number(job.avg_wape)
+    const ratio = job.avg_wape != null ? Number(job.avg_wape)
       : summary?.global_wape != null ? Number(summary.global_wape)
+      : job.avg_smape != null ? Number(job.avg_smape)
+      : summary?.global_smape != null ? Number(summary.global_smape)
       : null;
 
     return {
@@ -372,7 +372,7 @@ export async function getJobHistory(userId: string): Promise<HistoryJob[]> {
       createdAt: job.created_at,
       completedAt: job.completed_at,
       seriesCount: job.series_count || 0,
-      championScore: toChampionScoreFromSmape(ratio),
+      championScore: toChampionScore(ratio),
       smape: ratio != null ? ratio * 100 : null,
       duration: job.compute_time_seconds != null ? Number(job.compute_time_seconds) : null,
       topModel: job.top_champion_model,

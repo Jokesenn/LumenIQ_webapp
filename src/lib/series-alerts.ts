@@ -1,7 +1,7 @@
 import type { AlertType } from "@/components/ui/alert-badge"
 
 export interface SeriesAlertData {
-  smape: number | null
+  wape: number | null
   was_gated?: boolean | null
   drift_detected?: boolean | null
   is_first_run?: boolean | null
@@ -12,15 +12,16 @@ export interface SeriesAlertData {
 /**
  * Détermine les alertes applicables à une série
  * basé sur les données de lumeniq.forecast_results
+ * Seuils basés sur WAPE (typiquement plus élevé que SMAPE)
  */
 export function getSeriesAlerts(series: SeriesAlertData): AlertType[] {
   const alerts: AlertType[] = []
-  const smape = series.smape ?? 0
+  const wape = series.wape ?? 0
 
   // Performance alerts (mutuellement exclusifs - prendre le pire)
-  if (smape > 15) {
+  if (wape > 20) {
     alerts.push("attention")
-  } else if (smape > 10) {
+  } else if (wape > 15) {
     alerts.push("watch")
   }
 

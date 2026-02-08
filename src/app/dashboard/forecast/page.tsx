@@ -695,16 +695,20 @@ export default function ForecastPage() {
           <h2 className="text-2xl font-bold text-white mb-2">Prévision terminée !</h2>
           <p className="text-zinc-400 mb-2">
             {job?.series_count ?? analysis?.seriesCount ?? 0} séries analysées
-            {job?.avg_smape !== undefined && job.avg_smape !== null && (
-              <>
-                {" — "}
-                {job.avg_smape < 5
-                  ? "Excellente précision"
-                  : job.avg_smape < 15
-                    ? "Bonne précision"
-                    : "Précision à surveiller"}
-              </>
-            )}
+            {(() => {
+              const avgErr = job?.avg_wape ?? job?.avg_smape;
+              if (avgErr == null) return null;
+              return (
+                <>
+                  {" — "}
+                  {avgErr < 5
+                    ? "Excellente précision"
+                    : avgErr < 15
+                      ? "Bonne précision"
+                      : "Précision à surveiller"}
+                </>
+              );
+            })()}
           </p>
           {job?.compute_time_seconds && (
             <p className="text-sm text-zinc-500 mb-8">

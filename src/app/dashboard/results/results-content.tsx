@@ -105,7 +105,7 @@ export function ResultsContent({
     };
     for (const s of allSeries) {
       const alerts = getSeriesAlerts({
-        smape: s.smape,
+        wape: s.wape,
         was_gated: s.was_gated,
         drift_detected: s.drift_detected,
         is_first_run: s.is_first_run,
@@ -259,14 +259,14 @@ export function ResultsContent({
                   helpKey="championScore"
                 />
               </div>
-              {metrics?.global_wape != null && (
+              {metrics?.global_mape != null && (
                 <MetricGaugeCard
-                  label="Erreur pondérée"
-                  value={metrics.global_wape}
-                  description="Impact réel sur le volume d'affaires"
+                  label="Erreur moyenne"
+                  value={metrics.global_mape}
+                  description="Écart moyen toutes séries confondues"
                   thresholds={{ good: 10, warning: 20 }}
                   delay={0.1}
-                  helpKey="wape"
+                  helpKey="mape"
                 />
               )}
               <div data-onboarding="bias-gauge">
@@ -361,7 +361,7 @@ export function ResultsContent({
               <div data-onboarding="alerts-panel">
                 <AlertsSummaryCard
                   seriesList={allSeries.map((s: any) => ({
-                    smape: s.smape,
+                    wape: s.wape,
                     was_gated: s.was_gated,
                     drift_detected: s.drift_detected,
                     is_first_run: s.is_first_run,
