@@ -431,7 +431,7 @@ export function ResultsContent({
                 // Dropdown filters — OR within category, AND between categories
                 const statusChecks: boolean[] = [];
                 if (filters.attention) {
-                  statusChecks.push((s.smape ?? 0) > 15);
+                  statusChecks.push((s.wape ?? 0) > 20);
                 }
                 if (filters.modelChanged) {
                   const changed = !s.is_first_run && !!s.previous_champion && s.previous_champion !== s.champion_model;
