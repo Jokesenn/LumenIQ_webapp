@@ -12,6 +12,9 @@ import {
   AlertTriangle,
   CheckCircle2,
   Info,
+  Trophy,
+  Medal,
+  Crown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StatCard, SeriesNavigator } from "@/components/dashboard";
@@ -21,6 +24,7 @@ import { HelpTooltip } from "@/components/ui/help-tooltip";
 import { BadgeWithTooltip } from "@/components/ui/badge-with-tooltip";
 import { GLOSSARY } from "@/lib/glossary";
 import { cn } from "@/lib/utils";
+import { getModelMeta, MODEL_FAMILIES, type ModelFamily } from "@/lib/model-labels";
 import { useSeriesNavigation } from "@/hooks/useSeriesNavigation";
 import { SeriesAlertBadges } from "@/components/dashboard/results/SeriesAlertBadges";
 import { ExportPdfButton } from "@/components/dashboard/results/ExportPdfButton";
@@ -164,7 +168,7 @@ export function SeriesContent({
                   }}
                 />
               </div>
-              <p className="text-sm text-zinc-400 mt-1">Job: {job.filename}</p>
+              <p className="text-sm text-zinc-400 mt-1">Analyse: {job.filename}</p>
             </div>
           </div>
 
@@ -209,30 +213,20 @@ export function SeriesContent({
       </FadeIn>
 
       {/* Stats */}
-      <StaggerChildren staggerDelay={0.1} className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+      <StaggerChildren staggerDelay={0.1} className="grid grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
         <StaggerItem>
           <StatCard
-            label="Champion Score"
+            label="Score de fiabilité"
             value={championScoreValue.toFixed(1)}
             icon={TrendingUp}
-            subtitle="/100"
+            subtitle={`/100 · ${getModelMeta(series.champion_model ?? "").label}`}
             variant={championScoreValue >= 90 ? "success" : championScoreValue >= 70 ? "warning" : "default"}
             helpKey="championScore"
           />
         </StaggerItem>
         <StaggerItem>
           <StatCard
-            label="Champion"
-            value={series.champion_model || "N/A"}
-            icon={Award}
-            subtitle={`Score: ${championScoreValue.toFixed(1)}/100`}
-            variant="highlight"
-            helpKey="champion"
-          />
-        </StaggerItem>
-        <StaggerItem>
-          <StatCard
-            label="CV Coefficient"
+            label="Variabilité"
             value={(series.cv_coefficient ?? 0).toFixed(2)}
             icon={Activity}
             helpKey="cv"
@@ -251,9 +245,9 @@ export function SeriesContent({
             value={`${series.forecast_horizon ?? 12} mois`}
             icon={Target}
             helpKey="horizon"
-            subtitle={`Total: ${(series.forecast_sum ?? 0).toLocaleString("fr-FR", {
+            subtitle={`Total prévu: ${(series.forecast_sum ?? 0).toLocaleString("fr-FR", {
               maximumFractionDigits: 0,
-            })}`}
+            })} unités`}
           />
         </StaggerItem>
       </StaggerChildren>
@@ -275,6 +269,10 @@ export function SeriesContent({
                 <div className="w-3 h-3 rounded-full bg-violet-500" />
                 <span className="text-zinc-400">Prévision</span>
               </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-sm bg-violet-500/20 border border-violet-500/30" />
+                <span className="text-zinc-400">Intervalle de confiance</span>
+              </div>
             </div>
           </div>
           {chartData.length > 0 ? (
@@ -292,61 +290,122 @@ export function SeriesContent({
         {/* Model Comparison */}
         <FadeIn delay={0.4}>
           <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
-            <h2 className="text-lg font-semibold text-white mb-6">
-              Comparaison des modèles
-            </h2>
-            {modelComparison?.ranking ? (
-              <div className="space-y-3">
-                {modelComparison.ranking.map((model: any, index: number) => (
-                  <motion.div
-                    key={model.model}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className={cn(
-                      "flex items-center justify-between p-3 sm:p-4 rounded-xl",
-                      index === 0
-                        ? "bg-indigo-500/10 border border-indigo-500/30"
-                        : "bg-white/5"
-                    )}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-semibold text-white">
+                Comparaison des modèles
+              </h2>
+              {modelComparison?.modelsTested > 0 && (
+                <span className="text-xs text-zinc-500 bg-white/5 px-2.5 py-1 rounded-full">
+                  {modelComparison.modelsTested} testés
+                </span>
+              )}
+            </div>
+            {modelComparison?.ranking && modelComparison.ranking.length > 0 ? (
+              <div className="space-y-4">
+                {/* Podium – Top 3 */}
+                <div className="space-y-2">
+                  {modelComparison.ranking.slice(0, 3).map((model: any, index: number) => {
+                    const meta = getModelMeta(model.model);
+                    const maxScore = modelComparison.ranking[0]?.score ?? 100;
+                    const barWidth = maxScore > 0 ? (model.score / maxScore) * 100 : 0;
+                    const podiumStyles = [
+                      { bg: "bg-indigo-500/10", border: "border-indigo-500/30", badge: "bg-indigo-500 text-white", text: "text-indigo-400", icon: Crown },
+                      { bg: "bg-zinc-800/60", border: "border-zinc-700/50", badge: "bg-zinc-600 text-zinc-200", text: "text-zinc-300", icon: Medal },
+                      { bg: "bg-zinc-800/40", border: "border-zinc-700/30", badge: "bg-zinc-700 text-zinc-300", text: "text-zinc-400", icon: Medal },
+                    ];
+                    const style = podiumStyles[index];
+                    const Icon = style.icon;
+                    return (
+                      <motion.div
+                        key={model.rank}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
                         className={cn(
-                          "w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold",
-                          index === 0
-                            ? "bg-indigo-500 text-white"
-                            : "bg-zinc-800 text-zinc-400"
+                          "relative overflow-hidden p-3 sm:p-4 rounded-xl border",
+                          style.bg,
+                          style.border,
                         )}
                       >
-                        {model.rank}
-                      </div>
-                      <div className="min-w-0">
-                        <p
+                        {/* Barre de score en arrière-plan */}
+                        <div
                           className={cn(
-                            "font-medium truncate max-w-[120px] sm:max-w-[200px] md:max-w-none",
-                            index === 0 ? "text-indigo-400" : "text-white"
+                            "absolute inset-y-0 left-0 opacity-[0.07]",
+                            index === 0 ? "bg-indigo-400" : "bg-zinc-400",
                           )}
-                          title={model.model}
-                        >
-                          {model.model}
-                        </p>
-                        {index === 0 && (
-                          <p className="text-xs text-indigo-300">Champion</p>
-                        )}
-                      </div>
+                          style={{ width: `${barWidth}%` }}
+                        />
+                        <div className="relative flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-3 min-w-0">
+                            <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold shrink-0", style.badge)}>
+                              {index === 0 ? <Icon className="w-4 h-4" /> : model.rank}
+                            </div>
+                            <div className="min-w-0">
+                              <p className={cn("font-medium truncate max-w-[120px] sm:max-w-[200px] md:max-w-none", style.text)} title={model.model}>
+                                {meta.label}
+                              </p>
+                              <div className="flex items-center gap-2 mt-0.5">
+                                {index === 0 && <span className="text-xs text-indigo-300 font-medium">Champion</span>}
+                                <span className={cn("text-xs", meta.familyColor)}>{meta.family}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="text-right shrink-0">
+                            <p className="font-semibold text-white tabular-nums">
+                              {model.score != null ? model.score.toFixed(1) : "N/A"}
+                            </p>
+                            <p className="text-xs text-zinc-500">/100</p>
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+
+                {/* Autres modèles */}
+                {modelComparison.ranking.length > 3 && (
+                  <div>
+                    <p className="text-xs text-zinc-500 mb-2 px-1">Autres modèles</p>
+                    <div className="max-h-[240px] overflow-y-auto space-y-1 pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-700">
+                      {modelComparison.ranking.slice(3).map((model: any, index: number) => {
+                        const meta = getModelMeta(model.model);
+                        const familyKey = Object.entries(MODEL_FAMILIES).find(
+                          ([, v]) => v.label === meta.family
+                        )?.[0] as ModelFamily | undefined;
+                        const familyHex = familyKey ? MODEL_FAMILIES[familyKey].hex : "#71717a";
+                        const maxScore = modelComparison.ranking[0]?.score ?? 100;
+                        const barWidth = maxScore > 0 ? (model.score / maxScore) * 100 : 0;
+                        return (
+                          <motion.div
+                            key={model.rank}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.3 + index * 0.03 }}
+                            className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white/5 transition-colors group"
+                          >
+                            <span className="text-xs text-zinc-600 w-5 text-right tabular-nums shrink-0">{model.rank}</span>
+                            <div
+                              className="w-1.5 h-1.5 rounded-full shrink-0"
+                              style={{ backgroundColor: familyHex }}
+                            />
+                            <p className="text-sm text-zinc-400 group-hover:text-zinc-300 truncate min-w-0 flex-1" title={model.model}>
+                              {meta.label}
+                            </p>
+                            <div className="w-16 h-1.5 rounded-full bg-zinc-800 shrink-0 overflow-hidden">
+                              <div
+                                className="h-full rounded-full bg-zinc-600"
+                                style={{ width: `${barWidth}%` }}
+                              />
+                            </div>
+                            <span className="text-xs text-zinc-500 tabular-nums w-10 text-right shrink-0">
+                              {model.score != null ? model.score.toFixed(1) : "—"}
+                            </span>
+                          </motion.div>
+                        );
+                      })}
                     </div>
-                    <div className="text-right">
-                      <p className="font-semibold text-white">
-                        {model.score != null ? model.score.toFixed(1) : "N/A"}
-                      </p>
-                      <p className="text-xs text-zinc-500">Score</p>
-                    </div>
-                  </motion.div>
-                ))}
-                <p className="text-xs text-zinc-500 text-center mt-4">
-                  {modelComparison.modelsTested} modèles testés au total
-                </p>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="text-center py-8 text-zinc-500">

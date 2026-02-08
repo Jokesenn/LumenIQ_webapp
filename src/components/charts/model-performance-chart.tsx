@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { getModelMeta } from "@/lib/model-labels";
 
 interface ModelData {
   model: string;
@@ -64,13 +65,13 @@ export function ModelPerformanceChart({ data, onModelClick, className }: ModelPe
           >
             <div className="flex items-center justify-between mb-1.5">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-white">{item.model}</span>
+                <span className="text-sm font-medium text-white">{getModelMeta(item.model).label}</span>
                 <span className="text-xs text-zinc-500">({item.count})</span>
               </div>
               <div className="flex items-center gap-3">
                 {item.avgChampionScore !== undefined && (
                   <span className={cn("text-xs", getModelScoreColor(item.avgChampionScore))}>
-                    Score: {item.avgChampionScore.toFixed(1)}/100
+                    Fiabilité : {item.avgChampionScore.toFixed(1)}/100
                   </span>
                 )}
                 <span className="text-sm font-semibold text-white tabular-nums">

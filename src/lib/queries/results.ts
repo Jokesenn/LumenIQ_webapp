@@ -58,7 +58,8 @@ export async function getJobMetrics(jobId: string, userId: string) {
   };
 }
 
-// Enrichissement sparkline optionnel — requête séparée, ne casse jamais la requête principale
+// Enrichissement sparkline — utilise les échantillons pré-calculés par le backend
+// dans forecast_series (history_sample / forecast_sample en JSONB)
 async function enrichWithSparklines(
   supabase: Awaited<ReturnType<typeof createClient>>,
   jobId: string,
@@ -67,7 +68,8 @@ async function enrichWithSparklines(
 ) {
   if (rows.length === 0) return;
   const ids = rows.map((r) => r.series_id as string);
-  const { data: sparkData, error } = await supabase
+
+  const { data } = await supabase
     .schema("lumeniq")
     .from("forecast_series")
     .select("series_id, history_sample, forecast_sample")
@@ -75,16 +77,16 @@ async function enrichWithSparklines(
     .eq("user_id", userId)
     .in("series_id", ids);
 
-  // Si la table est vide ou erreur quelconque → on ne touche à rien
-  if (error || !sparkData) return;
+  if (!data) return;
 
-  const sparkMap = new Map(sparkData.map((s: Record<string, unknown>) => [s.series_id, s]));
+  const sampleMap = new Map(
+    data.map((r) => [r.series_id as string, r])
+  );
+
   for (const row of rows) {
-    const spark = sparkMap.get(row.series_id as string);
-    if (spark) {
-      row.history_sample = spark.history_sample ?? null;
-      row.forecast_sample = spark.forecast_sample ?? null;
-    }
+    const sample = sampleMap.get(row.series_id as string);
+    row.history_sample = (sample?.history_sample as number[] | null) ?? null;
+    row.forecast_sample = (sample?.forecast_sample as number[] | null) ?? null;
   }
 }
 
@@ -361,7 +363,7 @@ export async function getSeriesChartData(jobId: string, seriesId: string, userId
     const dateKey = new Date(a.ds).toISOString().split("T")[0];
     dataMap.set(dateKey, {
       date: new Date(a.ds).toLocaleDateString("fr-FR", { month: "short", year: "2-digit" }),
-      actual: a.y,
+      actual: Number(a.y),
       isOutlier: a.is_outlier,
     });
   });
@@ -373,15 +375,39 @@ export async function getSeriesChartData(jobId: string, seriesId: string, userId
     };
     dataMap.set(dateKey, {
       ...existing,
-      forecast: f.yhat,
-      forecastLower: f.yhat_lower,
-      forecastUpper: f.yhat_upper,
+      forecast: Number(f.yhat),
+      forecastLower: f.yhat_lower != null ? Number(f.yhat_lower) : undefined,
+      forecastUpper: f.yhat_upper != null ? Number(f.yhat_upper) : undefined,
     });
   });
 
-  return Array.from(dataMap.entries())
+  const sorted = Array.from(dataMap.entries())
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([, value]) => value);
+
+  // Bridge the gap between actuals and forecast so the lines connect visually.
+  // Find the last point that has an actual value and the first point that has
+  // only a forecast value, then copy the forecast value onto that last-actual
+  // point so Recharts draws a continuous transition.
+  const lastActualIdx = sorted.findLastIndex((d) => d.actual !== undefined);
+  const firstForecastOnlyIdx = sorted.findIndex(
+    (d) => d.forecast !== undefined && d.actual === undefined,
+  );
+  if (
+    lastActualIdx >= 0 &&
+    firstForecastOnlyIdx > lastActualIdx &&
+    sorted[lastActualIdx].forecast === undefined
+  ) {
+    const actualVal = sorted[lastActualIdx].actual as number;
+    sorted[lastActualIdx] = {
+      ...sorted[lastActualIdx],
+      forecast: actualVal,
+      forecastLower: actualVal,
+      forecastUpper: actualVal,
+    };
+  }
+
+  return sorted;
 }
 
 // Comparaison des modèles pour une série (challengers)
@@ -399,33 +425,46 @@ export async function getSeriesModelComparison(jobId: string, seriesId: string, 
 
   if (!data) return null;
 
-  // challengers peut être un objet JSON ou une string JSON (Supabase)
+  // challengers peut être :
+  //  - un dict {model_name: score}  (nouveau format)
+  //  - une liste [{name, score, status}, ...]  (ancien format candidates_topk)
+  //  - une string JSON de l'un des deux
   let challengers: Record<string, number> = {};
   if (data.challengers != null) {
-    if (typeof data.challengers === "string") {
-      try {
-        challengers = (JSON.parse(data.challengers) as Record<string, number>) || {};
-      } catch {
-        challengers = {};
+    let raw: unknown = data.challengers;
+    if (typeof raw === "string") {
+      try { raw = JSON.parse(raw); } catch { raw = null; }
+    }
+    if (Array.isArray(raw)) {
+      // Ancien format : liste d'objets [{name, score, status}, ...]
+      for (const c of raw) {
+        const entry = c as Record<string, unknown>;
+        if (typeof entry.name === "string" && entry.score != null) {
+          challengers[entry.name] = Number(entry.score);
+        }
       }
-    } else if (typeof data.challengers === "object" && !Array.isArray(data.challengers)) {
-      challengers = (data.challengers as Record<string, number>) || {};
+    } else if (raw != null && typeof raw === "object") {
+      // Nouveau format : dict {model_name: score}
+      challengers = (raw as Record<string, number>) || {};
     }
   }
 
   const championScoreValue = toChampionScore(resolveSeriesErrorRatio(data)) ?? 0;
+  const championName = data.champion_model ?? "—";
+  const sortedChallengers = Object.entries(challengers)
+    .filter(([model]) => model !== championName)
+    .map(([model, score]) => ({ model, score: toChampionScore(Number(score)) ?? 0 }))
+    .sort((a, b) => b.score - a.score);
   const modelRanking = [
-    { model: data.champion_model ?? "—", score: championScoreValue, rank: 1 },
-    ...Object.entries(challengers)
-      .map(([model, score], i) => ({ model, score: toChampionScore(Number(score)) ?? 0, rank: i + 2 }))
-      .sort((a, b) => b.score - a.score),
+    { model: championName, score: championScoreValue, rank: 1 },
+    ...sortedChallengers.map((c, i) => ({ ...c, rank: i + 2 })),
   ];
 
   return {
     champion: data.champion_model,
     championScore: championScoreValue,
     modelsTested: data.models_tested != null ? Number(data.models_tested) : 0,
-    ranking: modelRanking.slice(0, 5),
+    ranking: modelRanking,
   };
 }
 

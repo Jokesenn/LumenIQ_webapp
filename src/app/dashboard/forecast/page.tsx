@@ -148,7 +148,7 @@ export default function ForecastPage() {
 
   const startForecast = async () => {
     if (!file || !user) {
-      setAnalyzeError("Vous devez être connecté pour lancer un forecast");
+      setAnalyzeError("Vous devez être connecté pour lancer une prévision");
       return;
     }
 
@@ -242,14 +242,14 @@ export default function ForecastPage() {
     return 30 + jobProgress * 0.7;
   };
 
-  const wizardSteps = ["Upload", "Configuration", "Calcul", "Résultats"];
+  const wizardSteps = ["Import", "Configuration", "Calcul", "Résultats"];
 
   return (
     <div className="animate-fade">
       <div className="mb-8">
-        <h1 className="text-[28px] font-bold text-white mb-2">Nouveau forecast</h1>
+        <h1 className="text-[28px] font-bold text-white mb-2">Nouvelle prévision</h1>
         <p className="text-zinc-400">
-          Mode Express — Upload, configuration automatique, résultats en 5 min
+          Mode Express — Import, configuration automatique, résultats en 5 min
         </p>
       </div>
 
@@ -406,8 +406,8 @@ export default function ForecastPage() {
               )}
             />
             <ConfigItem label="Saisonnalité" value={getSeasonalityLabel()} />
-            <ConfigItem label="Horizon forecast" value={getDefaultHorizon()} />
-            <ConfigItem label="Routing" value="ABC/XYZ auto" />
+            <ConfigItem label="Horizon prévision" value={getDefaultHorizon()} />
+            <ConfigItem label="Sélection méthode" value="Automatique (ABC/XYZ)" />
           </div>
 
           {/* Options de calcul */}
@@ -464,7 +464,7 @@ export default function ForecastPage() {
                 </>
               ) : (
                 <>
-                  Lancer le forecast
+                  Lancer la prévision
                   <ArrowRight size={18} />
                 </>
               )}
@@ -492,7 +492,7 @@ export default function ForecastPage() {
                   : isFailed
                   ? "Erreur de traitement"
                   : uploadStep !== "complete"
-                  ? "Lancement du forecast..."
+                  ? "Lancement de la prévision..."
                   : "Traitement en cours..."}
               </h2>
               <p className="text-sm text-zinc-500">
@@ -530,7 +530,7 @@ export default function ForecastPage() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <SubStepIndicator
-                    label="Upload du fichier"
+                    label="Envoi du fichier"
                     status={getUploadSubStepStatus("uploading")}
                   />
                   {uploadStep === "uploading" && (
@@ -544,7 +544,7 @@ export default function ForecastPage() {
                   status={getUploadSubStepStatus("creating_job")}
                 />
                 <SubStepIndicator
-                  label="Déclenchement du forecast"
+                  label="Déclenchement de la prévision"
                   status={getUploadSubStepStatus("triggering_webhook")}
                 />
               </div>
@@ -582,7 +582,7 @@ export default function ForecastPage() {
                     }
                   />
                   <SubStepIndicator
-                    label="Backtesting des modèles"
+                    label="Validation sur historique"
                     status={
                       (job?.progress ?? 0) >= 70
                         ? "completed"
@@ -595,7 +595,7 @@ export default function ForecastPage() {
                   />
                   <div className="flex items-center justify-between">
                     <SubStepIndicator
-                      label="Génération des forecasts"
+                      label="Génération des prévisions"
                       status={
                         isComplete
                           ? "completed"
@@ -692,26 +692,30 @@ export default function ForecastPage() {
             <Check size={36} className="text-emerald-500" />
           </div>
 
-          <h2 className="text-2xl font-bold text-white mb-2">Forecast terminé !</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">Prévision terminée !</h2>
           <p className="text-zinc-400 mb-2">
             {job?.series_count ?? analysis?.seriesCount ?? 0} séries analysées
             {job?.avg_smape !== undefined && job.avg_smape !== null && (
-              <> - SMAPE moyen : {job.avg_smape.toFixed(1)}%</>
+              <>
+                {" — "}
+                {job.avg_smape < 5
+                  ? "Excellente précision"
+                  : job.avg_smape < 15
+                    ? "Bonne précision"
+                    : "Précision à surveiller"}
+              </>
             )}
           </p>
-          {activeJobId && (
+          {job?.compute_time_seconds && (
             <p className="text-sm text-zinc-500 mb-8">
-              Job ID:{" "}
-              <span className="font-mono">{activeJobId.slice(0, 8)}...</span>
-              {job?.compute_time_seconds && (
-                <> - Durée : {Math.round(job.compute_time_seconds)}s</>
-              )}
+              Durée de calcul : {Math.round(job.compute_time_seconds)}s
             </p>
           )}
+          {!(job?.compute_time_seconds) && <div className="mb-8" />}
 
           <div className="flex gap-3 justify-center">
             <Button variant="ghost" onClick={handleReset} className="text-zinc-400 hover:text-white">
-              Nouveau forecast
+              Nouvelle prévision
             </Button>
             <Button
               size="large"

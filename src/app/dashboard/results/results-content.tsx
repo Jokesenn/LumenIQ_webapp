@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -8,7 +8,9 @@ import {
   Calendar,
   Clock,
   FileText,
+  Loader2,
 } from "lucide-react";
+import { getResultsDownloadUrl } from "./actions";
 import { Button } from "@/components/ui/button";
 import {
   MetricGaugeCard,
@@ -77,7 +79,21 @@ export function ResultsContent({
   const [selectedCell, setSelectedCell] = useState<{ abc: string; xyz: string } | null>(null);
   const [modelFilter, setModelFilter] = useState<string | null>(null);
   const [filters, setFilters] = useState<SeriesFilters>(DEFAULT_FILTERS);
+  const [exporting, setExporting] = useState(false);
   const { showTour, completeTour } = useOnboarding();
+
+  const handleDownload = useCallback(async () => {
+    if (!job?.id || exporting) return;
+    setExporting(true);
+    try {
+      const url = await getResultsDownloadUrl(job.id);
+      if (url) {
+        window.open(url, "_blank");
+      }
+    } finally {
+      setExporting(false);
+    }
+  }, [job?.id, exporting]);
 
   // Compute filter counts from allSeries
   const filterCounts = useMemo<SeriesFilterCounts>(() => {
@@ -128,6 +144,13 @@ export function ResultsContent({
     allSeries,
     jobId: job?.id ?? "",
   });
+
+  const reliableSeriesPct = useMemo(() => {
+    const scored = allSeries.filter((s: any) => s.champion_score != null);
+    if (scored.length === 0) return null;
+    const reliable = scored.filter((s: any) => s.champion_score >= 70);
+    return Math.round((reliable.length / scored.length) * 100);
+  }, [allSeries]);
 
   const handleModelClick = (modelName: string) => {
     setModelFilter(modelName);
@@ -182,9 +205,17 @@ export function ResultsContent({
             </div>
           </div>
 
-          <Button className="bg-indigo-500 hover:bg-indigo-600">
-            <Download className="w-4 h-4 mr-2" />
-            Télécharger
+          <Button
+            className="bg-indigo-500 hover:bg-indigo-600"
+            onClick={handleDownload}
+            disabled={exporting}
+          >
+            {exporting ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <Download className="w-4 h-4 mr-2" />
+            )}
+            {exporting ? "Téléchargement…" : "Télécharger"}
           </Button>
         </div>
       </FadeIn>
@@ -215,42 +246,32 @@ export function ResultsContent({
         <div className="space-y-6">
           {/* Metric Gauges */}
           <FadeIn delay={0.2}>
-            <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 lg:gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 lg:gap-4">
               <div data-onboarding="champion-score-gauge">
                 <MetricGaugeCard
-                  label="Champion Score"
+                  label="Score de fiabilité"
                   value={metrics?.championScore ?? 0}
                   unit="/100"
-                  description="Score de fiabilité du modèle champion"
+                  description="Qualité globale de vos prévisions"
                   thresholds={{ good: 70, warning: 90 }}
                   inverted={false}
                   delay={0}
                   helpKey="championScore"
                 />
               </div>
-              {metrics?.global_smape != null && (
+              {metrics?.global_wape != null && (
                 <MetricGaugeCard
-                  label="SMAPE"
-                  value={metrics.global_smape}
-                  description="Symmetric MAPE"
+                  label="Erreur pondérée"
+                  value={metrics.global_wape}
+                  description="Impact réel sur le volume d'affaires"
                   thresholds={{ good: 10, warning: 20 }}
                   delay={0.1}
-                  helpKey="smape"
-                />
-              )}
-              {metrics?.global_mape != null && (
-                <MetricGaugeCard
-                  label="MAPE"
-                  value={metrics.global_mape}
-                  description="Mean Absolute Percentage Error"
-                  thresholds={{ good: 15, warning: 25 }}
-                  delay={0.2}
-                  helpKey="mape"
+                  helpKey="wape"
                 />
               )}
               <div data-onboarding="bias-gauge">
                 <MetricGaugeCard
-                  label="BIAS"
+                  label="Biais prévision"
                   value={Math.abs(metrics?.global_bias_pct ?? 0)}
                   unit="%"
                   description={(metrics?.global_bias_pct ?? 0) >= 0 ? "Sur-estimation" : "Sous-estimation"}
@@ -266,7 +287,7 @@ export function ResultsContent({
                     <span className="text-lg text-zinc-500">/{metrics?.n_series_total ?? 0}</span>
                   </p>
                   <div className="flex items-center justify-center gap-1 mt-2">
-                    <p className="text-sm text-zinc-400">Séries réussies</p>
+                    <p className="text-sm text-zinc-400">Séries analysées avec succès</p>
                     <HelpTooltip termKey="series_count" />
                   </div>
                   {(metrics?.n_series_failed ?? 0) > 0 && (
@@ -276,6 +297,18 @@ export function ResultsContent({
                   )}
                 </div>
               </div>
+              {reliableSeriesPct != null && (
+                <MetricGaugeCard
+                  label="Séries fiables"
+                  value={reliableSeriesPct}
+                  unit="%"
+                  description="Séries avec un score ≥ 70/100"
+                  thresholds={{ good: 70, warning: 90 }}
+                  inverted={false}
+                  delay={0.5}
+                  helpKey="reliable_series"
+                />
+              )}
             </div>
           </FadeIn>
 

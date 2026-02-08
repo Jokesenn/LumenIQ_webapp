@@ -249,6 +249,30 @@ export const GLOSSARY: Record<string, ReactNode> = {
     </div>
   ),
 
+  wape: (
+    <div>
+      <p className="font-medium mb-2">Erreur pondérée par le volume (WAPE)</p>
+      <p className="text-white/70 text-sm mb-2">
+        Mesure l&apos;écart entre prévisions et réel, pondéré par le volume de chaque produit.
+      </p>
+      <p className="text-white/70 text-sm">
+        Un WAPE de 5% signifie : sur l&apos;ensemble de votre chiffre d&apos;affaires, l&apos;erreur moyenne est de 5%. Les gros volumes pèsent plus que les petits.
+      </p>
+    </div>
+  ),
+
+  reliable_series: (
+    <div>
+      <p className="font-medium mb-2">Taux de séries fiables</p>
+      <p className="text-white/70 text-sm mb-2">
+        Pourcentage de produits dont le score de fiabilité dépasse 70/100.
+      </p>
+      <p className="text-white/70 text-sm">
+        Plus ce taux est élevé, plus votre portefeuille est globalement bien prévu. Les séries sous 70 méritent une attention particulière.
+      </p>
+    </div>
+  ),
+
   forecast_graph: (
     <div>
       <p className="font-medium mb-2">Comment lire ce graphique ?</p>

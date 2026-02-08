@@ -46,7 +46,7 @@ export function ExportPdfButton({
       ) : (
         <FileDown className="h-4 w-4 mr-2" />
       )}
-      {isExporting ? "Export..." : "Export PDF"}
+      {isExporting ? "Export en cours…" : "Exporter PDF"}
     </Button>
   );
 }

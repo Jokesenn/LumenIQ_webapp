@@ -264,7 +264,27 @@ src/
 ### Queries Pattern
 - **Server-side** (pages): import from `@/lib/queries/results` or `@/lib/queries/dashboard`, use `createClient()` from `@/lib/supabase/server`
 - **Client-side** (hooks/components): import `createClient` from `@/lib/supabase/client`, call `.schema("lumeniq")` explicitly for typed queries
-- Metric values in DB are stored as ratios (0-1); the frontend converts to percentages (0-100) in query functions
+
+### Data Contract: Metric Storage (VERIFIED against real DB data)
+
+**All metrics are stored as ratios (0–1) in Supabase.** The frontend converts to display values in query functions.
+
+Verified DB values from `forecast_results`:
+| Column | DB value (ratio) | Frontend conversion | Displayed |
+|--------|-------------------|-------------------|-----------|
+| `champion_score` | 0.022290 | `(1 - x) × 100` via `toChampionScore()` | 97.8 /100 |
+| `wape` | 0.0445 | `× 100` | 4.45% |
+| `smape` | 0.0223 | `× 100` | 2.23% |
+| `mape` | 0.0450 | `× 100` | 4.50% |
+
+Conversion functions in `@/lib/metrics.ts`:
+- `toChampionScore(ratio)` → `(1 - ratio) × 100` (score inversé: 0 = pire, 100 = parfait)
+- `resolveSeriesErrorRatio(row)` → fallback chain: `champion_score` → `smape` → `wape`
+
+**`challengers` field** in `forecast_results`:
+- Old format (pre-2026-02): list `[{name, score, status}, ...]` with only top 3 candidates
+- New format: dict `{model_name: score, ...}` with all candidates (score as ratio 0–1)
+- Frontend (`getSeriesModelComparison`) handles both formats
 
 ### Series Alerts
 - Alert logic in `@/lib/series-alerts.ts`: `getSeriesAlerts()` returns alert types based on SMAPE thresholds, gating, drift, model changes

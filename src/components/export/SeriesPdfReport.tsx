@@ -248,11 +248,11 @@ export function SeriesPdfReport({
                   },
                 ]}
               >
-                Gated
+                Automatisée
               </Text>
             )}
           </View>
-          <Text style={styles.subtitle}>Job: {jobName}</Text>
+          <Text style={styles.subtitle}>Analyse : {jobName}</Text>
         </View>
 
         {/* Metrics */}
@@ -260,21 +260,21 @@ export function SeriesPdfReport({
           <Text style={styles.sectionTitle}>Métriques clés</Text>
           <View style={styles.metricsGrid}>
             <View style={styles.metricCard}>
-              <Text style={styles.metricLabel}>SMAPE</Text>
+              <Text style={styles.metricLabel}>Écart prévision</Text>
               <Text style={[styles.metricValue, getSmapeStyle(series.smape)]}>
                 {series.smape.toFixed(1)}%
               </Text>
-              <Text style={styles.metricSubtext}>Erreur symétrique</Text>
+              <Text style={styles.metricSubtext}>Précision symétrique</Text>
             </View>
             <View style={styles.metricCard}>
-              <Text style={styles.metricLabel}>Champion</Text>
+              <Text style={styles.metricLabel}>Méthode retenue</Text>
               <Text style={[styles.metricValue, { fontSize: 14 }]}>
                 {series.champion_model}
               </Text>
-              <Text style={styles.metricSubtext}>Meilleur modèle</Text>
+              <Text style={styles.metricSubtext}>Meilleur algorithme</Text>
             </View>
             <View style={styles.metricCard}>
-              <Text style={styles.metricLabel}>CV</Text>
+              <Text style={styles.metricLabel}>Variabilité</Text>
               <Text style={styles.metricValue}>
                 {cvValue.toFixed(2)}
               </Text>
@@ -312,8 +312,8 @@ export function SeriesPdfReport({
             <View style={styles.tableHeader}>
               <Text style={styles.tableHeaderCell}>Date</Text>
               <Text style={styles.tableHeaderCell}>Prévision</Text>
-              <Text style={styles.tableHeaderCell}>IC Bas (10%)</Text>
-              <Text style={styles.tableHeaderCell}>IC Haut (90%)</Text>
+              <Text style={styles.tableHeaderCell}>Borne basse (10%)</Text>
+              <Text style={styles.tableHeaderCell}>Borne haute (90%)</Text>
             </View>
             {forecasts.slice(0, 12).map((row, index) => (
               <View

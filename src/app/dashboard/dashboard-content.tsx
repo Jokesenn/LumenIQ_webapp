@@ -109,7 +109,7 @@ export function DashboardContent({
           <Link href="/dashboard/forecast">
             <Button className="bg-indigo-500 hover:bg-indigo-600 glow-accent">
               <Plus className="w-4 h-4 mr-2" />
-              Nouveau Forecast
+              Nouvelle prévision
             </Button>
           </Link>
         </div>
@@ -124,38 +124,36 @@ export function DashboardContent({
                 label="Séries analysées"
                 value={stats.totalSeries}
                 icon={BarChart3}
-                trend={{ value: "+124", direction: "up", isGood: true }}
                 subtitle="Total cumulé"
                 variant="default"
               />
             </StaggerItem>
             <StaggerItem>
               <StatCard
-                label="Forecasts ce mois"
+                label="Prévisions ce mois"
                 value={stats.forecastsThisMonth}
                 icon={LineChart}
-                trend={{ value: "+3", direction: "up", isGood: true }}
                 href="/dashboard/history"
                 variant="default"
               />
             </StaggerItem>
             <StaggerItem>
               <StatCard
-                label="Champion Score"
+                label="Score de fiabilité"
                 value={stats.avgChampionScore.toFixed(1)}
                 icon={TrendingUp}
-                trend={{ value: "+1.3", direction: "up", isGood: true }}
                 subtitle="/100 · Sur les 10 derniers jobs"
                 variant={stats.avgChampionScore >= 90 ? "success" : stats.avgChampionScore >= 70 ? "warning" : "default"}
+                helpKey="championScore"
               />
             </StaggerItem>
             <StaggerItem>
               <StatCard
-                label="Temps moyen"
-                value={formatDuration(stats.avgDuration)}
-                icon={Clock}
-                trend={{ value: "-12s", direction: "down", isGood: true }}
-                variant="default"
+                label="Séries fiables"
+                value={`${stats.avgChampionScore >= 90 ? "≥ 90" : stats.avgChampionScore >= 70 ? "≥ 70" : "< 70"}`}
+                icon={CheckCircle2}
+                subtitle="Score moyen du portefeuille"
+                variant={stats.avgChampionScore >= 90 ? "success" : stats.avgChampionScore >= 70 ? "warning" : "default"}
               />
             </StaggerItem>
           </StaggerChildren>
@@ -179,7 +177,7 @@ export function DashboardContent({
         <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-lg font-semibold text-white">Forecast vs Réel</h2>
+              <h2 className="text-lg font-semibold text-white">Prévisions vs Réel</h2>
               <p className="text-sm text-zinc-400">Dernier job - données agrégées</p>
             </div>
             <div className="flex gap-2">
@@ -215,7 +213,7 @@ export function DashboardContent({
         <FadeIn delay={0.4}>
           <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
             <h2 className="text-lg font-semibold text-white mb-6">
-              Performance des modèles
+              Répartition qualité
             </h2>
             {modelPerformance.length > 0 ? (
               <ModelPerformanceChart data={modelPerformance} />
@@ -254,7 +252,7 @@ export function DashboardContent({
       <FadeIn delay={0.6}>
         <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-white">Forecasts récents</h2>
+            <h2 className="text-lg font-semibold text-white">Prévisions récentes</h2>
             <Link
               href="/dashboard/history"
               className="text-sm text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
@@ -308,7 +306,7 @@ export function DashboardContent({
                       <div className="flex items-center gap-4">
                         {job.championScore !== undefined && (
                           <div className="text-right">
-                            <p className="text-sm text-zinc-400">Score</p>
+                            <p className="text-sm text-zinc-400">Fiabilité</p>
                             <p
                               className={cn(
                                 "font-semibold",
@@ -333,11 +331,11 @@ export function DashboardContent({
           ) : (
             <div className="text-center py-12">
               <FileText className="w-12 h-12 text-zinc-600 mx-auto mb-4" />
-              <p className="text-zinc-400 mb-4">Aucun forecast pour le moment</p>
+              <p className="text-zinc-400 mb-4">Aucune prévision pour le moment</p>
               <Link href="/dashboard/forecast">
                 <Button className="bg-indigo-500 hover:bg-indigo-600">
                   <Plus className="w-4 h-4 mr-2" />
-                  Créer mon premier forecast
+                  Créer ma première prévision
                 </Button>
               </Link>
             </div>

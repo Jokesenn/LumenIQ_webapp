@@ -17,3 +17,32 @@ export async function fetchRecentJobs(limit = 10): Promise<ForecastJob[]> {
   if (!user) return [];
   return getRecentJobs(user.id, limit);
 }
+
+/**
+ * Retourne une signed URL pour télécharger le .zip de résultats depuis Supabase Storage.
+ * Le .zip est uploadé par N8N dans le bucket "forecasts" au chemin results/{user_id}/{job_id}.
+ */
+export async function getResultsDownloadUrl(jobId: string): Promise<string | null> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  // Lister les fichiers dans le dossier results/{user_id}/{job_id}
+  const folderPath = `results/${user.id}/${jobId}`;
+  const { data: files } = await supabase.storage
+    .from("forecasts")
+    .list(folderPath, { limit: 10 });
+
+  if (!files || files.length === 0) return null;
+
+  // Trouver le .zip (ou le premier fichier disponible)
+  const zipFile = files.find((f) => f.name.endsWith(".zip")) ?? files[0];
+  if (!zipFile) return null;
+
+  const filePath = `${folderPath}/${zipFile.name}`;
+  const { data: signedUrl } = await supabase.storage
+    .from("forecasts")
+    .createSignedUrl(filePath, 300); // 5 min
+
+  return signedUrl?.signedUrl ?? null;
+}

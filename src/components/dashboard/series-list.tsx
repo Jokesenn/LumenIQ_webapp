@@ -11,6 +11,7 @@ import { HelpTooltip } from "@/components/ui/help-tooltip";
 import { BadgeWithTooltip } from "@/components/ui/badge-with-tooltip";
 import { GLOSSARY } from "@/lib/glossary";
 import { getChampionScoreColor } from "@/lib/metrics";
+import { getModelMeta } from "@/lib/model-labels";
 
 interface SeriesListProps {
   series: SeriesListItem[];
@@ -122,7 +123,7 @@ export function SeriesList({
                           </span>
                         </BadgeWithTooltip>
                         <span className="text-xs text-zinc-500 truncate hidden lg:inline">
-                          {s.champion_model}
+                          {getModelMeta(s.champion_model).label}
                         </span>
                       </div>
                     </div>
@@ -142,7 +143,7 @@ export function SeriesList({
                       <p className={cn("text-sm lg:text-base font-semibold", getScoreColor(s.champion_score))}>
                         {s.champion_score != null ? s.champion_score.toFixed(1) : "N/A"}
                       </p>
-                      <p className="text-xs text-zinc-500">Score</p>
+                      <p className="text-xs text-zinc-500">Fiabilité</p>
                     </div>
                     <ArrowRight className="w-4 h-4 text-zinc-600 group-hover:text-zinc-400 transition-colors hidden lg:block" />
                   </div>
