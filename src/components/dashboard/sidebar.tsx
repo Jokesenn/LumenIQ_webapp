@@ -6,6 +6,7 @@ import { LogoWithText, Logo } from "@/components/shared/logo";
 import {
   BarChart3,
   Upload,
+  Zap,
   TrendingUp,
   Clock,
   Settings,
@@ -15,6 +16,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { useUrgentCount } from "@/hooks/use-actions";
 import { useTheme } from "next-themes";
 import { useState, useEffect } from "react";
 import { useLogout } from "@/hooks/use-supabase";
@@ -26,6 +28,7 @@ interface SidebarProps {
 
 const navItems = [
   { href: "/dashboard", icon: BarChart3, label: "Tableau de bord" },
+  { href: "/dashboard/actions", icon: Zap, label: "Actions", badge: true },
   { href: "/dashboard/forecast", icon: Upload, label: "Nouvelle prévision" },
   { href: "/dashboard/results", icon: TrendingUp, label: "Résultats" },
   { href: "/dashboard/history", icon: Clock, label: "Historique" },
@@ -38,6 +41,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const [mounted, setMounted] = useState(false);
   const logout = useLogout();
   const [loggingOut, setLoggingOut] = useState(false);
+  const urgentCount = useUrgentCount();
 
   useEffect(() => {
     setMounted(true);
@@ -86,11 +90,12 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       <nav className="flex-1 space-y-1">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
+          const showBadge = (item as { badge?: boolean }).badge && urgentCount > 0;
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors duration-200 ${
+              className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors duration-200 relative ${
                 collapsed ? "justify-center" : ""
               } ${
                 isActive
@@ -98,13 +103,25 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                   : "text-zinc-400 hover:bg-white/5 hover:text-white"
               }`}
             >
-              <item.icon size={20} className="shrink-0" />
+              <span className="relative shrink-0">
+                <item.icon size={20} />
+                {showBadge && collapsed && (
+                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500" />
+                )}
+              </span>
               {!collapsed && (
-                <span
-                  className={`text-sm ${isActive ? "font-semibold" : "font-normal"}`}
-                >
-                  {item.label}
-                </span>
+                <>
+                  <span
+                    className={`text-sm flex-1 ${isActive ? "font-semibold" : "font-normal"}`}
+                  >
+                    {item.label}
+                  </span>
+                  {showBadge && (
+                    <span className="ml-auto flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold rounded-full bg-red-500 text-white">
+                      {urgentCount}
+                    </span>
+                  )}
+                </>
               )}
             </Link>
           );

@@ -18,6 +18,7 @@ import {
   List,
   BarChart3,
   Sparkles,
+  Zap,
   Moon,
   Sun,
   Search,
@@ -161,6 +162,11 @@ export function CommandPalette({ open: controlledOpen, onOpenChange }: CommandPa
           <CommandItem onSelect={() => runCommand(() => goToTab("synthesis"))}>
             <Sparkles className="mr-2 h-4 w-4" />
             Synthèse IA
+          </CommandItem>
+          <CommandItem onSelect={() => runCommand(() => router.push("/dashboard/actions"))}>
+            <Zap className="mr-2 h-4 w-4" />
+            Actions
+            <CommandShortcut>⌘⇧A</CommandShortcut>
           </CommandItem>
         </CommandGroup>
 

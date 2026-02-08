@@ -3,6 +3,7 @@ import { Manrope } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { PageTransition } from "@/components/providers/page-transition";
 import { ScrollProgress } from "@/components/shared/scroll-progress";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -43,6 +44,17 @@ export default function RootLayout({
           <PageTransition>
             {children}
           </PageTransition>
+          <Toaster
+            theme="dark"
+            position="bottom-center"
+            toastOptions={{
+              style: {
+                background: "rgb(24 24 27)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                color: "rgb(228 228 231)",
+              },
+            }}
+          />
         </ThemeProvider>
       </body>
     </html>

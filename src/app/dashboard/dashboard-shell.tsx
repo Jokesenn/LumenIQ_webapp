@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback, Suspense } from "react";
 import { Sidebar, Header } from "@/components/dashboard";
 import { CommandPalette } from "@/components/dashboard/command-palette";
 import { AiChatButton, AiChatDrawer } from "@/components/dashboard/ai-chat";
+import { ActionsDrawer } from "@/components/dashboard/actions-drawer";
+import { ActionsFab } from "@/components/dashboard/actions-fab";
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -20,6 +22,33 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   }, []);
   const [commandOpen, setCommandOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
+  const [actionsOpen, setActionsOpen] = useState(false);
+
+  // One-drawer-at-a-time logic
+  const openChat = useCallback(() => {
+    setActionsOpen(false);
+    setChatOpen(true);
+  }, []);
+
+  const openActions = useCallback(() => {
+    setChatOpen(false);
+    setActionsOpen(true);
+  }, []);
+
+  // Keyboard shortcut: Cmd+Shift+A to toggle actions drawer
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "a" && e.metaKey && e.shiftKey) {
+        e.preventDefault();
+        setActionsOpen((prev) => {
+          if (!prev) setChatOpen(false);
+          return !prev;
+        });
+      }
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, []);
 
   return (
     <div className="flex min-h-screen bg-zinc-950">
@@ -41,7 +70,12 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       <Suspense>
         <AiChatDrawer open={chatOpen} onOpenChange={setChatOpen} />
       </Suspense>
-      <AiChatButton onClick={() => setChatOpen(true)} isOpen={chatOpen} />
+      <AiChatButton onClick={openChat} isOpen={chatOpen} />
+
+      <Suspense>
+        <ActionsDrawer open={actionsOpen} onOpenChange={setActionsOpen} />
+      </Suspense>
+      <ActionsFab onClick={openActions} isOpen={actionsOpen} />
     </div>
   );
 }
