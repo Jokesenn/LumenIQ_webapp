@@ -63,6 +63,7 @@ src/
 │   │   │       ├── page.tsx     # Individual series detail (?job=&series=)
 │   │   │       ├── loading.tsx
 │   │   │       └── series-content.tsx
+│   │   ├── actions/page.tsx      # Actions board (full-page, grouped by run)
 │   │   └── settings/page.tsx    # Profile, subscription, preferences, API key, danger zone
 │   ├── features/page.tsx        # Features marketing page
 │   ├── pricing/page.tsx         # Pricing page (3 tiers + enterprise)
@@ -118,6 +119,9 @@ src/
 │   │   │   ├── ChatInput.tsx
 │   │   │   ├── SuggestedQuestions.tsx
 │   │   │   └── types.ts
+│   │   ├── actions-board.tsx    # Actions board (page + drawer modes)
+│   │   ├── actions-summary.tsx  # Executive summary card (3 lines)
+│   │   ├── action-card.tsx      # Individual action card (priority, dismiss, navigate)
 │   │   └── results/            # Results-page-specific
 │   │       ├── SeriesAlertBadges.tsx
 │   │       ├── ExportPdfButton.tsx
@@ -197,7 +201,8 @@ src/
 │   ├── useExportPdf.ts          # PDF export (html2canvas + react-pdf)
 │   ├── useOnboarding.ts         # Tour state (localStorage-based)
 │   ├── useSeriesNavigation.ts   # Series list navigation + sorting + URL sync
-│   └── useUserPreferences.ts    # Forecast config preferences (horizon, gating, CI)
+│   ├── useUserPreferences.ts    # Forecast config preferences (horizon, gating, CI)
+│   └── use-actions.ts           # useActions() (page/drawer modes), useUrgentCount() (badge)
 │
 ├── lib/
 │   ├── utils.ts                 # cn() utility (clsx + tailwind-merge)
@@ -223,6 +228,7 @@ src/
     ├── database.ts              # Supabase-generated schema types (lumeniq schema)
     ├── forecast.ts              # ForecastJob, ForecastResult, SeriesListItem, upload types
     ├── export.ts                # PDF export types
+    ├── actions.ts               # ForecastAction, ActionsSummary, ActionsGroupedByJob
     └── preferences.ts           # User preferences & defaults
 ```
 
@@ -253,7 +259,7 @@ src/
 - Types are in `src/types/database.ts` — regenerate with Supabase CLI when schema changes
 - Server queries use `createClient()` from `@/lib/supabase/server`
 - Client queries use `createClient()` from `@/lib/supabase/client` (singleton, schema pre-configured) with `.schema("lumeniq")` when needed for typed queries
-- Key tables: `profiles`, `forecast_jobs`, `forecast_results`, `forecast_results_months`, `series_actuals`, `forecast_syntheses`, `job_summaries`, `forecast_series`, `job_monthly_aggregates`, `user_preferences`
+- Key tables: `profiles`, `forecast_jobs`, `forecast_results`, `forecast_results_months`, `series_actuals`, `forecast_syntheses`, `job_summaries`, `forecast_series`, `job_monthly_aggregates`, `user_preferences`, `forecast_actions`
 
 ### Auth
 - Supabase Auth with SSR via `@supabase/ssr`
@@ -268,10 +274,10 @@ src/
 
 | Technical term | UI label (French) | Context |
 |---|---|---|
-| Champion Score | Score de fiabilité | Gauge, cards, series list |
-| SMAPE | Écart prévision | PDF export only (removed from results overview gauges) |
-| WAPE | Erreur pondérée | Results overview gauge |
-| MAPE | Erreur moyenne | Not displayed (not populated in DB) |
+| Champion Score | Score de fiabilité | Gauge, cards, series list (based on WAPE: `(1 - WAPE) × 100`) |
+| SMAPE | Écart prévision | PDF export fallback only (legacy) |
+| WAPE | Erreur pondérée | Primary metric for Score de fiabilité, alerts, PDF export |
+| MAPE | Erreur moyenne | Results overview gauge card (populated via `global_mape` in `job_summaries`) |
 | Bias | Biais prévision | Results overview gauge |
 | CV (coefficient of variation) | Variabilité | Series detail, PDF |
 | Champion model | Méthode retenue | PDF export, series detail |
@@ -292,30 +298,30 @@ src/
 
 ### Data Contract: Metric Storage (VERIFIED against real DB data)
 
-**All metrics are stored as ratios (0–1) in Supabase.** The frontend converts to display values in query functions.
+**All metrics are stored as ratios (0–1) in Supabase.** The frontend converts to display values in query functions. Exception: `champion_score` now contains MASE (unbounded, can be > 1) — the frontend does NOT use it.
 
 Verified DB values from `forecast_results`:
-| Column | DB value (ratio) | Frontend conversion | Displayed as |
-|--------|-------------------|-------------------|-----------|
-| `champion_score` | 0.022290 | `(1 - x) × 100` via `toChampionScore()` | 97.8 /100 (Score de fiabilité) |
-| `wape` | 0.0445 | `× 100` | 4.45% (Erreur pondérée) |
-| `smape` | 0.0223 | `× 100` | 2.23% (used for champion_score calculation) |
-| `mape` | NULL (not populated) | `× 100` | Not displayed |
+| Column | DB value | Frontend conversion | Displayed as |
+|--------|----------|-------------------|-----------|
+| `champion_score` | 0.85 (MASE) | **NOT USED** by frontend | N/A (internal selection metric) |
+| `wape` | 0.0445 | `(1 - x) × 100` via `toChampionScore()` | 95.6 /100 (Score de fiabilité) |
+| `smape` | 0.0223 | Fallback only if wape is null | Legacy |
+| `mape` | 0.0450 | `× 100` | 4.50% (Erreur moyenne gauge) |
 | `bias_pct` | 0.5259 | `× 100` | Biais prévision |
 
-Note: `global_mape` is not populated in `job_summaries` for current jobs. The MAPE gauge card has been removed from the results overview. SMAPE gauge was also removed (redundant with champion_score = 1 - SMAPE) and replaced by WAPE.
+`global_mape` is populated in `job_summaries` for new jobs. For old jobs it is null — the MAPE gauge card is conditionally hidden.
 
 Conversion functions in `@/lib/metrics.ts`:
-- `toChampionScore(ratio)` → `(1 - ratio) × 100` (score inversé: 0 = pire, 100 = parfait)
-- `resolveSeriesErrorRatio(row)` → fallback chain: `champion_score` → `smape` → `wape`
+- `toChampionScore(ratio)` → `(1 - ratio) × 100` (score inverse: 0 = pire, 100 = parfait)
+- `resolveSeriesErrorRatio(row)` → fallback chain: `wape` → `smape` (does NOT use `champion_score`)
 
 **`challengers` field** in `forecast_results`:
-- Old format (pre-2026-02): list `[{name, score, status}, ...]` with only top 3 candidates
-- New format: dict `{model_name: score, ...}` with all candidates (score as ratio 0–1)
+- Old format (pre-2026-02): list `[{name, score, status}, ...]` with SMAPE scores
+- New format: dict `{model_name: wape_ratio, ...}` with WAPE scores for all candidates
 - Frontend (`getSeriesModelComparison`) handles both formats
 
 ### Series Alerts
-- Alert logic in `@/lib/series-alerts.ts`: `getSeriesAlerts()` returns alert types based on SMAPE thresholds, gating, drift, model changes
+- Alert logic in `@/lib/series-alerts.ts`: `getSeriesAlerts()` returns alert types based on WAPE thresholds (>20% = Attention, >15% = À surveiller), gating, drift, model changes
 - Alert badges rendered by `SeriesAlertBadges` component using `AlertBadge` from `components/ui/alert-badge.tsx`
 - `AlertsSummaryCard` shows aggregate alert counts on the results overview
 - Badge labels (French): Attention, À surveiller, Comportement inhabituel, Méthode mise à jour, Nouveau produit, Automatisée
@@ -336,6 +342,16 @@ Conversion functions in `@/lib/metrics.ts`:
 - Markdown responses rendered with `MarkdownRenderer`
 - State persists across dashboard navigation, resets on page reload
 
+### Actions Board (`components/dashboard/actions-board.tsx`, `hooks/use-actions.ts`)
+- Automatic post-forecast recommendations (stock alerts, reliability warnings, volume changes)
+- Backend generates actions via rule-based detection + Claude API reformulation (see `Lumen_IQ/docs/ACTIONS_SYSTEM.md`)
+- `useActions(mode, jobId)` hook: two modes — `"drawer"` (results panel) and `"page"` (full `/dashboard/actions` page grouped by run)
+- `useUrgentCount()` hook: lightweight badge counter for sidebar (polls every 30s)
+- `ActionsBoard` renders `ActionsSummaryCard` (executive summary) + `ActionCard[]` (per-action cards with priority colors, dismiss, navigate)
+- Actions are dismissible (optimistic update + undo toast) via `status = "dismissed"` in `forecast_actions` table
+- Priority levels: urgent (red), warning (orange), info (blue), clear (green)
+- Recurrence badges ("3e fois") and trend indicators ("En hausse" / "En baisse") from multi-run enrichment
+
 ### Results Download (`app/dashboard/results/actions.ts`)
 - "Télécharger" button on results overview page
 - Downloads the .zip file from Supabase Storage bucket `forecasts` at path `results/{user_id}/{job_id}`
@@ -345,8 +361,8 @@ Conversion functions in `@/lib/metrics.ts`:
 
 ### Results Overview Gauge Cards
 5 metric cards displayed on the results overview tab:
-1. **Score de fiabilité** — `(1 - SMAPE) × 100` via `toChampionScore()`, quality score /100
-2. **Erreur pondérée** — WAPE (weighted by volume), business impact metric
+1. **Score de fiabilité** — `(1 - WAPE) × 100` via `toChampionScore()`, quality score /100
+2. **Erreur moyenne (MAPE)** — mean absolute percentage error, informational gauge (from `global_mape` in `job_summaries`, hidden for old jobs where null)
 3. **Biais prévision** — directional tendency (over/under-estimation)
 4. **Séries réussies** — count of successfully analyzed series
 5. **Séries fiables** — % of series with champion_score ≥ 70/100
@@ -373,7 +389,7 @@ Conversion functions in `@/lib/metrics.ts`:
 - N8N webhook trigger (`NEXT_PUBLIC_N8N_WEBHOOK_URL`) after job creation
 - Job polling via `useJobStatus` hook (3s interval)
 - User preferences (horizon, gating, confidence) via `useUserPreferences`
-- Success screen shows qualitative message instead of raw SMAPE ("Excellente précision" / "Bonne précision" / "Précision à surveiller")
+- Success screen shows qualitative message based on WAPE ("Excellente précision" < 5%, "Bonne précision" < 15%, "Précision à surveiller" ≥ 15%)
 - Job ID hidden from end users on success screen
 
 ## Environment Variables
