@@ -21,6 +21,7 @@ interface UseActionsReturn {
   loading: boolean;
   error: string | null;
   dismissAction: (id: string) => Promise<void>;
+  dismissAll: () => Promise<void>;
   undoDismiss: (id: string) => Promise<void>;
 }
 
@@ -193,6 +194,47 @@ export function useActions(
     []
   );
 
+  // Dismiss all active actions
+  const dismissAll = useCallback(
+    async () => {
+      const ids = actions.map((a) => a.id);
+      if (ids.length === 0) return;
+
+      const supabase = createClient();
+      const { error: updateError } = await supabase
+        .schema("lumeniq")
+        .from("forecast_actions")
+        .update({ status: "dismissed", dismissed_at: new Date().toISOString() })
+        .in("id", ids);
+
+      if (updateError) {
+        toast.error("Erreur lors de la fermeture des actions");
+        return;
+      }
+
+      // Optimistic clear
+      setActions([]);
+      setGrouped([]);
+
+      toast(`${ids.length} action${ids.length > 1 ? "s" : ""} fermée${ids.length > 1 ? "s" : ""}`, {
+        action: {
+          label: "Annuler",
+          onClick: () => {
+            // Undo all dismissals
+            const sb = createClient();
+            sb.schema("lumeniq")
+              .from("forecast_actions")
+              .update({ status: "active", dismissed_at: null })
+              .in("id", ids)
+              .then(() => fetchActions());
+          },
+        },
+        duration: 6000,
+      });
+    },
+    [actions, fetchActions]
+  );
+
   // Undo a dismiss
   const undoDismiss = useCallback(
     async (id: string) => {
@@ -209,7 +251,7 @@ export function useActions(
     [fetchActions]
   );
 
-  return { actions, grouped, summary, loading, error, dismissAction, undoDismiss };
+  return { actions, grouped, summary, loading, error, dismissAction, dismissAll, undoDismiss };
 }
 
 // ---------------------------------------------------------------------------

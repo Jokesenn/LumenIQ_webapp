@@ -1,8 +1,9 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
-import { Inbox } from "lucide-react";
+import { Inbox, XCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useActions } from "@/hooks/use-actions";
 import { ActionsSummaryCard } from "./actions-summary";
@@ -15,13 +16,12 @@ interface ActionsBoardProps {
 }
 
 export function ActionsBoard({ mode, jobId }: ActionsBoardProps) {
-  const { actions, grouped, summary, loading, error, dismissAction } =
+  const { actions, grouped, summary, loading, error, dismissAction, dismissAll } =
     useActions(mode, jobId);
   const router = useRouter();
-  const searchParams = useSearchParams();
 
-  const handleNavigate = (seriesId: string) => {
-    const jid = mode === "drawer" ? jobId : searchParams.get("job");
+  const handleNavigate = (seriesId: string, actionJobId: string) => {
+    const jid = mode === "drawer" ? jobId : actionJobId;
     if (jid) {
       router.push(`/dashboard/results/series?job=${jid}&series=${seriesId}`);
     }
@@ -54,11 +54,14 @@ export function ActionsBoard({ mode, jobId }: ActionsBoardProps) {
     );
   }
 
+  const totalCount = mode === "drawer" ? actions.length : grouped.reduce((sum, g) => sum + g.actions.length, 0);
+
   // Drawer mode: flat list, compact
   if (mode === "drawer") {
     return (
       <div className="space-y-4 px-1">
         <ActionsSummaryCard summary={summary} />
+        <DismissAllButton count={totalCount} onDismissAll={dismissAll} />
         <div className="space-y-2">
           <AnimatePresence mode="popLayout">
             {actions.map((a) => (
@@ -80,6 +83,7 @@ export function ActionsBoard({ mode, jobId }: ActionsBoardProps) {
   return (
     <div className="space-y-6">
       <ActionsSummaryCard summary={summary} />
+      <DismissAllButton count={totalCount} onDismissAll={dismissAll} />
 
       {grouped.map((group) => (
         <div key={group.job_id} className="space-y-3">
@@ -112,6 +116,55 @@ export function ActionsBoard({ mode, jobId }: ActionsBoardProps) {
 // Sub-components
 // ---------------------------------------------------------------------------
 
+function DismissAllButton({
+  count,
+  onDismissAll,
+}: {
+  count: number;
+  onDismissAll: () => Promise<void>;
+}) {
+  const [confirming, setConfirming] = useState(false);
+
+  if (count === 0) return null;
+
+  if (confirming) {
+    return (
+      <div className="flex items-center gap-2 justify-end">
+        <span className="text-xs text-zinc-400">
+          Fermer {count} action{count > 1 ? "s" : ""} ?
+        </span>
+        <button
+          onClick={() => {
+            onDismissAll();
+            setConfirming(false);
+          }}
+          className="px-3 py-1.5 text-xs font-medium rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors"
+        >
+          Confirmer
+        </button>
+        <button
+          onClick={() => setConfirming(false)}
+          className="px-3 py-1.5 text-xs font-medium rounded-lg bg-white/5 text-zinc-400 hover:bg-white/10 transition-colors"
+        >
+          Annuler
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex justify-end">
+      <button
+        onClick={() => setConfirming(true)}
+        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-white/5 transition-colors"
+      >
+        <XCircle size={14} />
+        Tout fermer
+      </button>
+    </div>
+  );
+}
+
 function ActionsByPriority({
   actions,
   onDismiss,
@@ -119,7 +172,7 @@ function ActionsByPriority({
 }: {
   actions: ForecastAction[];
   onDismiss: (id: string) => Promise<void>;
-  onNavigate: (seriesId: string) => void;
+  onNavigate: (seriesId: string, jobId: string) => void;
 }) {
   const urgent = actions.filter((a) => a.priority === "urgent");
   const warning = actions.filter((a) => a.priority === "warning");

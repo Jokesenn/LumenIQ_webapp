@@ -20,7 +20,7 @@ interface ActionCardProps {
   action: ForecastAction;
   compact?: boolean;
   onDismiss?: (id: string) => void;
-  onNavigate?: (seriesId: string) => void;
+  onNavigate?: (seriesId: string, jobId: string) => void;
 }
 
 const PRIORITY_CONFIG: Record<
@@ -135,7 +135,7 @@ export function ActionCard({ action, compact, onDismiss, onNavigate }: ActionCar
             <div className="flex items-center gap-1">
               {action.series_id && onNavigate && (
                 <button
-                  onClick={() => onNavigate(action.series_id!)}
+                  onClick={() => onNavigate(action.series_id!, action.job_id)}
                   className="flex items-center gap-1 px-2 py-1 text-[11px] rounded-md text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
                 >
                   Voir
