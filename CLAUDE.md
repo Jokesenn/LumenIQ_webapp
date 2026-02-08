@@ -54,11 +54,11 @@ src/
 │   │   │   ├── page.tsx
 │   │   │   └── history-content.tsx
 │   │   ├── results/
-│   │   │   ├── page.tsx         # Tabs: overview, series, models, synthesis
+│   │   │   ├── page.tsx         # Tabs: overview, series, reliability, synthesis
 │   │   │   ├── loading.tsx
 │   │   │   ├── results-content.tsx
 │   │   │   ├── results-client.tsx  # Dynamic import wrapper (avoids SSR hydration mismatch)
-│   │   │   ├── actions.ts       # Server actions
+│   │   │   ├── actions.ts       # Server actions (getResultsDownloadUrl, etc.)
 │   │   │   └── series/
 │   │   │       ├── page.tsx     # Individual series detail (?job=&series=)
 │   │   │       ├── loading.tsx
@@ -98,6 +98,7 @@ src/
 │   │   ├── stat-card.tsx
 │   │   ├── recent-forecasts.tsx
 │   │   ├── empty-dashboard.tsx
+│   │   ├── reliability-tab.tsx    # Onglet Fiabilité (bubble chart + model perf)
 │   │   ├── series-list.tsx
 │   │   ├── series-navigator.tsx
 │   │   ├── series-quick-select.tsx
@@ -129,6 +130,7 @@ src/
 │   │   ├── animated-gauge.tsx
 │   │   ├── metric-gauge-card.tsx
 │   │   ├── model-performance-chart.tsx
+│   │   ├── reliability-bubble-chart.tsx  # Bubble chart fiabilité par modèle
 │   │   └── quota-progress.tsx
 │   │
 │   ├── landing/                 # Landing page sections
@@ -201,11 +203,13 @@ src/
 │   ├── utils.ts                 # cn() utility (clsx + tailwind-merge)
 │   ├── tokens.ts                # Design tokens & color schemas
 │   ├── metrics.ts               # toChampionScore(), getChampionScoreColor(), getChampionScoreStatus()
+│   ├── model-labels.ts          # MODEL_LABELS, MODEL_FAMILIES, getModelMeta() — French labels for technical model names
+│   ├── reliability-utils.ts     # Utility functions for reliability tab
 │   ├── csv-analyzer.ts          # CSV parsing, format detection, frequency analysis
 │   ├── series-alerts.ts         # getSeriesAlerts(), sortAlertsByPriority(), countAlertsByType()
 │   ├── linkify-skus.ts          # SKU linkification in markdown content
 │   ├── parse-markdown-sections.ts  # Split markdown by H2 headers for accordions
-│   ├── glossary.tsx             # Help tooltip content definitions
+│   ├── glossary.tsx             # Help tooltip content definitions (championScore, wape, smape, bias, reliable_series, etc.)
 │   ├── onboarding.ts            # Tour completion state (localStorage)
 │   ├── mock-data.ts             # Development mock data
 │   ├── supabase/
@@ -258,8 +262,29 @@ src/
 - Auth callback at `/auth/callback` (handles OAuth + password recovery)
 - Client-side auth via `useUser()` hook from `@/hooks/use-supabase`
 
-### Language
+### Language & Business Terminology
 - UI copy is in French (the target market is French SMEs)
+- **All technical ML terms must use business-friendly French labels:**
+
+| Technical term | UI label (French) | Context |
+|---|---|---|
+| Champion Score | Score de fiabilité | Gauge, cards, series list |
+| SMAPE | Écart prévision | PDF export only (removed from results overview gauges) |
+| WAPE | Erreur pondérée | Results overview gauge |
+| MAPE | Erreur moyenne | Not displayed (not populated in DB) |
+| Bias | Biais prévision | Results overview gauge |
+| CV (coefficient of variation) | Variabilité | Series detail, PDF |
+| Champion model | Méthode retenue | PDF export, series detail |
+| Gated | Automatisée | Alert badge, PDF |
+| Drift | Comportement inhabituel | Alert badge |
+| Model changed | Méthode mise à jour | Alert badge |
+| Backtesting | Validation sur historique | Forecast wizard |
+| Upload | Import | Forecast wizard step label |
+| Forecast | Prévision | All user-facing text |
+| IC Bas / IC Haut | Borne basse / Borne haute | PDF export table |
+| Score (in series list) | Fiabilité | Series list right column |
+
+- **Model names**: Use `getModelMeta(technicalName).label` from `@/lib/model-labels.ts` to display French labels (e.g., `hw_multiplicative` → "Holt-Winters multiplicatif"). Never show raw technical model names to users.
 
 ### Queries Pattern
 - **Server-side** (pages): import from `@/lib/queries/results` or `@/lib/queries/dashboard`, use `createClient()` from `@/lib/supabase/server`
@@ -270,12 +295,15 @@ src/
 **All metrics are stored as ratios (0–1) in Supabase.** The frontend converts to display values in query functions.
 
 Verified DB values from `forecast_results`:
-| Column | DB value (ratio) | Frontend conversion | Displayed |
+| Column | DB value (ratio) | Frontend conversion | Displayed as |
 |--------|-------------------|-------------------|-----------|
-| `champion_score` | 0.022290 | `(1 - x) × 100` via `toChampionScore()` | 97.8 /100 |
-| `wape` | 0.0445 | `× 100` | 4.45% |
-| `smape` | 0.0223 | `× 100` | 2.23% |
-| `mape` | 0.0450 | `× 100` | 4.50% |
+| `champion_score` | 0.022290 | `(1 - x) × 100` via `toChampionScore()` | 97.8 /100 (Score de fiabilité) |
+| `wape` | 0.0445 | `× 100` | 4.45% (Erreur pondérée) |
+| `smape` | 0.0223 | `× 100` | 2.23% (used for champion_score calculation) |
+| `mape` | NULL (not populated) | `× 100` | Not displayed |
+| `bias_pct` | 0.5259 | `× 100` | Biais prévision |
+
+Note: `global_mape` is not populated in `job_summaries` for current jobs. The MAPE gauge card has been removed from the results overview. SMAPE gauge was also removed (redundant with champion_score = 1 - SMAPE) and replaced by WAPE.
 
 Conversion functions in `@/lib/metrics.ts`:
 - `toChampionScore(ratio)` → `(1 - ratio) × 100` (score inversé: 0 = pire, 100 = parfait)
@@ -288,8 +316,15 @@ Conversion functions in `@/lib/metrics.ts`:
 
 ### Series Alerts
 - Alert logic in `@/lib/series-alerts.ts`: `getSeriesAlerts()` returns alert types based on SMAPE thresholds, gating, drift, model changes
-- Alert badges rendered by `SeriesAlertBadges` component
+- Alert badges rendered by `SeriesAlertBadges` component using `AlertBadge` from `components/ui/alert-badge.tsx`
 - `AlertsSummaryCard` shows aggregate alert counts on the results overview
+- Badge labels (French): Attention, À surveiller, Comportement inhabituel, Méthode mise à jour, Nouveau produit, Automatisée
+
+### Model Labels (`lib/model-labels.ts`)
+- `MODEL_LABELS`: maps 24+ technical model names to French labels and family categories
+- `MODEL_FAMILIES`: 4 families — Décomposition avancée (violet), Statistique classique (blue), Machine Learning (emerald), Statistique avancée (amber)
+- `getModelMeta(name)`: returns `{ label, family, familyColor }` — always use this for user-facing model names
+- `getFamilyMeta(name)`: returns `{ hex, bgClass, label }` — for color-coding by family
 
 ## Key Features
 
@@ -301,10 +336,26 @@ Conversion functions in `@/lib/metrics.ts`:
 - Markdown responses rendered with `MarkdownRenderer`
 - State persists across dashboard navigation, resets on page reload
 
+### Results Download (`app/dashboard/results/actions.ts`)
+- "Télécharger" button on results overview page
+- Downloads the .zip file from Supabase Storage bucket `forecasts` at path `results/{user_id}/{job_id}`
+- ZIP is uploaded by the N8N workflow after job completion (not by the frontend)
+- Server action `getResultsDownloadUrl(jobId)` creates a signed URL (5 min validity, generated on each click)
+- Works for any past job — not time-limited after job completion
+
+### Results Overview Gauge Cards
+5 metric cards displayed on the results overview tab:
+1. **Score de fiabilité** — `(1 - SMAPE) × 100` via `toChampionScore()`, quality score /100
+2. **Erreur pondérée** — WAPE (weighted by volume), business impact metric
+3. **Biais prévision** — directional tendency (over/under-estimation)
+4. **Séries réussies** — count of successfully analyzed series
+5. **Séries fiables** — % of series with champion_score ≥ 70/100
+
 ### PDF Export (`components/export/`, `hooks/useExportPdf.ts`)
 - Series-level PDF report generation via `@react-pdf/renderer`
 - Chart capture via `html2canvas`
 - Triggered by `ExportPdfButton` on series detail page
+- Labels fully translated to French business terms
 
 ### Command Palette (`components/dashboard/command-palette.tsx`)
 - Cmd+K (Mac) / Ctrl+K (Windows) keyboard shortcut
@@ -317,11 +368,13 @@ Conversion functions in `@/lib/metrics.ts`:
 - Can be reset from Settings page
 
 ### Forecast Submission (`app/dashboard/forecast/`)
-- 4-step wizard: upload → config review → processing → done
+- 4-step wizard: Import → Configuration → Calcul → Résultats
 - CSV/XLSX upload to Supabase Storage
 - N8N webhook trigger (`NEXT_PUBLIC_N8N_WEBHOOK_URL`) after job creation
 - Job polling via `useJobStatus` hook (3s interval)
 - User preferences (horizon, gating, confidence) via `useUserPreferences`
+- Success screen shows qualitative message instead of raw SMAPE ("Excellente précision" / "Bonne précision" / "Précision à surveiller")
+- Job ID hidden from end users on success screen
 
 ## Environment Variables
 
