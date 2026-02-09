@@ -44,25 +44,25 @@ interface BadgeConfig {
 
 const BADGE_CONFIG: Record<AlertType, BadgeConfig> = {
   attention: {
-    label: "Attention",
+    label: "Fiabilité faible",
     icon: AlertTriangle,
     variant: "destructive",
     priority: 1,
   },
   watch: {
-    label: "À surveiller",
+    label: "Fiabilité modérée",
     icon: AlertCircle,
     variant: "warning",
     priority: 2,
   },
   drift: {
-    label: "Comportement inhabituel",
+    label: "Changement de tendance",
     icon: TrendingDown,
     variant: "warning",
     priority: 3,
   },
   "model-changed": {
-    label: "Méthode mise à jour",
+    label: "Méthode adaptée",
     icon: RefreshCw,
     variant: "purple",
     priority: 4,
@@ -74,7 +74,7 @@ const BADGE_CONFIG: Record<AlertType, BadgeConfig> = {
     priority: 5,
   },
   gated: {
-    label: "Automatisée",
+    label: "Prévisions stables",
     icon: Zap,
     variant: "success",
     priority: 6,

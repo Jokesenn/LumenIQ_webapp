@@ -95,7 +95,7 @@ export function SeriesFiltersDropdown({
                   }
                 />
                 <span className="text-sm text-zinc-300 group-hover:text-white">
-                  Attention
+                  Fiabilité faible
                 </span>
                 <span className="ml-auto text-xs text-zinc-500">
                   ({counts.attention})
@@ -109,7 +109,7 @@ export function SeriesFiltersDropdown({
                   }
                 />
                 <span className="text-sm text-zinc-300 group-hover:text-white">
-                  Modèle changé
+                  Méthode adaptée
                 </span>
                 <span className="ml-auto text-xs text-zinc-500">
                   ({counts.modelChanged})

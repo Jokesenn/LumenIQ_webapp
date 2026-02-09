@@ -33,7 +33,7 @@ export function AlertsSummaryCard({
         <h3 className="text-sm font-medium text-zinc-400">Alertes</h3>
         {counts.gated > 0 && (
           <span className="text-xs text-emerald-400">
-            {counts.gated} séries optimisées
+            {counts.gated} séries stables
           </span>
         )}
       </div>

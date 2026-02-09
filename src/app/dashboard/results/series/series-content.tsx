@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -30,6 +30,20 @@ import { SeriesAlertBadges } from "@/components/dashboard/results/SeriesAlertBad
 import { ExportPdfButton } from "@/components/dashboard/results/ExportPdfButton";
 import type { SeriesListItem } from "@/types/forecast";
 import type { ForecastPoint } from "@/types/export";
+import type { ForecastAction } from "@/types/actions";
+import { ActionCard } from "@/components/dashboard/action-card";
+import { getSeriesAlerts, sortAlertsByPriority } from "@/lib/series-alerts";
+import { AlertBadge } from "@/components/ui/alert-badge";
+import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
+
+const ALERT_GLOSSARY_MAP: Record<string, string | undefined> = {
+  attention: "attention",
+  watch: "watch",
+  drift: "drift",
+  "model-changed": "model_changed",
+  gated: "gated",
+};
 
 interface SeriesContentProps {
   job: any;
@@ -38,6 +52,7 @@ interface SeriesContentProps {
   modelComparison: any;
   allSeries: SeriesListItem[];
   forecastPoints?: ForecastPoint[];
+  seriesActions?: ForecastAction[];
 }
 
 export function SeriesContent({
@@ -47,6 +62,7 @@ export function SeriesContent({
   modelComparison,
   allSeries,
   forecastPoints = [],
+  seriesActions = [],
 }: SeriesContentProps) {
   const chartRef = useRef<HTMLDivElement>(null);
 
@@ -96,17 +112,42 @@ export function SeriesContent({
   const scoreStatus = getScoreStatus(championScoreValue);
   const ScoreIcon = scoreStatus.Icon;
 
-  // Parse alerts si c'est une string JSON
-  const alerts =
-    typeof series.alerts === "string"
-      ? (() => {
-          try {
-            return JSON.parse(series.alerts || "[]");
-          } catch {
-            return [];
-          }
-        })()
-      : series.alerts || [];
+  // Alertes calculées depuis les flags série (zéro requête supplémentaire)
+  const computedAlerts = sortAlertsByPriority(
+    getSeriesAlerts({
+      wape: series.wape,
+      was_gated: series.was_gated,
+      drift_detected: series.drift_detected,
+      is_first_run: series.is_first_run,
+      previous_champion: series.previous_champion,
+      champion_model: series.champion_model,
+    })
+  );
+
+  // Actions riches depuis forecast_actions (état local pour dismiss optimiste)
+  const [liveActions, setLiveActions] = useState<ForecastAction[]>(seriesActions);
+
+  // Synchroniser quand on navigue vers une autre série
+  useEffect(() => {
+    setLiveActions(seriesActions);
+  }, [seriesActions]);
+
+  const handleDismissAction = useCallback(async (id: string) => {
+    setLiveActions((prev) => prev.filter((a) => a.id !== id));
+    const supabase = createClient();
+    const { error: updateError } = await supabase
+      .schema("lumeniq")
+      .from("forecast_actions")
+      .update({ status: "dismissed" as const, dismissed_at: new Date().toISOString() })
+      .eq("id", id);
+
+    if (updateError) {
+      toast.error("Erreur lors de la suppression");
+      setLiveActions(seriesActions);
+      return;
+    }
+    toast("Action ignorée", { duration: 3000 });
+  }, [seriesActions]);
 
   // Parse behavior_tags si c'est une string JSON
   const behaviorTags =
@@ -440,18 +481,45 @@ export function SeriesContent({
                 </div>
               </div>
 
-              {/* Alerts from series */}
-              {alerts.length > 0 ? (
-                alerts.map((alert: string, i: number) => (
-                  <div
-                    key={i}
-                    className="flex items-start gap-3 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20"
-                  >
-                    <AlertTriangle className="w-5 h-5 text-amber-400 mt-0.5" />
-                    <p className="text-sm text-zinc-300">{alert}</p>
-                  </div>
-                ))
-              ) : (
+              {/* Alertes calculées (badges avec tooltips explicatifs) */}
+              {computedAlerts.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {computedAlerts.map((alert) => {
+                    const glossaryKey = ALERT_GLOSSARY_MAP[alert];
+                    const tooltip = glossaryKey ? GLOSSARY[glossaryKey] : undefined;
+                    if (tooltip) {
+                      return (
+                        <BadgeWithTooltip key={alert} tooltip={tooltip}>
+                          <AlertBadge type={alert} />
+                        </BadgeWithTooltip>
+                      );
+                    }
+                    return <AlertBadge key={alert} type={alert} />;
+                  })}
+                </div>
+              )}
+
+              {/* Actions riches depuis forecast_actions */}
+              {liveActions.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-xs text-zinc-500 uppercase tracking-wider">
+                    Recommandations
+                  </p>
+                  <AnimatePresence mode="popLayout">
+                    {liveActions.map((action) => (
+                      <ActionCard
+                        key={action.id}
+                        action={action}
+                        compact
+                        onDismiss={handleDismissAction}
+                      />
+                    ))}
+                  </AnimatePresence>
+                </div>
+              )}
+
+              {/* Aucune alerte */}
+              {computedAlerts.length === 0 && liveActions.length === 0 && (
                 <div className="flex items-start gap-3 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
                   <CheckCircle2 className="w-5 h-5 text-emerald-400 mt-0.5" />
                   <p className="text-sm text-zinc-300">

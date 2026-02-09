@@ -54,10 +54,12 @@ const PRIORITY_CONFIG: Record<
 };
 
 const TREND_CONFIG: Record<ActionTrend, { icon: typeof TrendingUp; label: string; color: string }> = {
-  worsening: { icon: TrendingUp, label: "En hausse", color: "text-red-400" },
+  worsening: { icon: TrendingUp, label: "Dégradation", color: "text-red-400" },
   stable: { icon: Minus, label: "Stable", color: "text-zinc-400" },
-  improving: { icon: TrendingDown, label: "En baisse", color: "text-emerald-400" },
+  improving: { icon: TrendingDown, label: "Amélioration", color: "text-emerald-400" },
 };
+
+export { PRIORITY_CONFIG, TREND_CONFIG };
 
 export function ActionCard({ action, compact, onDismiss, onNavigate }: ActionCardProps) {
   const config = PRIORITY_CONFIG[action.priority];

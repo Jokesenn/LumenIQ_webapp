@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { ForecastJob, JobSummary } from "@/types/database";
 import { toChampionScore, resolveSeriesErrorRatio } from "@/lib/metrics";
+import type { ForecastAction } from "@/types/actions";
 
 // Récupérer un job par ID avec son summary
 export async function getJobWithSummary(jobId: string, userId: string) {
@@ -466,6 +467,23 @@ export async function getSeriesModelComparison(jobId: string, seriesId: string, 
     modelsTested: data.models_tested != null ? Number(data.models_tested) : 0,
     ranking: modelRanking,
   };
+}
+
+// Actions spécifiques à une série (depuis forecast_actions)
+export async function getSeriesActions(jobId: string, seriesId: string, userId: string): Promise<ForecastAction[]> {
+  const supabase = await createClient();
+
+  const { data } = await supabase
+    .schema("lumeniq")
+    .from("forecast_actions")
+    .select("*")
+    .eq("job_id", jobId)
+    .eq("series_id", seriesId)
+    .eq("status", "active")
+    .order("priority", { ascending: true })
+    .order("created_at", { ascending: false });
+
+  return (data || []) as ForecastAction[];
 }
 
 // ========== COMPATIBILITÉ PAGE RESULTS ==========

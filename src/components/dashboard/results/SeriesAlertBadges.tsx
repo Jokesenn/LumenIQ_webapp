@@ -18,7 +18,10 @@ interface SeriesAlertBadgesProps {
 
 const ALERT_GLOSSARY_KEY: Record<string, string | undefined> = {
   attention: "attention",
+  watch: "watch",
+  drift: "drift",
   "model-changed": "model_changed",
+  gated: "gated",
 };
 
 export function SeriesAlertBadges({

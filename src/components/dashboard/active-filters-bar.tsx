@@ -65,7 +65,7 @@ export function ActiveFiltersBar({
 
       {filters.attention && (
         <FilterChip
-          label="Attention"
+          label="Fiabilité faible"
           onRemove={() =>
             onFiltersChange({ ...filters, attention: false })
           }
@@ -74,7 +74,7 @@ export function ActiveFiltersBar({
 
       {filters.modelChanged && (
         <FilterChip
-          label="Modèle changé"
+          label="Méthode adaptée"
           onRemove={() =>
             onFiltersChange({ ...filters, modelChanged: false })
           }

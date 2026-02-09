@@ -207,19 +207,19 @@ export const GLOSSARY: Record<string, ReactNode> = {
 
   model_changed: (
     <div>
-      <p className="font-medium mb-2">Pourquoi ce badge ?</p>
+      <p className="font-medium mb-2">Méthode adaptée</p>
       <p className="text-white/70 text-sm">
         Le comportement de ce produit a évolué depuis la dernière analyse. LumenIQ a trouvé une meilleure approche pour le prévoir.
       </p>
       <p className="text-white/50 text-xs mt-3">
-        C&apos;est normal et souvent positif — le système s&apos;adapte.
+        C&apos;est normal et souvent positif — le système s&apos;adapte automatiquement.
       </p>
     </div>
   ),
 
   attention: (
     <div>
-      <p className="font-medium mb-2">Pourquoi ce badge ?</p>
+      <p className="font-medium mb-2">Fiabilité faible</p>
       <p className="text-white/70 text-sm">
         Les prévisions de ce produit sont moins fiables que la moyenne. Causes possibles :
       </p>
@@ -229,7 +229,48 @@ export const GLOSSARY: Record<string, ReactNode> = {
         <li>• Événement exceptionnel dans les données</li>
       </ul>
       <p className="text-white/50 text-xs mt-3">
-        Vérifiez les données sources de ce produit.
+        Vérifiez les données sources de ce produit et ajoutez une marge de sécurité à vos commandes.
+      </p>
+    </div>
+  ),
+
+  watch: (
+    <div>
+      <p className="font-medium mb-2">Fiabilité modérée</p>
+      <p className="text-white/70 text-sm">
+        La précision des prévisions pour ce produit est acceptable mais pas optimale. L&apos;écart entre les prévisions et la réalité est modéré.
+      </p>
+      <p className="text-white/50 text-xs mt-3">
+        Prévoyez une marge de sécurité sur vos commandes et surveillez l&apos;évolution lors des prochaines analyses.
+      </p>
+    </div>
+  ),
+
+  drift: (
+    <div>
+      <p className="font-medium mb-2">Changement de tendance</p>
+      <p className="text-white/70 text-sm">
+        Le profil de ventes de ce produit a significativement évolué par rapport aux analyses précédentes. Cela peut être lié à :
+      </p>
+      <ul className="text-sm space-y-1 mt-2 text-white/60">
+        <li>• Un changement saisonnier</li>
+        <li>• Une promotion ou un événement commercial</li>
+        <li>• Une évolution du marché</li>
+      </ul>
+      <p className="text-white/50 text-xs mt-3">
+        LumenIQ a relancé une analyse complète pour s&apos;adapter à ce changement.
+      </p>
+    </div>
+  ),
+
+  gated: (
+    <div>
+      <p className="font-medium mb-2">Prévisions stables</p>
+      <p className="text-white/70 text-sm">
+        Ce produit a un historique de ventes régulier et les prévisions précédentes étaient fiables. LumenIQ a conservé la même méthode de calcul.
+      </p>
+      <p className="text-white/50 text-xs mt-3">
+        C&apos;est un bon signe — ce produit est prévisible et les prévisions sont fiables pour vos commandes.
       </p>
     </div>
   ),

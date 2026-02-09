@@ -7,6 +7,7 @@ import {
   getSeriesForecastData,
   getJobWithSummary,
   getJobSeriesList,
+  getSeriesActions,
 } from "@/lib/queries/results";
 import { SeriesContent } from "./series-content";
 
@@ -31,13 +32,14 @@ export default async function SeriesPage({ searchParams }: SeriesPageProps) {
 
   const decodedSeriesId = decodeURIComponent(seriesId);
 
-  const [{ job }, seriesDetails, chartData, modelComparison, allSeries, forecastData] = await Promise.all([
+  const [{ job }, seriesDetails, chartData, modelComparison, allSeries, forecastData, seriesActions] = await Promise.all([
     getJobWithSummary(jobId, user.id),
     getSeriesDetails(jobId, decodedSeriesId, user.id),
     getSeriesChartData(jobId, decodedSeriesId, user.id),
     getSeriesModelComparison(jobId, decodedSeriesId, user.id),
     getJobSeriesList(jobId, user.id).catch(() => []),
     getSeriesForecastData(jobId, decodedSeriesId, user.id).catch(() => []),
+    getSeriesActions(jobId, decodedSeriesId, user.id).catch(() => []),
   ]);
 
   if (!job || !seriesDetails) {
@@ -60,6 +62,7 @@ export default async function SeriesPage({ searchParams }: SeriesPageProps) {
       modelComparison={modelComparison}
       allSeries={allSeries}
       forecastPoints={forecastPoints}
+      seriesActions={seriesActions}
     />
   );
 }
