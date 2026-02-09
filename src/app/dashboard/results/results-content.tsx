@@ -259,14 +259,16 @@ export function ResultsContent({
                   helpKey="championScore"
                 />
               </div>
-              {metrics?.global_mape != null && (
+              {metrics?.global_mase != null && (
                 <MetricGaugeCard
-                  label="Erreur moyenne"
-                  value={metrics.global_mape}
-                  description="Écart moyen toutes séries confondues"
-                  thresholds={{ good: 10, warning: 20 }}
+                  label="Indice prédictif"
+                  value={metrics.global_mase * 100}
+                  unit="/100"
+                  description="< 100 = meilleur que la référence naïve"
+                  thresholds={{ good: 80, warning: 100 }}
+                  inverted={true}
                   delay={0.1}
-                  helpKey="mape"
+                  helpKey="mase"
                 />
               )}
               <div data-onboarding="bias-gauge">

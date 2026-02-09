@@ -56,6 +56,18 @@ export const GLOSSARY: Record<string, ReactNode> = {
     </div>
   ),
 
+  mase: (
+    <div>
+      <p className="font-medium mb-2">Indice prédictif (MASE)</p>
+      <p className="text-white/70 text-sm mb-3">
+        Le MASE compare la qualité de vos prévisions à une méthode de référence simple (naïve saisonnière).
+      </p>
+      <p className="text-white/70 text-sm">
+        Un score inférieur à 100 signifie que le modèle fait mieux que la référence. Plus le score est bas, meilleures sont les prévisions.
+      </p>
+    </div>
+  ),
+
   bias: (
     <div>
       <p className="font-medium mb-2">Risquez-vous la rupture ou le surstock ?</p>

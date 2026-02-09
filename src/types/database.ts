@@ -523,6 +523,7 @@ export interface Database {
           global_wape: number | null
           global_smape: number | null
           global_mape: number | null
+          global_mase: number | null
           global_bias_pct: number | null
           avg_interval_width_pct: number | null
           n_series_total: number
@@ -548,6 +549,7 @@ export interface Database {
           global_wape?: number | null
           global_smape?: number | null
           global_mape?: number | null
+          global_mase?: number | null
           global_bias_pct?: number | null
           avg_interval_width_pct?: number | null
           n_series_total: number
@@ -573,6 +575,7 @@ export interface Database {
           global_wape?: number | null
           global_smape?: number | null
           global_mape?: number | null
+          global_mase?: number | null
           global_bias_pct?: number | null
           avg_interval_width_pct?: number | null
           n_series_total?: number
