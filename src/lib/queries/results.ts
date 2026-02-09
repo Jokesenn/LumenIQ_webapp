@@ -48,7 +48,7 @@ export async function getJobMetrics(jobId: string, userId: string) {
     ...data,
     global_wape: data.global_wape != null ? Number(data.global_wape) * 100 : null,
     global_smape: data.global_smape != null ? Number(data.global_smape) * 100 : null,
-    global_mape: data.global_mape != null ? Number(data.global_mape) * 100 : null,
+    global_mape: data.global_mape != null ? Math.min(Number(data.global_mape) * 100, 100) : null,
     global_bias_pct: data.global_bias_pct != null ? Number(data.global_bias_pct) : data.global_bias_pct,
     championScore: toChampionScore(
       data.global_wape != null ? Number(data.global_wape)
