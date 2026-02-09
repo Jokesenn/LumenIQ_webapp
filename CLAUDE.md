@@ -19,6 +19,7 @@ LumenIQ is a SaaS forecasting platform for SME retail/e-commerce businesses. It 
 - **Markdown**: react-markdown + remark-gfm
 - **Dates**: date-fns
 - **Compiler**: React Compiler (babel-plugin-react-compiler) enabled
+- **Testing**: Vitest + @testing-library/react + happy-dom
 
 ## Commands
 
@@ -28,6 +29,8 @@ npm run build     # Production build
 npm run start     # Production server
 npm run lint      # ESLint (flat config, v9)
 npx tsc           # Type-check (no emit)
+npm test          # Run unit tests (Vitest)
+npm run test:watch # Watch mode
 ```
 
 ## Project Structure
@@ -214,7 +217,7 @@ src/
 │   ├── series-alerts.ts         # getSeriesAlerts(), sortAlertsByPriority(), countAlertsByType()
 │   ├── linkify-skus.ts          # SKU linkification in markdown content
 │   ├── parse-markdown-sections.ts  # Split markdown by H2 headers for accordions
-│   ├── glossary.tsx             # Help tooltip content definitions (championScore, wape, smape, bias, reliable_series, etc.)
+│   ├── glossary.tsx             # Help tooltip content definitions (championScore, wape, smape, bias, reliable_series, attention, watch, drift, gated, model_changed, etc.)
 │   ├── onboarding.ts            # Tour completion state (localStorage)
 │   ├── mock-data.ts             # Development mock data
 │   ├── supabase/
@@ -222,7 +225,7 @@ src/
 │   │   └── client.ts            # Browser-side Supabase client (singleton, schema: lumeniq)
 │   └── queries/
 │       ├── dashboard.ts         # getDashboardStats(), getModelPerformance(), etc.
-│       └── results.ts           # getJobMetrics(), getTopBottomSeries(), getSeriesDetails(), etc.
+│       └── results.ts           # getJobMetrics(), getTopBottomSeries(), getSeriesDetails(), getSeriesActions(), etc.
 │
 └── types/
     ├── database.ts              # Supabase-generated schema types (lumeniq schema)
@@ -281,9 +284,9 @@ src/
 | Bias | Biais prévision | Results overview gauge |
 | CV (coefficient of variation) | Variabilité | Series detail, PDF |
 | Champion model | Méthode retenue | PDF export, series detail |
-| Gated | Automatisée | Alert badge, PDF |
-| Drift | Comportement inhabituel | Alert badge |
-| Model changed | Méthode mise à jour | Alert badge |
+| Gated | Prévisions stables | Alert badge, PDF |
+| Drift | Changement de tendance | Alert badge |
+| Model changed | Méthode adaptée | Alert badge |
 | Backtesting | Validation sur historique | Forecast wizard |
 | Upload | Import | Forecast wizard step label |
 | Forecast | Prévision | All user-facing text |
@@ -321,10 +324,15 @@ Conversion functions in `@/lib/metrics.ts`:
 - Frontend (`getSeriesModelComparison`) handles both formats
 
 ### Series Alerts
-- Alert logic in `@/lib/series-alerts.ts`: `getSeriesAlerts()` returns alert types based on WAPE thresholds (>20% = Attention, >15% = À surveiller), gating, drift, model changes
+- Alert logic in `@/lib/series-alerts.ts`: `getSeriesAlerts()` returns alert types based on WAPE thresholds (>20% = Fiabilité faible, >15% = Fiabilité modérée), gating, drift, model changes
 - Alert badges rendered by `SeriesAlertBadges` component using `AlertBadge` from `components/ui/alert-badge.tsx`
 - `AlertsSummaryCard` shows aggregate alert counts on the results overview
-- Badge labels (French): Attention, À surveiller, Comportement inhabituel, Méthode mise à jour, Nouveau produit, Automatisée
+- Badge labels (French, business-friendly): Fiabilité faible, Fiabilité modérée, Changement de tendance, Méthode adaptée, Nouveau produit, Prévisions stables
+- Series detail page "Alertes et observations" section combines:
+  - **Computed alerts** (badges from `getSeriesAlerts()`) with glossary tooltips
+  - **Rich actions** from `forecast_actions` table via `getSeriesActions()` query, rendered as `ActionCard` components with dismiss support
+- Glossary tooltips available for all alert types: `attention`, `watch`, `drift`, `model_changed`, `gated`
+- Trend labels on action cards: Dégradation (red), Stable (neutral), Amélioration (green)
 
 ### Model Labels (`lib/model-labels.ts`)
 - `MODEL_LABELS`: maps 24+ technical model names to French labels and family categories
@@ -350,7 +358,7 @@ Conversion functions in `@/lib/metrics.ts`:
 - `ActionsBoard` renders `ActionsSummaryCard` (executive summary) + `ActionCard[]` (per-action cards with priority colors, dismiss, navigate)
 - Actions are dismissible (optimistic update + undo toast) via `status = "dismissed"` in `forecast_actions` table
 - Priority levels: urgent (red), warning (orange), info (blue), clear (green)
-- Recurrence badges ("3e fois") and trend indicators ("En hausse" / "En baisse") from multi-run enrichment
+- Recurrence badges ("3e fois") and trend indicators ("Dégradation" / "Amélioration") from multi-run enrichment
 
 ### Results Download (`app/dashboard/results/actions.ts`)
 - "Télécharger" button on results overview page
@@ -400,9 +408,14 @@ Required (set in `.env.local`):
 - `NEXT_PUBLIC_N8N_WEBHOOK_URL` — N8N webhook for forecast job trigger
 - `NEXT_PUBLIC_N8N_CHAT_WEBHOOK_URL` — N8N webhook for AI chat
 
-## No Test Suite
+## Testing
 
-There is currently no testing framework configured. No Jest, Vitest, or other test runner.
+- **Framework**: Vitest v4 with happy-dom environment
+- **Config**: `vitest.config.ts` at project root
+- **Test files**: `src/**/__tests__/*.test.{ts,tsx}`
+- **Commands**: `npm test` (single run), `npm run test:watch` (watch mode)
+- **Current tests**: Unit tests for alert logic (`series-alerts`), alert badge config (`alert-badge`), action card config (`action-card`)
+- Tests validate: alert thresholds, priority ordering, absence of technical jargon in user-facing labels, color coherence with severity levels
 
 ## No CI/CD
 
