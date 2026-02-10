@@ -126,12 +126,12 @@ export const faqItems = [
   {
     id: "nombre-modeles",
     question: "Combien de modèles sont disponibles ?",
-    answer: "Jusqu'à 24 modèles organisés en 3 packs progressifs : Standard (17 modèles statistiques éprouvés), ML (22 modèles incluant le machine learning pour plus de précision), et Foundation (24+ modèles incluant les fondation models les plus avancés). Pour chaque série, le meilleur modèle est sélectionné automatiquement grâce au backtesting."
+    answer: "Jusqu'à 24 modèles organisés en 3 packs progressifs : Standard (17 modèles statistiques éprouvés), ML (22 modèles incluant le machine learning pour plus de précision), et Premium (24+ modèles incluant les foundation models les plus avancés). Pour chaque série, le meilleur modèle est sélectionné automatiquement grâce au backtesting."
   },
   {
     id: "integration",
     question: "Puis-je intégrer LumenIQ à mon système existant ?",
-    answer: "Oui, le plan Foundation (299 €/mois) inclut un accès API REST complet. Vous pouvez automatiser vos prévisions et intégrer les résultats (fichiers de prévision, métriques, rapports) directement dans votre ERP ou outil de BI. Un connecteur Shopify est également prévu prochainement."
+    answer: "Oui, le plan Premium (299 €/mois) inclut un accès API REST complet. Vous pouvez automatiser vos prévisions et intégrer les résultats (fichiers de prévision, métriques, rapports) directement dans votre ERP ou outil de BI. Un connecteur Shopify est également prévu prochainement."
   },
 ];
 

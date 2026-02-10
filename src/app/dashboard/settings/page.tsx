@@ -240,7 +240,7 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* API (Foundation) */}
+        {/* API (Premium) */}
         <div
           className={`bg-zinc-900/50 rounded-xl border border-white/[0.08] p-6 ${
             profile?.plan !== "premium" ? "opacity-60" : ""

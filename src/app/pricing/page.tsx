@@ -7,7 +7,7 @@ import { PLANS_LIST as pricingPlans, TRIAL_DURATION_MONTHS, type PricingPlan } f
 const icons: Record<string, React.ReactNode> = {
   Standard: <BarChart3 size={20} />,
   ML: <Cpu size={20} />,
-  Foundation: <Brain size={20} />,
+  Premium: <Brain size={20} />,
 };
 
 export default function PricingPage() {
@@ -44,13 +44,13 @@ export default function PricingPage() {
                       <th className="text-left py-3 px-4 text-zinc-500">Fonctionnalité</th>
                       <th className="text-center py-3 px-4 text-white">Standard</th>
                       <th className="text-center py-3 px-4 text-indigo-400">ML &#11088;</th>
-                      <th className="text-center py-3 px-4 text-amber-400">Foundation</th>
+                      <th className="text-center py-3 px-4 text-amber-400">Premium</th>
                     </tr>
                   </thead>
                   <tbody>
                     {[
                       ["Séries / mois", "50", "150", "300"],
-                      ["Modèles disponibles", "17 stats", "22 (+ ML)", "24+ (+ Foundation)"],
+                      ["Modèles disponibles", "17 stats", "22 (+ ML)", "24+ (+ Premium)"],
                       ["Ridge / LightGBM", "❌", "✅", "✅"],
                       ["TimeGPT", "❌", "❌", "✅"],
                       ["EnsembleTop2", "❌", "❌", "✅"],

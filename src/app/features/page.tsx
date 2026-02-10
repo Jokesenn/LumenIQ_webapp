@@ -18,11 +18,11 @@ const featureSections = [
   {
     title: "Jusqu'à 24 modèles en 3 packs",
     description:
-      "Une bibliothèque complète organisée en 3 packs progressifs : Standard (17 modèles stats), ML (+5 modèles ML), Foundation (+TimeGPT & EnsembleTop2). Chaque série est automatiquement associée au modèle champion.",
+      "Une bibliothèque complète organisée en 3 packs progressifs : Standard (17 modèles stats), ML (+5 modèles ML), Premium (+TimeGPT & EnsembleTop2). Chaque série est automatiquement associée au modèle champion.",
     benefits: [
       "Standard : 17 modèles statistiques éprouvés (AutoARIMA, ETS, Theta, Croston...)",
       "ML : Ridge, LightGBM (75% win-rate séries stables), Hurdle+ (ML-enhanced)",
-      "Foundation : TimeGPT (zero-shot, court historique), EnsembleTop2",
+      "Premium : TimeGPT (zero-shot, court historique), EnsembleTop2",
       "Sélection automatique du champion par cross-validation temporelle",
     ],
   },

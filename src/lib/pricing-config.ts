@@ -57,13 +57,13 @@ export const PLANS: Record<string, PricingPlan> = {
       "Support email 24h",
     ],
   },
-  foundation: {
-    name: "Foundation",
+  premium: {
+    name: "Premium",
     price: 299,
     models: 24,
     series: 300,
     history: 90,
-    description: "Foundation Models + Support prioritaire",
+    description: "Modèles avancés + Support prioritaire",
     badge: "PREMIUM",
     icon: "Crown",
     gradient: "from-amber-500 to-orange-500",
@@ -79,15 +79,15 @@ export const PLANS: Record<string, PricingPlan> = {
   },
 };
 
-export const PLANS_LIST: PricingPlan[] = [PLANS.standard, PLANS.ml, PLANS.foundation];
+export const PLANS_LIST: PricingPlan[] = [PLANS.standard, PLANS.ml, PLANS.premium];
 
 export const TRIAL_DURATION_MONTHS = 3;
 
 export const MODEL_COUNTS = {
   standard: PLANS.standard.models,
   ml: PLANS.ml.models,
-  foundation: PLANS.foundation.models,
+  premium: PLANS.premium.models,
 };
 
 // Chiffre générique pour les sections marketing (hero, comparison, etc.)
-export const MAX_MODELS = PLANS.foundation.models; // 24
+export const MAX_MODELS = PLANS.premium.models; // 24
