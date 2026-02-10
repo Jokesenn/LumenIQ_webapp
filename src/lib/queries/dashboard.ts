@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
-import { toChampionScore, resolveSeriesErrorRatio } from "@/lib/metrics";
+import { toChampionScore } from "@/lib/metrics";
+import type { ForecastAction } from "@/types/actions";
 
 const PLAN_LIMITS: Record<string, number> = {
   standard: 50,
@@ -7,16 +8,9 @@ const PLAN_LIMITS: Record<string, number> = {
   premium: 300,
 };
 
-// Stats générales du dashboard
+// Stats générales du dashboard (cockpit de décision)
 export async function getDashboardStats(userId: string) {
   const supabase = await createClient();
-
-  // Nombre total de séries analysées (tous jobs)
-  const { count: totalSeries } = await supabase
-    .schema("lumeniq")
-    .from("forecast_results")
-    .select("*", { count: "exact", head: true })
-    .eq("user_id", userId);
 
   // Nombre de forecasts ce mois
   const startOfMonth = new Date();
@@ -31,7 +25,7 @@ export async function getDashboardStats(userId: string) {
     .eq("status", "completed")
     .gte("created_at", startOfMonth.toISOString());
 
-  // Champion Score moyen global (basé sur WAPE, fallback SMAPE)
+  // Champion Score moyen global (basé sur WAPE, fallback SMAPE) — derniers 10 runs
   const { data: scoreData } = await supabase
     .schema("lumeniq")
     .from("job_summaries")
@@ -51,27 +45,36 @@ export async function getDashboardStats(userId: string) {
         }, 0) / scoreData.length
       : 0;
 
-  // Temps moyen de traitement
-  const { data: durationData } = await supabase
+  // Scores individuels pour calcul de tendance (dernier run vs avant-dernier)
+  const resolveRatio = (d: { global_wape: unknown; global_smape: unknown }) =>
+    d.global_wape != null ? Number(d.global_wape)
+      : d.global_smape != null ? Number(d.global_smape)
+      : null;
+  const latestScore = scoreData?.[0] ? toChampionScore(resolveRatio(scoreData[0])) : null;
+  const previousScore = scoreData?.[1] ? toChampionScore(resolveRatio(scoreData[1])) : null;
+
+  // Dernière prévision complétée
+  const { data: lastJob } = await supabase
     .schema("lumeniq")
-    .from("job_summaries")
-    .select("duration_sec")
+    .from("forecast_jobs")
+    .select("created_at")
     .eq("user_id", userId)
+    .eq("status", "completed")
     .order("created_at", { ascending: false })
-    .limit(10);
+    .limit(1)
+    .maybeSingle();
 
-  const avgDuration =
-    durationData?.length
-      ? durationData.reduce((sum, d) => sum + (d.duration_sec || 0), 0) / durationData.length
-      : 0;
-
-  // Quota utilisateur (depuis profiles)
+  // Profil utilisateur (quota + nom)
   const { data: profile } = await supabase
     .schema("lumeniq")
     .from("profiles")
-    .select("plan, series_used_this_period")
+    .select("plan, series_used_this_period, full_name, email")
     .eq("id", userId)
     .single();
+
+  const userName = profile?.full_name?.split(" ")[0]
+    ?? profile?.email?.split("@")[0]
+    ?? "";
 
   // Jours jusqu'à la fin du mois (reset quota)
   const now = new Date();
@@ -79,10 +82,12 @@ export async function getDashboardStats(userId: string) {
   const daysUntilReset = Math.max(0, Math.ceil((endOfMonth.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
 
   return {
-    totalSeries: totalSeries || 0,
+    userName,
     forecastsThisMonth: forecastsThisMonth || 0,
     avgChampionScore,
-    avgDuration,
+    latestScore,
+    previousScore,
+    lastForecastAt: lastJob?.created_at ?? null,
     daysUntilReset,
     quota: {
       used: profile?.series_used_this_period ?? 0,
@@ -92,169 +97,92 @@ export async function getDashboardStats(userId: string) {
   };
 }
 
-// Performance des modèles
-export interface ModelPerformanceItem {
-  model: string;
-  count: number;
-  percentage: number;
-  avgChampionScore?: number;
+// Données de tendance pour le sparkline (10 derniers runs)
+export interface TrendDataPoint {
+  jobId: string;
+  score: number;
+  date: string | null;
+  seriesCount: number;
 }
 
-export async function getModelPerformance(userId: string): Promise<ModelPerformanceItem[]> {
+export async function getTrendData(userId: string): Promise<TrendDataPoint[]> {
   const supabase = await createClient();
 
+  // Fetch les 10 plus récents (desc), puis on inverse pour l'affichage chronologique
   const { data } = await supabase
     .schema("lumeniq")
-    .from("forecast_results")
-    .select("champion_model, champion_score, smape, wape")
-    .eq("user_id", userId);
-
-  if (!data?.length) return [];
-
-  // Agréger par modèle
-  const modelStats: Record<string, { count: number; totalChampionScore: number }> = {};
-
-  data.forEach((row) => {
-    const model = row.champion_model || "Unknown";
-    if (!modelStats[model]) {
-      modelStats[model] = { count: 0, totalChampionScore: 0 };
-    }
-    modelStats[model].count++;
-    modelStats[model].totalChampionScore += toChampionScore(resolveSeriesErrorRatio(row)) ?? 0;
-  });
-
-  const total = data.length;
-
-  return Object.entries(modelStats)
-    .map(([model, stats]) => ({
-      model,
-      count: stats.count,
-      percentage: (stats.count / total) * 100,
-      avgChampionScore: stats.totalChampionScore / stats.count,
-    }))
-    .sort((a, b) => b.percentage - a.percentage)
-    .slice(0, 8); // Top 8 modèles
-}
-
-// Distribution ABC/XYZ
-export interface AbcXyzCell {
-  abc: "A" | "B" | "C";
-  xyz: "X" | "Y" | "Z";
-  count: number;
-  percentage: number;
-}
-
-export async function getAbcXyzDistribution(
-  userId: string,
-  jobId?: string
-): Promise<AbcXyzCell[]> {
-  const supabase = await createClient();
-
-  let query = supabase
-    .schema("lumeniq")
-    .from("forecast_results")
-    .select("abc_class, xyz_class")
-    .eq("user_id", userId);
-
-  if (jobId) {
-    query = query.eq("job_id", jobId);
-  }
-
-  const { data } = await query;
-
-  if (!data?.length) return [];
-
-  // Compter par cellule
-  const cells: Record<string, number> = {};
-  const total = data.length;
-
-  data.forEach((row) => {
-    const key = `${row.abc_class}-${row.xyz_class}`;
-    cells[key] = (cells[key] || 0) + 1;
-  });
-
-  // Formater pour la matrice
-  const abcValues: ("A" | "B" | "C")[] = ["A", "B", "C"];
-  const xyzValues: ("X" | "Y" | "Z")[] = ["X", "Y", "Z"];
-
-  return abcValues.flatMap((abc) =>
-    xyzValues.map((xyz) => ({
-      abc,
-      xyz,
-      count: cells[`${abc}-${xyz}`] || 0,
-      percentage: ((cells[`${abc}-${xyz}`] || 0) / total) * 100,
-    }))
-  );
-}
-
-// Données pour le graphique Forecast vs Actuals agrégé
-export interface ChartDataPoint {
-  date: string;
-  actual?: number;
-  forecast?: number;
-  forecastLower?: number;
-  forecastUpper?: number;
-}
-
-export async function getAggregatedChartData(
-  userId: string,
-  jobId?: string
-): Promise<ChartDataPoint[]> {
-  const supabase = await createClient();
-
-  let query = supabase
-    .schema("lumeniq")
-    .from("job_monthly_aggregates")
-    .select("ds, actual_sum, forecast_sum, forecast_lower_sum, forecast_upper_sum, is_forecast")
+    .from("job_summaries")
+    .select("job_id, global_wape, global_smape, created_at, n_series_total")
     .eq("user_id", userId)
-    .order("ds", { ascending: true });
+    .order("created_at", { ascending: false })
+    .limit(10);
 
-  if (jobId) {
-    query = query.eq("job_id", jobId);
-  } else {
-    // Prendre le dernier job
-    const { data: lastJob } = await supabase
-      .schema("lumeniq")
-      .from("forecast_jobs")
-      .select("id")
-      .eq("user_id", userId)
-      .eq("status", "completed")
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .single();
-
-    if (lastJob) {
-      query = query.eq("job_id", lastJob.id);
-    }
-  }
-
-  const { data } = await query;
-
-  if (!data?.length) return [];
-
-  return data.map((row) => ({
-    date: new Date(row.ds).toLocaleDateString("fr-FR", {
-      month: "short",
-      year: "2-digit",
-    }),
-    actual: row.is_forecast ? undefined : row.actual_sum,
-    forecast: row.is_forecast ? row.forecast_sum : undefined,
-    forecastLower: row.is_forecast ? row.forecast_lower_sum : undefined,
-    forecastUpper: row.is_forecast ? row.forecast_upper_sum : undefined,
-  }));
+  return (data ?? []).reverse().map((d) => {
+    const ratio = d.global_wape != null ? Number(d.global_wape)
+      : d.global_smape != null ? Number(d.global_smape)
+      : null;
+    return {
+      jobId: d.job_id,
+      score: toChampionScore(ratio) ?? 0,
+      date: d.created_at,
+      seriesCount: d.n_series_total ?? 0,
+    };
+  });
 }
 
-// Recent forecasts avec plus de détails
+// Actions urgentes pour le dashboard
+export interface UrgentActionsData {
+  counts: { urgent: number; warning: number; info: number };
+  total: number;
+  topActions: ForecastAction[];
+}
+
+export async function getUrgentActions(userId: string): Promise<UrgentActionsData> {
+  const supabase = await createClient();
+
+  // Compteur par priorité (actions actives uniquement)
+  const { data: allActive } = await supabase
+    .schema("lumeniq")
+    .from("forecast_actions")
+    .select("priority")
+    .eq("client_id", userId)
+    .eq("status", "active");
+
+  const counts = { urgent: 0, warning: 0, info: 0 };
+  (allActive ?? []).forEach((a) => {
+    const p = a.priority as keyof typeof counts;
+    if (p in counts) counts[p]++;
+  });
+
+  // Top 5 actions urgentes/warning
+  const { data: topActions } = await supabase
+    .schema("lumeniq")
+    .from("forecast_actions")
+    .select("*")
+    .eq("client_id", userId)
+    .eq("status", "active")
+    .in("priority", ["urgent", "warning"])
+    .order("priority", { ascending: true })
+    .order("created_at", { ascending: false })
+    .limit(5);
+
+  return {
+    counts,
+    total: (allActive ?? []).length,
+    topActions: (topActions ?? []) as ForecastAction[],
+  };
+}
+
+// Dernières prévisions enrichies (score + actions)
 export interface RecentForecastItem {
   id: string;
   filename: string | null;
   status: string;
   createdAt: string | null;
-  completedAt: string | null;
   seriesCount: number;
-  championScore?: number;
-  smape?: number;
-  duration?: number;
+  score: number | null;
+  duration: number | null;
+  actions: { urgent: number; warning: number; total: number };
 }
 
 export async function getRecentForecasts(
@@ -271,7 +199,6 @@ export async function getRecentForecasts(
       filename,
       status,
       created_at,
-      completed_at,
       series_count
     `)
     .eq("user_id", userId)
@@ -280,8 +207,9 @@ export async function getRecentForecasts(
 
   if (!jobs?.length) return [];
 
-  // Enrichir avec les summaries
   const jobIds = jobs.map((j) => j.id);
+
+  // Enrichir avec les summaries
   const { data: summaries } = await supabase
     .schema("lumeniq")
     .from("job_summaries")
@@ -289,6 +217,23 @@ export async function getRecentForecasts(
     .in("job_id", jobIds);
 
   const summaryMap = new Map(summaries?.map((s) => [s.job_id, s]));
+
+  // Compter les actions par job
+  const { data: actionsByJob } = await supabase
+    .schema("lumeniq")
+    .from("forecast_actions")
+    .select("job_id, priority")
+    .eq("client_id", userId)
+    .eq("status", "active")
+    .in("job_id", jobIds);
+
+  const actionCounts: Record<string, { urgent: number; warning: number; total: number }> = {};
+  (actionsByJob ?? []).forEach((a) => {
+    if (!actionCounts[a.job_id]) actionCounts[a.job_id] = { urgent: 0, warning: 0, total: 0 };
+    actionCounts[a.job_id].total++;
+    if (a.priority === "urgent") actionCounts[a.job_id].urgent++;
+    if (a.priority === "warning") actionCounts[a.job_id].warning++;
+  });
 
   return jobs.map((job) => {
     const summary = summaryMap.get(job.id);
@@ -299,13 +244,12 @@ export async function getRecentForecasts(
     return {
       id: job.id,
       filename: job.filename,
-      status: job.status,
+      status: job.status ?? "pending",
       createdAt: job.created_at,
-      completedAt: job.completed_at,
       seriesCount: job.series_count || 0,
-      championScore: toChampionScore(ratio) ?? undefined,
-      smape: ratio != null ? ratio * 100 : undefined,
-      duration: summary?.duration_sec,
+      score: toChampionScore(ratio),
+      duration: summary?.duration_sec ?? null,
+      actions: actionCounts[job.id] ?? { urgent: 0, warning: 0, total: 0 },
     };
   });
 }

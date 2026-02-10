@@ -2,9 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import {
   getDashboardStats,
-  getModelPerformance,
-  getAbcXyzDistribution,
-  getAggregatedChartData,
+  getTrendData,
+  getUrgentActions,
   getRecentForecasts,
 } from "@/lib/queries/dashboard";
 import { DashboardContent } from "./dashboard-content";
@@ -17,21 +16,18 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  // Fetch all data in parallel
-  const [stats, modelPerformance, abcXyzData, chartData, recentForecasts] = await Promise.all([
+  const [stats, trendData, urgentActions, recentForecasts] = await Promise.all([
     getDashboardStats(user.id),
-    getModelPerformance(user.id),
-    getAbcXyzDistribution(user.id),
-    getAggregatedChartData(user.id),
+    getTrendData(user.id),
+    getUrgentActions(user.id),
     getRecentForecasts(user.id),
   ]);
 
   return (
     <DashboardContent
       stats={stats}
-      modelPerformance={modelPerformance}
-      abcXyzData={abcXyzData}
-      chartData={chartData}
+      trendData={trendData}
+      urgentActions={urgentActions}
       recentForecasts={recentForecasts}
     />
   );

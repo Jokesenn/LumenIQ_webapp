@@ -9,9 +9,9 @@ import { cn } from "@/lib/utils";
 
 export function FAQSection() {
   return (
-    <section className="relative py-32 overflow-hidden">
+    <section id="faq" aria-label="Questions fréquentes" className="relative py-20 overflow-hidden">
       <div className="relative z-10 max-w-3xl mx-auto px-6">
-        <div className="text-center mb-20">
+        <div className="text-center mb-14">
           <FadeIn>
             <motion.div
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6"
@@ -32,7 +32,7 @@ export function FAQSection() {
         <StaggerChildren staggerDelay={0.1} className="space-y-3">
           {faqItems.map((item, index) => (
             <StaggerItem key={index}>
-              <FAQItem question={item.question} answer={item.answer} />
+              <FAQItem id={item.id} question={item.question} answer={item.answer} />
             </StaggerItem>
           ))}
         </StaggerChildren>
@@ -42,15 +42,17 @@ export function FAQSection() {
 }
 
 interface FAQItemProps {
+  id: string;
   question: string;
   answer: string;
 }
 
-function FAQItem({ question, answer }: FAQItemProps) {
+function FAQItem({ id, question, answer }: FAQItemProps) {
   const [open, setOpen] = useState(false);
 
   return (
     <motion.div
+      id={id}
       className={cn(
         "rounded-2xl border overflow-hidden transition-colors",
         open ? "border-indigo-500/30 bg-white/5" : "border-white/5 bg-zinc-900/50 hover:border-white/10"
@@ -59,6 +61,8 @@ function FAQItem({ question, answer }: FAQItemProps) {
     >
       <button
         onClick={() => setOpen(!open)}
+        aria-expanded={open}
+        aria-controls={`${id}-answer`}
         className="w-full p-6 flex justify-between items-center text-left"
       >
         <span className="text-[15px] font-semibold text-white pr-4">{question}</span>
@@ -77,7 +81,7 @@ function FAQItem({ question, answer }: FAQItemProps) {
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: [0.21, 0.47, 0.32, 0.98] }}
           >
-            <div className="px-6 pb-6">
+            <div id={`${id}-answer`} role="region" aria-labelledby={id} className="px-6 pb-6">
               <p className="text-sm text-zinc-400 leading-relaxed">
                 {answer}
               </p>

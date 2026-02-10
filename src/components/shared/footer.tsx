@@ -4,26 +4,21 @@ import { Linkedin, Twitter } from "lucide-react";
 
 const footerLinks = {
   product: [
-    { label: "Features", href: "/features" },
-    { label: "Pricing", href: "/pricing" },
-    { label: "Documentation", href: "#" },
-    { label: "API", href: "#" },
+    { label: "Fonctionnalités", href: "/features" },
+    { label: "Tarifs", href: "/pricing" },
+    { label: "Démo", href: "/demo" },
   ],
   company: [
-    { label: "Blog", href: "#" },
-    { label: "Contact", href: "#" },
-    { label: "À propos", href: "#" },
+    { label: "Contact", href: "/contact" },
   ],
   legal: [
-    { label: "Mentions légales", href: "#" },
-    { label: "Confidentialité", href: "#" },
-    { label: "CGU", href: "#" },
+    { label: "Mentions légales", href: "/mentions-legales" },
   ],
 };
 
 const socialLinks = [
-  { icon: Linkedin, href: "#", label: "LinkedIn" },
-  { icon: Twitter, href: "#", label: "X (Twitter)" },
+  { icon: Linkedin, href: "https://linkedin.com/company/lumeniq", label: "LinkedIn" },
+  { icon: Twitter, href: "https://x.com/lumeniq", label: "X (Twitter)" },
 ];
 
 export function Footer() {
@@ -94,7 +89,7 @@ export function Footer() {
 
         {/* Bottom */}
         <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-zinc-400">
             © 2026 LumenIQ. Tous droits réservés.
           </p>
           <div className="flex gap-4">
@@ -102,6 +97,8 @@ export function Footer() {
               <a
                 key={social.label}
                 href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-zinc-500 hover:text-white transition-colors duration-200"
                 aria-label={social.label}
               >

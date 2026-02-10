@@ -18,7 +18,7 @@ const steps = [
   {
     number: 3,
     title: "Calcul (2-5 min)",
-    description: "21 modèles en compétition, backtesting multi-fold, sélection du champion par série.",
+    description: "Jusqu'à 24 modèles en compétition, backtesting multi-fold, sélection du champion par série.",
   },
   {
     number: 4,
@@ -29,9 +29,9 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section className="relative py-32 overflow-hidden">
+    <section id="how-it-works" aria-label="Comment ça marche" className="relative py-20 overflow-hidden">
       <div className="relative z-10 max-w-7xl mx-auto px-6">
-        <div className="text-center mb-20">
+        <div className="text-center mb-14">
           <FadeIn>
             <motion.div
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6"

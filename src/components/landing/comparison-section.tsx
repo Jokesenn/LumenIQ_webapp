@@ -22,9 +22,9 @@ interface ComparisonCardProps {
 
 export function ComparisonSection() {
   return (
-    <section className="relative py-32 overflow-hidden">
+    <section id="comparison" aria-label="Comparatif" className="relative py-20 overflow-hidden">
       <div className="relative z-10 max-w-7xl mx-auto px-6">
-        <div className="text-center mb-20">
+        <div className="text-center mb-14">
           <FadeIn>
             <motion.div
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6"
@@ -59,7 +59,7 @@ export function ComparisonSection() {
               items={[
                 { text: "Moyennes mobiles basiques", bad: true },
                 { text: "Pas de validation statistique", bad: true },
-                { text: "Erreur forecast : 30-50%", bad: true },
+                { text: "Erreur élevée et non mesurée", bad: true },
                 { text: "Pas de saisonnalité détectée", bad: true },
               ]}
               badge="Gratuit mais risqué"
@@ -71,12 +71,12 @@ export function ComparisonSection() {
               title="LumenIQ"
               subtitle="Le juste équilibre"
               items={[
-                { text: "21 modèles statistiques/ML", good: true },
+                { text: "Jusqu'à 24 modèles stats/ML", good: true },
                 { text: "Backtesting multi-fold automatique", good: true },
                 { text: "Routing ABC/XYZ (unique)", good: true },
                 { text: "~60% réduction temps calcul", good: true },
               ]}
-              badge="€99-249/mois"
+              badge="Dès 99 €/mois"
               badgeColor="#6366f1"
               highlight={true}
             />

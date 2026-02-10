@@ -2,12 +2,12 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles, Shield, Server, Lock, Clock } from "lucide-react";
 import { FadeIn, MagneticButton } from "@/components/animations";
 
 export function CTASection() {
   return (
-    <section className="relative py-32 overflow-hidden">
+    <section id="cta" aria-label="Appel à l'action" className="relative py-24 overflow-hidden">
       {/* Background elements */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-b from-zinc-950 via-indigo-950/20 to-zinc-950" />
@@ -49,7 +49,7 @@ export function CTASection() {
           </p>
         </FadeIn>
 
-        <FadeIn delay={0.3}>
+        <FadeIn delay={0.15}>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/login?mode=signup">
               <MagneticButton className="group px-8 py-4 bg-white text-zinc-900 rounded-xl font-semibold hover:bg-zinc-100 transition-all">
@@ -75,12 +75,23 @@ export function CTASection() {
         {/* Trust elements */}
         <FadeIn delay={0.5}>
           <div className="mt-16 pt-8 border-t border-white/5">
-            <p className="text-sm text-zinc-500 mb-4">Ils nous font confiance</p>
-            <div className="flex flex-wrap items-center justify-center gap-8 opacity-50">
-              {/* Placeholder logos - replace with real ones */}
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="w-24 h-8 bg-white/10 rounded" />
-              ))}
+            <div className="flex flex-wrap items-center justify-center gap-8 text-zinc-400 text-sm">
+              <div className="flex items-center gap-2">
+                <Shield className="w-4 h-4" />
+                <span>Conforme RGPD</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Server className="w-4 h-4" />
+                <span>Hébergé en UE</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Lock className="w-4 h-4" />
+                <span>Chiffrement AES-256</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4" />
+                <span>Essai gratuit 3 mois</span>
+              </div>
             </div>
           </div>
         </FadeIn>

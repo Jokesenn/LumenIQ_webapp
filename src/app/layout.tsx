@@ -15,14 +15,25 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://lumeniq.fr"),
   title: "LumenIQ | Prévisions professionnelles validées par backtesting",
-  description: "Transformez vos historiques de ventes en forecasts fiables. 21 modèles statistiques/ML, routing ABC/XYZ intelligent, rapports détaillés. En 5 minutes.",
-  keywords: ["forecasting", "prévisions", "e-commerce", "PME", "machine learning", "backtesting", "ABC/XYZ"],
+  description: "Transformez vos historiques de ventes en prévisions fiables. Jusqu'à 24 modèles statistiques et ML, routing ABC/XYZ intelligent, rapports détaillés. Essai gratuit 3 mois.",
+  keywords: ["forecasting", "prévisions", "e-commerce", "PME", "machine learning", "backtesting", "ABC/XYZ", "prévision de ventes", "supply chain"],
   authors: [{ name: "LumenIQ" }],
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
-    title: "LumenIQ | Forecasting professionnel pour PME",
-    description: "Moteur de prévision professionnel pour PME e-commerce. Forecasts validés par backtesting, en 5 minutes.",
+    title: "LumenIQ | Prévisions professionnelles pour PME",
+    description: "Moteur de prévision professionnel pour PME e-commerce. Jusqu'à 24 modèles, backtesting automatique. Essai gratuit 3 mois.",
     type: "website",
+    siteName: "LumenIQ",
+    locale: "fr_FR",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "LumenIQ | Prévisions professionnelles pour PME",
+    description: "Moteur de prévision professionnel pour PME e-commerce. Jusqu'à 24 modèles, backtesting automatique. Essai gratuit 3 mois.",
   },
 };
 

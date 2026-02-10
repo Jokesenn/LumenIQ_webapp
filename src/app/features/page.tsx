@@ -16,11 +16,11 @@ const featureSections = [
     ],
   },
   {
-    title: "15 Modèles en 3 Packs",
+    title: "Jusqu'à 24 modèles en 3 packs",
     description:
-      "Une bibliothèque complète organisée en 3 packs progressifs : Standard (10 modèles stats), ML (+3 modèles batch-vectorisés), Foundation (+TimeGPT). Chaque série est automatiquement associée au modèle champion.",
+      "Une bibliothèque complète organisée en 3 packs progressifs : Standard (17 modèles stats), ML (+5 modèles ML), Foundation (+TimeGPT & EnsembleTop2). Chaque série est automatiquement associée au modèle champion.",
     benefits: [
-      "Standard : Naive, SeasonalNaive, Drift, AutoETS, Theta, AutoARIMA, Croston, TSB, ADIDA, Hurdle",
+      "Standard : 17 modèles statistiques éprouvés (AutoARIMA, ETS, Theta, Croston...)",
       "ML : Ridge, LightGBM (75% win-rate séries stables), Hurdle+ (ML-enhanced)",
       "Foundation : TimeGPT (zero-shot, court historique), EnsembleTop2",
       "Sélection automatique du champion par cross-validation temporelle",
@@ -75,9 +75,9 @@ export default function FeaturesPage() {
             </div>
 
             <div className="text-center mt-20">
-              <Link href="/dashboard">
+              <Link href="/login?mode=signup">
                 <Button size="large" className="bg-indigo-500 hover:bg-indigo-600 text-white">
-                  Essayer gratuitement
+                  Essai gratuit 3 mois
                   <ArrowRight size={20} />
                 </Button>
               </Link>

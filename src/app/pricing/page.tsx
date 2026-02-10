@@ -2,7 +2,7 @@ import { Navbar, Footer } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { BarChart3, Cpu, Brain, Check, Mail } from "lucide-react";
 import Link from "next/link";
-import { pricingPlans } from "@/lib/mock-data";
+import { PLANS_LIST as pricingPlans, TRIAL_DURATION_MONTHS, type PricingPlan } from "@/lib/pricing-config";
 
 const icons: Record<string, React.ReactNode> = {
   Standard: <BarChart3 size={20} />,
@@ -23,7 +23,7 @@ export default function PricingPage() {
                 Tarification
               </h1>
               <p className="text-lg text-zinc-400">
-                Essai gratuit 3 mois. Aucun engagement. Annulez à tout moment.
+                Essai gratuit {TRIAL_DURATION_MONTHS} mois. Aucun engagement. Annulez à tout moment.
               </p>
             </div>
 
@@ -41,7 +41,7 @@ export default function PricingPage() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-white/[0.08]">
-                      <th className="text-left py-3 px-4 text-zinc-500">Feature</th>
+                      <th className="text-left py-3 px-4 text-zinc-500">Fonctionnalité</th>
                       <th className="text-center py-3 px-4 text-white">Standard</th>
                       <th className="text-center py-3 px-4 text-indigo-400">ML &#11088;</th>
                       <th className="text-center py-3 px-4 text-amber-400">Foundation</th>
@@ -50,11 +50,11 @@ export default function PricingPage() {
                   <tbody>
                     {[
                       ["Séries / mois", "50", "150", "300"],
-                      ["Modèles disponibles", "10 stats", "13 (+ ML)", "15+ (+ Foundation)"],
+                      ["Modèles disponibles", "17 stats", "22 (+ ML)", "24+ (+ Foundation)"],
                       ["Ridge / LightGBM", "❌", "✅", "✅"],
                       ["TimeGPT", "❌", "❌", "✅"],
                       ["EnsembleTop2", "❌", "❌", "✅"],
-                      ["API Access", "❌", "❌", "✅"],
+                      ["Accès API", "❌", "❌", "✅"],
                       ["Historique", "30 jours", "60 jours", "90 jours"],
                       ["Support", "Email 48h", "Email 24h", "Prioritaire 4h"],
                     ].map(([feature, std, ml, found], i) => (
@@ -79,10 +79,12 @@ export default function PricingPage() {
                 Pour les entreprises avec plus de 500 séries/mois ou des besoins spécifiques
                 (on-premise, intégrations custom, SLA), contactez-nous pour un devis personnalisé.
               </p>
-              <Button variant="secondary">
-                <Mail size={18} />
-                Contacter l&apos;équipe
-              </Button>
+              <Link href="/contact">
+                <Button variant="secondary">
+                  <Mail size={18} />
+                  Contacter l&apos;équipe
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
@@ -94,12 +96,12 @@ export default function PricingPage() {
 }
 
 interface PricingCardProps {
-  plan: (typeof pricingPlans)[0];
+  plan: PricingPlan;
   icon: React.ReactNode;
 }
 
 function PricingCard({ plan, icon }: PricingCardProps) {
-  const isML = plan.popular || plan.badge === "BEST VALUE";
+  const isML = plan.popular || plan.badge === "PLUS POPULAIRE";
   const isPremium = plan.badge === "PREMIUM";
 
   return (
@@ -117,8 +119,8 @@ function PricingCard({ plan, icon }: PricingCardProps) {
           className={`absolute top-[-12px] left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap text-white ${
             isPremium
               ? "bg-amber-500"
-              : plan.badge === "BEST VALUE"
-              ? "bg-emerald-500"
+              : plan.badge === "PLUS POPULAIRE"
+              ? "bg-indigo-500"
               : "bg-indigo-500"
           }`}
         >
@@ -148,12 +150,12 @@ function PricingCard({ plan, icon }: PricingCardProps) {
         <span className="text-base text-zinc-500">/mois</span>
       </div>
 
-      <Link href="/dashboard" className="mb-6">
+      <Link href="/login?mode=signup" className="mb-6">
         <Button
           variant={isML ? "primary" : "secondary"}
           className="w-full justify-center"
         >
-          Commencer l&apos;essai gratuit
+          Essai gratuit {TRIAL_DURATION_MONTHS} mois
         </Button>
       </Link>
 

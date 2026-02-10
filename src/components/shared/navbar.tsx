@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 const navLinks = [
   { href: "/features", label: "Fonctionnalités" },
   { href: "/pricing", label: "Tarifs" },
-  { href: "/docs", label: "Documentation" },
+  { href: "/demo", label: "Démo" },
 ];
 
 export function Navbar() {
@@ -82,7 +82,7 @@ export function Navbar() {
 
           {/* Right side */}
           <div className="hidden md:flex items-center gap-4">
-            <ThemeToggle />
+            {pathname.startsWith("/dashboard") && <ThemeToggle />}
 
             <Link href="/login">
               <Button
@@ -95,7 +95,7 @@ export function Navbar() {
 
             <Link href="/login?mode=signup">
               <MagneticButton className="px-5 py-2.5 bg-indigo-500 hover:bg-indigo-600 rounded-xl text-sm font-semibold text-white glow-accent transition-all">
-                Essai gratuit
+                Essai gratuit 3 mois
               </MagneticButton>
             </Link>
           </div>
@@ -104,6 +104,8 @@ export function Navbar() {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label={isMobileMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+            aria-expanded={isMobileMenuOpen}
             className="md:hidden p-2 rounded-lg hover:bg-white/5"
           >
             <AnimatePresence mode="wait">
@@ -193,7 +195,7 @@ export function Navbar() {
                 </Link>
                 <Link href="/login?mode=signup" className="block">
                   <Button className="w-full justify-center bg-indigo-500 hover:bg-indigo-600">
-                    Essai gratuit
+                    Essai gratuit 3 mois
                   </Button>
                 </Link>
               </motion.div>

@@ -30,21 +30,33 @@ export interface ModelPerformance {
   series: number;
 }
 
-// Generate forecast data for 30 days
-export const forecastData: ForecastDataPoint[] = Array.from({ length: 30 }, (_, i) => {
-  const date = new Date(2025, 0, i + 1);
-  const actual = i < 20 ? Math.floor(1200 + Math.random() * 600 + Math.sin(i / 3) * 200) : null;
-  const forecast = i >= 18 ? Math.floor(1400 + Math.random() * 400 + Math.sin(i / 3) * 150) : null;
-  const lower = forecast ? forecast - 150 - Math.random() * 100 : null;
-  const upper = forecast ? forecast + 150 + Math.random() * 100 : null;
-  return {
-    date: date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }),
-    actual,
-    forecast,
-    lower,
-    upper,
+// Seeded PRNG for deterministic mock data (avoids SSR hydration mismatch)
+function seededRandom(seed: number): () => number {
+  let s = seed;
+  return () => {
+    s = (s * 16807 + 0) % 2147483647;
+    return (s - 1) / 2147483646;
   };
-});
+}
+
+// Generate forecast data for 30 days (deterministic)
+export const forecastData: ForecastDataPoint[] = (() => {
+  const rng = seededRandom(42);
+  return Array.from({ length: 30 }, (_, i) => {
+    const date = new Date(2025, 0, i + 1);
+    const actual = i < 20 ? Math.floor(1200 + rng() * 600 + Math.sin(i / 3) * 200) : null;
+    const forecast = i >= 18 ? Math.floor(1400 + rng() * 400 + Math.sin(i / 3) * 150) : null;
+    const lower = forecast ? forecast - 150 - rng() * 100 : null;
+    const upper = forecast ? forecast + 150 + rng() * 100 : null;
+    return {
+      date: date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }),
+      actual,
+      forecast,
+      lower,
+      upper,
+    };
+  });
+})();
 
 // Recent forecasts
 export const recentForecasts: RecentForecast[] = [
@@ -89,85 +101,37 @@ export const availableModels = [
   'EnsembleTop2',
 ];
 
-// Pricing plans
-export const pricingPlans = [
-  {
-    name: 'Standard',
-    price: 99,
-    description: 'Forecasts pro sans expertise data science',
-    features: [
-      '50 séries / mois',
-      '10 modèles statistiques',
-      'Routing ABC/XYZ intelligent',
-      'Backtesting automatique',
-      'Synthèse LLM (Claude)',
-      'Historique 30 jours',
-      'Support email 48h',
-    ],
-    models: 10,
-    series: 50,
-    history: 30,
-  },
-  {
-    name: 'ML',
-    price: 179,
-    description: 'Performance ML sans data scientist',
-    badge: 'BEST VALUE',
-    popular: true,
-    features: [
-      '150 séries / mois',
-      'Tout Standard inclus',
-      '+ Ridge (batch vectorisé)',
-      '+ LightGBM (tree-based)',
-      '+ Hurdle+ (ML-enhanced)',
-      'Historique 60 jours',
-      'Support email 24h',
-    ],
-    models: 13,
-    series: 150,
-    history: 60,
-  },
-  {
-    name: 'Foundation',
-    price: 299,
-    description: 'Foundation Models + Support prioritaire',
-    badge: 'PREMIUM',
-    features: [
-      '300 séries / mois',
-      'Tout ML inclus',
-      '+ TimeGPT (Nixtla)',
-      '+ EnsembleTop2',
-      'API REST complète',
-      'Support prioritaire 4h',
-      'Connecteur Shopify (M9+)',
-    ],
-    models: 15,
-    series: 300,
-    history: 90,
-  },
-];
+// Pricing plans — source unique : pricing-config.ts
+// Ce re-export est conservé pour compatibilité avec les composants existants
+import { PLANS_LIST } from "@/lib/pricing-config";
+export const pricingPlans = PLANS_LIST;
 
 // FAQ items
 export const faqItems = [
   {
+    id: "format-donnees",
     question: "Quel format de données est accepté ?",
-    answer: "LumenIQ accepte les fichiers CSV et XLSX. Votre fichier doit contenir au minimum une colonne date et une ou plusieurs colonnes de valeurs numériques (ventes, quantités...). Le système effectue des contrôles qualité automatiques (missing, duplicates, outliers) et détecte automatiquement les colonnes."
+    answer: "LumenIQ accepte les fichiers CSV et Excel. Votre fichier doit contenir au minimum une colonne date et une ou plusieurs colonnes de valeurs numériques (ventes, quantités...). Le système détecte automatiquement vos colonnes et effectue des contrôles qualité (données manquantes, doublons, valeurs aberrantes)."
   },
   {
+    id: "routing-abc-xyz",
     question: "Qu'est-ce que le routing ABC/XYZ ?",
-    answer: "C'est notre innovation différenciante : allocation dynamique du budget compute selon la valeur business. Les produits classe A (top 20% CA) reçoivent jusqu'à 30 modèles avec 5-fold CV, tandis que la classe C utilise 10 modèles avec 2-fold CV. Résultat : ~60% de réduction du temps de calcul vs approche naïve, permettant un pricing compétitif."
+    answer: "C'est notre méthode d'optimisation intelligente : vos produits les plus importants (classe A, top 20% du chiffre d'affaires) bénéficient de plus de modèles et de validations plus poussées. Les produits à faible volume reçoivent un traitement adapté mais plus rapide. Résultat : des prévisions plus précises là où ça compte, avec un temps de calcul réduit d'environ 60%."
   },
   {
+    id: "backtesting",
     question: "Comment fonctionne le backtesting ?",
-    answer: "Chaque forecast est validé par cross-validation temporelle (jusqu'à 5 folds pour classe A). De plus, notre mécanisme de Gating détecte si vos données ont significativement changé entre les runs. Si stable, un mini-backtest suffit : 60-70% plus rapide sur les exécutions récurrentes."
+    answer: "Chaque prévision est validée sur vos propres données historiques : le système masque une partie de vos ventes passées, génère une prévision, puis compare avec la réalité. Ce processus est répété jusqu'à 5 fois pour les produits clés. Vous obtenez ainsi un score de fiabilité concret avant de prendre vos décisions."
   },
   {
+    id: "nombre-modeles",
     question: "Combien de modèles sont disponibles ?",
-    answer: "15 modèles organisés en 3 packs progressifs : Standard (10 modèles stats : Naive, SeasonalNaive, Drift, AutoETS, Theta, AutoARIMA, Croston, TSB, ADIDA, Hurdle), ML (+ Ridge, LightGBM, Hurdle+ batch-vectorisés avec 75% win-rate sur séries stables), et Foundation (+ TimeGPT zero-shot, EnsembleTop2). Le champion est sélectionné automatiquement par cross-validation."
+    answer: "Jusqu'à 24 modèles organisés en 3 packs progressifs : Standard (17 modèles statistiques éprouvés), ML (22 modèles incluant le machine learning pour plus de précision), et Foundation (24+ modèles incluant les fondation models les plus avancés). Pour chaque série, le meilleur modèle est sélectionné automatiquement grâce au backtesting."
   },
   {
+    id: "integration",
     question: "Puis-je intégrer LumenIQ à mon système existant ?",
-    answer: "Oui, le plan Foundation (€299/mois) inclut un accès API REST complet avec clé personnelle. Vous pouvez automatiser vos forecasts et intégrer les 6 artifacts (forecast.csv, metrics.json, etc.) directement dans votre ERP/BI. Un connecteur Shopify est prévu pour M9+."
+    answer: "Oui, le plan Foundation (299 €/mois) inclut un accès API REST complet. Vous pouvez automatiser vos prévisions et intégrer les résultats (fichiers de prévision, métriques, rapports) directement dans votre ERP ou outil de BI. Un connecteur Shopify est également prévu prochainement."
   },
 ];
 

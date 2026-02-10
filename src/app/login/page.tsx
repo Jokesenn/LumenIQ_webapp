@@ -13,17 +13,18 @@ import { useSupabase } from "@/hooks/use-supabase";
 type AuthMode = "login" | "signup" | "forgot-password";
 
 function LoginContent() {
-  const [mode, setMode] = useState<AuthMode>("login");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const supabase = useSupabase();
+
+  const initialMode = searchParams.get("mode") === "signup" ? "signup" : "login";
+  const [mode, setMode] = useState<AuthMode>(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
-
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const supabase = useSupabase();
 
   const redirectTo = searchParams.get("redirectTo") || "/dashboard";
 

@@ -2,8 +2,8 @@
 
 import { motion } from "framer-motion";
 import {
-  Zap, Shield, Clock, TrendingUp, BarChart3, Sparkles,
-  Brain, Target, Layers, RefreshCw
+  Shield, Clock, BarChart3, Sparkles,
+  Brain, Target, Layers
 } from "lucide-react";
 import { FadeIn, StaggerChildren, StaggerItem, TiltCard } from "@/components/animations";
 import { AnimatedBackground } from "@/components/backgrounds";
@@ -11,8 +11,8 @@ import { AnimatedBackground } from "@/components/backgrounds";
 const features = [
   {
     icon: Brain,
-    title: "15 modèles ML",
-    description: "ARIMA, Prophet, XGBoost, LightGBM, Theta, CES... Le meilleur modèle est sélectionné automatiquement pour chaque série.",
+    title: "Jusqu'à 24 modèles",
+    description: "ARIMA, LightGBM, TimeGPT, EnsembleTop2... Le meilleur modèle est sélectionné automatiquement pour chaque série.",
     gradient: "from-indigo-500 to-violet-500",
   },
   {
@@ -49,12 +49,12 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section className="relative py-32 overflow-hidden">
+    <section id="features" aria-label="Fonctionnalités" className="relative py-20 overflow-hidden">
       <AnimatedBackground variant="section" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
         {/* Header */}
-        <div className="text-center mb-20">
+        <div className="text-center mb-14">
           <FadeIn>
             <motion.div
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6"
@@ -112,16 +112,6 @@ export function FeaturesSection() {
                     {feature.description}
                   </p>
 
-                  {/* Hover arrow */}
-                  <motion.div
-                    className="absolute bottom-8 right-8 opacity-0 group-hover:opacity-100 transition-opacity"
-                    initial={{ x: -10 }}
-                    whileHover={{ x: 0 }}
-                  >
-                    <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
-                      <RefreshCw className="w-4 h-4 text-zinc-400" />
-                    </div>
-                  </motion.div>
                 </motion.div>
               </TiltCard>
             </StaggerItem>

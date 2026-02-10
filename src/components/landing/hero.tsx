@@ -10,7 +10,7 @@ import { HeroChart } from "./hero-chart";
 
 export function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section id="hero" aria-label="Accueil" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background animé */}
       <AnimatedBackground variant="hero" />
       <FloatingParticles count={40} className="z-0" />
@@ -73,7 +73,7 @@ export function Hero() {
                   <Sparkles className="w-4 h-4 text-indigo-400" />
                 </motion.div>
                 <span className="text-sm text-zinc-300">
-                  Forecast Engine v2.0 — 15 modèles ML
+                  Nouveau — Synthèse IA de vos résultats
                 </span>
                 <span className="flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-indigo-400 opacity-75"></span>
@@ -113,7 +113,7 @@ export function Hero() {
                 <Link href="/login?mode=signup">
                   <MagneticButton className="group relative px-8 py-4 bg-indigo-500 hover:bg-indigo-600 rounded-xl font-semibold text-white transition-all duration-300 glow-pulse shimmer">
                     <span className="flex items-center gap-2">
-                      Essayer gratuitement
+                      Essai gratuit 3 mois
                       <motion.span
                         animate={{ x: [0, 4, 0] }}
                         transition={{ duration: 1.5, repeat: Infinity }}
@@ -142,12 +142,12 @@ export function Hero() {
               <div className="mt-12 flex flex-wrap items-center justify-center lg:justify-start gap-x-8 gap-y-4">
                 {[
                   { value: "5 min", label: "Setup rapide" },
-                  { value: "15", label: "Modèles ML" },
-                  { value: "70%", label: "Économie compute" },
+                  { value: "24", label: "Modèles disponibles" },
+                  { value: "99%", label: "Automatisé" },
                 ].map((stat, i) => (
                   <div key={i} className="text-center">
                     <div className="text-2xl font-bold text-white">{stat.value}</div>
-                    <div className="text-xs text-zinc-500 uppercase tracking-wider">{stat.label}</div>
+                    <div className="text-xs text-zinc-400 uppercase tracking-wider">{stat.label}</div>
                   </div>
                 ))}
               </div>
@@ -174,11 +174,11 @@ export function Hero() {
                 {/* Floating elements */}
                 <Parallax speed={0.15} className="absolute -top-4 -right-4">
                   <motion.div
-                    className="px-3 py-1.5 glass rounded-full text-xs font-medium text-emerald-400 border border-emerald-500/20"
+                    className="px-3 py-1.5 glass rounded-full text-xs font-medium text-amber-400 border border-amber-500/20"
                     animate={{ y: [0, -10, 0] }}
                     transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                   >
-                    Score: 91.8/100
+                    24 modèles testés
                   </motion.div>
                 </Parallax>
 
@@ -198,19 +198,24 @@ export function Hero() {
       </div>
 
       {/* Scroll indicator */}
-      <motion.div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
-        animate={{ y: [0, 10, 0], opacity: [0.5, 1, 0.5] }}
-        transition={{ duration: 2, repeat: Infinity }}
+      <button
+        onClick={() => document.getElementById('comparison')?.scrollIntoView({ behavior: 'smooth' })}
+        aria-label="Défiler vers le bas"
       >
-        <div className="w-6 h-10 rounded-full border-2 border-white/20 flex justify-center pt-2">
-          <motion.div
-            className="w-1.5 h-1.5 bg-white rounded-full"
-            animate={{ y: [0, 12, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          />
-        </div>
-      </motion.div>
+        <motion.div
+          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+          animate={{ y: [0, 10, 0], opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          <div className="w-6 h-10 rounded-full border-2 border-white/20 flex justify-center pt-2">
+            <motion.div
+              className="w-1.5 h-1.5 bg-white rounded-full"
+              animate={{ y: [0, 12, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            />
+          </div>
+        </motion.div>
+      </button>
     </section>
   );
 }
