@@ -111,6 +111,18 @@ function ComparisonCard({
 }: ComparisonCardProps) {
   return (
     <TiltCard className="h-full">
+      <div className="relative h-full">
+        {highlight && (
+          <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
+            <motion.div
+              className="px-4 py-1 bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full text-xs font-semibold text-white"
+              animate={{ y: [0, -3, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              RECOMMANDÉ
+            </motion.div>
+          </div>
+        )}
       <motion.div
         className={cn(
           "relative h-full p-8 rounded-2xl spotlight",
@@ -127,17 +139,6 @@ function ComparisonCard({
           e.currentTarget.style.setProperty('--spotlight-y', `${y}%`);
         }}
       >
-        {highlight && (
-          <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-            <motion.div
-              className="px-4 py-1 bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full text-xs font-semibold text-white"
-              animate={{ y: [0, -3, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              RECOMMANDÉ
-            </motion.div>
-          </div>
-        )}
         <span
           className="inline-block px-3 py-1 rounded-full text-xs font-semibold mb-4"
           style={{ backgroundColor: `color-mix(in srgb, ${badgeColor} 20%, transparent)`, color: badgeColor }}
@@ -163,6 +164,7 @@ function ComparisonCard({
           ))}
         </div>
       </motion.div>
+      </div>
     </TiltCard>
   );
 }
