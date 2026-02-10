@@ -36,6 +36,24 @@ export function FAQSection() {
             </StaggerItem>
           ))}
         </StaggerChildren>
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              "mainEntity": faqItems.map(item => ({
+                "@type": "Question",
+                "name": item.question,
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": item.answer
+                }
+              }))
+            })
+          }}
+        />
       </div>
     </section>
   );
@@ -59,20 +77,22 @@ function FAQItem({ id, question, answer }: FAQItemProps) {
       )}
       layout
     >
-      <button
-        onClick={() => setOpen(!open)}
-        aria-expanded={open}
-        aria-controls={`${id}-answer`}
-        className="w-full p-6 flex justify-between items-center text-left"
-      >
-        <span className="text-[15px] font-semibold text-white pr-4">{question}</span>
-        <motion.div
-          animate={{ rotate: open ? 180 : 0 }}
-          transition={{ duration: 0.3, ease: [0.21, 0.47, 0.32, 0.98] }}
+      <h3 className="m-0">
+        <button
+          onClick={() => setOpen(!open)}
+          aria-expanded={open}
+          aria-controls={`${id}-answer`}
+          className="w-full p-6 flex justify-between items-center text-left"
         >
-          <ChevronDown className="w-5 h-5 text-zinc-500 flex-shrink-0" />
-        </motion.div>
-      </button>
+          <span className="text-base font-semibold text-white pr-4">{question}</span>
+          <motion.div
+            animate={{ rotate: open ? 180 : 0 }}
+            transition={{ duration: 0.3, ease: [0.21, 0.47, 0.32, 0.98] }}
+          >
+            <ChevronDown className="w-5 h-5 text-zinc-500 flex-shrink-0" />
+          </motion.div>
+        </button>
+      </h3>
       <AnimatePresence>
         {open && (
           <motion.div
@@ -82,7 +102,7 @@ function FAQItem({ id, question, answer }: FAQItemProps) {
             transition={{ duration: 0.3, ease: [0.21, 0.47, 0.32, 0.98] }}
           >
             <div id={`${id}-answer`} role="region" aria-labelledby={id} className="px-6 pb-6">
-              <p className="text-sm text-zinc-400 leading-relaxed">
+              <p className="text-sm text-zinc-300 leading-relaxed">
                 {answer}
               </p>
             </div>

@@ -1,8 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Workflow } from "lucide-react";
-import { FadeIn, StaggerChildren, StaggerItem } from "@/components/animations";
+import Link from "next/link";
+import { Workflow, ArrowRight } from "lucide-react";
+import { FadeIn, StaggerChildren, StaggerItem, MagneticButton } from "@/components/animations";
 
 const steps = [
   {
@@ -18,12 +19,12 @@ const steps = [
   {
     number: 3,
     title: "Calcul (2-5 min)",
-    description: "Jusqu'à 24 modèles en compétition, backtesting multi-fold, sélection du champion par série.",
+    description: "Jusqu'à 24 modèles en compétition, validation automatique sur votre historique, sélection du meilleur pour chaque produit.",
   },
   {
     number: 4,
     title: "Résultats",
-    description: "Dashboard interactif, métriques de fiabilité, export ZIP complet.",
+    description: "Dashboard interactif, scores de précision par produit, export ZIP complet (Excel + PDF).",
   },
 ];
 
@@ -70,7 +71,7 @@ export function HowItWorks() {
                     {step.number}
                   </motion.div>
                   <h3 className="text-lg font-semibold text-white mb-2">{step.title}</h3>
-                  <p className="text-sm text-zinc-400 leading-relaxed">
+                  <p className="text-sm text-zinc-300 leading-relaxed">
                     {step.description}
                   </p>
                 </motion.div>
@@ -78,6 +79,28 @@ export function HowItWorks() {
             ))}
           </StaggerChildren>
         </div>
+
+        {/* CTA après les étapes */}
+        <FadeIn delay={0.7}>
+          <div className="mt-12 text-center">
+            <Link href="/login?mode=signup">
+              <MagneticButton className="group px-8 py-4 bg-indigo-500 hover:bg-indigo-600 rounded-xl font-semibold text-white transition-all duration-300 glow-pulse shimmer">
+                <span className="flex items-center gap-2">
+                  Lancer mon premier forecast
+                  <motion.span
+                    animate={{ x: [0, 4, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  >
+                    <ArrowRight className="w-4 h-4" />
+                  </motion.span>
+                </span>
+              </MagneticButton>
+            </Link>
+            <p className="mt-3 text-sm text-zinc-300">
+              Aucune carte bancaire requise · Essai gratuit 3 mois
+            </p>
+          </div>
+        </FadeIn>
       </div>
     </section>
   );

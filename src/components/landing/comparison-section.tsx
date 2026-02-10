@@ -44,7 +44,7 @@ export function ComparisonSection() {
           </FadeIn>
 
           <FadeIn delay={0.2}>
-            <p className="text-lg text-zinc-400 max-w-2xl mx-auto">
+            <p className="text-lg text-zinc-300 max-w-2xl mx-auto">
               Ni Excel approximatif, ni solutions enterprise à 20k€/an.
               LumenIQ comble le gap avec une précision pro à prix PME.
             </p>
@@ -72,9 +72,9 @@ export function ComparisonSection() {
               subtitle="Le juste équilibre"
               items={[
                 { text: "Jusqu'à 24 modèles stats/ML", good: true },
-                { text: "Backtesting multi-fold automatique", good: true },
-                { text: "Routing ABC/XYZ (unique)", good: true },
-                { text: "~60% réduction temps calcul", good: true },
+                { text: "Validation automatique sur votre historique", good: true },
+                { text: "Priorisation intelligente de vos produits stars", good: true },
+                { text: "60% plus rapide que les solutions enterprise", good: true },
               ]}
               badge="Dès 99 €/mois"
               badgeColor="#6366f1"
@@ -159,7 +159,7 @@ function ComparisonCard({
                   <X className="w-3 h-3 text-red-400" />
                 </div>
               ) : null}
-              <span className="text-sm text-zinc-400">{item.text}</span>
+              <span className="text-sm text-zinc-300">{item.text}</span>
             </div>
           ))}
         </div>

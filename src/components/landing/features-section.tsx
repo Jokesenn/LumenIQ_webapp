@@ -12,7 +12,7 @@ const features = [
   {
     icon: Brain,
     title: "Jusqu'à 24 modèles",
-    description: "ARIMA, LightGBM, TimeGPT, EnsembleTop2... Le meilleur modèle est sélectionné automatiquement pour chaque série.",
+    description: "Jusqu'à 24 algorithmes statistiques et ML en compétition. Le champion est sélectionné automatiquement pour chaque produit.",
     gradient: "from-indigo-500 to-violet-500",
   },
   {
@@ -30,13 +30,13 @@ const features = [
   {
     icon: Target,
     title: "Classification ABC/XYZ",
-    description: "Identifiez automatiquement vos produits stars et vos séries erratiques pour prioriser vos efforts.",
+    description: "Identifiez automatiquement vos best-sellers et vos produits à faible volume pour prioriser vos efforts.",
     gradient: "from-rose-500 to-pink-500",
   },
   {
     icon: BarChart3,
     title: "Rapports professionnels",
-    description: "Graphiques interactifs, métriques clés, exports Excel. Prêt à présenter en comité de direction.",
+    description: "Graphiques interactifs, rapports PDF, exports Excel. Présentez vos prévisions en comité sans retravailler les données.",
     gradient: "from-blue-500 to-indigo-500",
   },
   {
@@ -74,7 +74,7 @@ export function FeaturesSection() {
           </FadeIn>
 
           <FadeIn delay={0.2}>
-            <p className="text-lg text-zinc-400 max-w-2xl mx-auto">
+            <p className="text-lg text-zinc-300 max-w-2xl mx-auto">
               Tout ce dont vous avez besoin pour des prévisions fiables,
               sans la complexité des outils enterprise.
             </p>
@@ -108,7 +108,7 @@ export function FeaturesSection() {
                   <h3 className="text-xl font-semibold text-white mb-3 group-hover:text-gradient transition-all">
                     {feature.title}
                   </h3>
-                  <p className="text-zinc-400 leading-relaxed">
+                  <p className="text-zinc-300 leading-relaxed">
                     {feature.description}
                   </p>
 

@@ -9,14 +9,46 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  ReferenceLine,
 } from "recharts";
 import { forecastData } from "@/lib/mock-data";
+
+const LABEL_MAP: Record<string, { label: string; color: string }> = {
+  actual:   { label: "Réel",      color: "#a1a1aa" },
+  forecast: { label: "Prévision", color: "#6366f1" },
+  lower:    { label: "Borne basse", color: "#6366f180" },
+  upper:    { label: "Borne haute", color: "#6366f180" },
+};
+
+function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ dataKey: string; value: number }>; label?: string }) {
+  if (!active || !payload?.length) return null;
+  const items = payload.filter((p) => p.value != null && LABEL_MAP[p.dataKey]);
+  if (!items.length) return null;
+  return (
+    <div className="bg-zinc-900/95 border border-white/10 rounded-lg px-3 py-2.5 text-xs shadow-xl backdrop-blur-sm">
+      <p className="text-zinc-400 mb-1.5 font-medium">{label}</p>
+      {items.map((item) => {
+        const meta = LABEL_MAP[item.dataKey];
+        return (
+          <p key={item.dataKey} className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: meta.color }} />
+            <span className="text-zinc-300">{meta.label}</span>
+            <span className="ml-auto font-semibold text-white">{Math.round(item.value).toLocaleString("fr-FR")}</span>
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
+// Index of the junction month (last actual = first forecast): "déc. 24"
+const JUNCTION_INDEX = 23;
 
 export function HeroChart() {
   return (
     <>
       <div className="flex justify-between items-center mb-5">
-        <h3 className="text-base font-semibold text-white">Prévision T1 2025</h3>
+        <h3 className="text-base font-semibold text-white">Prévisions 2025</h3>
         <span className="px-3 py-1 bg-emerald-500/20 text-emerald-500 rounded-full text-xs font-semibold">
           Fiabilité 91.8/100
         </span>
@@ -25,68 +57,82 @@ export function HeroChart() {
       <ResponsiveContainer width="100%" height={250}>
         <ComposedChart data={forecastData}>
           <defs>
-            <linearGradient id="colorForecast" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+            <linearGradient id="ciBand" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#6366f1" stopOpacity={0.25} />
+              <stop offset="100%" stopColor="#6366f1" stopOpacity={0.05} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
           <XAxis
             dataKey="date"
-            stroke="#71717a"
+            stroke="#52525b"
             fontSize={11}
             tickLine={false}
+            interval={5}
           />
           <YAxis
-            stroke="#71717a"
+            stroke="#52525b"
             fontSize={11}
             tickLine={false}
             axisLine={false}
+            width={40}
+            tickFormatter={(v: number) => v.toLocaleString("fr-FR")}
           />
           <Tooltip
-            contentStyle={{
-              backgroundColor: "#18181b",
-              border: "1px solid rgba(255,255,255,0.1)",
-              borderRadius: "8px",
-              fontSize: "12px",
-              color: "#fff",
-            }}
+            content={<ChartTooltip />}
+            cursor={{ stroke: "#52525b", strokeDasharray: "3 3" }}
+          />
+          {/* Confidence interval: stacked areas (ciBase transparent + ciBand colored) */}
+          <Area
+            type="monotone"
+            dataKey="ciBase"
+            stackId="ci"
+            stroke="none"
+            fill="transparent"
+            isAnimationActive={false}
           />
           <Area
             type="monotone"
-            dataKey="upper"
+            dataKey="ciBand"
+            stackId="ci"
             stroke="none"
-            fill="#6366f1"
-            fillOpacity={0.15}
+            fill="url(#ciBand)"
+            fillOpacity={1}
+            isAnimationActive={false}
           />
-          <Area
-            type="monotone"
-            dataKey="lower"
-            stroke="none"
-            fill="#18181b"
-          />
+          {/* Actual line */}
           <Line
             type="monotone"
             dataKey="actual"
             stroke="#a1a1aa"
             strokeWidth={2}
             dot={false}
+            connectNulls={false}
           />
+          {/* Forecast line */}
           <Line
             type="monotone"
             dataKey="forecast"
             stroke="#6366f1"
-            strokeWidth={3}
+            strokeWidth={2.5}
             dot={false}
-            strokeDasharray="5 5"
+            strokeDasharray="6 4"
+            connectNulls={false}
+          />
+          {/* Junction vertical marker */}
+          <ReferenceLine
+            x={forecastData[JUNCTION_INDEX].date}
+            stroke="#6366f1"
+            strokeDasharray="3 3"
+            strokeOpacity={0.4}
           />
         </ComposedChart>
       </ResponsiveContainer>
 
       <div className="grid grid-cols-3 gap-4 mt-5">
         <MetricMini label="Séries" value="47" />
-        <MetricMini label="Méthode" value="Auto-régressif" />
-        <MetricMini label="Horizon" value="12 sem" />
+        <MetricMini label="Méthode" value="AutoARIMA" />
+        <MetricMini label="Horizon" value="12 mois" />
       </div>
     </>
   );

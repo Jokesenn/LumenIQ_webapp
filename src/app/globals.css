@@ -79,26 +79,15 @@
    ============================================ */
 
 :root {
-  /* Background colors — zinc scale */
-  --bg-primary: #09090b;
-  --bg-secondary: #18181b;
-  --bg-surface: #27272a;
-  --bg-hover: #3f3f46;
-
-  /* Text colors */
-  --text-primary: #fafafa;
-  --text-secondary: #a1a1aa;
+  /* Text colors (USED: useJobStatus.ts) */
   --text-muted: #71717a;
 
-  /* Accent colors — indigo */
+  /* Accent colors (USED: useJobStatus.ts, utilities) */
   --accent: #6366f1;
   --accent-hover: #4f46e5;
   --accent-muted: rgba(99, 102, 241, 0.15);
 
-  /* Border */
-  --border: rgba(255, 255, 255, 0.08);
-
-  /* Status colors */
+  /* Status colors (USED: useJobStatus.ts) */
   --success: #10b981;
   --warning: #f59e0b;
   --danger: #ef4444;
@@ -107,48 +96,37 @@
   --chart-ic-sup: #38bdf8;
   --chart-ic-inf: #fb923c;
 
-  /* Radius */
+  /* Radius (USED: Tailwind theme below) */
   --radius: 0.625rem;
 
-  /* shadcn compatibility */
-  --background: var(--bg-primary);
-  --foreground: var(--text-primary);
-  --card: var(--bg-secondary);
-  --card-foreground: var(--text-primary);
-  --popover: var(--bg-secondary);
-  --popover-foreground: var(--text-primary);
+  /* shadcn compatibility — direct values instead of circular refs */
+  --background: #09090b;
+  --foreground: #fafafa;
+  --card: #18181b;
+  --card-foreground: #fafafa;
+  --popover: #18181b;
+  --popover-foreground: #fafafa;
   --primary: var(--accent);
   --primary-foreground: #ffffff;
-  --secondary: var(--bg-surface);
-  --secondary-foreground: var(--text-primary);
-  --muted: var(--bg-surface);
+  --secondary: #27272a;
+  --secondary-foreground: #fafafa;
+  --muted: #27272a;
   --muted-foreground: var(--text-muted);
   --destructive: var(--danger);
-  --input: var(--border);
+  --input: rgba(255, 255, 255, 0.08);
   --ring: var(--accent);
 }
 
 .light {
-  /* Background colors — zinc scale (inversé) */
-  --bg-primary: #ffffff;
-  --bg-secondary: #f4f4f5;
-  --bg-surface: #e4e4e7;
-  --bg-hover: #d4d4d8;
-
-  /* Text colors */
-  --text-primary: #09090b;
-  --text-secondary: #52525b;
+  /* Text colors (USED: useJobStatus.ts) */
   --text-muted: #a1a1aa;
 
-  /* Accent colors — indigo (plus profond en light) */
+  /* Accent colors (USED: useJobStatus.ts, utilities) */
   --accent: #4f46e5;
   --accent-hover: #4338ca;
   --accent-muted: rgba(79, 70, 229, 0.1);
 
-  /* Border */
-  --border: #e4e4e7;
-
-  /* Status colors */
+  /* Status colors (USED: useJobStatus.ts) */
   --success: #059669;
   --warning: #d97706;
   --danger: #dc2626;
@@ -157,21 +135,21 @@
   --chart-ic-sup: #0284c7;
   --chart-ic-inf: #c2410c;
 
-  /* shadcn compatibility */
-  --background: var(--bg-primary);
-  --foreground: var(--text-primary);
-  --card: var(--bg-secondary);
-  --card-foreground: var(--text-primary);
-  --popover: var(--bg-secondary);
-  --popover-foreground: var(--text-primary);
+  /* shadcn compatibility — direct values instead of circular refs */
+  --background: #ffffff;
+  --foreground: #09090b;
+  --card: #f4f4f5;
+  --card-foreground: #09090b;
+  --popover: #f4f4f5;
+  --popover-foreground: #09090b;
   --primary: var(--accent);
   --primary-foreground: #ffffff;
-  --secondary: var(--bg-surface);
-  --secondary-foreground: var(--text-primary);
-  --muted: var(--bg-surface);
+  --secondary: #e4e4e7;
+  --secondary-foreground: #09090b;
+  --muted: #e4e4e7;
   --muted-foreground: var(--text-muted);
   --destructive: var(--danger);
-  --input: var(--border);
+  --input: #e4e4e7;
   --ring: var(--accent);
 }
 
@@ -332,7 +310,7 @@
   }
 
   body {
-    @apply bg-[var(--bg-primary)] text-[var(--text-primary)];
+    @apply bg-[var(--background)] text-[var(--foreground)];
     font-family: var(--font-manrope), -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -397,9 +375,9 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
 
-  /* Surface tokens */
-  --color-surface: var(--bg-surface);
-  --color-surface-hover: var(--bg-hover);
+  /* Surface tokens — direct values (no longer from deprecated tokens) */
+  --color-surface: #27272a;
+  --color-surface-hover: #3f3f46;
 
   /* Status colors */
   --color-success: var(--success);
@@ -420,7 +398,7 @@
   /* Gradient border animée */
   .gradient-border {
     position: relative;
-    background: hsl(var(--bg-secondary));
+    background: #18181b;
     border-radius: 1rem;
   }
 
@@ -503,12 +481,16 @@
   .spotlight::before {
     content: "";
     position: absolute;
-    top: var(--spotlight-y, 50%);
-    left: var(--spotlight-x, 50%);
+    top: 0;
+    left: 0;
     width: 300px;
     height: 300px;
     background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
-    transform: translate(-50%, -50%);
+    transform: translate(
+      calc(var(--spotlight-x, 50%) - 50%),
+      calc(var(--spotlight-y, 50%) - 50%)
+    );
+    will-change: transform;
     opacity: 0;
     transition: opacity 0.3s;
     pointer-events: none;
@@ -530,7 +512,7 @@
     left: 0;
     width: 0;
     height: 2px;
-    background: linear-gradient(90deg, hsl(var(--accent)), hsl(var(--brand-violet)));
+    background: linear-gradient(90deg, var(--accent), #8b5cf6);
     transition: width 0.3s ease;
   }
 

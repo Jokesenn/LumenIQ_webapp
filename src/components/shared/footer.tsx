@@ -29,9 +29,9 @@ export function Footer() {
           {/* Brand */}
           <div>
             <LogoWithText size={32} variant="glow" />
-            <p className="mt-4 text-sm text-zinc-400 leading-relaxed max-w-[280px]">
+            <p className="mt-4 text-sm text-zinc-300 leading-relaxed max-w-[280px]">
               Moteur de prévision professionnel pour PME e-commerce.
-              Forecasts validés par backtesting, en 5 minutes.
+              Prévisions fiables, validées sur votre historique, en 5 minutes.
             </p>
           </div>
 
@@ -43,7 +43,7 @@ export function Footer() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-zinc-400 hover:text-white transition-colors duration-200"
+                    className="text-sm text-zinc-300 hover:text-white transition-colors duration-200"
                   >
                     {link.label}
                   </Link>
@@ -60,7 +60,7 @@ export function Footer() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-zinc-400 hover:text-white transition-colors duration-200"
+                    className="text-sm text-zinc-300 hover:text-white transition-colors duration-200"
                   >
                     {link.label}
                   </Link>
@@ -77,7 +77,7 @@ export function Footer() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-zinc-400 hover:text-white transition-colors duration-200"
+                    className="text-sm text-zinc-300 hover:text-white transition-colors duration-200"
                   >
                     {link.label}
                   </Link>
@@ -99,7 +99,7 @@ export function Footer() {
                 href={social.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-zinc-500 hover:text-white transition-colors duration-200"
+                className="p-3 -m-3 text-zinc-500 hover:text-white transition-colors duration-200"
                 aria-label={social.label}
               >
                 <social.icon size={18} />

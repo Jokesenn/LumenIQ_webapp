@@ -41,7 +41,7 @@ export function PricingSection() {
           </FadeIn>
 
           <FadeIn delay={0.2}>
-            <p className="text-lg text-zinc-400 max-w-2xl mx-auto">
+            <p className="text-lg text-zinc-300 max-w-2xl mx-auto">
               Essai gratuit {TRIAL_DURATION_MONTHS} mois, sans engagement.
               Annulable à tout moment.
             </p>

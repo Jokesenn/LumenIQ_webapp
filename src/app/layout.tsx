@@ -18,7 +18,6 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://lumeniq.fr"),
   title: "LumenIQ | Prévisions professionnelles validées par backtesting",
   description: "Transformez vos historiques de ventes en prévisions fiables. Jusqu'à 24 modèles statistiques et ML, routing ABC/XYZ intelligent, rapports détaillés. Essai gratuit 3 mois.",
-  keywords: ["forecasting", "prévisions", "e-commerce", "PME", "machine learning", "backtesting", "ABC/XYZ", "prévision de ventes", "supply chain"],
   authors: [{ name: "LumenIQ" }],
   alternates: {
     canonical: "/",
@@ -44,6 +43,30 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "LumenIQ",
+              "url": "https://lumeniq.fr",
+              "logo": "https://lumeniq.fr/logo.png",
+              "sameAs": [
+                "https://linkedin.com/company/lumeniq",
+                "https://x.com/lumeniq"
+              ],
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "contactType": "Support client",
+                "email": "support@lumeniq.fr",
+                "availableLanguage": "French"
+              }
+            })
+          }}
+        />
+      </head>
       <body className={`${manrope.variable} font-sans antialiased`}>
         <ScrollProgress />
         <ThemeProvider

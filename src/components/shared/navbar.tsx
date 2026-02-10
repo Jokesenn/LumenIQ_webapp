@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ChevronRight } from "lucide-react";
-import { Logo } from "./logo";
+import { LogoWithText } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "@/components/ui/button";
 import { MagneticButton } from "@/components/animations";
@@ -46,13 +46,17 @@ export function Navbar() {
             : "bg-transparent"
         )}
       >
-        <nav className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          {/* Logo */}
-          <motion.div whileHover={{ scale: 1.02 }}>
-            <Logo />
-          </motion.div>
+        <nav className="max-w-7xl mx-auto px-6 h-20 flex items-center">
+          {/* Logo — left column */}
+          <div className="flex-1">
+            <Link href="/">
+              <motion.div whileHover={{ scale: 1.02 }} className="inline-flex items-center">
+                <LogoWithText />
+              </motion.div>
+            </Link>
+          </div>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Navigation — center column */}
           <div className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
@@ -61,7 +65,7 @@ export function Navbar() {
                   <motion.div
                     className={cn(
                       "relative px-4 py-2 rounded-lg text-sm font-medium transition-colors",
-                      isActive ? "text-white" : "text-zinc-400 hover:text-white"
+                      isActive ? "text-white" : "text-zinc-300 hover:text-white"
                     )}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.98 }}
@@ -80,8 +84,8 @@ export function Navbar() {
             })}
           </div>
 
-          {/* Right side */}
-          <div className="hidden md:flex items-center gap-4">
+          {/* Right side — right column */}
+          <div className="hidden md:flex flex-1 items-center justify-end gap-4">
             {pathname.startsWith("/dashboard") && <ThemeToggle />}
 
             <Link href="/login">
@@ -106,7 +110,7 @@ export function Navbar() {
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label={isMobileMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
             aria-expanded={isMobileMenuOpen}
-            className="md:hidden p-2 rounded-lg hover:bg-white/5"
+            className="md:hidden p-3 rounded-lg hover:bg-white/5"
           >
             <AnimatePresence mode="wait">
               {isMobileMenuOpen ? (

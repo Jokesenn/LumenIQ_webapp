@@ -30,33 +30,53 @@ export interface ModelPerformance {
   series: number;
 }
 
-// Seeded PRNG for deterministic mock data (avoids SSR hydration mismatch)
-function seededRandom(seed: number): () => number {
-  let s = seed;
-  return () => {
-    s = (s * 16807 + 0) % 2147483647;
-    return (s - 1) / 2147483646;
-  };
-}
-
-// Generate forecast data for 30 days (deterministic)
-export const forecastData: ForecastDataPoint[] = (() => {
-  const rng = seededRandom(42);
-  return Array.from({ length: 30 }, (_, i) => {
-    const date = new Date(2025, 0, i + 1);
-    const actual = i < 20 ? Math.floor(1200 + rng() * 600 + Math.sin(i / 3) * 200) : null;
-    const forecast = i >= 18 ? Math.floor(1400 + rng() * 400 + Math.sin(i / 3) * 150) : null;
-    const lower = forecast ? forecast - 150 - rng() * 100 : null;
-    const upper = forecast ? forecast + 150 + rng() * 100 : null;
-    return {
-      date: date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }),
-      actual,
-      forecast,
-      lower,
-      upper,
-    };
-  });
-})();
+// Static hero chart data — handcrafted for visual impact
+// 36 months: 24 months actuals (Jan 2023 – Dec 2024) + 12 months forecast (Jan – Dec 2025)
+// Shows clear seasonality (peak Nov-Dec, dip Jan-Feb) with slight upward trend (~3%/yr)
+// CI band widens progressively into the future
+// ciBase + ciBand are computed for stacked area rendering (avoids black fill bug)
+export const forecastData: (ForecastDataPoint & { ciBase: number | null; ciBand: number | null })[] = [
+  // ── 2023 ──────────────────────────────────
+  { date: "jan. 23",  actual: 1120, forecast: null, lower: null, upper: null, ciBase: null, ciBand: null },
+  { date: "fév. 23",  actual: 1080, forecast: null, lower: null, upper: null, ciBase: null, ciBand: null },
+  { date: "mars 23",  actual: 1210, forecast: null, lower: null, upper: null, ciBase: null, ciBand: null },
+  { date: "avr. 23",  actual: 1340, forecast: null, lower: null, upper: null, ciBase: null, ciBand: null },
+  { date: "mai 23",   actual: 1420, forecast: null, lower: null, upper: null, ciBase: null, ciBand: null },
+  { date: "juin 23",  actual: 1380, forecast: null, lower: null, upper: null, ciBase: null, ciBand: null },
+  { date: "juil. 23", actual: 1290, forecast: null, lower: null, upper: null, ciBase: null, ciBand: null },
+  { date: "août 23",  actual: 1180, forecast: null, lower: null, upper: null, ciBase: null, ciBand: null },
+  { date: "sept. 23", actual: 1350, forecast: null, lower: null, upper: null, ciBase: null, ciBand: null },
+  { date: "oct. 23",  actual: 1510, forecast: null, lower: null, upper: null, ciBase: null, ciBand: null },
+  { date: "nov. 23",  actual: 1780, forecast: null, lower: null, upper: null, ciBase: null, ciBand: null },
+  { date: "déc. 23",  actual: 1920, forecast: null, lower: null, upper: null, ciBase: null, ciBand: null },
+  // ── 2024 ──────────────────────────────────
+  { date: "jan. 24",  actual: 1180, forecast: null, lower: null, upper: null, ciBase: null, ciBand: null },
+  { date: "fév. 24",  actual: 1140, forecast: null, lower: null, upper: null, ciBase: null, ciBand: null },
+  { date: "mars 24",  actual: 1280, forecast: null, lower: null, upper: null, ciBase: null, ciBand: null },
+  { date: "avr. 24",  actual: 1410, forecast: null, lower: null, upper: null, ciBase: null, ciBand: null },
+  { date: "mai 24",   actual: 1490, forecast: null, lower: null, upper: null, ciBase: null, ciBand: null },
+  { date: "juin 24",  actual: 1440, forecast: null, lower: null, upper: null, ciBase: null, ciBand: null },
+  { date: "juil. 24", actual: 1350, forecast: null, lower: null, upper: null, ciBase: null, ciBand: null },
+  { date: "août 24",  actual: 1240, forecast: null, lower: null, upper: null, ciBase: null, ciBand: null },
+  { date: "sept. 24", actual: 1420, forecast: null, lower: null, upper: null, ciBase: null, ciBand: null },
+  { date: "oct. 24",  actual: 1580, forecast: null, lower: null, upper: null, ciBase: null, ciBand: null },
+  { date: "nov. 24",  actual: 1850, forecast: null, lower: null, upper: null, ciBase: null, ciBand: null },
+  // Junction: Dec 2024 — last actual, first forecast (continuity)
+  { date: "déc. 24",  actual: 1990, forecast: 1990, lower: 1990, upper: 1990, ciBase: 1990, ciBand: 0 },
+  // ── 2025 (forecast) ───────────────────────
+  { date: "jan. 25",  actual: null, forecast: 1230, lower: 1150, upper: 1310, ciBase: 1150, ciBand: 160 },
+  { date: "fév. 25",  actual: null, forecast: 1190, lower: 1080, upper: 1300, ciBase: 1080, ciBand: 220 },
+  { date: "mars 25",  actual: null, forecast: 1340, lower: 1200, upper: 1480, ciBase: 1200, ciBand: 280 },
+  { date: "avr. 25",  actual: null, forecast: 1480, lower: 1310, upper: 1650, ciBase: 1310, ciBand: 340 },
+  { date: "mai 25",   actual: null, forecast: 1560, lower: 1360, upper: 1760, ciBase: 1360, ciBand: 400 },
+  { date: "juin 25",  actual: null, forecast: 1510, lower: 1280, upper: 1740, ciBase: 1280, ciBand: 460 },
+  { date: "juil. 25", actual: null, forecast: 1410, lower: 1150, upper: 1670, ciBase: 1150, ciBand: 520 },
+  { date: "août 25",  actual: null, forecast: 1300, lower: 1010, upper: 1590, ciBase: 1010, ciBand: 580 },
+  { date: "sept. 25", actual: null, forecast: 1490, lower: 1160, upper: 1820, ciBase: 1160, ciBand: 660 },
+  { date: "oct. 25",  actual: null, forecast: 1660, lower: 1290, upper: 2030, ciBase: 1290, ciBand: 740 },
+  { date: "nov. 25",  actual: null, forecast: 1940, lower: 1530, upper: 2350, ciBase: 1530, ciBand: 820 },
+  { date: "déc. 25",  actual: null, forecast: 2090, lower: 1640, upper: 2540, ciBase: 1640, ciBand: 900 },
+];
 
 // Recent forecasts
 export const recentForecasts: RecentForecast[] = [
@@ -109,6 +129,21 @@ export const pricingPlans = PLANS_LIST;
 // FAQ items
 export const faqItems = [
   {
+    id: "temps-setup",
+    question: "Combien de temps pour obtenir mes premières prévisions ?",
+    answer: "5 minutes chrono. Upload CSV, configuration automatique, résultats prêts. Aucune formation technique requise."
+  },
+  {
+    id: "garantie-qualite",
+    question: "Que se passe-t-il si mes prévisions sont imprécises ?",
+    answer: "Chaque prévision inclut un score de fiabilité basé sur la validation historique. Vous savez à l'avance où faire confiance et où rester vigilant. Support technique disponible si besoin."
+  },
+  {
+    id: "migration-excel",
+    question: "Puis-je migrer depuis mes fichiers Excel actuels ?",
+    answer: "Oui. LumenIQ accepte vos CSV/Excel existants. Glissez-déposez votre fichier, le système détecte automatiquement la structure. Pas de reformatage manuel."
+  },
+  {
     id: "format-donnees",
     question: "Quel format de données est accepté ?",
     answer: "LumenIQ accepte les fichiers CSV et Excel. Votre fichier doit contenir au minimum une colonne date et une ou plusieurs colonnes de valeurs numériques (ventes, quantités...). Le système détecte automatiquement vos colonnes et effectue des contrôles qualité (données manquantes, doublons, valeurs aberrantes)."
@@ -116,7 +151,7 @@ export const faqItems = [
   {
     id: "routing-abc-xyz",
     question: "Qu'est-ce que le routing ABC/XYZ ?",
-    answer: "C'est notre méthode d'optimisation intelligente : vos produits les plus importants (classe A, top 20% du chiffre d'affaires) bénéficient de plus de modèles et de validations plus poussées. Les produits à faible volume reçoivent un traitement adapté mais plus rapide. Résultat : des prévisions plus précises là où ça compte, avec un temps de calcul réduit d'environ 60%."
+    answer: "Méthode d'optimisation intelligente : vos produits les plus importants (classe A, top 20% du CA) bénéficient de plus de modèles et validations poussées. Les produits à faible volume reçoivent un traitement adapté mais plus rapide. Résultat : précision maximale là où ça compte, temps de calcul réduit de 60%."
   },
   {
     id: "backtesting",

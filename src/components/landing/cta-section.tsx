@@ -43,9 +43,8 @@ export function CTASection() {
         </FadeIn>
 
         <FadeIn delay={0.2}>
-          <p className="text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto mb-10">
-            Rejoignez les PME qui font confiance à LumenIQ pour leurs décisions
-            d&apos;approvisionnement et de planification.
+          <p className="text-lg sm:text-xl text-zinc-300 max-w-2xl mx-auto mb-10">
+            Des prévisions fiables pour piloter vos stocks et anticiper vos ventes.
           </p>
         </FadeIn>
 
@@ -54,7 +53,7 @@ export function CTASection() {
             <Link href="/login?mode=signup">
               <MagneticButton className="group px-8 py-4 bg-white text-zinc-900 rounded-xl font-semibold hover:bg-zinc-100 transition-all">
                 <span className="flex items-center gap-2">
-                  Créer mon compte gratuit
+                  Essayer LumenIQ gratuitement
                   <motion.span
                     className="group-hover:translate-x-1 transition-transform"
                   >
@@ -70,12 +69,13 @@ export function CTASection() {
               </MagneticButton>
             </Link>
           </div>
+          <p className="mt-3 text-sm text-zinc-300">Aucune carte bancaire requise</p>
         </FadeIn>
 
         {/* Trust elements */}
         <FadeIn delay={0.5}>
           <div className="mt-16 pt-8 border-t border-white/5">
-            <div className="flex flex-wrap items-center justify-center gap-8 text-zinc-400 text-sm">
+            <div className="flex flex-wrap items-center justify-center gap-8 text-zinc-300 text-sm">
               <div className="flex items-center gap-2">
                 <Shield className="w-4 h-4" />
                 <span>Conforme RGPD</span>
@@ -86,7 +86,7 @@ export function CTASection() {
               </div>
               <div className="flex items-center gap-2">
                 <Lock className="w-4 h-4" />
-                <span>Chiffrement AES-256</span>
+                <span>Données chiffrées (banque-grade)</span>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
