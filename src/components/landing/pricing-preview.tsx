@@ -16,7 +16,7 @@ const iconMap = {
 
 export function PricingSection() {
   return (
-    <section id="pricing" aria-label="Tarifs" className="relative py-20 overflow-hidden">
+    <section id="pricing" aria-label="Tarifs" className="relative py-28 overflow-hidden">
       <AnimatedBackground variant="subtle" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
@@ -53,6 +53,9 @@ export function PricingSection() {
           {PLANS_LIST.map((plan, i) => {
             const Icon = iconMap[plan.icon];
             const isPopular = "popular" in plan && plan.popular;
+            const inheritedFeatureIndex = plan.features.findIndex(
+              (f) => f.startsWith("Tout ") && f.includes("inclus")
+            );
 
             return (
               <StaggerItem key={i}>
@@ -61,22 +64,20 @@ export function PricingSection() {
                     className={cn(
                       "relative h-full p-8 rounded-3xl transition-all duration-500",
                       isPopular
-                        ? "bg-gradient-to-b from-indigo-500/10 to-violet-500/5 border-2 border-indigo-500/50"
+                        ? "bg-gradient-to-b from-indigo-500/10 to-violet-500/5 border-2 border-indigo-500/50 shadow-[0_0_40px_rgba(99,102,241,0.15)]"
                         : "bg-zinc-900/50 border border-white/5 hover:border-white/10"
                     )}
                     whileHover={{ y: -10 }}
                   >
-                    {/* Popular badge */}
+                    {/* Popular badge — inside card padding */}
                     {isPopular && (
-                      <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                        <motion.div
-                          className="px-4 py-1 bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full text-xs font-semibold text-white"
-                          animate={{ y: [0, -3, 0] }}
-                          transition={{ duration: 2, repeat: Infinity }}
-                        >
-                          Plus populaire
-                        </motion.div>
-                      </div>
+                      <motion.div
+                        className="inline-flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full text-xs font-semibold text-white mb-4"
+                        animate={{ y: [0, -2, 0] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      >
+                        Plus populaire
+                      </motion.div>
                     )}
 
                     {/* Icon */}
@@ -90,9 +91,11 @@ export function PricingSection() {
                     <h3 className="text-xl font-semibold text-white mb-2">{plan.name}</h3>
                     <p className="text-sm text-zinc-400 mb-6">{plan.description}</p>
 
-                    {/* Price */}
+                    {/* Price — larger with subtle glow */}
                     <div className="mb-2">
-                      <span className="text-5xl font-bold text-white">{plan.price}</span>
+                      <span className="text-6xl font-bold text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+                        {plan.price}
+                      </span>
                       <span className="text-zinc-400 ml-2">€/mois</span>
                     </div>
                     <p className="text-xs text-zinc-500 mb-8">
@@ -101,20 +104,31 @@ export function PricingSection() {
 
                     {/* Features */}
                     <ul className="space-y-4 mb-8">
-                      {plan.features.map((feature, j) => (
-                        <li key={j} className="flex items-start gap-3">
-                          <div className={cn(
-                            "w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5",
-                            isPopular ? "bg-indigo-500/20" : "bg-white/5"
-                          )}>
-                            <Check className={cn(
-                              "w-3 h-3",
-                              isPopular ? "text-indigo-400" : "text-zinc-400"
-                            )} />
-                          </div>
-                          <span className="text-zinc-300 text-sm">{feature}</span>
-                        </li>
-                      ))}
+                      {plan.features.map((feature, j) => {
+                        const isInheritedSeparator = j === inheritedFeatureIndex;
+                        return (
+                          <li key={j}>
+                            {isInheritedSeparator ? (
+                              <div className="flex items-center gap-3 pb-3 mb-1 border-b border-white/5">
+                                <span className="text-sm text-zinc-400 italic">{feature}, plus :</span>
+                              </div>
+                            ) : (
+                              <div className="flex items-start gap-3">
+                                <div className={cn(
+                                  "w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5",
+                                  isPopular ? "bg-indigo-500/20" : "bg-white/5"
+                                )}>
+                                  <Check className={cn(
+                                    "w-3 h-3",
+                                    isPopular ? "text-indigo-400" : "text-zinc-400"
+                                  )} />
+                                </div>
+                                <span className="text-zinc-300 text-sm">{feature}</span>
+                              </div>
+                            )}
+                          </li>
+                        );
+                      })}
                     </ul>
 
                     {/* CTA */}

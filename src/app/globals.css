@@ -560,6 +560,27 @@
     animation: gradient-x 8s ease infinite;
     @apply bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-200 to-white;
   }
+
+  /* Ligne de separation gradient entre sections */
+  .section-glow-top {
+    position: relative;
+  }
+
+  .section-glow-top::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.3), transparent);
+    pointer-events: none;
+  }
+
+  /* Background legerement plus clair pour alterner les sections */
+  .bg-zinc-925 {
+    background-color: #0f0f12;
+  }
 }
 
 /* ===== SMOOTH SCROLL ===== */

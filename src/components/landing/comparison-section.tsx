@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Check, X, GitCompareArrows } from "lucide-react";
 import { FadeIn, StaggerChildren, StaggerItem, TiltCard } from "@/components/animations";
@@ -12,17 +13,23 @@ interface ComparisonItem {
 }
 
 interface ComparisonCardProps {
+  id: string;
   title: string;
   subtitle: string;
   items: ComparisonItem[];
   badge: string;
   badgeColor: string;
   highlight?: boolean;
+  hoveredCard: string | null;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
 }
 
 export function ComparisonSection() {
+  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+
   return (
-    <section id="comparison" aria-label="Comparatif" className="relative py-20 overflow-hidden">
+    <section id="comparison" aria-label="Comparatif" className="relative py-24 overflow-hidden bg-zinc-925 section-glow-top">
       <div className="relative z-10 max-w-7xl mx-auto px-6">
         <div className="text-center mb-14">
           <FadeIn>
@@ -54,6 +61,7 @@ export function ComparisonSection() {
         <StaggerChildren staggerDelay={0.15} className="grid md:grid-cols-3 gap-8">
           <StaggerItem>
             <ComparisonCard
+              id="excel"
               title="Excel / Sheets"
               subtitle="Approximations manuelles"
               items={[
@@ -64,10 +72,14 @@ export function ComparisonSection() {
               ]}
               badge="Gratuit mais risqué"
               badgeColor="#f59e0b"
+              hoveredCard={hoveredCard}
+              onMouseEnter={() => setHoveredCard("excel")}
+              onMouseLeave={() => setHoveredCard(null)}
             />
           </StaggerItem>
           <StaggerItem>
             <ComparisonCard
+              id="lumeniq"
               title="LumenIQ"
               subtitle="Le juste équilibre"
               items={[
@@ -79,10 +91,14 @@ export function ComparisonSection() {
               badge="Dès 99 €/mois"
               badgeColor="#6366f1"
               highlight={true}
+              hoveredCard={hoveredCard}
+              onMouseEnter={() => setHoveredCard("lumeniq")}
+              onMouseLeave={() => setHoveredCard(null)}
             />
           </StaggerItem>
           <StaggerItem>
             <ComparisonCard
+              id="enterprise"
               title="Enterprise"
               subtitle="DataRobot, H2O, SAP..."
               items={[
@@ -93,6 +109,9 @@ export function ComparisonSection() {
               ]}
               badge="Surdimensionné"
               badgeColor="#71717a"
+              hoveredCard={hoveredCard}
+              onMouseEnter={() => setHoveredCard("enterprise")}
+              onMouseLeave={() => setHoveredCard(null)}
             />
           </StaggerItem>
         </StaggerChildren>
@@ -102,35 +121,41 @@ export function ComparisonSection() {
 }
 
 function ComparisonCard({
+  id,
   title,
   subtitle,
   items,
   badge,
   badgeColor,
   highlight,
+  hoveredCard,
+  onMouseEnter,
+  onMouseLeave,
 }: ComparisonCardProps) {
+  const isExcel = id === "excel";
+  const isLumenIQ = id === "lumeniq";
+  const isEnterprise = id === "enterprise";
+
+  // When LumenIQ is hovered, non-LumenIQ cards recede
+  const shouldRecede = hoveredCard === "lumeniq" && !isLumenIQ;
+
   return (
     <TiltCard className="h-full">
-      <div className="relative h-full">
-        {highlight && (
-          <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
-            <motion.div
-              className="px-4 py-1 bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full text-xs font-semibold text-white"
-              animate={{ y: [0, -3, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              RECOMMANDÉ
-            </motion.div>
-          </div>
-        )}
       <motion.div
         className={cn(
-          "relative h-full p-8 rounded-2xl spotlight",
+          "relative h-full p-8 rounded-2xl spotlight transition-all duration-300",
           highlight
-            ? "bg-zinc-900/50 backdrop-blur-xl border-2 border-indigo-500/50"
-            : "bg-zinc-900/50 backdrop-blur-xl border border-white/5 hover:border-white/10"
+            ? "bg-zinc-900/50 backdrop-blur-xl border-2 border-indigo-500/50 scale-[1.02] shadow-[0_0_40px_rgba(99,102,241,0.15)] bg-gradient-to-b from-indigo-500/10 to-transparent"
+            : "bg-zinc-900/50 backdrop-blur-xl border border-white/5 hover:border-white/10",
+          isExcel && "border-t-2 border-amber-500/30 opacity-90",
         )}
+        style={{
+          opacity: shouldRecede ? 0.7 : undefined,
+          transform: shouldRecede ? "scale(0.98)" : undefined,
+        }}
         whileHover={{ y: -5 }}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
         onMouseMove={(e) => {
           const rect = e.currentTarget.getBoundingClientRect();
           const x = ((e.clientX - rect.left) / rect.width) * 100;
@@ -139,6 +164,22 @@ function ComparisonCard({
           e.currentTarget.style.setProperty('--spotlight-y', `${y}%`);
         }}
       >
+        {/* Enterprise watermark */}
+        {isEnterprise && (
+          <span className="absolute top-4 right-4 text-5xl font-bold text-white/[0.03] select-none">2000+€</span>
+        )}
+
+        {/* RECOMMANDE badge inside card */}
+        {highlight && (
+          <motion.div
+            className="inline-flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full text-xs font-semibold text-white mb-4"
+            animate={{ y: [0, -2, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            RECOMMANDÉ
+          </motion.div>
+        )}
+
         <span
           className="inline-block px-3 py-1 rounded-full text-xs font-semibold mb-4"
           style={{ backgroundColor: `color-mix(in srgb, ${badgeColor} 20%, transparent)`, color: badgeColor }}
@@ -159,12 +200,18 @@ function ComparisonCard({
                   <X className="w-3 h-3 text-red-400" />
                 </div>
               ) : null}
-              <span className="text-sm text-zinc-300">{item.text}</span>
+              <span
+                className={cn(
+                  "text-sm text-zinc-300",
+                  isExcel && item.bad && "line-through text-zinc-500"
+                )}
+              >
+                {item.text}
+              </span>
             </div>
           ))}
         </div>
       </motion.div>
-      </div>
     </TiltCard>
   );
 }

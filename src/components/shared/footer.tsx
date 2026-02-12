@@ -7,8 +7,10 @@ const footerLinks = {
     { label: "Fonctionnalités", href: "/features" },
     { label: "Tarifs", href: "/pricing" },
     { label: "Démo", href: "/demo" },
+    { label: "Blog", href: "#" },
   ],
   company: [
+    { label: "À propos", href: "#" },
     { label: "Contact", href: "/contact" },
   ],
   legal: [
@@ -23,7 +25,9 @@ const socialLinks = [
 
 export function Footer() {
   return (
-    <footer className="bg-zinc-950 border-t border-white/5 py-16 px-6">
+    <footer className="bg-zinc-950 py-16 px-6">
+      {/* Gradient line separator */}
+      <div className="h-px bg-gradient-to-r from-transparent via-indigo-500/20 to-transparent mb-16" />
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           {/* Brand */}

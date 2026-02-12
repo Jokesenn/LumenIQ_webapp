@@ -42,7 +42,7 @@ export function Navbar() {
         className={cn(
           "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
           isScrolled
-            ? "bg-zinc-950/80 backdrop-blur-xl border-b border-white/5"
+            ? "bg-zinc-950/80 backdrop-blur-xl border-b border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.3)]"
             : "bg-transparent"
         )}
       >
@@ -98,7 +98,7 @@ export function Navbar() {
             </Link>
 
             <Link href="/login?mode=signup">
-              <MagneticButton className="px-5 py-2.5 bg-indigo-500 hover:bg-indigo-600 rounded-xl text-sm font-semibold text-white glow-accent transition-all">
+              <MagneticButton className="px-5 py-2.5 bg-indigo-500 hover:bg-indigo-600 rounded-xl text-sm font-semibold text-white transition-all hover:shadow-[0_0_20px_rgba(99,102,241,0.3)]">
                 Essai gratuit 3 mois
               </MagneticButton>
             </Link>

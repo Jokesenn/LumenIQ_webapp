@@ -24,6 +24,23 @@ const FAQSection = dynamic(() =>
 const CTASection = dynamic(() =>
   import("@/components/landing/cta-section").then(mod => ({ default: mod.CTASection }))
 );
+const ScrollProgress = dynamic(() =>
+  import("@/components/shared/scroll-progress").then(mod => ({ default: mod.ScrollProgress }))
+);
+
+function SectionDivider({ variant = "default" }: { variant?: "default" | "subtle" }) {
+  return (
+    <div className="max-w-7xl mx-auto px-6">
+      <div
+        className={
+          variant === "default"
+            ? "h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent"
+            : "h-px bg-white/[0.03]"
+        }
+      />
+    </div>
+  );
+}
 
 export default function Home() {
   return (
@@ -56,14 +73,19 @@ export default function Home() {
         Aller au contenu principal
       </a>
 
+      <ScrollProgress />
       <Navbar />
 
       <main className="pt-20">
         <Hero />
         <ComparisonSection />
+        <SectionDivider />
         <FeaturesSection />
+        <SectionDivider variant="subtle" />
         <HowItWorks />
+        <SectionDivider />
         <RoiSection />
+        <SectionDivider variant="subtle" />
         <PricingSection />
         <FAQSection />
         <CTASection />
