@@ -41,12 +41,12 @@ export function MetricGaugeCard({
   const getStatus = () => {
     if (inverted) {
       if (value <= thresholds.good) return { label: "Excellent", color: "text-emerald-400" };
-      if (value <= thresholds.warning) return { label: "Acceptable", color: "text-amber-400" };
-      return { label: "À améliorer", color: "text-red-400" };
+      if (value <= thresholds.warning) return { label: "Bon, marge conseillée", color: "text-amber-400" };
+      return { label: "À vérifier", color: "text-red-400" };
     } else {
       if (value >= thresholds.warning) return { label: "Excellent", color: "text-emerald-400" };
-      if (value >= thresholds.good) return { label: "Acceptable", color: "text-amber-400" };
-      return { label: "À améliorer", color: "text-red-400" };
+      if (value >= thresholds.good) return { label: "Bon, marge conseillée", color: "text-amber-400" };
+      return { label: "À vérifier", color: "text-red-400" };
     }
   };
 

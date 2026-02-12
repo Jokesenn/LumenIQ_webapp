@@ -93,32 +93,32 @@ export const abcDistribution: ABCDistribution[] = [
   { name: 'C', value: 50, color: '#8B94E8', label: 'Longue traîne' },
 ];
 
-// Model performance data
+// Model performance data (labels business pour affichage)
 export const modelPerformance: ModelPerformance[] = [
-  { model: 'AutoARIMA', smape: 8.2, series: 12 },
-  { model: 'Theta', smape: 9.1, series: 18 },
-  { model: 'CrostonOptimized', smape: 7.4, series: 8 },
-  { model: 'ETS', smape: 10.2, series: 6 },
-  { model: 'MSTL', smape: 8.8, series: 3 },
+  { model: 'ARIMA automatique', smape: 8.2, series: 12 },
+  { model: 'Méthode Theta', smape: 9.1, series: 18 },
+  { model: 'Demande intermittente', smape: 7.4, series: 8 },
+  { model: 'Lissage exponentiel', smape: 10.2, series: 6 },
+  { model: 'Décomposition saisonnière', smape: 8.8, series: 3 },
 ];
 
-// Available models list
+// Available models list (labels business)
 export const availableModels = [
-  'AutoARIMA',
-  'AutoETS',
-  'Theta',
-  'Croston',
-  'TSB',
-  'ADIDA',
-  'LightGBM',
-  'Ridge',
-  'Naive',
-  'SeasonalNaive',
-  'Drift',
-  'RollingMean',
-  'Hurdle',
-  'TimeGPT',
-  'EnsembleTop2',
+  'ARIMA automatique',
+  'Lissage exponentiel',
+  'Méthode Theta',
+  'Demande intermittente',
+  'Teunter-Syntetos-Babai',
+  'Décomp. temporelle',
+  'Gradient Boosting',
+  'Régression Ridge',
+  'Référence simple',
+  'Référence saisonnière',
+  'Tendance',
+  'Moyenne mobile',
+  'Demande mixte',
+  'IA avancée (TimeGPT)',
+  'Combinaison automatique',
 ];
 
 // Pricing plans — source unique : pricing-config.ts
@@ -155,13 +155,13 @@ export const faqItems = [
   },
   {
     id: "backtesting",
-    question: "Comment fonctionne le backtesting ?",
+    question: "Comment fonctionne la validation sur historique ?",
     answer: "Chaque prévision est validée sur vos propres données historiques : le système masque une partie de vos ventes passées, génère une prévision, puis compare avec la réalité. Ce processus est répété jusqu'à 5 fois pour les produits clés. Vous obtenez ainsi un score de fiabilité concret avant de prendre vos décisions."
   },
   {
     id: "nombre-modeles",
-    question: "Combien de modèles sont disponibles ?",
-    answer: "Jusqu'à 24 modèles organisés en 3 packs progressifs : Standard (17 modèles statistiques éprouvés), ML (22 modèles incluant le machine learning pour plus de précision), et Premium (24+ modèles incluant les foundation models les plus avancés). Pour chaque série, le meilleur modèle est sélectionné automatiquement grâce au backtesting."
+    question: "Combien de méthodes de calcul sont disponibles ?",
+    answer: "Jusqu'à 24 méthodes organisées en 3 packs progressifs : Standard (17 méthodes statistiques éprouvées), ML (22 méthodes incluant l'apprentissage automatique pour plus de précision), et Premium (24+ méthodes incluant l'IA avancée). Pour chaque produit, la meilleure méthode est sélectionnée automatiquement grâce à la validation sur historique."
   },
   {
     id: "integration",

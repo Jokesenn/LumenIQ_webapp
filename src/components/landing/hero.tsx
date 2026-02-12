@@ -193,7 +193,7 @@ export function Hero() {
             {/* Subtitle */}
             <FadeIn delay={0.7}>
               <p className="text-lg sm:text-xl text-zinc-400 max-w-xl leading-relaxed font-light">
-                Transformez vos données de vente en forecasts validés par backtesting.
+                Transformez vos données de vente en prévisions validées sur votre historique réel.
                 <span className="text-zinc-300 font-medium"> Sans data scientist. Sans Excel.</span>
               </p>
             </FadeIn>
@@ -242,7 +242,7 @@ export function Hero() {
 
                 <div className="w-px h-14 bg-gradient-to-b from-transparent via-white/10 to-transparent" />
 
-                <AnimatedStat target={24} label="Modèles disponibles" />
+                <AnimatedStat target={24} label="Méthodes de calcul" />
 
                 <div className="w-px h-14 bg-gradient-to-b from-transparent via-white/10 to-transparent hidden sm:block" />
 
@@ -317,7 +317,7 @@ export function Hero() {
                   animate={{ y: [0, 8, 0] }}
                   transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
                 >
-                  24 modèles testés
+                  24 méthodes testées
                 </motion.div>
 
                 {/* Floating badge — series analyzed */}

@@ -77,7 +77,7 @@ export function DashboardContent({
   const router = useRouter();
 
   const lastForecastText = stats.lastForecastAt
-    ? `Derniere prevision ${formatDistanceToNow(parseISO(stats.lastForecastAt), { addSuffix: true, locale: fr })}`
+    ? `Dernière prévision ${formatDistanceToNow(parseISO(stats.lastForecastAt), { addSuffix: true, locale: fr })}`
     : null;
 
   // Calcul tendance score : dernier run vs avant-dernier run
@@ -86,7 +86,7 @@ export function DashboardContent({
     const delta = stats.latestScore - stats.previousScore;
     if (Math.abs(delta) < 0.1) return undefined;
     return {
-      value: `${delta > 0 ? "+" : ""}${delta.toFixed(1)} vs precedent`,
+      value: `${delta > 0 ? "+" : ""}${delta.toFixed(1)} vs précédent`,
       direction: delta > 0 ? "up" as const : "down" as const,
       isGood: true,
     };
@@ -97,7 +97,7 @@ export function DashboardContent({
     ? "Aucune action en attente"
     : [
         urgentActions.counts.urgent > 0 ? `${urgentActions.counts.urgent} urgente${urgentActions.counts.urgent > 1 ? "s" : ""}` : null,
-        urgentActions.counts.warning > 0 ? `${urgentActions.counts.warning} a verifier` : null,
+        urgentActions.counts.warning > 0 ? `${urgentActions.counts.warning} à vérifier` : null,
       ].filter(Boolean).join(" · ");
 
   // Quota percentage for variant
@@ -118,13 +118,13 @@ export function DashboardContent({
               Bonjour {stats.userName}
             </h1>
             <p className="text-zinc-400 mt-1">
-              {lastForecastText ?? "Lancez votre premiere prevision"}
+              {lastForecastText ?? "Lancez votre première prévision"}
             </p>
           </div>
           <Link href="/dashboard/forecast">
             <Button className="bg-indigo-500 hover:bg-indigo-600 glow-accent">
               <Plus className="w-4 h-4 mr-2" />
-              Nouvelle prevision
+              Nouvelle prévision
             </Button>
           </Link>
         </div>
@@ -134,7 +134,7 @@ export function DashboardContent({
       <StaggerChildren staggerDelay={0.08} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StaggerItem>
           <StatCard
-            label="Score de fiabilite"
+            label="Score de fiabilité"
             value={`${stats.avgChampionScore.toFixed(1)}`}
             icon={TrendingUp}
             subtitle="/100 · Moyenne des 10 derniers jobs"
@@ -145,7 +145,7 @@ export function DashboardContent({
         </StaggerItem>
         <StaggerItem>
           <StatCard
-            label="Actions a traiter"
+            label="Actions à traiter"
             value={urgentActions.total}
             icon={urgentActions.counts.urgent > 0 ? AlertTriangle : CheckCircle2}
             subtitle={actionsSubtitle}
@@ -155,10 +155,10 @@ export function DashboardContent({
         </StaggerItem>
         <StaggerItem>
           <StatCard
-            label="Previsions ce mois"
+            label="Prévisions ce mois"
             value={stats.forecastsThisMonth}
             icon={LineChart}
-            subtitle={lastForecastText ? `Derniere : ${formatDistanceToNow(parseISO(stats.lastForecastAt!), { addSuffix: true, locale: fr })}` : undefined}
+            subtitle={lastForecastText ? `Dernière : ${formatDistanceToNow(parseISO(stats.lastForecastAt!), { addSuffix: true, locale: fr })}` : undefined}
             href="/dashboard/history"
           />
         </StaggerItem>
@@ -201,10 +201,10 @@ export function DashboardContent({
         <FadeIn delay={0.2} className="lg:col-span-3">
           <div className="p-6 rounded-2xl dash-card">
             <div className="flex items-center gap-2 mb-1">
-              <h2 className="dash-section-title">Evolution de la fiabilite</h2>
+              <h2 className="dash-section-title">Évolution de la fiabilité</h2>
               <HelpTooltip termKey="championScore" />
             </div>
-            <p className="text-sm text-zinc-500 mb-4">10 dernieres analyses</p>
+            <p className="text-sm text-zinc-500 mb-4">10 dernières analyses</p>
             <ScoreTrendChart data={trendData} height={250} />
           </div>
         </FadeIn>
@@ -244,7 +244,7 @@ export function DashboardContent({
                   </div>
                   <div className="text-center">
                     <p className="text-sm font-medium text-zinc-300">Aucune action requise</p>
-                    <p className="text-xs text-zinc-500 mt-1">Toutes vos previsions sont dans les clous</p>
+                    <p className="text-xs text-zinc-500 mt-1">Toutes vos prévisions sont dans les clous</p>
                   </div>
                 </div>
               )}
@@ -267,7 +267,7 @@ export function DashboardContent({
       <FadeIn delay={0.4}>
         <div className="p-6 rounded-2xl dash-card">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="dash-section-title">Dernieres previsions</h2>
+            <h2 className="dash-section-title">Dernières prévisions</h2>
             <Link
               href="/dashboard/history"
               className="text-sm text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
@@ -280,9 +280,9 @@ export function DashboardContent({
           {/* Table header */}
           <div className="hidden sm:grid grid-cols-12 gap-3 px-4 pb-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
             <div className="col-span-4">Fichier</div>
-            <div className="col-span-1 text-center">Series</div>
+            <div className="col-span-1 text-center">Séries</div>
             <div className="col-span-2 text-center">Score</div>
-            <div className="col-span-1 text-center">Duree</div>
+            <div className="col-span-1 text-center">Durée</div>
             <div className="col-span-2 text-center">Actions</div>
             <div className="col-span-2 text-right">Date</div>
           </div>

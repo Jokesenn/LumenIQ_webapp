@@ -407,7 +407,7 @@ export default function ForecastPage() {
             />
             <ConfigItem label="Saisonnalité" value={getSeasonalityLabel()} />
             <ConfigItem label="Horizon prévision" value={getDefaultHorizon()} />
-            <ConfigItem label="Sélection méthode" value="Automatique (ABC/XYZ)" />
+            <ConfigItem label="Calcul des prévisions" value="Automatique (ABC/XYZ)" />
           </div>
 
           {/* Options de calcul */}

@@ -51,16 +51,16 @@ export const GLOSSARY: Record<string, ReactNode> = {
     <div>
       <p className="font-medium mb-2">Erreur moyenne de prévision</p>
       <p className="text-white/70 text-sm">
-        Mesure l&apos;écart moyen entre vos prévisions et les ventes réelles. Utile pour comparer la performance globale de vos forecasts.
+        Mesure l&apos;écart moyen entre vos prévisions et les ventes réelles. Utile pour comparer la performance globale de vos prévisions.
       </p>
     </div>
   ),
 
   mase: (
     <div>
-      <p className="font-medium mb-2">Indice prédictif (MASE)</p>
+      <p className="font-medium mb-2">Indice prédictif</p>
       <p className="text-white/70 text-sm mb-3">
-        Le MASE compare la qualité de vos prévisions à une méthode de référence simple (naïve saisonnière).
+        Compare la qualité de vos prévisions à une méthode de référence simple.
       </p>
       <p className="text-white/70 text-sm">
         Un score inférieur à 100 signifie que le modèle fait mieux que la référence. Plus le score est bas, meilleures sont les prévisions.
@@ -304,12 +304,12 @@ export const GLOSSARY: Record<string, ReactNode> = {
 
   wape: (
     <div>
-      <p className="font-medium mb-2">Erreur pondérée par le volume (WAPE)</p>
+      <p className="font-medium mb-2">Erreur pondérée par le volume</p>
       <p className="text-white/70 text-sm mb-2">
         Mesure l&apos;écart entre prévisions et réel, pondéré par le volume de chaque produit.
       </p>
       <p className="text-white/70 text-sm">
-        Un WAPE de 5% signifie : sur l&apos;ensemble de votre chiffre d&apos;affaires, l&apos;erreur moyenne est de 5%. Les gros volumes pèsent plus que les petits.
+        Concrètement : sur l&apos;ensemble de votre chiffre d&apos;affaires, l&apos;erreur moyenne est de 5%. Les gros volumes pèsent plus que les petits.
       </p>
     </div>
   ),

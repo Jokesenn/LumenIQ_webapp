@@ -318,7 +318,7 @@ export function ResultsContent({
             <div className="dash-card p-6">
               <div className="flex items-center gap-1.5 mb-6">
                 <h2 className="dash-section-title">
-                  Prévisions vs Réel (agrégé)
+                  Prévisions vs Ventes réelles (total)
                 </h2>
                 <HelpTooltip termKey="forecast_graph" />
               </div>

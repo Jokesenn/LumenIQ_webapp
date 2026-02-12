@@ -58,12 +58,12 @@ const featureSections = [
   {
     icon: Target,
     title: "Routing ABC/XYZ Intelligent",
-    description: "Allocation dynamique du budget compute selon la valeur business de chaque série. Classification automatique selon contribution CA (ABC) et volatilité demande (XYZ).",
+    description: "Allocation dynamique des ressources selon la valeur business de chaque produit. Classification automatique selon contribution CA (ABC) et régularité des ventes (XYZ).",
     benefits: [
-      "Classe A (Top 20% CA) : jusqu’à 30 modèles, 5-fold CV",
-      "Classe B (30% suivants) : jusqu’à 20 modèles, 3-fold CV",
-      "Classe C (50% restants) : jusqu’à 10 modèles, 2-fold CV",
-      "Impact : ~60% réduction temps de calcul vs approche naïve",
+      "Classe A (Top 20% CA) : jusqu'à 30 méthodes, 5 étapes de validation",
+      "Classe B (30% suivants) : jusqu'à 20 méthodes, 3 étapes de validation",
+      "Classe C (50% restants) : jusqu'à 10 méthodes, 2 étapes de validation",
+      "Impact : ~60% réduction temps de calcul vs méthode classique",
     ],
     gradient: "from-rose-500 to-pink-500",
     metric: 60,
@@ -73,29 +73,29 @@ const featureSections = [
   },
   {
     icon: Brain,
-    title: "Jusqu’à 24 modèles en 3 packs",
-    description: "Une bibliothèque complète organisée en 3 packs progressifs : Standard (17 modèles stats), ML (+5 modèles ML), Premium (+TimeGPT & EnsembleTop2).",
+    title: "Jusqu'à 24 méthodes de calcul en 3 packs",
+    description: "Une bibliothèque complète organisée en 3 packs progressifs : Standard (17 méthodes statistiques), ML (+5 méthodes d'apprentissage), Premium (+IA avancée).",
     benefits: [
-      "Standard : 17 modèles statistiques éprouvés (AutoARIMA, ETS, Theta, Croston...)",
-      "ML : Ridge, LightGBM (75% win-rate séries stables), Hurdle+ (ML-enhanced)",
-      "Premium : TimeGPT (zero-shot, court historique), EnsembleTop2",
-      "Sélection automatique du champion par cross-validation temporelle",
+      "Standard : 17 méthodes statistiques éprouvées pour tout type de produit",
+      "ML : méthodes d'apprentissage automatique (75% de précision sur ventes régulières)",
+      "Premium : prévision IA avancée + combinaison automatique des meilleures approches",
+      "Sélection automatique de la meilleure méthode par validation sur votre historique",
     ],
     gradient: "from-indigo-500 to-violet-500",
     metric: 24,
     metricSuffix: "",
-    metricLabel: "modeles",
+    metricLabel: "méthodes",
     visual: "models",
   },
   {
     icon: Shield,
-    title: "Backtesting Multi-Fold",
-    description: "Chaque forecast est validé par cross-validation temporelle (jusqu’à 5 folds pour classe A). Mécanisme de Gating : évite de recalculer si les données n’ont pas significativement changé.",
+    title: "Validation multi-étapes sur historique",
+    description: "Chaque prévision est validée par des tests progressifs sur votre historique réel (jusqu'à 5 étapes pour les produits stratégiques). Optimisation intelligente : évite de recalculer si vos données n'ont pas évolué.",
     benefits: [
-      "Métriques : Score de fiabilité, Erreur pondérée, Erreur moyenne, Biais...",
-      "Gating : 60-70% plus rapide sur séries stables (runs récurrents)",
-      "Détection de drift automatique entre les runs",
-      "Intervalle de confiance 80% calibré sur l’historique",
+      "Indicateurs : Score de fiabilité, Erreur pondérée, Erreur moyenne, Biais de prévision",
+      "Optimisation intelligente : 60-70% plus rapide sur produits à ventes régulières",
+      "Détection automatique des changements de tendance entre analyses",
+      "Fourchette de prévision calibrée sur votre historique réel",
     ],
     gradient: "from-emerald-500 to-cyan-500",
     metric: 5,
@@ -116,16 +116,16 @@ const featureSections = [
     gradient: "from-amber-500 to-orange-500",
     metric: 6,
     metricSuffix: "",
-    metricLabel: "artifacts",
+    metricLabel: "fichiers",
     visual: "artifacts",
   },
 ];
 
 const keyStats = [
   { value: 60, suffix: "%", label: "Réduction temps de calcul", icon: Clock },
-  { value: 24, suffix: "", label: "Modèles disponibles", icon: Cpu },
-  { value: 5, suffix: "x", label: "Cross-validation", icon: Shield },
-  { value: 6, suffix: "", label: "Artifacts par run", icon: FileText },
+  { value: 24, suffix: "", label: "Méthodes de calcul", icon: Cpu },
+  { value: 5, suffix: "x", label: "Étapes de validation", icon: Shield },
+  { value: 6, suffix: "", label: "Fichiers par analyse", icon: FileText },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -592,7 +592,7 @@ export default function FeaturesPage() {
                   Comment ça marche
                 </p>
                 <h2 className="font-display text-3xl md:text-4xl font-800 text-white tracking-[-0.03em]">
-                  De l&apos;upload au forecast en 3 étapes
+                  De l&apos;import à la prévision en 3 étapes
                 </h2>
               </div>
             </FadeIn>
@@ -609,7 +609,7 @@ export default function FeaturesPage() {
                 {
                   step: "02",
                   title: "Laissez tourner",
-                  desc: "Le pipeline teste jusqu’à 24 modèles par série, sélectionne le champion par backtesting et génère la synthèse IA.",
+                  desc: "Le moteur teste jusqu'à 24 méthodes par produit, sélectionne la meilleure par validation sur historique et génère la synthèse IA.",
                   icon: Cpu,
                   gradient: "from-violet-500 to-purple-500",
                 },
