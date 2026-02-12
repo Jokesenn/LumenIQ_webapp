@@ -2,11 +2,11 @@
 
 ## Project Overview
 
-LumenIQ is a SaaS forecasting platform for SME retail/e-commerce businesses. It transforms sales histories into forecasts using 21 statistical/ML models with ABC/XYZ routing. The frontend is a French-language application.
+LumenIQ is a SaaS forecasting platform for SME retail/e-commerce businesses. It transforms sales histories into forecasts using 24+ statistical/ML models with ABC/XYZ routing. The frontend is a French-language application.
 
 ## Tech Stack
 
-- **Framework**: Next.js 16 (App Router) with React 19
+- **Framework**: Next.js 16.1 (App Router) with React 19.2
 - **Language**: TypeScript 5.9 (strict mode)
 - **Styling**: Tailwind CSS v4 (`@import "tailwindcss"` syntax) + shadcn/ui (new-york style) + Radix UI primitives
 - **Animations**: Framer Motion, React Three Fiber (3D), tw-animate-css
@@ -39,9 +39,13 @@ npm run test:watch # Watch mode
 ├── middleware.ts                # Supabase auth middleware (at project root, NOT in src/)
 src/
 ├── app/                         # Next.js App Router pages
-│   ├── layout.tsx               # Root layout (Manrope font, ThemeProvider, PageTransition)
+│   ├── layout.tsx               # Root layout (Manrope+Syne fonts, ThemeProvider, PageTransition)
 │   ├── page.tsx                 # Landing page
 │   ├── globals.css              # Tailwind imports, design tokens, theme vars
+│   ├── robots.ts                # SEO robots.txt generation
+│   ├── sitemap.ts               # SEO sitemap generation
+│   ├── opengraph-image.tsx      # Open Graph image generation
+│   ├── twitter-image.tsx        # Twitter card image generation
 │   ├── auth/callback/route.ts   # OAuth/SSR callback handler
 │   ├── login/
 │   │   ├── page.tsx             # Login / signup / forgot-password tabs
@@ -68,8 +72,11 @@ src/
 │   │   │       └── series-content.tsx
 │   │   ├── actions/page.tsx      # Actions board (full-page, grouped by run)
 │   │   └── settings/page.tsx    # Profile, subscription, preferences, API key, danger zone
-│   ├── features/page.tsx        # Features marketing page
+│   ├── features/page.tsx        # Features marketing page (ABC/XYZ, backtesting visuals)
 │   ├── pricing/page.tsx         # Pricing page (3 tiers + enterprise)
+│   ├── contact/page.tsx         # Contact form (constellation animation, premium inputs)
+│   ├── demo/page.tsx            # Interactive product tour (4-step timeline, auto-play)
+│   ├── mentions-legales/page.tsx # Legal mentions page
 │   └── test-upload/page.tsx     # Dev-only: CSV upload test page
 │
 ├── components/
@@ -103,6 +110,7 @@ src/
 │   │   ├── recent-forecasts.tsx
 │   │   ├── empty-dashboard.tsx
 │   │   ├── reliability-tab.tsx    # Onglet Fiabilité (bubble chart + model perf)
+│   │   ├── reliability-detail-table.tsx # Detailed model metrics table
 │   │   ├── series-list.tsx
 │   │   ├── series-navigator.tsx
 │   │   ├── series-quick-select.tsx
@@ -124,6 +132,8 @@ src/
 │   │   │   └── types.ts
 │   │   ├── actions-board.tsx    # Actions board (page + drawer modes)
 │   │   ├── actions-summary.tsx  # Executive summary card (3 lines)
+│   │   ├── actions-drawer.tsx   # Sheet drawer for actions panel on results page
+│   │   ├── actions-fab.tsx      # Floating action button (amber) with urgent count badge
 │   │   ├── action-card.tsx      # Individual action card (priority, dismiss, navigate)
 │   │   └── results/            # Results-page-specific
 │   │       ├── SeriesAlertBadges.tsx
@@ -138,6 +148,8 @@ src/
 │   │   ├── metric-gauge-card.tsx
 │   │   ├── model-performance-chart.tsx
 │   │   ├── reliability-bubble-chart.tsx  # Bubble chart fiabilité par modèle
+│   │   ├── reliability-family-viz.tsx   # Treemap/pie of model families by series count
+│   │   ├── score-trend-chart.tsx        # Line chart of score trends over forecasts
 │   │   └── quota-progress.tsx
 │   │
 │   ├── landing/                 # Landing page sections
@@ -149,7 +161,8 @@ src/
 │   │   ├── comparison-section.tsx
 │   │   ├── cta-section.tsx
 │   │   ├── faq-section.tsx
-│   │   └── pricing-preview.tsx
+│   │   ├── pricing-preview.tsx
+│   │   └── roi-section.tsx          # ROI benefits with animated counters (16 days saved, -30% ruptures, 10x ROI)
 │   │
 │   ├── shared/                  # Global components (navbar, footer, logo)
 │   │   ├── index.ts
@@ -194,6 +207,7 @@ src/
 │   ├── providers/               # Context providers
 │   │   └── page-transition.tsx
 │   │
+│   ├── error-boundary.tsx          # Error fallback component
 │   └── theme-provider.tsx
 │
 ├── hooks/                       # Custom React hooks
@@ -219,6 +233,7 @@ src/
 │   ├── parse-markdown-sections.ts  # Split markdown by H2 headers for accordions
 │   ├── glossary.tsx             # Help tooltip content definitions (championScore, wape, smape, bias, reliable_series, attention, watch, drift, gated, model_changed, etc.)
 │   ├── onboarding.ts            # Tour completion state (localStorage)
+│   ├── pricing-config.ts        # Central pricing plan config (Standard/ML/Premium: models, series, features)
 │   ├── mock-data.ts             # Development mock data
 │   ├── supabase/
 │   │   ├── server.ts            # Server-side Supabase client (SSR, schema: lumeniq)
@@ -335,7 +350,7 @@ Conversion functions in `@/lib/metrics.ts`:
 - Trend labels on action cards: Dégradation (red), Stable (neutral), Amélioration (green)
 
 ### Model Labels (`lib/model-labels.ts`)
-- `MODEL_LABELS`: maps 24+ technical model names to French labels and family categories
+- `MODEL_LABELS`: maps 30+ technical model names to French labels and family categories
 - `MODEL_FAMILIES`: 4 families — Décomposition avancée (violet), Statistique classique (blue), Machine Learning (emerald), Statistique avancée (amber)
 - `getModelMeta(name)`: returns `{ label, family, familyColor }` — always use this for user-facing model names
 - `getFamilyMeta(name)`: returns `{ hex, bgClass, label }` — for color-coding by family
@@ -416,6 +431,53 @@ Required (set in `.env.local`):
 - **Commands**: `npm test` (single run), `npm run test:watch` (watch mode)
 - **Current tests**: Unit tests for alert logic (`series-alerts`), alert badge config (`alert-badge`), action card config (`action-card`)
 - Tests validate: alert thresholds, priority ordering, absence of technical jargon in user-facing labels, color coherence with severity levels
+
+### Marketing Pages (recent additions)
+
+- **`/contact`** — Split-screen contact form: left side with animated constellation background, right side with premium input components (glow on focus), subject dropdown, message textarea, success state with confetti animation
+- **`/demo`** — Interactive product tour: 4-step timeline (import, analysis, results, actions), auto-play with pause/resume controls, TiltCard hover effects, bento grid of feature highlights
+- **`/features`** — Features overview with redesigned ABC/XYZ and backtesting visuals ("Geometric Showcase" design)
+- **`/mentions-legales`** — Legal mentions page
+
+### Pricing Configuration (`lib/pricing-config.ts`)
+
+Single source of truth for pricing tiers:
+- **Standard**: 17 models, 50 series
+- **ML**: 22 models, 150 series
+- **Premium**: 24 models, 300 series
+
+Used by `/pricing` page and referenced across the app.
+
+### SEO & Social Sharing
+
+- `opengraph-image.tsx` — Dynamic Open Graph image generation
+- `twitter-image.tsx` — Twitter card image generation
+- `robots.ts` — Robots.txt generation
+- `sitemap.ts` — Sitemap generation
+
+### Results Overview Gauge Cards — MASE "Indice predictif"
+
+The MAPE gauge card has been replaced with a MASE-based "Indice predictif" card:
+- Source: `global_mase` from `job_summaries` (aggregated in backend `build_reports.py`)
+- Display: Lower is better (unlike Score de fiabilite)
+- Conditionally hidden for old jobs where the field is null
+
+### Additional Visualizations (recent additions)
+
+- **`reliability-family-viz.tsx`** — Treemap/pie chart of model families by series count
+- **`score-trend-chart.tsx`** — Line chart tracking score improvements across multiple forecast runs
+- **`reliability-detail-table.tsx`** — Detailed model metrics table for the reliability tab
+
+### Actions Drawer & FAB (recent additions)
+
+- **`actions-drawer.tsx`** — Sheet-based side panel for actions on the results page (alternative to full actions page)
+- **`actions-fab.tsx`** — Floating action button (amber) with urgent count badge, positioned bottom-right on dashboard pages
+
+## Git Structure
+
+Two independent git repositories:
+- Root (`/Lumen_IQ/`): Backend forecast engine on branch `dev`
+- Webapp (`/LumenIQ_webapp/`): Frontend on branch `main`
 
 ## No CI/CD
 
