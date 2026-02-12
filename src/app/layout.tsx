@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Manrope } from "next/font/google";
+import { Manrope, Syne } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { PageTransition } from "@/components/providers/page-transition";
 import { ScrollProgress } from "@/components/shared/scroll-progress";
@@ -12,6 +12,13 @@ const manrope = Manrope({
   weight: ["300", "400", "500", "600", "700", "800"],
   display: "swap",
   fallback: ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
+});
+
+const syne = Syne({
+  variable: "--font-syne",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -67,7 +74,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${manrope.variable} font-sans antialiased`}>
+      <body className={`${manrope.variable} ${syne.variable} font-sans antialiased`}>
         <ScrollProgress />
         <ThemeProvider
           attribute="class"

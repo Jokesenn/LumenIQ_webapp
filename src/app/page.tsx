@@ -24,9 +24,6 @@ const FAQSection = dynamic(() =>
 const CTASection = dynamic(() =>
   import("@/components/landing/cta-section").then(mod => ({ default: mod.CTASection }))
 );
-const ScrollProgress = dynamic(() =>
-  import("@/components/shared/scroll-progress").then(mod => ({ default: mod.ScrollProgress }))
-);
 
 function SectionDivider({ variant = "default" }: { variant?: "default" | "subtle" }) {
   return (
@@ -73,7 +70,6 @@ export default function Home() {
         Aller au contenu principal
       </a>
 
-      <ScrollProgress />
       <Navbar />
 
       <main className="pt-20">

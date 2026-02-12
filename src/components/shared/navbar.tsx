@@ -28,7 +28,6 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu on route change
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [pathname]);
@@ -38,16 +37,26 @@ export function Navbar() {
       <motion.header
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        transition={{ duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }}
+        transition={{ duration: 0.6, ease: [0.21, 0.47, 0.32, 0.98] }}
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
+          "fixed top-0 left-0 right-0 z-50 transition-all duration-700",
           isScrolled
-            ? "bg-zinc-950/80 backdrop-blur-xl border-b border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.3)]"
+            ? "bg-zinc-950/70 backdrop-blur-2xl border-b border-white/[0.04] shadow-[0_4px_30px_rgba(0,0,0,0.4)]"
             : "bg-transparent"
         )}
       >
-        <nav className="max-w-7xl mx-auto px-6 h-20 flex items-center">
-          {/* Logo — left column */}
+        {/* Subtle gradient line at bottom when scrolled */}
+        {isScrolled && (
+          <motion.div
+            className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-500/20 to-transparent"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          />
+        )}
+
+        <nav className="max-w-[1400px] mx-auto px-6 sm:px-8 h-20 flex items-center">
+          {/* Logo */}
           <div className="flex-1">
             <Link href="/">
               <motion.div whileHover={{ scale: 1.02 }} className="inline-flex items-center">
@@ -56,25 +65,25 @@ export function Navbar() {
             </Link>
           </div>
 
-          {/* Desktop Navigation — center column */}
-          <div className="hidden md:flex items-center gap-1">
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-1 bg-white/[0.03] rounded-full px-1.5 py-1.5 border border-white/[0.04]">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
                 <Link key={link.href} href={link.href}>
                   <motion.div
                     className={cn(
-                      "relative px-4 py-2 rounded-lg text-sm font-medium transition-colors",
-                      isActive ? "text-white" : "text-zinc-300 hover:text-white"
+                      "relative px-5 py-2 rounded-full text-sm font-medium transition-colors",
+                      isActive ? "text-white" : "text-zinc-400 hover:text-white"
                     )}
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
                     {link.label}
                     {isActive && (
                       <motion.div
                         layoutId="navbar-indicator"
-                        className="absolute inset-0 bg-white/5 rounded-lg -z-10"
+                        className="absolute inset-0 bg-white/[0.07] rounded-full -z-10 border border-white/[0.06]"
                         transition={{ type: "spring", stiffness: 350, damping: 30 }}
                       />
                     )}
@@ -84,21 +93,21 @@ export function Navbar() {
             })}
           </div>
 
-          {/* Right side — right column */}
-          <div className="hidden md:flex flex-1 items-center justify-end gap-4">
+          {/* Right actions */}
+          <div className="hidden md:flex flex-1 items-center justify-end gap-3">
             {pathname.startsWith("/dashboard") && <ThemeToggle />}
 
             <Link href="/login">
               <Button
                 variant="ghost"
-                className="text-zinc-400 hover:text-white hover:bg-white/5"
+                className="text-zinc-400 hover:text-white hover:bg-white/5 rounded-full px-5"
               >
                 Connexion
               </Button>
             </Link>
 
             <Link href="/login?mode=signup">
-              <MagneticButton className="px-5 py-2.5 bg-indigo-500 hover:bg-indigo-600 rounded-xl text-sm font-semibold text-white transition-all hover:shadow-[0_0_20px_rgba(99,102,241,0.3)]">
+              <MagneticButton className="px-5 py-2.5 bg-indigo-500 hover:bg-indigo-600 rounded-full text-sm font-semibold text-white transition-all hover:shadow-[0_0_20px_rgba(99,102,241,0.3)]">
                 Essai gratuit 3 mois
               </MagneticButton>
             </Link>
@@ -110,7 +119,7 @@ export function Navbar() {
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label={isMobileMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
             aria-expanded={isMobileMenuOpen}
-            className="md:hidden p-3 rounded-lg hover:bg-white/5"
+            className="md:hidden p-3 rounded-xl hover:bg-white/5"
           >
             <AnimatePresence mode="wait">
               {isMobileMenuOpen ? (
@@ -148,19 +157,17 @@ export function Navbar() {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-40 md:hidden"
           >
-            {/* Backdrop */}
             <motion.div
-              className="absolute inset-0 bg-zinc-950/90 backdrop-blur-xl"
+              className="absolute inset-0 bg-zinc-950/90 backdrop-blur-2xl"
               onClick={() => setIsMobileMenuOpen(false)}
             />
 
-            {/* Menu content */}
             <motion.nav
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="absolute right-0 top-0 bottom-0 w-[80%] max-w-sm bg-zinc-900 border-l border-white/5 p-6 pt-24"
+              className="absolute right-0 top-0 bottom-0 w-[80%] max-w-sm bg-zinc-900/95 backdrop-blur-xl border-l border-white/5 p-6 pt-24"
             >
               <div className="space-y-2">
                 {navLinks.map((link, i) => (
@@ -193,12 +200,12 @@ export function Navbar() {
                 transition={{ delay: 0.3 }}
               >
                 <Link href="/login" className="block">
-                  <Button variant="outline" className="w-full justify-center border-white/10">
+                  <Button variant="outline" className="w-full justify-center border-white/10 rounded-xl">
                     Connexion
                   </Button>
                 </Link>
                 <Link href="/login?mode=signup" className="block">
-                  <Button className="w-full justify-center bg-indigo-500 hover:bg-indigo-600">
+                  <Button className="w-full justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl">
                     Essai gratuit 3 mois
                   </Button>
                 </Link>

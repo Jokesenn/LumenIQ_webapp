@@ -5,7 +5,7 @@ import {
   Shield, Clock, BarChart3, Sparkles,
   Brain, Target, ArrowRight
 } from "lucide-react";
-import { FadeIn, StaggerChildren, StaggerItem, TiltCard } from "@/components/animations";
+import { FadeIn, TiltCard } from "@/components/animations";
 
 const features = [
   {
@@ -14,6 +14,8 @@ const features = [
     description: "Jusqu'à 24 algorithmes statistiques et ML en compétition. Le champion est sélectionné automatiquement pour chaque produit.",
     gradient: "from-indigo-500 to-violet-500",
     iconColor: "text-indigo-400",
+    metric: "24",
+    metricLabel: "modèles",
   },
   {
     icon: Shield,
@@ -21,6 +23,8 @@ const features = [
     description: "Chaque prévision est validée sur vos données historiques. Vous connaissez la fiabilité avant de décider.",
     gradient: "from-emerald-500 to-cyan-500",
     iconColor: "text-emerald-400",
+    metric: "5x",
+    metricLabel: "cross-val",
   },
   {
     icon: Clock,
@@ -28,6 +32,8 @@ const features = [
     description: "Upload CSV, cliquez, téléchargez. Pas de configuration complexe, pas de formation requise.",
     gradient: "from-amber-500 to-orange-500",
     iconColor: "text-amber-400",
+    metric: "5",
+    metricLabel: "min",
   },
   {
     icon: Target,
@@ -35,6 +41,8 @@ const features = [
     description: "Identifiez automatiquement vos best-sellers et vos produits à faible volume pour prioriser vos efforts.",
     gradient: "from-rose-500 to-pink-500",
     iconColor: "text-rose-400",
+    metric: "60%",
+    metricLabel: "temps gagné",
   },
   {
     icon: BarChart3,
@@ -52,36 +60,6 @@ const features = [
   },
 ];
 
-/** Style A: gradient-border icon (indices 0, 2, 4) */
-function GradientBorderIcon({ icon: Icon, gradient }: { icon: typeof Brain; gradient: string }) {
-  return (
-    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${gradient} p-[1px] mb-6`}>
-      <div className="w-full h-full rounded-2xl bg-zinc-900 flex items-center justify-center">
-        <Icon className="w-6 h-6 text-white" />
-      </div>
-    </div>
-  );
-}
-
-/** Style B: flat colored icon (indices 1, 3, 5) */
-function FlatIcon({ icon: Icon, iconColor }: { icon: typeof Brain; iconColor: string }) {
-  return (
-    <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mb-5">
-      <Icon className={`w-5 h-5 ${iconColor}`} />
-    </div>
-  );
-}
-
-/** Hover reveal link */
-function HoverReveal() {
-  return (
-    <span className="text-sm text-indigo-400 flex items-center gap-1 mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-      En savoir plus <ArrowRight className="w-3 h-3" />
-    </span>
-  );
-}
-
-/** Spotlight mouse handler */
 function handleSpotlight(e: React.MouseEvent<HTMLDivElement>) {
   const rect = e.currentTarget.getBoundingClientRect();
   const x = ((e.clientX - rect.left) / rect.width) * 100;
@@ -90,130 +68,140 @@ function handleSpotlight(e: React.MouseEvent<HTMLDivElement>) {
   e.currentTarget.style.setProperty("--spotlight-y", `${y}%`);
 }
 
-/** Standard feature card (used for features[1] and features[2..5]) */
-function FeatureCard({ feature, index }: { feature: (typeof features)[number]; index: number }) {
-  const useStyleA = index % 2 === 0;
-
-  return (
-    <TiltCard className="h-full">
-      <motion.div
-        className="group relative h-full p-8 rounded-2xl bg-zinc-900/50 border border-white/5 hover:border-white/10 transition-all duration-500 spotlight"
-        whileHover={{ y: -5 }}
-        onMouseMove={handleSpotlight}
-      >
-        {useStyleA ? (
-          <GradientBorderIcon icon={feature.icon} gradient={feature.gradient} />
-        ) : (
-          <FlatIcon icon={feature.icon} iconColor={feature.iconColor} />
-        )}
-
-        <h3 className="text-xl font-semibold text-white mb-3 group-hover:text-gradient transition-all">
-          {feature.title}
-        </h3>
-        <p className="text-zinc-300 leading-relaxed">
-          {feature.description}
-        </p>
-
-        <HoverReveal />
-      </motion.div>
-    </TiltCard>
-  );
-}
-
-/** Hero feature card for features[0] -- spans 2 columns with mini bar chart visual */
-function HeroFeatureCard({ feature }: { feature: (typeof features)[number] }) {
-  return (
-    <TiltCard className="h-full">
-      <motion.div
-        className="group relative h-full min-h-[280px] p-8 rounded-2xl bg-gradient-to-br from-indigo-500/5 to-violet-500/5 border border-indigo-500/10 hover:border-indigo-500/20 transition-all duration-500 spotlight"
-        whileHover={{ y: -5 }}
-        onMouseMove={handleSpotlight}
-      >
-        <div className="flex flex-col sm:flex-row gap-8 h-full">
-          {/* Text left */}
-          <div className="flex-1 flex flex-col justify-center">
-            <GradientBorderIcon icon={feature.icon} gradient={feature.gradient} />
-
-            <h3 className="text-xl font-semibold text-white mb-3 group-hover:text-gradient transition-all">
-              {feature.title}
-            </h3>
-            <p className="text-zinc-300 leading-relaxed">
-              {feature.description}
-            </p>
-
-            <HoverReveal />
-          </div>
-
-          {/* Mini bar chart visual right */}
-          <div className="flex items-end justify-center gap-3 sm:w-40 shrink-0 pb-4">
-            <div className="flex flex-col items-center gap-2">
-              <div className="w-8 rounded-t-md bg-gradient-to-t from-indigo-500/40 to-indigo-400/20 h-14" />
-              <span className="text-[11px] text-zinc-500">Starter</span>
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <div className="w-8 rounded-t-md bg-gradient-to-t from-indigo-500/60 to-indigo-400/30 h-24" />
-              <span className="text-[11px] text-zinc-500">Premium</span>
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <div className="w-8 rounded-t-md bg-gradient-to-t from-violet-500/80 to-indigo-400/40 h-36" />
-              <span className="text-[11px] text-zinc-500">Business</span>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-    </TiltCard>
-  );
-}
-
 export function FeaturesSection() {
   return (
-    <section id="features" aria-label="Fonctionnalités" className="relative py-20 overflow-hidden">
-      <div className="absolute inset-0 bg-grid-pattern opacity-20" />
+    <section id="features" aria-label="Fonctionnalités" className="relative py-28 overflow-hidden">
+      <div className="absolute inset-0 bg-hex-pattern opacity-40" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6">
-        {/* Header */}
-        <div className="text-center mb-14">
-          <FadeIn>
-            <span className="text-sm font-semibold uppercase tracking-widest text-indigo-400 mb-4 block">
-              Fonctionnalités
-            </span>
-          </FadeIn>
-
-          <FadeIn delay={0.1}>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
-              <span className="text-gradient">Forecasting enterprise,</span>
-              <br />
-              <span className="text-white">accessible aux PME</span>
-            </h2>
-          </FadeIn>
-
-          <FadeIn delay={0.2}>
-            <p className="text-lg text-zinc-300 max-w-2xl mx-auto">
-              Tout ce dont vous avez besoin pour des prévisions fiables,
-              sans la complexité des outils enterprise.
-            </p>
-          </FadeIn>
+      <div className="relative z-10 max-w-[1400px] mx-auto px-6 sm:px-8">
+        {/* Header — offset with section number */}
+        <div className="relative mb-20">
+          <div className="absolute -top-8 right-0 section-number hidden lg:block">02</div>
+          <div className="relative z-10 text-center max-w-2xl mx-auto">
+            <FadeIn>
+              <p className="text-sm font-display font-600 uppercase tracking-[0.2em] text-indigo-400 mb-4">
+                Fonctionnalités
+              </p>
+            </FadeIn>
+            <FadeIn delay={0.1}>
+              <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-800 tracking-[-0.03em] leading-[1.05]">
+                <span className="text-gradient">Forecasting enterprise,</span>
+                <br />
+                <span className="text-white">accessible aux PME</span>
+              </h2>
+            </FadeIn>
+            <FadeIn delay={0.2}>
+              <p className="text-lg text-zinc-400 mt-6 font-light leading-relaxed">
+                Tout ce dont vous avez besoin pour des prévisions fiables,
+                sans la complexité des outils enterprise.
+              </p>
+            </FadeIn>
+          </div>
         </div>
 
-        {/* Bento grid */}
-        <StaggerChildren staggerDelay={0.1} className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Hero feature -- spans 2 cols */}
-          <StaggerItem className="md:col-span-2 lg:col-span-2">
-            <HeroFeatureCard feature={features[0]} />
-          </StaggerItem>
+        {/* Bento grid — varied sizes with metric highlights */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {/* Hero feature — spans 2 cols */}
+          <FadeIn delay={0.1} className="md:col-span-2">
+            <TiltCard className="h-full">
+              <motion.div
+                className="group relative h-full min-h-[300px] p-8 lg:p-10 rounded-2xl bg-gradient-to-br from-indigo-500/[0.06] to-violet-500/[0.03] border border-indigo-500/10 hover:border-indigo-500/20 transition-all duration-500 spotlight overflow-hidden"
+                whileHover={{ y: -5 }}
+                onMouseMove={handleSpotlight}
+              >
+                <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 h-full">
+                  <div className="flex-1 flex flex-col justify-center">
+                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-500 p-[1px] mb-6`}>
+                      <div className="w-full h-full rounded-2xl bg-zinc-900 flex items-center justify-center">
+                        <Brain className="w-6 h-6 text-white" />
+                      </div>
+                    </div>
+                    <h3 className="text-2xl font-display font-700 text-white mb-3 group-hover:text-gradient-brand transition-all">
+                      {features[0].title}
+                    </h3>
+                    <p className="text-zinc-300 leading-relaxed">{features[0].description}</p>
+                    <span className="text-sm text-indigo-400 flex items-center gap-1 mt-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      En savoir plus <ArrowRight className="w-3 h-3" />
+                    </span>
+                  </div>
 
-          {/* Second feature -- 1 col beside hero */}
-          <StaggerItem>
-            <FeatureCard feature={features[1]} index={1} />
-          </StaggerItem>
+                  {/* Visual: animated model bars */}
+                  <div className="flex items-end justify-center gap-2 lg:w-48 shrink-0 pb-4">
+                    {[
+                      { h: "h-10", label: "C", delay: 0 },
+                      { h: "h-16", label: "B", delay: 0.1 },
+                      { h: "h-24", label: "A", delay: 0.2 },
+                      { h: "h-32", label: "ML", delay: 0.3 },
+                      { h: "h-40", label: "IA", delay: 0.4 },
+                    ].map((bar, i) => (
+                      <motion.div
+                        key={i}
+                        className="flex flex-col items-center gap-2"
+                        initial={{ scaleY: 0 }}
+                        whileInView={{ scaleY: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.5 + bar.delay, duration: 0.6, ease: "easeOut" }}
+                        style={{ transformOrigin: "bottom" }}
+                      >
+                        <div className={`w-7 rounded-t-md bg-gradient-to-t from-indigo-500/50 to-violet-400/20 ${bar.h}`} />
+                        <span className="text-[10px] text-zinc-600 font-medium">{bar.label}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            </TiltCard>
+          </FadeIn>
 
-          {/* Remaining 4 features */}
-          {features.slice(2).map((feature, i) => (
-            <StaggerItem key={i + 2}>
-              <FeatureCard feature={feature} index={i + 2} />
-            </StaggerItem>
-          ))}
-        </StaggerChildren>
+          {/* Feature cards with metrics */}
+          {features.slice(1).map((feature, i) => {
+            const index = i + 1;
+            const useGradientIcon = index % 2 === 0;
+
+            return (
+              <FadeIn key={index} delay={0.1 + index * 0.08}>
+                <TiltCard className="h-full">
+                  <motion.div
+                    className="group relative h-full p-7 rounded-2xl bg-zinc-900/40 border border-white/[0.05] hover:border-white/[0.08] transition-all duration-500 spotlight"
+                    whileHover={{ y: -5 }}
+                    onMouseMove={handleSpotlight}
+                  >
+                    {/* Metric highlight (top right) */}
+                    {feature.metric && (
+                      <div className="absolute top-6 right-6">
+                        <span className={`text-3xl font-display font-800 bg-gradient-to-br ${feature.gradient} bg-clip-text text-transparent opacity-20 group-hover:opacity-40 transition-opacity`}>
+                          {feature.metric}
+                        </span>
+                      </div>
+                    )}
+
+                    {useGradientIcon ? (
+                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.gradient} p-[1px] mb-5`}>
+                        <div className="w-full h-full rounded-xl bg-zinc-900 flex items-center justify-center">
+                          <feature.icon className="w-5 h-5 text-white" />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="w-11 h-11 rounded-xl bg-white/[0.04] flex items-center justify-center mb-5">
+                        <feature.icon className={`w-5 h-5 ${feature.iconColor}`} />
+                      </div>
+                    )}
+
+                    <h3 className="text-lg font-display font-600 text-white mb-3">
+                      {feature.title}
+                    </h3>
+                    <p className="text-sm text-zinc-400 leading-relaxed">
+                      {feature.description}
+                    </p>
+                    <span className="text-sm text-indigo-400 flex items-center gap-1 mt-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      En savoir plus <ArrowRight className="w-3 h-3" />
+                    </span>
+                  </motion.div>
+                </TiltCard>
+              </FadeIn>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

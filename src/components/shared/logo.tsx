@@ -53,7 +53,7 @@ export function LogoWithText({ size = 32, className = "", variant = "default" }:
   return (
     <div className={`flex items-center gap-3 ${className}`}>
       <Logo size={size} variant={variant} />
-      <span className="text-xl font-bold tracking-tight text-gradient">
+      <span className="text-xl font-display font-800 tracking-tight text-gradient">
         LumenIQ
       </span>
     </div>

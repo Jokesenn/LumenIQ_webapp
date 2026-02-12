@@ -7,30 +7,30 @@ import { FadeIn, MagneticButton } from "@/components/animations";
 
 export function CTASection() {
   return (
-    <section id="cta" aria-label="Appel à l'action" className="relative py-28 overflow-hidden">
-      {/* Background elements */}
+    <section id="cta" aria-label="Appel à l'action" className="relative py-32 overflow-hidden">
+      {/* Dramatic background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-b from-zinc-950 via-indigo-950/20 to-zinc-950" />
+        <div className="absolute inset-0 gradient-mesh opacity-80" />
+
+        {/* Animated central glow */}
         <motion.div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-indigo-500/10 rounded-full blur-[150px]"
-          animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-          transition={{ duration: 8, repeat: Infinity }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] bg-indigo-500/8 rounded-full blur-[200px]"
+          animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.5, 0.3] }}
+          transition={{ duration: 10, repeat: Infinity }}
         />
-        {/* Animated vertical beam */}
-        <motion.div
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-full bg-gradient-to-b from-indigo-500/20 via-transparent to-transparent"
-          initial={{ scaleY: 0 }}
-          whileInView={{ scaleY: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 2 }}
-          style={{ transformOrigin: "top" }}
-        />
+
+        {/* Vertical light beam */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-full light-beam opacity-20" />
+
+        {/* Hex pattern */}
+        <div className="absolute inset-0 bg-hex-pattern opacity-20" />
       </div>
 
-      <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
+      <div className="relative z-10 max-w-4xl mx-auto px-6 sm:px-8 text-center">
         <FadeIn>
           <motion.div
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.04] border border-white/[0.06] mb-10"
             whileHover={{ scale: 1.02 }}
           >
             <motion.div
@@ -44,55 +44,58 @@ export function CTASection() {
         </FadeIn>
 
         <FadeIn delay={0.1}>
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
+          <h2 className="font-display text-5xl sm:text-6xl lg:text-7xl font-800 tracking-[-0.04em] leading-[0.95] mb-8">
             <span className="text-white">Commencez</span>
             <br />
-            <span className="text-gradient-brand">gratuitement aujourd&apos;hui</span>
+            <span className="text-gradient-brand">gratuitement</span>
+            <br />
+            <span className="text-white">aujourd&apos;hui</span>
           </h2>
         </FadeIn>
 
         <FadeIn delay={0.2}>
-          <p className="text-lg sm:text-xl text-zinc-300 max-w-2xl mx-auto mb-10">
-            Des prévisions fiables pour piloter vos stocks et anticiper vos ventes.
+          <p className="text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto mb-12 font-light leading-relaxed">
+            Des previsions fiables pour piloter vos stocks et anticiper vos ventes.
           </p>
         </FadeIn>
 
         <FadeIn delay={0.15}>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/login?mode=signup">
-              <MagneticButton className="group px-8 py-4 bg-white text-zinc-900 rounded-xl font-semibold transition-all duration-300 hover:bg-indigo-500 hover:text-white hover:shadow-[0_0_30px_rgba(99,102,241,0.3)]">
+              <MagneticButton className="group px-10 py-5 bg-white text-zinc-900 rounded-xl font-semibold text-base transition-all duration-300 hover:bg-indigo-500 hover:text-white hover:shadow-[0_0_40px_rgba(99,102,241,0.3)]">
                 <span className="flex items-center gap-2">
                   Essayer LumenIQ gratuitement
-                  <motion.span
-                    className="group-hover:translate-x-1 transition-transform"
-                  >
-                    <ArrowRight className="w-4 h-4" />
+                  <motion.span className="group-hover:translate-x-1 transition-transform">
+                    <ArrowRight className="w-5 h-5" />
                   </motion.span>
                 </span>
               </MagneticButton>
             </Link>
 
             <Link href="/demo">
-              <MagneticButton className="px-8 py-4 glass rounded-xl font-semibold text-white hover:bg-white/10 transition-all border border-white/10">
-                Voir la démo
+              <MagneticButton className="px-10 py-5 bg-white/[0.04] rounded-xl font-semibold text-base text-white hover:bg-white/[0.07] transition-all border border-white/[0.06]">
+                Voir la demo
               </MagneticButton>
             </Link>
           </div>
-          <p className="mt-3 text-sm text-zinc-300">Aucune carte bancaire requise</p>
+          <p className="mt-4 text-sm text-zinc-500">Aucune carte bancaire requise</p>
         </FadeIn>
 
-        {/* Trust elements — with subtle backgrounds */}
-        <FadeIn delay={0.5}>
-          <div className="mt-16 pt-8 border-t border-white/5">
-            <div className="flex flex-wrap items-center justify-center gap-4 text-zinc-300 text-sm">
+        {/* Trust elements */}
+        <FadeIn delay={0.4}>
+          <div className="mt-20 pt-8 border-t border-white/[0.04]">
+            <div className="flex flex-wrap items-center justify-center gap-3">
               {[
                 { icon: Shield, label: "Conforme RGPD" },
-                { icon: Server, label: "Hébergé en UE" },
-                { icon: Lock, label: "Données chiffrées (banque-grade)" },
+                { icon: Server, label: "Heberge en UE" },
+                { icon: Lock, label: "Donnees chiffrees" },
                 { icon: Clock, label: "Essai gratuit 3 mois" },
               ].map(({ icon: TrustIcon, label }) => (
-                <div key={label} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5">
-                  <TrustIcon className="w-4 h-4 text-indigo-400" />
+                <div
+                  key={label}
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/[0.03] border border-white/[0.04] text-sm text-zinc-400"
+                >
+                  <TrustIcon className="w-4 h-4 text-indigo-400/70" />
                   <span>{label}</span>
                 </div>
               ))}

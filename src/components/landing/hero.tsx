@@ -7,26 +7,30 @@ import {
   useTransform,
   animate,
   useInView,
+  useScroll,
+  useSpring,
 } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight, Sparkles, Play, AlertTriangle } from "lucide-react";
+import { ArrowRight, Sparkles, Play, AlertTriangle, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { AnimatedBackground, FloatingParticles } from "@/components/backgrounds";
+import { FloatingParticles } from "@/components/backgrounds";
 import { TextReveal, FadeIn, MagneticButton } from "@/components/animations";
 import { HeroChart } from "./hero-chart";
 
 /* ------------------------------------------------------------------ */
-/*  Animated counter component                                        */
+/*  Animated counter                                                   */
 /* ------------------------------------------------------------------ */
 
 function AnimatedStat({
   target,
   label,
   suffix = "",
+  prefix = "",
 }: {
   target: number;
   label: string;
   suffix?: string;
+  prefix?: string;
 }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
@@ -50,12 +54,13 @@ function AnimatedStat({
   }, [rounded]);
 
   return (
-    <div ref={ref} className="text-center">
-      <div className="text-3xl font-bold text-white flex items-center justify-center">
+    <div ref={ref} className="group">
+      <div className="text-4xl sm:text-5xl font-display font-800 tracking-tight text-white flex items-baseline gap-0.5">
+        {prefix && <span className="text-indigo-400">{prefix}</span>}
         <span>{display}</span>
-        {suffix}
+        {suffix && <span className="text-indigo-400">{suffix}</span>}
       </div>
-      <div className="text-xs text-zinc-400 uppercase tracking-wider mt-1">
+      <div className="text-[13px] text-zinc-500 mt-2 tracking-wide uppercase font-medium">
         {label}
       </div>
     </div>
@@ -63,267 +68,280 @@ function AnimatedStat({
 }
 
 /* ------------------------------------------------------------------ */
-/*  Hero section                                                      */
+/*  Hexagonal decorative element                                       */
+/* ------------------------------------------------------------------ */
+
+function HexDecor({ className }: { className?: string }) {
+  return (
+    <svg
+      width="120"
+      height="140"
+      viewBox="0 0 120 140"
+      fill="none"
+      className={className}
+    >
+      <polygon
+        points="60,5 110,30 110,80 60,105 10,80 10,30"
+        fill="none"
+        stroke="rgba(99,102,241,0.08)"
+        strokeWidth="1"
+      />
+      <polygon
+        points="60,20 95,37.5 95,72.5 60,90 25,72.5 25,37.5"
+        fill="none"
+        stroke="rgba(99,102,241,0.05)"
+        strokeWidth="0.5"
+      />
+    </svg>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Hero section                                                       */
 /* ------------------------------------------------------------------ */
 
 export function Hero() {
-  const [scrollIndicatorVisible, setScrollIndicatorVisible] = useState(true);
+  const containerRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"],
+  });
 
-  /* Fade out scroll indicator after 3 s */
-  useEffect(() => {
-    const timer = setTimeout(() => setScrollIndicatorVisible(false), 3000);
-    return () => clearTimeout(timer);
-  }, []);
+  const yChart = useSpring(useTransform(scrollYProgress, [0, 1], [0, 80]), {
+    stiffness: 100,
+    damping: 30,
+  });
+
+  const opacityScroll = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
   return (
     <section
+      ref={containerRef}
       id="hero"
       aria-label="Accueil"
-      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
+      className="relative min-h-screen overflow-hidden"
     >
-      {/* Background */}
-      <AnimatedBackground variant="hero" />
-      <FloatingParticles count={20} className="z-0" />
+      {/* Background layers */}
+      <div className="absolute inset-0 gradient-mesh" />
+      <div className="absolute inset-0 bg-hex-pattern opacity-60" />
+      <FloatingParticles count={15} className="z-0" />
 
-      {/* ---- Centered content ---- */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 pt-28 pb-12 flex flex-col items-center text-center">
-        {/* Badge */}
-        <motion.div
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-8"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <motion.div
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          >
-            <Sparkles className="w-4 h-4 text-indigo-400" />
-          </motion.div>
-          <span className="text-sm text-zinc-300">
-            Nouveau — Claude analyse vos résultats en langage business
-          </span>
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500" />
-          </span>
-        </motion.div>
+      {/* Light beam from top center */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[800px] light-beam opacity-40" />
 
-        {/* Headline */}
-        <div className="mb-4">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.1] tracking-tight">
-            <TextReveal
-              text="Réduisez vos ruptures de stock et surstocks"
-              className="text-white block"
-              delay={0.15}
-            />
-            <TextReveal
-              text="avec des prévisions fiables en 5 minutes"
-              className="text-gradient-brand block mt-2"
-              delay={0.35}
-            />
-          </h1>
-        </div>
+      {/* Decorative hexagons */}
+      <HexDecor className="absolute top-20 right-[8%] opacity-30 hidden lg:block" />
+      <HexDecor className="absolute bottom-32 left-[5%] opacity-20 hidden lg:block rotate-12 scale-75" />
 
-        {/* Subtitle */}
-        <FadeIn delay={0.6}>
-          <p className="text-lg sm:text-xl text-zinc-300 max-w-2xl mx-auto mb-8 leading-relaxed">
-            Transformez vos données de vente en forecasts validés par backtesting.
-            Sans data scientist. Sans Excel.
-          </p>
-        </FadeIn>
-
-        {/* CTA Buttons */}
-        <FadeIn delay={0.8}>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/login?mode=signup">
-              <MagneticButton className="group relative px-8 py-4 bg-indigo-500 hover:bg-indigo-600 rounded-xl font-semibold text-white transition-all duration-300 glow-pulse shimmer">
-                <span className="flex items-center gap-2">
-                  Essai gratuit 3 mois
-                  <motion.span
-                    animate={{ x: [0, 4, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                  >
-                    <ArrowRight className="w-4 h-4" />
-                  </motion.span>
-                </span>
-              </MagneticButton>
-            </Link>
-
-            <Link href="/demo">
-              <Button
-                variant="outline"
-                size="lg"
-                className="group px-8 py-4 border-white/10 hover:bg-white/5 hover:border-white/20 rounded-xl"
+      {/* ---- Main content grid ---- */}
+      <div className="relative z-10 w-full max-w-[1400px] mx-auto px-6 sm:px-8 pt-32 lg:pt-40 pb-16">
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-start">
+          {/* Left column — Text content (7 cols) */}
+          <div className="lg:col-span-7 flex flex-col">
+            {/* Badge */}
+            <motion.div
+              className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-indigo-500/8 border border-indigo-500/15 mb-10 w-fit"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1, duration: 0.6 }}
+            >
+              <motion.div
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
               >
-                <Play className="w-4 h-4 mr-2 text-indigo-400 group-hover:text-indigo-300" />
-                Voir la démo
-              </Button>
-            </Link>
-          </div>
-        </FadeIn>
-
-        {/* Animated Stats */}
-        <FadeIn delay={1}>
-          <div className="mt-10 flex items-center justify-center gap-10 sm:gap-14">
-            {/* "5 min" kept as static text */}
-            <div className="text-center">
-              <div className="text-3xl font-bold text-white">5 min</div>
-              <div className="text-xs text-zinc-400 uppercase tracking-wider mt-1">
-                Setup rapide
-              </div>
-            </div>
-
-            <div className="w-px h-10 bg-white/10" />
-
-            <AnimatedStat
-              target={24}
-              label="Modèles disponibles"
-            />
-
-            <div className="w-px h-10 bg-white/10" />
-
-            <AnimatedStat
-              target={99}
-              label="Zéro intervention manuelle"
-              suffix="%"
-            />
-          </div>
-        </FadeIn>
-
-        {/* ---- Chart card (scroll-revealed, full-width) ---- */}
-        <FadeIn delay={0.2} direction="up" className="mt-16 w-full max-w-4xl mx-auto">
-          <div className="relative">
-            {/* Glow behind */}
-            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-violet-500/20 blur-3xl" />
-
-            {/* Dashboard card */}
-            <div className="relative glass-card p-6 gradient-border">
-              <HeroChart />
-            </div>
-
-            {/* Floating mini-card: Action preview */}
-            <motion.div
-              className="absolute -top-14 left-2 hidden lg:block glass rounded-xl px-3 py-2.5 border border-amber-500/20 max-w-[210px] shadow-lg"
-              animate={{ y: [0, -6, 0] }}
-              transition={{
-                duration: 6,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: 0.5,
-              }}
-            >
-              <div className="flex items-start gap-2">
-                <AlertTriangle className="w-3.5 h-3.5 text-amber-400 mt-0.5 shrink-0" />
-                <div>
-                  <p className="text-[11px] font-semibold text-amber-400">
-                    Alerte stock
-                  </p>
-                  <p className="text-[11px] text-zinc-300 leading-snug">
-                    Réapprovisionner SKU-2847 avant le 15 mars
-                  </p>
-                </div>
-              </div>
+                <Sparkles className="w-4 h-4 text-indigo-400" />
+              </motion.div>
+              <span className="text-sm text-zinc-300 font-medium">
+                Nouveau — Claude analyse vos résultats en langage business
+              </span>
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500" />
+              </span>
             </motion.div>
 
-            {/* Floating mini-card: Reliability gauge */}
-            <motion.div
-              className="absolute -top-12 right-6 hidden lg:block glass rounded-xl px-3 py-2.5 border border-emerald-500/20 shadow-lg"
-              animate={{ y: [0, -8, 0] }}
-              transition={{
-                duration: 6,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: 1.5,
-              }}
-            >
-              <div className="flex items-center gap-2.5">
-                <svg
-                  width="32"
-                  height="32"
-                  viewBox="0 0 36 36"
-                  className="shrink-0"
+            {/* Headline — Display font with extreme weight contrast */}
+            <div className="mb-8">
+              <h1 className="font-display tracking-[-0.03em] leading-[0.95]">
+                <motion.span
+                  className="block text-[clamp(2.5rem,5.5vw,4.5rem)] font-300 text-zinc-300"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2, duration: 0.7, ease: [0.21, 0.47, 0.32, 0.98] }}
                 >
-                  <circle
-                    cx="18"
-                    cy="18"
-                    r="14"
-                    fill="none"
-                    stroke="#27272a"
-                    strokeWidth="3"
-                  />
-                  <circle
-                    cx="18"
-                    cy="18"
-                    r="14"
-                    fill="none"
-                    stroke="#10b981"
-                    strokeWidth="3"
-                    strokeDasharray="82.9 87.96"
-                    strokeLinecap="round"
-                    transform="rotate(-90 18 18)"
-                  />
-                </svg>
+                  Réduisez vos ruptures
+                </motion.span>
+                <motion.span
+                  className="block text-[clamp(2.5rem,5.5vw,4.5rem)] font-800 text-white mt-1"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.35, duration: 0.7, ease: [0.21, 0.47, 0.32, 0.98] }}
+                >
+                  de stock et surstocks
+                </motion.span>
+                <motion.span
+                  className="block text-[clamp(2.5rem,5.5vw,4.5rem)] font-800 text-gradient-brand mt-1"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5, duration: 0.7, ease: [0.21, 0.47, 0.32, 0.98] }}
+                >
+                  en 5 minutes.
+                </motion.span>
+              </h1>
+            </div>
+
+            {/* Subtitle */}
+            <FadeIn delay={0.7}>
+              <p className="text-lg sm:text-xl text-zinc-400 max-w-xl leading-relaxed font-light">
+                Transformez vos données de vente en forecasts validés par backtesting.
+                <span className="text-zinc-300 font-medium"> Sans data scientist. Sans Excel.</span>
+              </p>
+            </FadeIn>
+
+            {/* CTA Buttons */}
+            <FadeIn delay={0.9}>
+              <div className="flex flex-col sm:flex-row gap-4 mt-10">
+                <Link href="/login?mode=signup">
+                  <MagneticButton className="group relative px-8 py-4 bg-indigo-500 hover:bg-indigo-600 rounded-xl font-semibold text-white transition-all duration-300 glow-pulse shimmer">
+                    <span className="flex items-center gap-2">
+                      Essai gratuit 3 mois
+                      <motion.span
+                        animate={{ x: [0, 4, 0] }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                      >
+                        <ArrowRight className="w-4 h-4" />
+                      </motion.span>
+                    </span>
+                  </MagneticButton>
+                </Link>
+
+                <Link href="/demo">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="group px-8 py-4 border-white/10 hover:bg-white/5 hover:border-white/20 rounded-xl"
+                  >
+                    <Play className="w-4 h-4 mr-2 text-indigo-400 group-hover:text-indigo-300" />
+                    Voir la démo
+                  </Button>
+                </Link>
+              </div>
+            </FadeIn>
+
+            {/* Stats row */}
+            <FadeIn delay={1.1}>
+              <div className="mt-14 flex items-start gap-12 sm:gap-16">
                 <div>
-                  <p className="text-[10px] text-zinc-400">Fiabilité moy.</p>
-                  <p className="text-sm font-bold text-white">
-                    94.2
-                    <span className="text-zinc-500 text-[11px]">/100</span>
-                  </p>
+                  <div className="text-4xl sm:text-5xl font-display font-800 tracking-tight text-white">
+                    5<span className="text-indigo-400 text-2xl ml-1">min</span>
+                  </div>
+                  <div className="text-[13px] text-zinc-500 mt-2 tracking-wide uppercase font-medium">
+                    Setup rapide
+                  </div>
+                </div>
+
+                <div className="w-px h-14 bg-gradient-to-b from-transparent via-white/10 to-transparent" />
+
+                <AnimatedStat target={24} label="Modèles disponibles" />
+
+                <div className="w-px h-14 bg-gradient-to-b from-transparent via-white/10 to-transparent hidden sm:block" />
+
+                <div className="hidden sm:block">
+                  <AnimatedStat target={99} label="Zéro intervention" suffix="%" />
                 </div>
               </div>
-            </motion.div>
-
-            {/* Floating pill badges */}
-            <motion.div
-              className="absolute -top-4 -right-4 px-3 py-1.5 glass rounded-full text-xs font-medium text-amber-400 border border-amber-500/20"
-              animate={{ y: [0, -10, 0] }}
-              transition={{
-                duration: 6,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            >
-              24 modèles testés
-            </motion.div>
-
-            <motion.div
-              className="absolute -bottom-4 -left-4 px-3 py-1.5 glass rounded-full text-xs font-medium text-indigo-400 border border-indigo-500/20"
-              animate={{ y: [0, 10, 0] }}
-              transition={{
-                duration: 6,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: 1,
-              }}
-            >
-              847 séries analysées
-            </motion.div>
+            </FadeIn>
           </div>
-        </FadeIn>
+
+          {/* Right column — Chart visualization (5 cols) */}
+          <motion.div
+            className="lg:col-span-5 relative mt-4 lg:mt-8"
+            style={{ y: yChart }}
+          >
+            <FadeIn delay={0.4} direction="up">
+              <div className="relative">
+                {/* Deep glow behind chart */}
+                <div className="absolute -inset-8 bg-gradient-to-br from-indigo-500/15 via-violet-500/10 to-transparent blur-3xl rounded-3xl" />
+
+                {/* Chart card */}
+                <div className="relative glass-card p-5 sm:p-6 gradient-border">
+                  <HeroChart />
+                </div>
+
+                {/* Floating alert card — top left */}
+                <motion.div
+                  className="absolute -top-6 -left-4 hidden lg:block glass rounded-xl px-3.5 py-2.5 border border-amber-500/20 max-w-[210px] shadow-lg shadow-black/20"
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                >
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="w-3.5 h-3.5 text-amber-400 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-[11px] font-semibold text-amber-400">Alerte stock</p>
+                      <p className="text-[11px] text-zinc-300 leading-snug">
+                        Réapprovisionner SKU-2847 avant le 15 mars
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Reliability gauge — top right */}
+                <motion.div
+                  className="absolute -top-5 -right-3 hidden lg:block glass rounded-xl px-3.5 py-2.5 border border-emerald-500/20 shadow-lg shadow-black/20"
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <svg width="32" height="32" viewBox="0 0 36 36" className="shrink-0">
+                      <circle cx="18" cy="18" r="14" fill="none" stroke="#27272a" strokeWidth="3" />
+                      <circle
+                        cx="18" cy="18" r="14"
+                        fill="none" stroke="#10b981" strokeWidth="3"
+                        strokeDasharray="82.9 87.96"
+                        strokeLinecap="round"
+                        transform="rotate(-90 18 18)"
+                      />
+                    </svg>
+                    <div>
+                      <p className="text-[10px] text-zinc-400">Fiabilité moy.</p>
+                      <p className="text-sm font-bold text-white">
+                        94.2<span className="text-zinc-500 text-[11px]">/100</span>
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Floating badge — models tested */}
+                <motion.div
+                  className="absolute -bottom-3 -right-3 px-3 py-1.5 glass rounded-full text-xs font-medium text-amber-400 border border-amber-500/20"
+                  animate={{ y: [0, 8, 0] }}
+                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  24 modèles testés
+                </motion.div>
+
+                {/* Floating badge — series analyzed */}
+                <motion.div
+                  className="absolute -bottom-3 -left-3 px-3 py-1.5 glass rounded-full text-xs font-medium text-indigo-400 border border-indigo-500/20"
+                  animate={{ y: [0, 10, 0] }}
+                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                >
+                  847 séries analysées
+                </motion.div>
+              </div>
+            </FadeIn>
+          </motion.div>
+        </div>
       </div>
 
-      {/* Scroll indicator with fade-out after 3s */}
+      {/* Scroll indicator */}
       <motion.div
-        animate={{
-          opacity: scrollIndicatorVisible ? [0.5, 1, 0.5] : 0,
-          y: scrollIndicatorVisible ? [0, 10, 0] : 10,
-        }}
-        transition={{
-          duration: scrollIndicatorVisible ? 2 : 0.6,
-          repeat: scrollIndicatorVisible ? Infinity : 0,
-        }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        style={{ opacity: opacityScroll }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
       >
         <button
           onClick={() =>
-            document
-              .getElementById("comparison")
-              ?.scrollIntoView({ behavior: "smooth" })
+            document.getElementById("comparison")?.scrollIntoView({ behavior: "smooth" })
           }
           aria-label="Défiler vers le bas"
         >

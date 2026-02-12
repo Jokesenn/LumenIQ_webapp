@@ -295,6 +295,53 @@
   background-size: 24px 24px;
 }
 
+/* Hexagonal grid pattern — echoes the LumenIQ logo geometry */
+.bg-hex-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='rgba(99,102,241,0.04)' stroke-width='0.5'/%3E%3Cpath d='M28 0L56 16L56 50L28 66L0 50L0 16Z' fill='none' stroke='rgba(99,102,241,0.04)' stroke-width='0.5'/%3E%3C/svg%3E");
+}
+
+/* Isometric data lines — subtle flowing lines as decoration */
+.bg-iso-lines {
+  background-image:
+    repeating-linear-gradient(
+      -30deg,
+      transparent,
+      transparent 80px,
+      rgba(99, 102, 241, 0.02) 80px,
+      rgba(99, 102, 241, 0.02) 81px
+    );
+}
+
+/* Section number watermark */
+.section-number {
+  font-size: clamp(6rem, 12vw, 14rem);
+  font-weight: 800;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(99, 102, 241, 0.08);
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Gradient mesh for hero and CTA backgrounds */
+.gradient-mesh {
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(99, 102, 241, 0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 80% 60%, rgba(139, 92, 246, 0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 30% at 50% 20%, rgba(99, 102, 241, 0.06) 0%, transparent 70%);
+}
+
+/* Light beam effect */
+.light-beam {
+  background: linear-gradient(
+    180deg,
+    rgba(99, 102, 241, 0.15) 0%,
+    rgba(99, 102, 241, 0.05) 30%,
+    transparent 60%
+  );
+  clip-path: polygon(45% 0%, 55% 0%, 70% 100%, 30% 100%);
+}
+
 .glow {
   box-shadow: 0 0 40px var(--accent-muted);
 }
@@ -351,6 +398,7 @@
 @theme inline {
   /* Fonts */
   --font-sans: var(--font-manrope);
+  --font-display: var(--font-syne);
   --font-mono: var(--font-geist-mono);
 
   /* Core colors */
