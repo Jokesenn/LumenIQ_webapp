@@ -76,9 +76,9 @@ function getStatusIcon(status: string) {
 
 export function RecentForecasts({ forecasts }: RecentForecastsProps) {
   return (
-    <div className="bg-zinc-900/50 rounded-2xl border border-white/5 p-6">
+    <div className="dash-card p-6">
       <div className="flex justify-between items-center mb-5">
-        <h2 className="text-base font-semibold text-white">Dernières prévisions</h2>
+        <h2 className="dash-section-title">Dernières prévisions</h2>
         <Link
           href="/dashboard/history"
           className="text-indigo-400 text-sm flex items-center gap-1 hover:text-indigo-300 transition-colors"

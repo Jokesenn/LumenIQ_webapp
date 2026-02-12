@@ -11,7 +11,7 @@ interface ActionsSummaryCardProps {
 export function ActionsSummaryCard({ summary, loading }: ActionsSummaryCardProps) {
   if (loading) {
     return (
-      <div className="rounded-2xl bg-zinc-900/50 border border-white/5 p-5 space-y-3">
+      <div className="dash-card p-5 space-y-3">
         <Skeleton className="w-32 h-5 rounded" />
         <Skeleton className="w-full h-4 rounded" />
         <Skeleton className="w-3/4 h-4 rounded" />
@@ -23,8 +23,8 @@ export function ActionsSummaryCard({ summary, loading }: ActionsSummaryCardProps
   if (!summary?.lines?.length) return null;
 
   return (
-    <div className="rounded-2xl bg-zinc-900/50 border border-white/5 p-5">
-      <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3">
+    <div className="dash-card p-5">
+      <h3 className="text-sm font-semibold font-display text-white/60 uppercase tracking-wider mb-3">
         Résumé
       </h3>
       <ul className="space-y-2">

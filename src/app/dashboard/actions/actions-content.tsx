@@ -14,7 +14,7 @@ export function ActionsPageContent() {
             <Zap className="w-5 h-5 text-amber-400" />
           </div>
           <div>
-            <h1 className="text-xl font-semibold text-white">Actions</h1>
+            <h1 className="dash-page-title">Actions</h1>
             <p className="text-sm text-zinc-400">
               Recommandations issues de vos prévisions
             </p>

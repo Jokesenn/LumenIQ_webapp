@@ -137,7 +137,7 @@ export function StatCard({
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       className={cn(
-        "group relative p-4 sm:p-6 rounded-2xl bg-zinc-900/50 border transition-all duration-300 spotlight overflow-hidden",
+        "group relative p-4 sm:p-6 rounded-2xl dash-card border transition-all duration-300 spotlight overflow-hidden",
         styles.border,
         href && "cursor-pointer"
       )}
@@ -187,7 +187,7 @@ export function StatCard({
             {helpKey && <HelpTooltip termKey={helpKey} />}
           </div>
           <p
-            className="text-2xl sm:text-3xl font-bold text-white tabular-nums truncate"
+            className="text-2xl sm:text-3xl font-bold font-display text-white tabular-nums truncate"
             title={typeof value === "string" ? value : undefined}
           >
             {typeof value === "number" ||

@@ -142,6 +142,7 @@ export function CommandPalette({ open: controlledOpen, onOpenChange }: CommandPa
       onOpenChange={setOpen}
       title="Palette de commandes"
       description="Rechercher une série, naviguer ou exécuter une action"
+      className="bg-zinc-950/95 backdrop-blur-2xl"
     >
       <CommandInput placeholder="Rechercher ou exécuter..." />
       <CommandList>

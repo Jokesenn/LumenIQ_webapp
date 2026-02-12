@@ -256,13 +256,14 @@ export function AiChatDrawer({ open, onOpenChange }: AiChatDrawerProps) {
         className="w-[420px] sm:max-w-[420px] p-0 flex flex-col h-full gap-0 bg-zinc-950 border-white/10"
       >
         <SheetHeader className="px-6 py-4 border-b border-white/10 shrink-0">
-          <SheetTitle className="text-white text-lg">
+          <SheetTitle className="text-white text-lg font-display">
             Assistant IA
           </SheetTitle>
           <SheetDescription className="sr-only">
             Posez des questions sur vos résultats de forecast
           </SheetDescription>
         </SheetHeader>
+        <div className="h-px bg-gradient-to-r from-transparent via-indigo-500/30 to-transparent" />
 
         <ChatMessages
           messages={messages}

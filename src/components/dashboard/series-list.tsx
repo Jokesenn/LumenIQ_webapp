@@ -64,7 +64,7 @@ export function SeriesList({
               transition={{ duration: 0.3, delay: index * 0.05 }}
             >
               <Link href={`/dashboard/results/series?job=${jobId}&series=${encodeURIComponent(s.series_id)}`}>
-                <div className="group flex items-center justify-between p-2 lg:p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-all gap-2">
+                <div className="group flex items-center justify-between p-3 lg:p-4 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-transparent hover:border-white/[0.08] transition-all gap-2">
                   <div className="flex items-center gap-2 lg:gap-3 min-w-0">
                     {/* Rank indicator */}
                     <div
@@ -140,7 +140,7 @@ export function SeriesList({
                       />
                     </div>
                     <div className="text-right">
-                      <p className={cn("text-sm lg:text-base font-semibold", getScoreColor(s.champion_score))}>
+                      <p className={cn("text-sm lg:text-base font-semibold font-display", getScoreColor(s.champion_score))}>
                         {s.champion_score != null ? s.champion_score.toFixed(1) : "N/A"}
                       </p>
                       <p className="text-xs text-zinc-500">Fiabilité</p>

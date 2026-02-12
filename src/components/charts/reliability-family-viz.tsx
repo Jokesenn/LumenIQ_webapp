@@ -27,7 +27,7 @@ function FamilyTooltip({ active, payload }: { active?: boolean; payload?: any[] 
   if (!d) return null;
 
   return (
-    <div className="bg-zinc-900/95 backdrop-blur-sm border border-white/10 rounded-lg p-3 shadow-xl">
+    <div className="bg-zinc-900/95 backdrop-blur-xl border border-white/10 rounded-xl p-3 shadow-xl">
       <div className="flex items-center gap-2 mb-1">
         <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: d.hex }} />
         <p className="text-sm font-medium text-white">{d.family}</p>

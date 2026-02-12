@@ -101,11 +101,11 @@ export function HistoryContent({ jobs }: HistoryContentProps) {
     return (
       <div className="animate-fade">
         <div className="mb-8">
-          <h1 className="text-[28px] font-bold text-white mb-2">Historique</h1>
+          <h1 className="dash-page-title mb-2">Historique</h1>
           <p className="text-zinc-400">Toutes vos prévisions passées</p>
         </div>
 
-        <div className="bg-zinc-900/50 rounded-xl border border-white/[0.08] p-16 text-center">
+        <div className="dash-card p-16 text-center">
           <div className="w-16 h-16 rounded-2xl bg-zinc-800 flex items-center justify-center mx-auto mb-4">
             <Inbox size={28} className="text-zinc-600" />
           </div>
@@ -126,13 +126,13 @@ export function HistoryContent({ jobs }: HistoryContentProps) {
   return (
     <div className="animate-fade">
       <div className="mb-8">
-        <h1 className="text-[28px] font-bold text-white mb-2">Historique</h1>
+        <h1 className="dash-page-title mb-2">Historique</h1>
         <p className="text-zinc-400">
           Toutes vos prévisions passées ({jobs.length} analyse{jobs.length > 1 ? "s" : ""})
         </p>
       </div>
 
-      <div className="bg-zinc-900/50 rounded-xl border border-white/[0.08] overflow-hidden">
+      <div className="dash-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>

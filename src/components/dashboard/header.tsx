@@ -46,7 +46,7 @@ export function Header({ onToggleSidebar, onOpenCommand }: HeaderProps) {
   const usagePercent = Math.min((seriesUsed / seriesQuota) * 100, 100);
 
   return (
-    <header className="px-8 py-4 border-b border-white/[0.08] flex justify-between items-center bg-zinc-950/80 backdrop-blur-xl sticky top-0 z-10">
+    <header className="px-8 py-4 border-b border-white/[0.08] flex justify-between items-center bg-zinc-950/60 backdrop-blur-2xl sticky top-0 z-10">
       <div className="flex items-center gap-3">
         <button
           onClick={onToggleSidebar}
@@ -63,7 +63,7 @@ export function Header({ onToggleSidebar, onOpenCommand }: HeaderProps) {
       <div className="flex items-center gap-4">
         {/* Plan badge */}
         <div
-          className={`px-3 py-1.5 rounded-md text-xs font-medium ${
+          className={`px-3 py-1.5 rounded-md text-xs font-medium font-display ${
             loading ? "bg-zinc-800 text-zinc-500" : planBadgeStyles[plan] ?? planBadgeStyles.standard
           }`}
         >
@@ -93,14 +93,14 @@ export function Header({ onToggleSidebar, onOpenCommand }: HeaderProps) {
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="w-9 h-9 rounded-full bg-indigo-500/20 flex items-center justify-center text-sm font-semibold text-indigo-400 hover:bg-indigo-500/30 transition-colors"
+            className="w-9 h-9 rounded-full bg-indigo-500/20 flex items-center justify-center text-sm font-semibold text-indigo-400 hover:bg-indigo-500/30 transition-colors ring-2 ring-indigo-500/20 hover:ring-indigo-500/40"
             title={profile?.full_name ?? user?.email ?? ""}
           >
             {initials}
           </button>
 
           {dropdownOpen && (
-            <div className="absolute right-0 top-12 w-56 bg-zinc-900 border border-white/[0.1] rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.5)] py-2 z-50">
+            <div className="absolute right-0 top-12 w-56 bg-zinc-900/90 backdrop-blur-xl border border-white/[0.1] rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.5)] py-2 z-50">
               <div className="px-4 py-2.5 border-b border-white/[0.08]">
                 <p className="text-sm font-medium text-white truncate">
                   {profile?.full_name ?? "Utilisateur"}

@@ -247,30 +247,30 @@ export default function ForecastPage() {
   return (
     <div className="animate-fade">
       <div className="mb-8">
-        <h1 className="text-[28px] font-bold text-white mb-2">Nouvelle prévision</h1>
+        <h1 className="dash-page-title">Nouvelle prévision</h1>
         <p className="text-zinc-400">
           Mode Express — Import, configuration automatique, résultats en 5 min
         </p>
       </div>
 
       {/* Progress Steps */}
-      <div className="flex items-center gap-2 mb-10 p-5 bg-zinc-900/50 rounded-xl border border-white/[0.08]">
+      <div className="flex items-center gap-2 mb-10 p-5 dash-card">
         {wizardSteps.map((s, i) => (
           <div key={s} className="flex items-center gap-2 flex-1">
             <div className="flex items-center gap-2">
               <div
                 className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold transition-colors ${
                   step > i + 1
-                    ? "bg-indigo-500 text-white"
+                    ? "bg-indigo-500/20 text-indigo-400"
                     : step === i + 1
-                    ? "bg-indigo-500 text-white"
-                    : "bg-white/10 text-zinc-500"
+                    ? "bg-indigo-500 text-white ring-4 ring-indigo-500/20"
+                    : "bg-zinc-800 text-zinc-500"
                 }`}
               >
                 {step > i + 1 ? <Check size={14} /> : i + 1}
               </div>
               <span
-                className={`text-sm transition-colors ${
+                className={`text-sm font-display transition-colors ${
                   step === i + 1
                     ? "font-semibold text-white"
                     : step > i + 1
@@ -302,7 +302,7 @@ export default function ForecastPage() {
           onDragLeave={() => setIsDragging(false)}
           onDrop={handleDrop}
           onClick={() => document.getElementById("file-input")?.click()}
-          className={`rounded-2xl border-2 border-dashed p-20 text-center cursor-pointer transition-all ${
+          className={`dash-empty-hex rounded-2xl border-2 border-dashed p-20 text-center cursor-pointer transition-all ${
             isDragging
               ? "bg-indigo-500/5 border-indigo-500"
               : "bg-white/5 border-white/10 hover:border-indigo-500/50 hover:bg-white/[0.07]"
@@ -334,7 +334,7 @@ export default function ForecastPage() {
 
       {/* Step 1.5: Analyzing */}
       {step === 1 && analyzing && (
-        <div className="bg-zinc-900/50 rounded-2xl border border-white/[0.08] p-16 text-center">
+        <div className="dash-card p-16 text-center">
           <div className="w-20 h-20 rounded-2xl bg-indigo-500/10 flex items-center justify-center mx-auto mb-6">
             <Loader2 size={36} className="text-indigo-400 animate-spin" />
           </div>
@@ -372,7 +372,7 @@ export default function ForecastPage() {
 
       {/* Step 2: Configuration */}
       {step === 2 && analysis && (
-        <div className="bg-zinc-900/50 rounded-2xl border border-white/[0.08] p-8">
+        <div className="dash-card p-8">
           <div className="flex items-center gap-4 mb-8">
             <div className="w-12 h-12 rounded-xl bg-emerald-500/15 flex items-center justify-center">
               <Check size={24} className="text-emerald-500" />
@@ -475,7 +475,7 @@ export default function ForecastPage() {
 
       {/* Step 3: Processing (Upload + Job Processing) */}
       {step === 3 && (
-        <div className="bg-zinc-900/50 rounded-2xl border border-white/[0.08] p-8">
+        <div className="dash-card p-8">
           {/* Header */}
           <div className="flex items-center gap-4 mb-8">
             <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center">
@@ -687,7 +687,7 @@ export default function ForecastPage() {
 
       {/* Step 4: Complete */}
       {step === 4 && (
-        <div className="glass-card p-16 text-center">
+        <div className="dash-card-accent p-16 text-center">
           <div className="w-20 h-20 rounded-2xl bg-emerald-500/15 flex items-center justify-center mx-auto mb-6">
             <Check size={36} className="text-emerald-500" />
           </div>
@@ -730,7 +730,7 @@ export default function ForecastPage() {
                   `/dashboard/results${activeJobId ? `?job=${activeJobId}` : ""}`
                 )
               }
-              className="bg-indigo-500 hover:bg-indigo-600 text-white"
+              className="bg-indigo-500 hover:bg-indigo-600 text-white shimmer"
             >
               Voir les résultats
               <ArrowRight size={20} />

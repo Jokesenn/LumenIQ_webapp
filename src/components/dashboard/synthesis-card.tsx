@@ -47,18 +47,18 @@ export function SynthesisCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       className={cn(
-        "p-6 rounded-2xl bg-gradient-to-br from-indigo-500/10 to-violet-500/5 border border-indigo-500/20",
+        "dash-card-accent p-6",
         className
       )}
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-indigo-500/20">
+          <div className="p-2 rounded-xl bg-indigo-500/20 shadow-[0_0_12px_rgba(99,102,241,0.2)]">
             <Sparkles className="w-5 h-5 text-indigo-400" />
           </div>
           <div>
-            <h3 className="font-semibold text-white">Synthèse IA</h3>
+            <h3 className="font-semibold font-display text-white">Synthèse IA</h3>
             {synthesis && (
               <p className="text-xs text-zinc-500">
                 Générée le {new Date(synthesis.created_at).toLocaleDateString("fr-FR")}

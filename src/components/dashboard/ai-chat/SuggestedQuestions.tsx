@@ -101,7 +101,7 @@ export function SuggestedQuestions({
                 variant="outline"
                 size="sm"
                 onClick={() => onSelect(s.question)}
-                className="text-xs text-white/70 border-white/10 hover:bg-white/5 hover:text-white h-auto py-1.5 px-3"
+                className="text-xs text-white/70 border-white/10 hover:bg-indigo-500/10 hover:border-indigo-500/30 hover:text-indigo-300 h-auto py-1.5 px-3"
               >
                 {s.label}
               </Button>

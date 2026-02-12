@@ -59,7 +59,7 @@ export function ReliabilityDetailTable({ data, onModelClick }: ReliabilityDetail
     <div>
       <div className="flex items-center gap-2 mb-4">
         <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-        <h3 className="text-sm font-medium text-zinc-300">
+        <h3 className="text-sm font-medium text-zinc-300 font-display">
           Détail par méthode
         </h3>
       </div>

@@ -55,11 +55,11 @@ export function SynthesisAccordion({
             className="border-b border-white/10 last:border-b-0"
           >
             <AccordionTrigger
-              className="text-base font-semibold text-white hover:no-underline hover:bg-white/5 px-4 py-3 rounded-lg data-[state=open]:bg-white/5"
+              className="text-base font-semibold font-display text-white hover:no-underline hover:bg-white/5 px-4 py-3 rounded-lg data-[state=open]:bg-white/5"
             >
               {section.title}
             </AccordionTrigger>
-            <AccordionContent className="px-4 pt-2 pb-4">
+            <AccordionContent className="px-4 pt-2 pb-4 bg-white/[0.02]">
               <MarkdownRenderer
                 content={processContent(section.content)}
               />

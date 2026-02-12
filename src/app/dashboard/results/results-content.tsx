@@ -183,7 +183,7 @@ export function ResultsContent({
               </Button>
             </Link>
             <div>
-              <h1 className="text-2xl font-bold text-white">{job?.filename ?? "—"}</h1>
+              <h1 className="dash-page-title">{job?.filename ?? "—"}</h1>
               <div className="flex items-center gap-4 mt-1 text-sm text-zinc-400">
                 <span className="flex items-center gap-1">
                   <Calendar className="w-4 h-4" />
@@ -222,17 +222,16 @@ export function ResultsContent({
 
       {/* Tabs */}
       <FadeIn delay={0.1}>
-        <div className="flex gap-1 p-1 bg-white/5 rounded-xl w-fit">
+        <div className="dash-tab-bar">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={cn(
-                "px-4 py-2 rounded-lg text-sm font-medium transition-all",
+              className={
                 activeTab === tab.id
-                  ? "bg-indigo-500 text-white"
-                  : "text-zinc-400 hover:text-white hover:bg-white/5"
-              )}
+                  ? "dash-tab-active"
+                  : "dash-tab-inactive"
+              }
               {...(tab.id === "synthesis" ? { "data-onboarding": "synthesis-tab" } : {})}
             >
               {tab.label}
@@ -282,7 +281,7 @@ export function ResultsContent({
                   helpKey="bias"
                 />
               </div>
-              <div className="p-4 sm:p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+              <div className="dash-card p-4 sm:p-6">
                 <div className="text-center">
                   <p className="text-3xl sm:text-4xl font-bold text-white">
                     {metrics?.n_series_success ?? 0}
@@ -316,9 +315,9 @@ export function ResultsContent({
 
           {/* Main Chart */}
           <FadeIn delay={0.3}>
-            <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+            <div className="dash-card p-6">
               <div className="flex items-center gap-1.5 mb-6">
-                <h2 className="text-lg font-semibold text-white">
+                <h2 className="dash-section-title">
                   Prévisions vs Réel (agrégé)
                 </h2>
                 <HelpTooltip termKey="forecast_graph" />
@@ -336,7 +335,7 @@ export function ResultsContent({
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Top/Bottom Performers */}
             <FadeIn delay={0.4} className="lg:col-span-2">
-              <div className="p-4 sm:p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+              <div className="dash-card p-4 sm:p-6">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <SeriesList
                     series={topPerformers}
@@ -378,9 +377,9 @@ export function ResultsContent({
 
           {/* ABC/XYZ Matrix */}
           <FadeIn delay={0.5}>
-            <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5" data-onboarding="abc-xyz-matrix">
+            <div className="dash-card p-6" data-onboarding="abc-xyz-matrix">
               <div className="flex items-center gap-1.5 mb-6">
-                <h2 className="text-lg font-semibold text-white">
+                <h2 className="dash-section-title">
                   Classification ABC/XYZ
                 </h2>
                 <HelpTooltip termKey="abcxyz_matrix" />
@@ -401,9 +400,9 @@ export function ResultsContent({
 
       <div className={cn(activeTab !== "series" && "hidden")}>
         <FadeIn>
-          <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+          <div className="dash-card p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-white">Toutes les séries</h2>
+              <h2 className="dash-section-title">Toutes les séries</h2>
               <div className="flex items-center gap-2">
                 <SeriesFiltersDropdown
                   filters={filters}

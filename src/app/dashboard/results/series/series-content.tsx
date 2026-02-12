@@ -177,7 +177,7 @@ export function SeriesContent({
             </Link>
             <div>
               <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="text-2xl font-bold text-white">{series.series_id}</h1>
+                <h1 className="dash-page-title">{series.series_id}</h1>
                 <BadgeWithTooltip tooltip={GLOSSARY.abc}>
                   <span
                     className={cn(
@@ -295,10 +295,10 @@ export function SeriesContent({
 
       {/* Main Chart */}
       <FadeIn delay={0.3}>
-        <div ref={chartRef} className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+        <div ref={chartRef} className="dash-card p-6">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-1.5">
-              <h2 className="text-lg font-semibold text-white">Historique & Prévisions</h2>
+              <h2 className="dash-section-title">Historique & Prévisions</h2>
               <HelpTooltip termKey="forecast_graph" />
             </div>
             <div className="flex items-center gap-4 text-sm">
@@ -330,9 +330,9 @@ export function SeriesContent({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Model Comparison */}
         <FadeIn delay={0.4}>
-          <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+          <div className="dash-card p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-white">
+              <h2 className="dash-section-title">
                 Comparaison des modèles
               </h2>
               {modelComparison?.modelsTested > 0 && (
@@ -458,8 +458,8 @@ export function SeriesContent({
 
         {/* Alerts & Insights */}
         <FadeIn delay={0.5}>
-          <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
-            <h2 className="text-lg font-semibold text-white mb-6">
+          <div className="dash-card p-6">
+            <h2 className="dash-section-title mb-6">
               Alertes et observations
             </h2>
             <div className="space-y-4">

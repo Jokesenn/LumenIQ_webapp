@@ -629,6 +629,163 @@
   .bg-zinc-925 {
     background-color: #0f0f12;
   }
+
+  /* ============================================
+     DASHBOARD DESIGN SYSTEM — "Precision Command Center"
+     ============================================ */
+
+  /* Dashboard card — glassmorphism with gradient accent line */
+  .dash-card {
+    background: rgba(24, 24, 27, 0.5);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 1rem;
+    position: relative;
+    transition: border-color 0.3s ease;
+  }
+
+  .dash-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 24px;
+    right: 24px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.25), transparent);
+    border-radius: 1px;
+    pointer-events: none;
+  }
+
+  .dash-card:hover {
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  /* Accent card — indigo/violet gradient for AI & synthesis sections */
+  .dash-card-accent {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(139, 92, 246, 0.04));
+    border: 1px solid rgba(99, 102, 241, 0.18);
+    border-radius: 1rem;
+    position: relative;
+    transition: border-color 0.3s ease;
+  }
+
+  .dash-card-accent::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 24px;
+    right: 24px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.5), rgba(139, 92, 246, 0.3), transparent);
+    border-radius: 1px;
+    pointer-events: none;
+  }
+
+  .dash-card-accent:hover {
+    border-color: rgba(99, 102, 241, 0.3);
+  }
+
+  /* Page title — Syne display font */
+  .dash-page-title {
+    font-family: var(--font-syne), var(--font-manrope), sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  /* Section title — Syne display font */
+  .dash-section-title {
+    font-family: var(--font-syne), var(--font-manrope), sans-serif;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: white;
+    letter-spacing: -0.01em;
+  }
+
+  /* Metric big value — Syne tabular nums */
+  .dash-metric-value {
+    font-family: var(--font-syne), var(--font-manrope), sans-serif;
+    font-weight: 700;
+    color: white;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Tab bar container — glassmorphic */
+  .dash-tab-bar {
+    display: flex;
+    gap: 2px;
+    padding: 4px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(8px);
+    border-radius: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    width: fit-content;
+  }
+
+  /* Active tab */
+  .dash-tab-active {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    background: rgba(99, 102, 241, 0.15);
+    color: #a5b4fc;
+    box-shadow: inset 0 1px 0 rgba(99, 102, 241, 0.25), 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+  }
+
+  /* Inactive tab */
+  .dash-tab-inactive {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #a1a1aa;
+    transition: all 0.2s ease;
+  }
+
+  .dash-tab-inactive:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  /* Nav active indicator — gradient bar on left */
+  .dash-nav-active {
+    background: rgba(99, 102, 241, 0.1);
+    color: #818cf8;
+    position: relative;
+    border-radius: 0.5rem;
+  }
+
+  .dash-nav-active::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 6px;
+    bottom: 6px;
+    width: 3px;
+    background: linear-gradient(180deg, #6366f1, #8b5cf6);
+    border-radius: 0 2px 2px 0;
+    pointer-events: none;
+  }
+
+  /* Empty state with hex overlay */
+  .dash-empty-hex {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dash-empty-hex::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.4;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='rgba(99,102,241,0.05)' stroke-width='0.5'/%3E%3Cpath d='M28 0L56 16L56 50L28 66L0 50L0 16Z' fill='none' stroke='rgba(99,102,241,0.05)' stroke-width='0.5'/%3E%3C/svg%3E");
+    border-radius: inherit;
+  }
 }
 
 /* ===== SMOOTH SCROLL ===== */

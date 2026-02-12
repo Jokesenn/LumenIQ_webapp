@@ -50,7 +50,7 @@ export function SeriesQuickSelect({
           <span className="hidden sm:inline">Aller à...</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[320px] p-0 bg-zinc-900 border-white/[0.08]" align="end">
+      <PopoverContent className="w-[320px] p-0 bg-zinc-900 border-white/[0.08] backdrop-blur-xl" align="end">
         <Command>
           <CommandInput placeholder="Rechercher une série..." />
           <CommandEmpty>Aucune série trouvée</CommandEmpty>

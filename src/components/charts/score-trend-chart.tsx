@@ -28,7 +28,7 @@ function CustomTooltip({ active, payload }: { active?: boolean; payload?: Array<
   const dateStr = d.date ? format(parseISO(d.date), "dd MMM yyyy", { locale: fr }) : "—";
 
   return (
-    <div className="rounded-lg border border-white/10 bg-zinc-900/95 px-3 py-2 shadow-xl backdrop-blur-sm">
+    <div className="bg-zinc-900/95 backdrop-blur-xl border border-white/10 rounded-xl px-3 py-2 shadow-xl">
       <p className="text-xs text-zinc-400">{dateStr}</p>
       <p className="text-sm font-semibold text-white mt-0.5">
         Score {d.score.toFixed(1)}<span className="text-zinc-500">/100</span>

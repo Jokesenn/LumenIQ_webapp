@@ -76,7 +76,7 @@ export function MetricGaugeCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay }}
       className={cn(
-        "p-4 sm:p-6 rounded-2xl bg-zinc-900/50 border border-white/5 hover:border-white/10 transition-all",
+        "dash-card p-4 sm:p-6",
         className
       )}
     >
@@ -93,7 +93,7 @@ export function MetricGaugeCard({
 
         {/* Label */}
         <div className="flex items-center gap-1.5 mt-4">
-          <h3 className="text-base sm:text-lg font-semibold text-white">{label}</h3>
+          <h3 className="text-base sm:text-lg font-semibold text-white font-display">{label}</h3>
           {helpKey && <HelpTooltip termKey={helpKey} />}
         </div>
 

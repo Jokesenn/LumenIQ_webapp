@@ -44,7 +44,7 @@ export function ActionsBoard({ mode, jobId }: ActionsBoardProps) {
   // Empty state
   if (actions.length === 0 && grouped.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
+      <div className="dash-empty-hex flex flex-col items-center justify-center py-16 text-center">
         <Inbox className="w-12 h-12 text-zinc-600 mb-3" />
         <p className="text-sm text-zinc-400">Aucune action en attente</p>
         <p className="text-xs text-zinc-500 mt-1">
@@ -89,7 +89,7 @@ export function ActionsBoard({ mode, jobId }: ActionsBoardProps) {
         <div key={group.job_id} className="space-y-3">
           {/* Group header */}
           <div className="flex items-center gap-3">
-            <h3 className="text-sm font-medium text-white">
+            <h3 className="dash-section-title">
               {group.filename || "Prévision"}
             </h3>
             <span className="text-xs text-zinc-500">
@@ -204,7 +204,7 @@ function ActionsBoardSkeleton({ mode }: { mode: "page" | "drawer" }) {
   return (
     <div className={cn("space-y-3", mode === "drawer" && "px-1")}>
       {/* Summary skeleton */}
-      <div className="rounded-2xl bg-zinc-900/50 border border-white/5 p-5 space-y-3">
+      <div className="dash-card p-5 space-y-3">
         <Skeleton className="w-20 h-4 rounded" />
         <Skeleton className="w-full h-4 rounded" />
         <Skeleton className="w-3/4 h-4 rounded" />
@@ -214,7 +214,7 @@ function ActionsBoardSkeleton({ mode }: { mode: "page" | "drawer" }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="rounded-xl border border-white/5 bg-white/[0.02] p-4 space-y-2"
+          className="dash-card p-4 space-y-2"
         >
           <div className="flex items-center gap-2">
             <Skeleton className="w-5 h-5 rounded" />

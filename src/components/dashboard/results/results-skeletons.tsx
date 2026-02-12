@@ -8,7 +8,7 @@ export function OverviewTabSkeleton() {
         {Array.from({ length: 5 }).map((_, i) => (
           <div
             key={i}
-            className="p-4 sm:p-6 rounded-2xl bg-zinc-900/50 border border-white/5 flex flex-col items-center"
+            className="dash-card p-4 sm:p-6 flex flex-col items-center"
           >
             <Skeleton className="w-[90px] h-[90px] sm:w-[120px] sm:h-[120px] rounded-full" />
             <Skeleton className="w-16 h-5 mt-4 rounded" />
@@ -19,14 +19,14 @@ export function OverviewTabSkeleton() {
       </div>
 
       {/* Chart */}
-      <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+      <div className="dash-card p-6">
         <Skeleton className="w-48 h-6 rounded mb-6" />
         <Skeleton className="w-full h-[350px] rounded-xl" />
       </div>
 
       {/* Bottom Grid: Top/Bottom + Alerts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 p-4 sm:p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+        <div className="lg:col-span-2 p-4 sm:dash-card p-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
               <Skeleton className="w-32 h-5 mb-4 rounded" />
@@ -42,7 +42,7 @@ export function OverviewTabSkeleton() {
             </div>
           </div>
         </div>
-        <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+        <div className="dash-card p-6">
           <Skeleton className="w-24 h-5 mb-4 rounded" />
           {Array.from({ length: 3 }).map((_, i) => (
             <Skeleton key={i} className="w-full h-10 rounded-lg mb-2" />
@@ -51,7 +51,7 @@ export function OverviewTabSkeleton() {
       </div>
 
       {/* ABC/XYZ Matrix */}
-      <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+      <div className="dash-card p-6">
         <Skeleton className="w-44 h-6 mb-6 rounded" />
         <div className="grid grid-cols-4 gap-2">
           <div />
@@ -74,7 +74,7 @@ export function OverviewTabSkeleton() {
 
 export function SeriesTabSkeleton() {
   return (
-    <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+    <div className="dash-card p-6">
       <div className="flex items-center justify-between mb-6">
         <Skeleton className="w-36 h-6 rounded" />
         <Skeleton className="w-[180px] h-9 rounded-lg" />
@@ -114,17 +114,17 @@ export function ReliabilityTabSkeleton() {
   return (
     <div className="space-y-6">
       {/* Headline summary */}
-      <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+      <div className="dash-card p-6">
         <Skeleton className="w-48 h-6 mb-2 rounded" />
         <Skeleton className="w-3/4 h-4 rounded" />
       </div>
 
       {/* Two-column grid */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        <div className="lg:col-span-3 p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+        <div className="lg:col-span-3 dash-card p-6">
           <Skeleton className="w-full h-[350px] rounded-xl" />
         </div>
-        <div className="lg:col-span-2 p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+        <div className="lg:col-span-2 dash-card p-6">
           <div className="flex justify-end gap-2 mb-4">
             <Skeleton className="w-8 h-8 rounded" />
             <Skeleton className="w-8 h-8 rounded" />
@@ -134,7 +134,7 @@ export function ReliabilityTabSkeleton() {
       </div>
 
       {/* Detail table */}
-      <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+      <div className="dash-card p-6">
         <Skeleton className="w-40 h-5 mb-4 rounded" />
         {Array.from({ length: 6 }).map((_, i) => (
           <div key={i} className="flex items-center justify-between py-3 border-b border-white/5 last:border-0">
@@ -162,7 +162,7 @@ export const ModelsTabSkeleton = ReliabilityTabSkeleton;
 
 export function SynthesisTabSkeleton() {
   return (
-    <div className="p-6 rounded-2xl bg-gradient-to-br from-indigo-500/10 to-violet-500/5 border border-indigo-500/20">
+    <div className="dash-card-accent p-6">
       <div className="flex items-center gap-3 mb-4">
         <Skeleton className="w-9 h-9 rounded-xl" />
         <div>

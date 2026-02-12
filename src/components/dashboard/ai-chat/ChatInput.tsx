@@ -36,7 +36,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
   };
 
   return (
-    <div className="border-t border-white/10 bg-zinc-900/50 p-4 flex gap-3 items-end shrink-0">
+    <div className="border-t border-white/10 bg-zinc-900/30 backdrop-blur-xl p-4 flex gap-3 items-end shrink-0">
       <textarea
         ref={textareaRef}
         value={value}
@@ -52,7 +52,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
         size="sm"
         onClick={handleSend}
         disabled={!value.trim() || disabled}
-        className="text-violet-400 hover:text-violet-300 hover:bg-violet-500/10 h-8 w-8 p-0 shrink-0"
+        className="text-violet-400 hover:text-violet-300 hover:bg-violet-500/10 hover:shadow-[0_0_12px_rgba(139,92,246,0.3)] h-8 w-8 p-0 shrink-0"
       >
         <Send className="w-4 h-4" />
       </Button>

@@ -28,7 +28,7 @@ export function AlertsSummaryCard({
   const totalCritical = counts.attention + counts.watch;
 
   return (
-    <div className="bg-zinc-900/50 rounded-2xl border border-white/5 p-5">
+    <div className="dash-card p-5">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-medium text-zinc-400">Alertes</h3>
         {counts.gated > 0 && (

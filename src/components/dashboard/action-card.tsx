@@ -81,7 +81,7 @@ export function ActionCard({ action, compact, onDismiss, onNavigate }: ActionCar
         "rounded-xl border p-4",
         config.bg,
         config.border,
-        "transition-colors"
+        "transition-colors backdrop-blur-sm"
       )}
     >
       <div className="flex items-start gap-3">
@@ -90,7 +90,7 @@ export function ActionCard({ action, compact, onDismiss, onNavigate }: ActionCar
         <div className="flex-1 min-w-0">
           {/* Title + badges */}
           <div className="flex items-center gap-2 flex-wrap">
-            <h4 className="text-sm font-medium text-white truncate">
+            <h4 className="text-sm font-medium font-display text-white truncate">
               {action.title}
             </h4>
             {action.recurrence_count > 1 && (

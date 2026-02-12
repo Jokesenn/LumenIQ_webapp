@@ -43,7 +43,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   if (visible.length === 0) return null;
 
   return (
-    <div className="bg-zinc-900/95 backdrop-blur-sm border border-white/10 rounded-lg p-3 shadow-xl">
+    <div className="bg-zinc-900/95 backdrop-blur-xl border border-white/10 rounded-xl p-3 shadow-xl">
       <p className="text-xs text-zinc-400 mb-2">{label}</p>
       {visible.map((entry: any, i: number) => (
         <div key={i} className="flex items-center gap-2 text-sm">

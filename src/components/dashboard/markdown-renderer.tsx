@@ -13,17 +13,17 @@ interface MarkdownRendererProps {
 
 const components: Components = {
   h1: ({ children }) => (
-    <h1 className="text-2xl font-bold text-white mt-6 mb-3 first:mt-0">
+    <h1 className="text-2xl font-bold font-display text-white mt-6 mb-3 first:mt-0">
       {children}
     </h1>
   ),
   h2: ({ children }) => (
-    <h2 className="text-xl font-semibold text-white mt-5 mb-2 first:mt-0">
+    <h2 className="text-xl font-semibold font-display text-white mt-5 mb-2 first:mt-0">
       {children}
     </h2>
   ),
   h3: ({ children }) => (
-    <h3 className="text-lg font-semibold text-white mt-4 mb-2 first:mt-0">
+    <h3 className="text-lg font-semibold font-display text-white mt-4 mb-2 first:mt-0">
       {children}
     </h3>
   ),
@@ -69,7 +69,7 @@ const components: Components = {
     return (
       <code
         className={cn(
-          "block bg-white/5 rounded-lg p-4 my-3 text-sm font-mono text-white/80 overflow-x-auto",
+          "block bg-zinc-900/80 border border-white/[0.06] rounded-lg p-4 my-3 text-sm font-mono text-white/80 overflow-x-auto",
           className
         )}
         {...props}

@@ -23,13 +23,13 @@ export default function DashboardLoading() {
       {/* Two columns: chart + actions */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
         <div className="lg:col-span-3">
-          <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+          <div className="p-6 rounded-2xl dash-card">
             <Skeleton className="w-48 h-6 rounded-lg mb-4" />
             <Skeleton className="w-full h-[250px] rounded-xl" />
           </div>
         </div>
         <div className="lg:col-span-2">
-          <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5 space-y-3">
+          <div className="p-6 rounded-2xl dash-card space-y-3">
             <div className="flex items-center justify-between mb-2">
               <Skeleton className="w-40 h-6 rounded-lg" />
               <Skeleton className="w-8 h-5 rounded-full" />
@@ -42,7 +42,7 @@ export default function DashboardLoading() {
       </div>
 
       {/* Recent forecasts table skeleton */}
-      <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5 space-y-3">
+      <div className="p-6 rounded-2xl dash-card space-y-3">
         <Skeleton className="w-44 h-6 rounded-lg mb-4" />
         {Array.from({ length: 5 }).map((_, i) => (
           <Skeleton key={i} className="w-full h-14 rounded-xl" />

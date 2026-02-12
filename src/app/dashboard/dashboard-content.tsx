@@ -114,7 +114,7 @@ export function DashboardContent({
       <FadeIn>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white">
+            <h1 className="dash-page-title">
               Bonjour {stats.userName}
             </h1>
             <p className="text-zinc-400 mt-1">
@@ -163,7 +163,7 @@ export function DashboardContent({
           />
         </StaggerItem>
         <StaggerItem>
-          <div className="p-4 sm:p-6 rounded-2xl bg-zinc-900/50 border border-white/5 h-full flex flex-col justify-between">
+          <div className="p-4 sm:p-6 rounded-2xl dash-card h-full flex flex-col justify-between">
             <div className="flex items-start justify-between mb-3">
               <div className="p-3 rounded-xl bg-indigo-500/10">
                 <Gauge className="w-5 h-5 text-indigo-400" />
@@ -199,9 +199,9 @@ export function DashboardContent({
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Trend chart */}
         <FadeIn delay={0.2} className="lg:col-span-3">
-          <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+          <div className="p-6 rounded-2xl dash-card">
             <div className="flex items-center gap-2 mb-1">
-              <h2 className="text-lg font-semibold text-white">Evolution de la fiabilite</h2>
+              <h2 className="dash-section-title">Evolution de la fiabilite</h2>
               <HelpTooltip termKey="championScore" />
             </div>
             <p className="text-sm text-zinc-500 mb-4">10 dernieres analyses</p>
@@ -211,9 +211,9 @@ export function DashboardContent({
 
         {/* Priority actions */}
         <FadeIn delay={0.3} className="lg:col-span-2">
-          <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5 h-full flex flex-col">
+          <div className="p-6 rounded-2xl dash-card h-full flex flex-col">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-white">Actions prioritaires</h2>
+              <h2 className="dash-section-title">Actions prioritaires</h2>
               {urgentActions.total > 0 && (
                 <span className="text-xs font-medium text-white bg-indigo-500/20 text-indigo-300 px-2.5 py-1 rounded-full tabular-nums">
                   {urgentActions.total}
@@ -265,9 +265,9 @@ export function DashboardContent({
 
       {/* Row 4 — Dernieres previsions */}
       <FadeIn delay={0.4}>
-        <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+        <div className="p-6 rounded-2xl dash-card">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-white">Dernieres previsions</h2>
+            <h2 className="dash-section-title">Dernieres previsions</h2>
             <Link
               href="/dashboard/history"
               className="text-sm text-indigo-400 hover:text-indigo-300 flex items-center gap-1"

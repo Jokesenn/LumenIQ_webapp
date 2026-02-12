@@ -65,7 +65,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
     >
       {/* Logo + Collapse toggle */}
       <div className="flex items-center justify-between mb-8">
-        <div className="px-3">
+        <div className="px-3 hover:drop-shadow-[0_0_12px_rgba(99,102,241,0.3)] transition-all duration-300">
           {collapsed ? <Logo size={32} /> : <LogoWithText size={32} />}
         </div>
         {onToggle && !collapsed && (
@@ -88,7 +88,10 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
       {/* Navigation */}
       <nav className="flex-1 space-y-1">
-        {navItems.map((item) => {
+        {!collapsed && (
+          <p className="text-[10px] uppercase tracking-[0.15em] text-zinc-600 font-semibold px-4 mb-1 mt-4">PRINCIPAL</p>
+        )}
+        {navItems.slice(0, 1).map((item) => {
           const isActive = pathname === item.href;
           const showBadge = (item as { badge?: boolean }).badge && urgentCount > 0;
           return (
@@ -99,7 +102,91 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 collapsed ? "justify-center" : ""
               } ${
                 isActive
-                  ? "bg-indigo-500/10 text-indigo-400 border-l-2 border-indigo-500"
+                  ? "dash-nav-active"
+                  : "text-zinc-400 hover:bg-white/5 hover:text-white"
+              }`}
+            >
+              <span className="relative shrink-0">
+                <item.icon size={20} />
+                {showBadge && collapsed && (
+                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500" />
+                )}
+              </span>
+              {!collapsed && (
+                <>
+                  <span
+                    className={`text-sm flex-1 ${isActive ? "font-semibold" : "font-normal"}`}
+                  >
+                    {item.label}
+                  </span>
+                  {showBadge && (
+                    <span className="ml-auto flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold rounded-full bg-red-500 text-white">
+                      {urgentCount}
+                    </span>
+                  )}
+                </>
+              )}
+            </Link>
+          );
+        })}
+
+        {!collapsed && (
+          <p className="text-[10px] uppercase tracking-[0.15em] text-zinc-600 font-semibold px-4 mb-1 mt-4">ANALYSES</p>
+        )}
+        {navItems.slice(1, 5).map((item) => {
+          const isActive = pathname === item.href;
+          const showBadge = (item as { badge?: boolean }).badge && urgentCount > 0;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors duration-200 relative ${
+                collapsed ? "justify-center" : ""
+              } ${
+                isActive
+                  ? "dash-nav-active"
+                  : "text-zinc-400 hover:bg-white/5 hover:text-white"
+              }`}
+            >
+              <span className="relative shrink-0">
+                <item.icon size={20} />
+                {showBadge && collapsed && (
+                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500" />
+                )}
+              </span>
+              {!collapsed && (
+                <>
+                  <span
+                    className={`text-sm flex-1 ${isActive ? "font-semibold" : "font-normal"}`}
+                  >
+                    {item.label}
+                  </span>
+                  {showBadge && (
+                    <span className="ml-auto flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold rounded-full bg-red-500 text-white">
+                      {urgentCount}
+                    </span>
+                  )}
+                </>
+              )}
+            </Link>
+          );
+        })}
+
+        {!collapsed && (
+          <p className="text-[10px] uppercase tracking-[0.15em] text-zinc-600 font-semibold px-4 mb-1 mt-4">CONFIGURATION</p>
+        )}
+        {navItems.slice(5).map((item) => {
+          const isActive = pathname === item.href;
+          const showBadge = (item as { badge?: boolean }).badge && urgentCount > 0;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors duration-200 relative ${
+                collapsed ? "justify-center" : ""
+              } ${
+                isActive
+                  ? "dash-nav-active"
                   : "text-zinc-400 hover:bg-white/5 hover:text-white"
               }`}
             >

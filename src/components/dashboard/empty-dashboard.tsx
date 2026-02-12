@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 
 export function EmptyDashboard() {
   return (
-    <div className="glass-card p-12">
+    <div className="dash-card dash-empty-hex p-12">
       <div className="text-center max-w-md mx-auto">
         {/* Icon */}
         <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 flex items-center justify-center mx-auto mb-6">
@@ -12,7 +12,7 @@ export function EmptyDashboard() {
         </div>
 
         {/* Title & Description */}
-        <h2 className="text-xl font-semibold text-white mb-2">
+        <h2 className="dash-section-title mb-2">
           Bienvenue sur LumenIQ
         </h2>
         <p className="text-zinc-400 mb-6">

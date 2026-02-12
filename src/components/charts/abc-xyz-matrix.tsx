@@ -67,7 +67,7 @@ export function AbcXyzMatrix({ data, onCellClick, selectedCell, className }: Abc
         <div /> {/* Empty corner */}
         {xyzCols.map((xyz) => (
           <div key={xyz} className="text-center py-2">
-            <span className={cn("text-sm font-semibold", xyzLabels[xyz].color)}>
+            <span className={cn("text-sm font-semibold font-display", xyzLabels[xyz].color)}>
               {xyz}
             </span>
             <p className="text-xs text-zinc-500">{xyzLabels[xyz].label}</p>
@@ -81,7 +81,7 @@ export function AbcXyzMatrix({ data, onCellClick, selectedCell, className }: Abc
           {/* ABC label */}
           <div className="flex items-center justify-center">
             <div className="text-center">
-              <span className={cn("text-sm font-semibold", abcLabels[abc].color)}>
+              <span className={cn("text-sm font-semibold font-display", abcLabels[abc].color)}>
                 {abc}
               </span>
               <p className="text-xs text-zinc-500">{abcLabels[abc].label}</p>

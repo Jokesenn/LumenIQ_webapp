@@ -60,7 +60,7 @@ export function ChatMessages({
   return (
     <div
       ref={scrollRef}
-      className="flex-1 min-h-0 overflow-y-auto"
+      className="flex-1 min-h-0 overflow-y-auto bg-hex-pattern"
     >
       <div className="flex flex-col gap-4 px-6 py-4">
         {/* Welcome message */}

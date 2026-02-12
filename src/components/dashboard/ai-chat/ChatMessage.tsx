@@ -27,10 +27,10 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
         className={cn(
           "max-w-[85%] px-4 py-2.5",
           isUser
-            ? "bg-violet-500/20 text-white rounded-2xl rounded-br-md"
+            ? "bg-gradient-to-br from-violet-500/20 to-indigo-500/10 text-white rounded-2xl rounded-br-md"
             : isError
-              ? "bg-red-500/10 border border-red-500/30 text-white rounded-2xl rounded-bl-md"
-              : "bg-white/5 text-white rounded-2xl rounded-bl-md"
+              ? "bg-red-500/10 border border-red-500/30 text-white rounded-2xl rounded-bl-md backdrop-blur-sm"
+              : "bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] text-white rounded-2xl rounded-bl-md"
         )}
       >
         {isUser ? (

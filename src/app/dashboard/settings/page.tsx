@@ -79,7 +79,7 @@ export default function SettingsPage() {
   return (
     <div className="animate-fade">
       <div className="mb-8">
-        <h1 className="text-[28px] font-bold text-white mb-2">Paramètres</h1>
+        <h1 className="dash-page-title mb-2">Paramètres</h1>
         <p className="text-zinc-400">
           Gérez votre compte et vos préférences
         </p>
@@ -87,8 +87,8 @@ export default function SettingsPage() {
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Profile */}
-        <div className="bg-zinc-900/50 rounded-xl border border-white/[0.08] p-6">
-          <h3 className="text-base font-semibold text-white mb-5">Profil</h3>
+        <div className="dash-card p-6">
+          <h3 className="dash-section-title mb-5">Profil</h3>
 
           {saveMessage && (
             <div
@@ -141,8 +141,8 @@ export default function SettingsPage() {
         </div>
 
         {/* Subscription */}
-        <div className="bg-zinc-900/50 rounded-xl border border-white/[0.08] p-6">
-          <h3 className="text-base font-semibold text-white mb-5">Abonnement</h3>
+        <div className="dash-card p-6">
+          <h3 className="dash-section-title mb-5">Abonnement</h3>
           <div className="p-5 bg-indigo-500/10 rounded-xl mb-5">
             <div className="flex justify-between items-center mb-3">
               <span className="font-semibold text-white">
@@ -198,8 +198,8 @@ export default function SettingsPage() {
         </div>
 
         {/* Preferences */}
-        <div className="bg-zinc-900/50 rounded-xl border border-white/[0.08] p-6">
-          <h3 className="text-base font-semibold text-white mb-5">Préférences</h3>
+        <div className="dash-card p-6">
+          <h3 className="dash-section-title mb-5">Préférences</h3>
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <div>
@@ -227,12 +227,12 @@ export default function SettingsPage() {
 
         {/* API (Premium) */}
         <div
-          className={`bg-zinc-900/50 rounded-xl border border-white/[0.08] p-6 ${
+          className={`dash-card p-6 ${
             profile?.plan !== "premium" ? "opacity-60" : ""
           }`}
         >
           <div className="flex items-center gap-2 mb-5">
-            <h3 className="text-base font-semibold text-white">API</h3>
+            <h3 className="dash-section-title">API</h3>
             {profile?.plan !== "premium" && (
               <span className="px-2 py-0.5 bg-amber-500/20 rounded text-[10px] font-semibold text-amber-400">
                 PREMIUM
@@ -273,8 +273,8 @@ export default function SettingsPage() {
         </div>
 
         {/* Aide & Onboarding */}
-        <div className="bg-zinc-900/50 rounded-xl border border-white/[0.08] p-6">
-          <h3 className="text-base font-semibold text-white mb-5">Aide</h3>
+        <div className="dash-card p-6">
+          <h3 className="dash-section-title mb-5">Aide</h3>
           <div className="flex justify-between items-center">
             <div>
               <p className="font-medium text-sm text-white">Guide interactif</p>
@@ -294,7 +294,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Danger Zone */}
-        <div className="md:col-span-2 bg-zinc-900/50 rounded-xl border border-red-500/30 p-6">
+        <div className="md:col-span-2 dash-card p-6 !border-red-500/30">
           <h3 className="text-base font-semibold text-red-500 mb-4">
             Zone de danger
           </h3>
