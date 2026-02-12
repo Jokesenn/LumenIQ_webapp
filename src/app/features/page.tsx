@@ -134,34 +134,83 @@ const keyStats = [
 
 function FeatureVisual({ type, gradient }: { type: string; gradient: string }) {
   if (type === "routing") {
+    /* ABC/XYZ routing matrix — shows compute budget allocation */
+    const matrixCells = [
+      /* row A (top revenue) */
+      { abc: "A", xyz: "X", models: 30, folds: 5, intensity: 1.0 },
+      { abc: "A", xyz: "Y", models: 30, folds: 5, intensity: 0.9 },
+      { abc: "A", xyz: "Z", models: 30, folds: 5, intensity: 0.85 },
+      /* row B */
+      { abc: "B", xyz: "X", models: 20, folds: 3, intensity: 0.6 },
+      { abc: "B", xyz: "Y", models: 20, folds: 3, intensity: 0.5 },
+      { abc: "B", xyz: "Z", models: 20, folds: 3, intensity: 0.45 },
+      /* row C (long tail) */
+      { abc: "C", xyz: "X", models: 10, folds: 2, intensity: 0.3 },
+      { abc: "C", xyz: "Y", models: 10, folds: 2, intensity: 0.25 },
+      { abc: "C", xyz: "Z", models: 10, folds: 2, intensity: 0.2 },
+    ];
+
     return (
-      <div className="relative w-full h-full flex items-center justify-center">
-        {/* ABC bars */}
-        {[
-          { label: "A", width: "85%", delay: 0, color: "bg-rose-500" },
-          { label: "B", width: "60%", delay: 0.15, color: "bg-rose-400/70" },
-          { label: "C", width: "35%", delay: 0.3, color: "bg-rose-300/50" },
-        ].map((bar) => (
-          <motion.div
-            key={bar.label}
-            className="absolute flex items-center gap-3"
-            style={{ top: bar.label === "A" ? "20%" : bar.label === "B" ? "45%" : "70%" }}
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: bar.delay + 0.3, duration: 0.6 }}
-          >
-            <span className="text-xs font-display font-700 text-white/60 w-4">{bar.label}</span>
-            <motion.div
-              className={`h-8 rounded-lg ${bar.color}`}
-              initial={{ width: 0 }}
-              whileInView={{ width: bar.width }}
-              viewport={{ once: true }}
-              transition={{ delay: bar.delay + 0.5, duration: 0.8, ease: "easeOut" }}
-              style={{ maxWidth: bar.width, minWidth: 0 }}
-            />
-          </motion.div>
+      <div className="relative w-full h-full flex flex-col items-center justify-center gap-1">
+        {/* Column headers — XYZ (volatility) */}
+        <div className="grid grid-cols-[28px_1fr_1fr_1fr] gap-1 w-full max-w-[220px]">
+          <div />
+          {["X", "Y", "Z"].map((col) => (
+            <div key={col} className="text-center">
+              <span className="text-[9px] font-display font-600 text-zinc-500 uppercase tracking-wider">{col}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Matrix grid */}
+        {(["A", "B", "C"] as const).map((row, rowIdx) => (
+          <div key={row} className="grid grid-cols-[28px_1fr_1fr_1fr] gap-1 w-full max-w-[220px]">
+            {/* Row label */}
+            <div className="flex items-center justify-center">
+              <span className="text-[10px] font-display font-700 text-zinc-400">{row}</span>
+            </div>
+            {/* Cells */}
+            {matrixCells
+              .filter((c) => c.abc === row)
+              .map((cell, colIdx) => (
+                <motion.div
+                  key={`${cell.abc}${cell.xyz}`}
+                  className="relative aspect-square rounded-lg flex flex-col items-center justify-center cursor-default group/cell"
+                  style={{
+                    background: `rgba(244, 63, 94, ${cell.intensity * 0.35})`,
+                    border: `1px solid rgba(244, 63, 94, ${cell.intensity * 0.25})`,
+                  }}
+                  initial={{ scale: 0, opacity: 0 }}
+                  whileInView={{ scale: 1, opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{
+                    delay: 0.3 + rowIdx * 0.12 + colIdx * 0.08,
+                    type: "spring",
+                    stiffness: 260,
+                    damping: 20,
+                  }}
+                  whileHover={{ scale: 1.08 }}
+                >
+                  <span className="text-[11px] font-display font-800 text-white leading-none">
+                    {cell.models}
+                  </span>
+                  <span className="text-[7px] text-white/50 font-medium mt-0.5">
+                    {cell.folds}‑fold
+                  </span>
+                </motion.div>
+              ))}
+          </div>
         ))}
+
+        {/* Axis labels */}
+        <div className="flex items-center justify-between w-full max-w-[220px] mt-1 px-7">
+          <span className="text-[7px] text-zinc-600 font-display">Stable</span>
+          <span className="text-[7px] text-zinc-600 font-display italic">Volatilité →</span>
+          <span className="text-[7px] text-zinc-600 font-display">Erratique</span>
+        </div>
+        <div className="absolute -left-1 top-1/2 -translate-y-1/2 -rotate-90 origin-center">
+          <span className="text-[7px] text-zinc-600 font-display italic">← Valeur CA</span>
+        </div>
       </div>
     );
   }
@@ -197,22 +246,91 @@ function FeatureVisual({ type, gradient }: { type: string; gradient: string }) {
   }
 
   if (type === "backtesting") {
+    /* Temporal cross-validation — expanding window diagram */
+    const folds = [
+      { id: 1, trainPct: 40, testPct: 15 },
+      { id: 2, trainPct: 50, testPct: 15 },
+      { id: 3, trainPct: 60, testPct: 15 },
+      { id: 4, trainPct: 70, testPct: 15 },
+      { id: 5, trainPct: 80, testPct: 15 },
+    ];
+
     return (
-      <div className="relative w-full h-full flex items-center justify-center">
-        <div className="flex gap-2 items-end">
-          {[65, 80, 45, 90, 72].map((h, i) => (
-            <motion.div
-              key={i}
-              className="w-8 bg-gradient-to-t from-emerald-500/80 to-cyan-400/60 rounded-t-md"
-              initial={{ height: 0 }}
-              whileInView={{ height: `${h}%` }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.4 + i * 0.12, duration: 0.7, ease: "easeOut" }}
-              style={{ maxHeight: `${h}%`, minHeight: 0 }}
-            />
+      <div className="relative w-full h-full flex flex-col items-center justify-center gap-0">
+        {/* Timeline arrow */}
+        <div className="w-full max-w-[230px] flex items-center mb-2 px-1">
+          <div className="flex-1 h-px bg-zinc-700" />
+          <span className="text-[8px] text-zinc-500 font-display ml-1">temps →</span>
+        </div>
+
+        {/* Folds */}
+        <div className="flex flex-col gap-[5px] w-full max-w-[230px]">
+          {folds.map((fold) => (
+            <div key={fold.id} className="flex items-center gap-1.5">
+              {/* Fold label */}
+              <span className="text-[8px] font-display font-600 text-zinc-500 w-5 shrink-0 text-right">
+                F{fold.id}
+              </span>
+
+              {/* Train + Test bar */}
+              <div className="flex-1 flex items-center h-[18px] rounded-md overflow-hidden bg-zinc-800/50">
+                {/* Training portion — expanding */}
+                <motion.div
+                  className="h-full bg-gradient-to-r from-emerald-600/60 to-emerald-500/40 flex items-center justify-center"
+                  initial={{ width: 0 }}
+                  whileInView={{ width: `${fold.trainPct}%` }}
+                  viewport={{ once: true }}
+                  transition={{
+                    delay: 0.3 + (fold.id - 1) * 0.12,
+                    duration: 0.7,
+                    ease: "easeOut",
+                  }}
+                >
+                  {fold.id >= 3 && (
+                    <span className="text-[7px] text-emerald-200/70 font-display font-600 whitespace-nowrap">
+                      Train
+                    </span>
+                  )}
+                </motion.div>
+
+                {/* Cutoff line */}
+                <div className="w-px h-full bg-white/30 shrink-0" />
+
+                {/* Test portion — fixed width */}
+                <motion.div
+                  className="h-full bg-gradient-to-r from-cyan-500/50 to-cyan-400/30 flex items-center justify-center"
+                  initial={{ width: 0 }}
+                  whileInView={{ width: `${fold.testPct}%` }}
+                  viewport={{ once: true }}
+                  transition={{
+                    delay: 0.5 + (fold.id - 1) * 0.12,
+                    duration: 0.5,
+                    ease: "easeOut",
+                  }}
+                >
+                  <span className="text-[7px] text-cyan-200/70 font-display font-600 whitespace-nowrap">
+                    Test
+                  </span>
+                </motion.div>
+
+                {/* Remaining (future) */}
+                <div className="flex-1" />
+              </div>
+            </div>
           ))}
         </div>
-        <div className="absolute bottom-3 text-[10px] text-zinc-500 font-display">Fold 1 — 5</div>
+
+        {/* Legend */}
+        <div className="flex items-center gap-4 mt-2.5">
+          <span className="flex items-center gap-1.5 text-[8px] text-zinc-500 font-display">
+            <span className="w-3 h-2 rounded-sm bg-emerald-500/50" />
+            Historique (train)
+          </span>
+          <span className="flex items-center gap-1.5 text-[8px] text-zinc-500 font-display">
+            <span className="w-3 h-2 rounded-sm bg-cyan-500/40" />
+            Validation (test)
+          </span>
+        </div>
       </div>
     );
   }
