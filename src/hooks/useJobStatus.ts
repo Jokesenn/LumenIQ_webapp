@@ -57,10 +57,11 @@ export function useJobStatus(
         setJob(null)
       } else {
         // Colonnes numeric PostgreSQL arrivent comme string via Supabase JS
+        // Les valeurs restent en ratio (0-1), la conversion en % se fait dans la couche d'affichage
         const parsed = {
           ...data,
-          avg_wape: data.avg_wape != null ? Number(data.avg_wape) * 100 : null,
-          avg_smape: data.avg_smape != null ? Number(data.avg_smape) * 100 : null,
+          avg_wape: data.avg_wape != null ? Number(data.avg_wape) : null,
+          avg_smape: data.avg_smape != null ? Number(data.avg_smape) : null,
           avg_bias: data.avg_bias != null ? Number(data.avg_bias) : null,
         }
         setJob(parsed as ForecastJob)
@@ -119,16 +120,6 @@ export function useJobStatus(
       }
     }
   }, [jobId, enabled, pollInterval, fetchJobStatus])
-
-  // Arrêter le polling quand le job est terminé
-  useEffect(() => {
-    if (job?.status === 'completed' || job?.status === 'failed' || job?.status === 'cancelled') {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current)
-        intervalRef.current = null
-      }
-    }
-  }, [job?.status])
 
   const isComplete = job?.status === 'completed'
   const isFailed = job?.status === 'failed' || job?.status === 'cancelled'

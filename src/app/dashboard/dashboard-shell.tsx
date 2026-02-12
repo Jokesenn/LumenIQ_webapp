@@ -6,6 +6,7 @@ import { CommandPalette } from "@/components/dashboard/command-palette";
 import { AiChatButton, AiChatDrawer } from "@/components/dashboard/ai-chat";
 import { ActionsDrawer } from "@/components/dashboard/actions-drawer";
 import { ActionsFab } from "@/components/dashboard/actions-fab";
+import { ErrorBoundary } from "@/components/error-boundary";
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -60,7 +61,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           onOpenCommand={() => setCommandOpen(true)}
         />
 
-        <main className="flex-1 overflow-auto p-4 lg:p-8">{children}</main>
+        <ErrorBoundary>
+          <main className="flex-1 overflow-auto p-4 lg:p-8">{children}</main>
+        </ErrorBoundary>
       </div>
 
       <Suspense>

@@ -88,5 +88,3 @@ export const MODEL_COUNTS = {
   premium: PLANS.premium.models,
 };
 
-// Chiffre générique pour les sections marketing (hero, comparison, etc.)
-export const MAX_MODELS = PLANS.premium.models; // 24

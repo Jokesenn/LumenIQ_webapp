@@ -41,8 +41,8 @@ export function Header({ onToggleSidebar, onOpenCommand }: HeaderProps) {
 
   const plan = profile?.plan ?? "standard";
   const seriesUsed = profile?.series_used_this_period ?? 0;
-  const defaultQuotas: Record<string, number> = { standard: 50, ml: 200, premium: 1000 };
-  const seriesQuota = (profile as any)?.series_quota ?? defaultQuotas[plan] ?? 50;
+  const defaultQuotas: Record<string, number> = { standard: 50, ml: 150, premium: 300 };
+  const seriesQuota = (profile as Record<string, unknown> | null)?.series_quota as number | undefined ?? defaultQuotas[plan] ?? 50;
   const usagePercent = Math.min((seriesUsed / seriesQuota) * 100, 100);
 
   return (

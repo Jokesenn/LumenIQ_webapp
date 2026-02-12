@@ -7,6 +7,7 @@ import { RotateCcw } from "lucide-react";
 import { useProfile, formatPlanName } from "@/hooks/use-profile";
 import { useSupabase, useUser } from "@/hooks/use-supabase";
 import { resetOnboarding } from "@/lib/onboarding";
+import { PLANS } from "@/lib/pricing-config";
 
 export default function SettingsPage() {
   const { user } = useUser();
@@ -62,25 +63,9 @@ export default function SettingsPage() {
     }
   };
 
-  // Calculer le quota de séries basé sur le plan
-  const getSeriesQuota = (plan: string) => {
-    const quotas: Record<string, number> = {
-      standard: 50,
-      ml: 200,
-      premium: 1000,
-    };
-    return quotas[plan] || 50;
-  };
-
-  // Calculer le prix basé sur le plan
-  const getPlanPrice = (plan: string) => {
-    const prices: Record<string, number> = {
-      standard: 99,
-      ml: 249,
-      premium: 499,
-    };
-    return prices[plan] || 99;
-  };
+  // Quota et prix depuis la source unique pricing-config
+  const getSeriesQuota = (plan: string) => PLANS[plan]?.series ?? 50;
+  const getPlanPrice = (plan: string) => PLANS[plan]?.price ?? 99;
 
   const handleResetOnboarding = () => {
     resetOnboarding();

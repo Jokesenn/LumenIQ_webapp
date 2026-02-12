@@ -155,10 +155,10 @@ export function AiChatDrawer({ open, onOpenChange }: AiChatDrawerProps) {
         content: question,
         timestamp: new Date(),
       };
+      isLoadingRef.current = true;
       setMessages((prev) => [...prev, userMessage]);
       setHasSentFirstMessage(true);
       setIsLoading(true);
-      isLoadingRef.current = true;
 
       try {
         const controller = new AbortController();

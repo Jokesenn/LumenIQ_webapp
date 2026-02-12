@@ -97,6 +97,7 @@ export function CommandPalette({ open: controlledOpen, onOpenChange }: CommandPa
       try {
         const supabase = createClient();
         const { data } = await supabase
+          .schema("lumeniq")
           .from("forecast_results")
           .select("series_id, abc_class, xyz_class")
           .eq("job_id", jobId!)
@@ -115,7 +116,8 @@ export function CommandPalette({ open: controlledOpen, onOpenChange }: CommandPa
     return () => {
       cancelled = true;
     };
-  }, [open, jobId, series.length]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- series.length omis volontairement pour éviter un fetch en boucle
+  }, [open, jobId]);
 
   // Reset series cache when job changes
   useEffect(() => {

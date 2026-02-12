@@ -157,6 +157,22 @@ export function useActions(
     fetchActions();
   }, [fetchActions]);
 
+  // Undo a dismiss
+  const undoDismiss = useCallback(
+    async (id: string) => {
+      const supabase = createClient();
+      await supabase
+        .schema("lumeniq")
+        .from("forecast_actions")
+        .update({ status: "active", dismissed_at: null })
+        .eq("id", id);
+
+      // Refresh data
+      fetchActions();
+    },
+    [fetchActions]
+  );
+
   // Dismiss an action
   const dismissAction = useCallback(
     async (id: string) => {
@@ -190,8 +206,7 @@ export function useActions(
         duration: 5000,
       });
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [undoDismiss]
   );
 
   // Dismiss all active actions
@@ -233,22 +248,6 @@ export function useActions(
       });
     },
     [actions, fetchActions]
-  );
-
-  // Undo a dismiss
-  const undoDismiss = useCallback(
-    async (id: string) => {
-      const supabase = createClient();
-      await supabase
-        .schema("lumeniq")
-        .from("forecast_actions")
-        .update({ status: "active", dismissed_at: null })
-        .eq("id", id);
-
-      // Refresh data
-      fetchActions();
-    },
-    [fetchActions]
   );
 
   return { actions, grouped, summary, loading, error, dismissAction, dismissAll, undoDismiss };

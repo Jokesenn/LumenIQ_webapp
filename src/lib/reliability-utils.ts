@@ -60,6 +60,8 @@ export function computeEnrichedModels(allSeries: SeriesRow[]): EnrichedModelData
     entry.businessWeight += ABC_WEIGHTS[s.abc_class ?? ""] ?? 1;
   }
 
+  if (statsMap.size === 0) return [];
+
   const rawModels = Array.from(statsMap.entries()).map(([technicalName, stats]) => {
     const mapping = MODEL_LABELS[technicalName];
     const familyKey: ModelFamily | "other" = mapping?.family ?? "other";

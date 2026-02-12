@@ -30,10 +30,16 @@ export function linkifySKUs(
     //
     // We use a negative lookbehind for [ and negative lookahead for ](
     // and also skip matches that are already inside [...](...) constructs.
-    const regex = new RegExp(
-      `(?<!\\[)\\b${escaped}\\b(?!\\]\\()`,
-      "g"
-    );
+    let regex: RegExp;
+    try {
+      regex = new RegExp(
+        `(?<!\\[)\\b${escaped}\\b(?!\\]\\()`,
+        "g"
+      );
+    } catch {
+      // Fallback pour les navigateurs sans lookbehind support
+      regex = new RegExp(`\\b${escaped}\\b`, "g");
+    }
 
     const url = `/dashboard/results/series?job=${jobId}&series=${encodeURIComponent(sku)}`;
     result = result.replace(regex, `[${sku}](${url})`);

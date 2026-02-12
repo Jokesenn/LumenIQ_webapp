@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useSupabase, useUser } from './use-supabase'
 import type { Profile } from '@/types/database'
 
@@ -18,7 +18,7 @@ export function useProfile(): UseProfileReturn {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
 
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     if (!user) {
       setProfile(null)
       setLoading(false)
@@ -44,13 +44,13 @@ export function useProfile(): UseProfileReturn {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user, supabase])
 
   useEffect(() => {
     if (!userLoading) {
       fetchProfile()
     }
-  }, [user, userLoading])
+  }, [userLoading, fetchProfile])
 
   return {
     profile,
@@ -63,11 +63,14 @@ export function useProfile(): UseProfileReturn {
 // Helper pour obtenir les initiales
 export function getInitials(name: string | null | undefined, email: string): string {
   if (name) {
-    const parts = name.trim().split(' ')
+    const parts = name.trim().split(' ').filter(Boolean)
     if (parts.length >= 2) {
       return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
     }
-    return name.substring(0, 2).toUpperCase()
+    const trimmed = name.trim()
+    if (trimmed.length > 0) {
+      return trimmed.substring(0, 2).toUpperCase()
+    }
   }
   return email.substring(0, 2).toUpperCase()
 }

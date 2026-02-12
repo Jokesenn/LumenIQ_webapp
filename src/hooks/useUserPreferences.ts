@@ -21,7 +21,7 @@ export function useUserPreferences(): UseUserPreferencesReturn {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
 
-  const fetchPreferences = async () => {
+  const fetchPreferences = useCallback(async () => {
     if (!user) {
       setPreferences(DEFAULT_PREFERENCES)
       setSavedPreferences(DEFAULT_PREFERENCES)
@@ -59,13 +59,13 @@ export function useUserPreferences(): UseUserPreferencesReturn {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user, supabase])
 
   useEffect(() => {
     if (!userLoading) {
       fetchPreferences()
     }
-  }, [user, userLoading])
+  }, [userLoading, fetchPreferences])
 
   const save = useCallback(async (newPrefs: ForecastConfigOverride) => {
     if (!user) return

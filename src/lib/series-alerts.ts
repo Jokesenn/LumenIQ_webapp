@@ -1,5 +1,10 @@
 import type { AlertType } from "@/components/ui/alert-badge"
 
+/** Seuil WAPE (%) au-dessus duquel une série est en alerte « Fiabilité faible » */
+const WAPE_THRESHOLD_ATTENTION = 20
+/** Seuil WAPE (%) au-dessus duquel une série est en alerte « Fiabilité modérée » */
+const WAPE_THRESHOLD_WATCH = 15
+
 export interface SeriesAlertData {
   wape: number | null
   was_gated?: boolean | null
@@ -19,9 +24,9 @@ export function getSeriesAlerts(series: SeriesAlertData): AlertType[] {
   const wape = series.wape ?? 0
 
   // Performance alerts (mutuellement exclusifs - prendre le pire)
-  if (wape > 20) {
+  if (wape > WAPE_THRESHOLD_ATTENTION) {
     alerts.push("attention")
-  } else if (wape > 15) {
+  } else if (wape > WAPE_THRESHOLD_WATCH) {
     alerts.push("watch")
   }
 
