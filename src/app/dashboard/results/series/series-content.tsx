@@ -33,6 +33,7 @@ import type { ForecastPoint } from "@/types/export";
 import type { ForecastAction } from "@/types/actions";
 import { ActionCard } from "@/components/dashboard/action-card";
 import { getSeriesAlerts, sortAlertsByPriority } from "@/lib/series-alerts";
+import { useThresholds } from "@/lib/thresholds/context";
 import { AlertBadge } from "@/components/ui/alert-badge";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
@@ -102,15 +103,24 @@ export function SeriesContent({
     Z: "bg-red-500/20 text-red-400 border-red-500/30",
   };
 
+  const { thresholds } = useThresholds();
+  const reliabilityGreen = thresholds.reliability_score.green_max;
+  const reliabilityYellow = thresholds.reliability_score.yellow_max;
+
   const getScoreStatus = (score: number) => {
-    if (score >= 90) return { label: "Excellent", color: "text-emerald-400", Icon: CheckCircle2 };
-    if (score >= 70) return { label: "Acceptable", color: "text-amber-400", Icon: Info };
+    if (score >= reliabilityGreen) return { label: "Excellent", color: "text-emerald-400", Icon: CheckCircle2 };
+    if (score >= reliabilityYellow) return { label: "Acceptable", color: "text-amber-400", Icon: Info };
     return { label: "À améliorer", color: "text-red-400", Icon: AlertTriangle };
   };
 
   const championScoreValue = series.champion_score ?? 0;
   const scoreStatus = getScoreStatus(championScoreValue);
   const ScoreIcon = scoreStatus.Icon;
+
+  const wapeThresholds = {
+    attention: thresholds.wape.yellow_max,
+    watch: thresholds.wape.green_max,
+  };
 
   // Alertes calculées depuis les flags série (zéro requête supplémentaire)
   const computedAlerts = sortAlertsByPriority(
@@ -121,7 +131,7 @@ export function SeriesContent({
       is_first_run: series.is_first_run,
       previous_champion: series.previous_champion,
       champion_model: series.champion_model,
-    })
+    }, { wapeThresholds })
   );
 
   // Actions riches depuis forecast_actions (état local pour dismiss optimiste)
@@ -261,7 +271,7 @@ export function SeriesContent({
             value={championScoreValue.toFixed(1)}
             icon={TrendingUp}
             subtitle={`/100 · ${getModelMeta(series.champion_model ?? "").label}`}
-            variant={championScoreValue >= 90 ? "success" : championScoreValue >= 70 ? "warning" : "default"}
+            variant={championScoreValue >= reliabilityGreen ? "success" : championScoreValue >= reliabilityYellow ? "warning" : "default"}
             helpKey="championScore"
           />
         </StaggerItem>
@@ -472,9 +482,9 @@ export function SeriesContent({
                   </p>
                   <p className="text-sm text-zinc-400 mt-1">
                     Score de fiabilité de {championScoreValue.toFixed(1)}/100
-                    {championScoreValue >= 90
+                    {championScoreValue >= reliabilityGreen
                       ? " - Excellente précision des prévisions"
-                      : championScoreValue >= 70
+                      : championScoreValue >= reliabilityYellow
                         ? " - Précision acceptable, surveiller les écarts"
                         : " - Précision insuffisante, analyse recommandée"}
                   </p>

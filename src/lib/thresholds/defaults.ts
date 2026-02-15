@@ -13,7 +13,7 @@ export interface ThresholdConfig {
 export const DEFAULT_THRESHOLDS: ThresholdConfig[] = [
   {
     metric_key: "reliability_score",
-    label: "Score de fiabilite",
+    label: "Score de fiabilité",
     unit: "%",
     green_max: 90,
     yellow_max: 70,
@@ -21,7 +21,7 @@ export const DEFAULT_THRESHOLDS: ThresholdConfig[] = [
   },
   {
     metric_key: "wape",
-    label: "Erreur ponderee (WAPE)",
+    label: "Erreur pondérée (WAPE)",
     unit: "%",
     green_max: 15,
     yellow_max: 20,
@@ -29,7 +29,7 @@ export const DEFAULT_THRESHOLDS: ThresholdConfig[] = [
   },
   {
     metric_key: "model_score",
-    label: "Score modele",
+    label: "Score modèle",
     unit: "/100",
     green_max: 80,
     yellow_max: 50,
@@ -37,7 +37,7 @@ export const DEFAULT_THRESHOLDS: ThresholdConfig[] = [
   },
   {
     metric_key: "mase",
-    label: "Indice predictif (MASE)",
+    label: "Indice prédictif (MASE)",
     unit: "/100",
     green_max: 80,
     yellow_max: 100,
@@ -45,7 +45,7 @@ export const DEFAULT_THRESHOLDS: ThresholdConfig[] = [
   },
   {
     metric_key: "bias",
-    label: "Biais prevision",
+    label: "Biais prévision",
     unit: "%",
     green_max: 5,
     yellow_max: 10,

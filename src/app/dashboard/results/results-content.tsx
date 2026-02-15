@@ -310,7 +310,7 @@ export function ResultsContent({
                   label="Séries fiables"
                   value={reliableSeriesPct}
                   unit="%"
-                  description="Séries avec un score ≥ 70/100"
+                  description={`Séries avec un score ≥ ${thresholds.reliability_score.yellow_max}/100`}
                   thresholds={{ good: thresholds.reliability_score.yellow_max, warning: thresholds.reliability_score.green_max }}
                   inverted={false}
                   delay={0.5}

@@ -27,9 +27,9 @@ function isInvalid(
 /** Build a validation message for the user. */
 function validationMessage(direction: ThresholdConfig["direction"]): string {
   if (direction === "lower_is_better") {
-    return "Le seuil Vert doit etre inferieur au seuil Jaune";
+    return "Le seuil Vert doit être inférieur au seuil Jaune";
   }
-  return "Le seuil Vert doit etre superieur au seuil Jaune";
+  return "Le seuil Vert doit être supérieur au seuil Jaune";
 }
 
 // ---------------------------------------------------------------------------
@@ -162,11 +162,11 @@ function MetricRow({
           <span className="text-xs text-zinc-500">{config.unit}</span>
           {custom ? (
             <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-500/20 text-indigo-400">
-              Personnalise
+              Personnalisé
             </span>
           ) : (
             <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-zinc-700/60 text-zinc-400">
-              Par defaut
+              Par défaut
             </span>
           )}
         </div>
@@ -174,10 +174,10 @@ function MetricRow({
           <button
             onClick={() => onReset(config.metric_key)}
             className="flex items-center gap-1 text-xs text-zinc-500 hover:text-white transition-colors"
-            title="Reinitialiser"
+            title="Réinitialiser"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Reinitialiser</span>
+            <span className="hidden sm:inline">Réinitialiser</span>
           </button>
         )}
       </div>
@@ -248,12 +248,12 @@ export function ThresholdSettings() {
             className="gap-1.5 text-zinc-400 hover:text-white"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            Reinitialiser tout
+            Réinitialiser tout
           </Button>
         )}
       </div>
       <p className="text-sm text-zinc-400 mb-5">
-        Personnalisez les seuils de coloration des metriques
+        Personnalisez les seuils de coloration des métriques
       </p>
 
       {/* Metric rows */}
