@@ -8,6 +8,7 @@ import { useProfile, formatPlanName } from "@/hooks/use-profile";
 import { useSupabase, useUser } from "@/hooks/use-supabase";
 import { resetOnboarding } from "@/lib/onboarding";
 import { PLANS } from "@/lib/pricing-config";
+import { ThresholdSettings } from "@/components/dashboard/threshold-settings";
 
 export default function SettingsPage() {
   const { user } = useUser();
@@ -224,6 +225,9 @@ export default function SettingsPage() {
             </p>
           </div>
         </div>
+
+        {/* Seuils d'affichage */}
+        <ThresholdSettings />
 
         {/* API (Premium) */}
         <div
