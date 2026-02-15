@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { getModelMeta } from "@/lib/model-labels";
+import { useThresholds } from "@/lib/thresholds/context";
 
 interface ModelData {
   model: string;
@@ -17,9 +18,9 @@ interface ModelPerformanceChartProps {
   className?: string;
 }
 
-function getModelScoreColor(score: number): string {
-  if (score >= 90) return "text-emerald-400";
-  if (score >= 70) return "text-amber-400";
+function getModelScoreColor(score: number, green: number, yellow: number): string {
+  if (score >= green) return "text-emerald-400";
+  if (score >= yellow) return "text-amber-400";
   return "text-red-400";
 }
 
@@ -35,6 +36,9 @@ const modelColors: Record<string, string> = {
 };
 
 export function ModelPerformanceChart({ data, onModelClick, className }: ModelPerformanceChartProps) {
+  const { thresholds } = useThresholds();
+  const scoreGreen = thresholds.model_score.green_max;
+  const scoreYellow = thresholds.model_score.yellow_max;
   const maxPercentage = data.length > 0 ? Math.max(...data.map((d) => d.percentage)) : 0;
 
   if (data.length === 0) {
@@ -70,7 +74,7 @@ export function ModelPerformanceChart({ data, onModelClick, className }: ModelPe
               </div>
               <div className="flex items-center gap-3">
                 {item.avgChampionScore !== undefined && (
-                  <span className={cn("text-xs", getModelScoreColor(item.avgChampionScore))}>
+                  <span className={cn("text-xs", getModelScoreColor(item.avgChampionScore, scoreGreen, scoreYellow))}>
                     Fiabilité : {item.avgChampionScore.toFixed(1)}/100
                   </span>
                 )}

@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { useThresholds } from "@/lib/thresholds/context";
 import type { JobSummarySnapshot, SuggestedQuestion } from "./types";
 
 interface SuggestedQuestionsProps {
@@ -14,24 +15,26 @@ interface SuggestedQuestionsProps {
 
 function buildSuggestions(
   summary: JobSummarySnapshot | null,
-  xyzZCount: number
+  xyzZCount: number,
+  wapeThreshold: number,
+  biasThreshold: number,
 ): SuggestedQuestion[] {
   if (!summary) return [];
 
   const suggestions: SuggestedQuestion[] = [];
 
-  // WAPE > 15% (stored as ratio 0-1 in DB)
-  if (summary.global_wape != null && summary.global_wape > 0.15) {
+  // WAPE above yellow threshold (stored as ratio 0-1 in DB)
+  if (summary.global_wape != null && summary.global_wape > wapeThreshold / 100) {
     suggestions.push({
       label: "Pourquoi la précision est faible ?",
       question: "Pourquoi la précision est faible ?",
     });
   }
 
-  // Bias > 10%
+  // Bias above yellow threshold
   if (
     summary.global_bias_pct != null &&
-    Math.abs(summary.global_bias_pct) > 0.10
+    Math.abs(summary.global_bias_pct) > biasThreshold / 100
   ) {
     suggestions.push({
       label: "Pourquoi le biais est élevé ?",
@@ -77,9 +80,13 @@ export function SuggestedQuestions({
   onSelect,
   visible,
 }: SuggestedQuestionsProps) {
+  const { thresholds } = useThresholds();
+  const wapeYellow = thresholds.wape.yellow_max;
+  const biasYellow = thresholds.bias.yellow_max;
+
   const suggestions = useMemo(
-    () => buildSuggestions(summary, xyzZCount),
-    [summary, xyzZCount]
+    () => buildSuggestions(summary, xyzZCount, wapeYellow, biasYellow),
+    [summary, xyzZCount, wapeYellow, biasYellow]
   );
 
   if (suggestions.length === 0) return null;

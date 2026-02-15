@@ -19,6 +19,7 @@ import { EnrichedWaiting } from "@/components/forecast/enriched-waiting";
 import type { ForecastConfigOverride, HorizonMonths, ConfidenceInterval } from "@/types/preferences";
 import { DEFAULT_PREFERENCES } from "@/types/preferences";
 import type { UploadStep } from "@/types/forecast";
+import { useThresholds } from "@/lib/thresholds/context";
 
 export default function ForecastPage() {
   const [step, setStep] = useState(1);
@@ -30,6 +31,7 @@ export default function ForecastPage() {
   const [activeJobId, setActiveJobId] = useState<string | null>(null);
   const [forecastOptions, setForecastOptions] = useState<ForecastConfigOverride>(DEFAULT_PREFERENCES);
   const router = useRouter();
+  const { thresholds } = useThresholds();
 
   // Hooks pour l'upload réel
   const { user, loading: userLoading } = useUser();
@@ -698,12 +700,14 @@ export default function ForecastPage() {
             {(() => {
               const avgErr = job?.avg_wape ?? job?.avg_smape;
               if (avgErr == null) return null;
+              const wapeGreen = thresholds.wape.green_max / 100;
+              const wapeYellow = thresholds.wape.yellow_max / 100;
               return (
                 <>
                   {" — "}
-                  {avgErr < 5
+                  {avgErr < wapeGreen
                     ? "Excellente précision"
-                    : avgErr < 15
+                    : avgErr < wapeYellow
                       ? "Bonne précision"
                       : "Précision à surveiller"}
                 </>

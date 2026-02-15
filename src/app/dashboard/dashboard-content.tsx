@@ -22,6 +22,7 @@ import { ScoreTrendChart } from "@/components/charts/score-trend-chart";
 import { FadeIn, StaggerChildren, StaggerItem } from "@/components/animations";
 import { HelpTooltip } from "@/components/ui/help-tooltip";
 import { cn } from "@/lib/utils";
+import { useThresholds } from "@/lib/thresholds/context";
 import type { TrendDataPoint, UrgentActionsData, RecentForecastItem } from "@/lib/queries/dashboard";
 
 interface DashboardContentProps {
@@ -48,23 +49,23 @@ function formatDuration(seconds: number | null): string {
   return `${mins}m ${secs}s`;
 }
 
-function getScoreColor(score: number | null): string {
+function getScoreColor(score: number | null, green: number, yellow: number): string {
   if (score == null) return "text-zinc-500";
-  if (score >= 80) return "text-emerald-400";
-  if (score >= 60) return "text-amber-400";
+  if (score >= green) return "text-emerald-400";
+  if (score >= yellow) return "text-amber-400";
   return "text-red-400";
 }
 
-function getScoreBg(score: number | null): string {
+function getScoreBg(score: number | null, green: number, yellow: number): string {
   if (score == null) return "bg-zinc-500/10";
-  if (score >= 80) return "bg-emerald-500/10";
-  if (score >= 60) return "bg-amber-500/10";
+  if (score >= green) return "bg-emerald-500/10";
+  if (score >= yellow) return "bg-amber-500/10";
   return "bg-red-500/10";
 }
 
-function getScoreVariant(score: number): "success" | "warning" | "default" {
-  if (score >= 80) return "success";
-  if (score >= 60) return "warning";
+function getScoreVariant(score: number, green: number, yellow: number): "success" | "warning" | "default" {
+  if (score >= green) return "success";
+  if (score >= yellow) return "warning";
   return "default";
 }
 
@@ -75,6 +76,9 @@ export function DashboardContent({
   recentForecasts,
 }: DashboardContentProps) {
   const router = useRouter();
+  const { thresholds } = useThresholds();
+  const green = thresholds.reliability_score.green_max;
+  const yellow = thresholds.reliability_score.yellow_max;
 
   const lastForecastText = stats.lastForecastAt
     ? `Dernière prévision ${formatDistanceToNow(parseISO(stats.lastForecastAt), { addSuffix: true, locale: fr })}`
@@ -138,7 +142,7 @@ export function DashboardContent({
             value={`${stats.avgChampionScore.toFixed(1)}`}
             icon={TrendingUp}
             subtitle="/100 · Moyenne des 10 derniers jobs"
-            variant={getScoreVariant(stats.avgChampionScore)}
+            variant={getScoreVariant(stats.avgChampionScore, green, yellow)}
             trend={scoreTrend}
             helpKey="championScore"
           />
@@ -319,8 +323,8 @@ export function DashboardContent({
                       {job.score != null ? (
                         <span className={cn(
                           "text-sm font-semibold tabular-nums px-2.5 py-0.5 rounded-md",
-                          getScoreColor(job.score),
-                          getScoreBg(job.score),
+                          getScoreColor(job.score, green, yellow),
+                          getScoreBg(job.score, green, yellow),
                         )}>
                           {job.score.toFixed(1)}
                         </span>
