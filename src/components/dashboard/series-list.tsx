@@ -12,6 +12,7 @@ import { BadgeWithTooltip } from "@/components/ui/badge-with-tooltip";
 import { GLOSSARY } from "@/lib/glossary";
 import { getChampionScoreColor } from "@/lib/metrics";
 import { getModelMeta } from "@/lib/model-labels";
+import { useThresholds } from "@/lib/thresholds/context";
 
 interface SeriesListProps {
   series: SeriesListItem[];
@@ -41,7 +42,12 @@ export function SeriesList({
   emptyMessage = "Aucune série",
   className,
 }: SeriesListProps) {
-  const getScoreColor = getChampionScoreColor;
+  const { thresholds } = useThresholds();
+  const getScoreColor = (score: number | null) =>
+    getChampionScoreColor(score, {
+      green: thresholds.reliability_score.green_max,
+      yellow: thresholds.reliability_score.yellow_max,
+    });
 
   return (
     <div className={className}>
