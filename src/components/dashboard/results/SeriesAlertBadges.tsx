@@ -8,6 +8,7 @@ import {
   sortAlertsByPriority,
   type SeriesAlertData,
 } from "@/lib/series-alerts";
+import { useThresholds } from "@/lib/thresholds/context";
 
 interface SeriesAlertBadgesProps {
   series: SeriesAlertData;
@@ -30,7 +31,12 @@ export function SeriesAlertBadges({
   size = "default",
   className,
 }: SeriesAlertBadgesProps) {
-  const alerts = sortAlertsByPriority(getSeriesAlerts(series));
+  const { thresholds } = useThresholds();
+  const wapeThresholds = {
+    attention: thresholds.wape.yellow_max,
+    watch: thresholds.wape.green_max,
+  };
+  const alerts = sortAlertsByPriority(getSeriesAlerts(series, { wapeThresholds }));
   const displayedAlerts = alerts.slice(0, maxBadges);
   const hiddenCount = alerts.length - displayedAlerts.length;
 

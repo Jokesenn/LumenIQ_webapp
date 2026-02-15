@@ -4,6 +4,7 @@ import { AlertBadge, type AlertType } from "@/components/ui/alert-badge";
 import { countAlertsByType, type SeriesAlertData } from "@/lib/series-alerts";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
+import { useThresholds } from "@/lib/thresholds/context";
 
 interface AlertsSummaryCardProps {
   seriesList: SeriesAlertData[];
@@ -14,7 +15,12 @@ export function AlertsSummaryCard({
   seriesList,
   onFilterAlerts,
 }: AlertsSummaryCardProps) {
-  const counts = countAlertsByType(seriesList);
+  const { thresholds } = useThresholds();
+  const wapeThresholds = {
+    attention: thresholds.wape.yellow_max,
+    watch: thresholds.wape.green_max,
+  };
+  const counts = countAlertsByType(seriesList, { wapeThresholds });
 
   // Alertes à afficher (exclure gated car c'est positif)
   const alertTypes: AlertType[] = [

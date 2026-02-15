@@ -98,6 +98,11 @@ export function ResultsContent({
   }, [job?.id, exporting]);
 
   // Compute filter counts from allSeries
+  const wapeThresholds = useMemo(() => ({
+    attention: thresholds.wape.yellow_max,
+    watch: thresholds.wape.green_max,
+  }), [thresholds]);
+
   const filterCounts = useMemo<SeriesFilterCounts>(() => {
     const counts: SeriesFilterCounts = {
       attention: 0,
@@ -113,14 +118,14 @@ export function ResultsContent({
         is_first_run: s.is_first_run,
         previous_champion: s.previous_champion,
         champion_model: s.champion_model,
-      });
+      }, { wapeThresholds });
       if (alerts.includes("attention")) counts.attention++;
       if (alerts.includes("model-changed")) counts.modelChanged++;
       if (s.abc_class) counts.abc[s.abc_class] = (counts.abc[s.abc_class] ?? 0) + 1;
       if (s.xyz_class) counts.xyz[s.xyz_class] = (counts.xyz[s.xyz_class] ?? 0) + 1;
     }
     return counts;
-  }, [allSeries]);
+  }, [allSeries, wapeThresholds]);
 
   // Sync tab when navigating from another page via URL (?tab=...)
   useEffect(() => {
