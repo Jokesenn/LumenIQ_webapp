@@ -61,20 +61,23 @@ export function ThresholdsProvider({ children }: { children: ReactNode }) {
   // Fetch custom thresholds from Supabase on mount / user change
   useEffect(() => {
     if (userLoading) return;
-    if (!user) {
-      setCustomRows([]);
-      setIsLoading(false);
-      return;
-    }
 
     let cancelled = false;
 
     async function fetchThresholds() {
+      if (!user) {
+        if (!cancelled) {
+          setCustomRows([]);
+          setIsLoading(false);
+        }
+        return;
+      }
+
       const { data, error } = await supabase
         .schema("lumeniq")
         .from("user_thresholds")
         .select("metric_key, green_max, yellow_max")
-        .eq("user_id", user!.id);
+        .eq("user_id", user.id);
 
       if (cancelled) return;
 
@@ -85,17 +88,19 @@ export function ThresholdsProvider({ children }: { children: ReactNode }) {
       }
 
       if (data) {
-        const rows: ThresholdConfig[] = data.map((row: any) => {
-          const base = defaultMap[row.metric_key];
-          return {
-            metric_key: row.metric_key,
-            label: base?.label ?? row.metric_key,
-            unit: base?.unit ?? "",
-            green_max: row.green_max,
-            yellow_max: row.yellow_max,
-            direction: base?.direction ?? "lower_is_better",
-          };
-        });
+        const rows: ThresholdConfig[] = data.map(
+          (row: { metric_key: string; green_max: number; yellow_max: number }) => {
+            const base = defaultMap[row.metric_key];
+            return {
+              metric_key: row.metric_key,
+              label: base?.label ?? row.metric_key,
+              unit: base?.unit ?? "",
+              green_max: row.green_max,
+              yellow_max: row.yellow_max,
+              direction: base?.direction ?? "lower_is_better",
+            };
+          }
+        );
         setCustomRows(rows);
       }
 
