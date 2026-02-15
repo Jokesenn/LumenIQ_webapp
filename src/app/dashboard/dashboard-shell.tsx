@@ -53,35 +53,37 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-zinc-950 bg-hex-pattern">
-      <Sidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} />
+    <ThresholdsProvider>
+      <div className="flex min-h-screen bg-zinc-950 bg-hex-pattern">
+        <Sidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} />
 
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Header
-          onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
-          onOpenCommand={() => setCommandOpen(true)}
-        />
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <Header
+            onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
+            onOpenCommand={() => setCommandOpen(true)}
+          />
 
-        <ErrorBoundary>
-          <main className="flex-1 overflow-auto p-4 lg:p-8">
-            <ThresholdsProvider>{children}</ThresholdsProvider>
-          </main>
-        </ErrorBoundary>
+          <ErrorBoundary>
+            <main className="flex-1 overflow-auto p-4 lg:p-8">
+              {children}
+            </main>
+          </ErrorBoundary>
+        </div>
+
+        <Suspense>
+          <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} />
+        </Suspense>
+
+        <Suspense>
+          <AiChatDrawer open={chatOpen} onOpenChange={setChatOpen} />
+        </Suspense>
+        <AiChatButton onClick={openChat} isOpen={chatOpen} />
+
+        <Suspense>
+          <ActionsDrawer open={actionsOpen} onOpenChange={setActionsOpen} />
+        </Suspense>
+        <ActionsFab onClick={openActions} isOpen={actionsOpen} />
       </div>
-
-      <Suspense>
-        <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} />
-      </Suspense>
-
-      <Suspense>
-        <AiChatDrawer open={chatOpen} onOpenChange={setChatOpen} />
-      </Suspense>
-      <AiChatButton onClick={openChat} isOpen={chatOpen} />
-
-      <Suspense>
-        <ActionsDrawer open={actionsOpen} onOpenChange={setActionsOpen} />
-      </Suspense>
-      <ActionsFab onClick={openActions} isOpen={actionsOpen} />
-    </div>
+    </ThresholdsProvider>
   );
 }
