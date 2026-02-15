@@ -13,6 +13,7 @@ import {
   Inbox,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useThresholds } from "@/lib/thresholds/context";
 import type { HistoryJob } from "@/lib/queries/dashboard";
 
 interface HistoryContentProps {
@@ -78,15 +79,15 @@ function StatusBadge({ status }: { status: string }) {
   }
 }
 
-function ChampionScoreBadge({ score }: { score: number | null }) {
+function ChampionScoreBadge({ score, green, yellow }: { score: number | null; green: number; yellow: number }) {
   if (score == null) return <span className="text-zinc-600">—</span>;
   return (
     <span
       className={cn(
         "px-2.5 py-1 rounded-full text-xs font-semibold",
-        score >= 90
+        score >= green
           ? "bg-emerald-500/10 text-emerald-500"
-          : score >= 70
+          : score >= yellow
             ? "bg-amber-500/10 text-amber-400"
             : "bg-red-500/10 text-red-400"
       )}
@@ -97,6 +98,10 @@ function ChampionScoreBadge({ score }: { score: number | null }) {
 }
 
 export function HistoryContent({ jobs }: HistoryContentProps) {
+  const { thresholds } = useThresholds();
+  const reliabilityGreen = thresholds.reliability_score.green_max;
+  const reliabilityYellow = thresholds.reliability_score.yellow_max;
+
   if (jobs.length === 0) {
     return (
       <div className="animate-fade">
@@ -184,7 +189,7 @@ export function HistoryContent({ jobs }: HistoryContentProps) {
                     <StatusBadge status={job.status} />
                   </td>
                   <td className="px-5 py-4">
-                    <ChampionScoreBadge score={job.championScore} />
+                    <ChampionScoreBadge score={job.championScore} green={reliabilityGreen} yellow={reliabilityYellow} />
                   </td>
                   <td className="px-5 py-4 text-zinc-400 text-sm whitespace-nowrap">
                     {formatDuration(job.duration)}
