@@ -3,50 +3,55 @@
 import { motion } from "framer-motion";
 import type { EnrichedModelData } from "@/lib/reliability-utils";
 import { cn } from "@/lib/utils";
+import { useThresholds } from "@/lib/thresholds/context";
 
 interface ReliabilityDetailTableProps {
   data: EnrichedModelData[];
   onModelClick: (modelName: string) => void;
 }
 
-function getScoreColor(score: number): string {
-  if (score >= 80) return "text-emerald-400";
-  if (score >= 50) return "text-amber-400";
-  return "text-red-400";
-}
-
-function getScoreDotBg(score: number): string {
-  if (score >= 80) return "bg-emerald-400";
-  if (score >= 50) return "bg-amber-400";
-  return "bg-red-400";
-}
-
-function getScoreDotShadow(score: number): string {
-  if (score >= 80) return "shadow-[0_0_4px_rgba(52,211,153,0.5)]";
-  if (score >= 50) return "shadow-[0_0_4px_rgba(251,191,36,0.5)]";
-  return "shadow-[0_0_4px_rgba(248,113,113,0.4)]";
-}
-
-function ScoreDots({ score }: { score: number }) {
-  const filled = Math.round(score / 10);
-  return (
-    <div className="flex gap-0.5">
-      {Array.from({ length: 10 }).map((_, i) => (
-        <div
-          key={i}
-          className={cn(
-            "w-2 h-2 rounded-full transition-all",
-            i < filled
-              ? cn(getScoreDotBg(score), getScoreDotShadow(score))
-              : "bg-white/10"
-          )}
-        />
-      ))}
-    </div>
-  );
-}
-
 export function ReliabilityDetailTable({ data, onModelClick }: ReliabilityDetailTableProps) {
+  const { getColor } = useThresholds();
+
+  const getScoreColor = (score: number): string => {
+    const c = getColor("model_score", score);
+    if (c === "green") return "text-emerald-400";
+    if (c === "yellow") return "text-amber-400";
+    return "text-red-400";
+  };
+
+  const getScoreDotBg = (score: number): string => {
+    const c = getColor("model_score", score);
+    if (c === "green") return "bg-emerald-400";
+    if (c === "yellow") return "bg-amber-400";
+    return "bg-red-400";
+  };
+
+  const getScoreDotShadow = (score: number): string => {
+    const c = getColor("model_score", score);
+    if (c === "green") return "shadow-[0_0_4px_rgba(52,211,153,0.5)]";
+    if (c === "yellow") return "shadow-[0_0_4px_rgba(251,191,36,0.5)]";
+    return "shadow-[0_0_4px_rgba(248,113,113,0.4)]";
+  };
+
+  function ScoreDots({ score }: { score: number }) {
+    const filled = Math.round(score / 10);
+    return (
+      <div className="flex gap-0.5">
+        {Array.from({ length: 10 }).map((_, i) => (
+          <div
+            key={i}
+            className={cn(
+              "w-2 h-2 rounded-full transition-all",
+              i < filled
+                ? cn(getScoreDotBg(score), getScoreDotShadow(score))
+                : "bg-white/10"
+            )}
+          />
+        ))}
+      </div>
+    );
+  }
   if (data.length === 0) {
     return (
       <div className="py-8 text-center text-zinc-500">
