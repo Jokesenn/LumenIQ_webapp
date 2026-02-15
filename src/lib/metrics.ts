@@ -32,22 +32,30 @@ export function resolveSeriesErrorRatio(row: {
  * Classe couleur Tailwind pour un Champion Score.
  * ≥ 90 : vert (excellent), ≥ 70 : orange (acceptable), < 70 : rouge (à améliorer)
  */
-export function getChampionScoreColor(score: number | null): string {
+export function getChampionScoreColor(
+  score: number | null,
+  thresholds?: { green: number; yellow: number }
+): string {
   if (score == null) return "text-zinc-400";
-  if (score >= 90) return "text-emerald-400";
-  if (score >= 70) return "text-amber-400";
+  const { green, yellow } = thresholds ?? { green: 90, yellow: 70 };
+  if (score >= green) return "text-emerald-400";
+  if (score >= yellow) return "text-amber-400";
   return "text-red-400";
 }
 
 /**
  * Statut + couleur + icône pour un Champion Score (vues détaillées).
  */
-export function getChampionScoreStatus(score: number): {
+export function getChampionScoreStatus(
+  score: number,
+  thresholds?: { green: number; yellow: number }
+): {
   label: string;
   color: string;
   Icon: LucideIcon;
 } {
-  if (score >= 90) return { label: "Excellent", color: "text-emerald-400", Icon: CheckCircle2 };
-  if (score >= 70) return { label: "Acceptable", color: "text-amber-400", Icon: Info };
+  const { green, yellow } = thresholds ?? { green: 90, yellow: 70 };
+  if (score >= green) return { label: "Excellent", color: "text-emerald-400", Icon: CheckCircle2 };
+  if (score >= yellow) return { label: "Acceptable", color: "text-amber-400", Icon: Info };
   return { label: "À améliorer", color: "text-red-400", Icon: AlertTriangle };
 }
