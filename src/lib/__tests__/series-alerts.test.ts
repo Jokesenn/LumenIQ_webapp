@@ -4,7 +4,7 @@ import {
   sortAlertsByPriority,
   countAlertsByType,
 } from "@/lib/series-alerts";
-import type { SeriesAlertData } from "@/lib/series-alerts";
+import type { SeriesAlertData, AlertThresholdOptions } from "@/lib/series-alerts";
 
 // ────────────────────────────────────────────
 // getSeriesAlerts
@@ -187,5 +187,107 @@ describe("countAlertsByType", () => {
 
     const counts = countAlertsByType(seriesList);
     expect(counts.attention).toBe(3);
+  });
+
+  it("utilise les seuils personnalises quand fournis", () => {
+    const seriesList: SeriesAlertData[] = [
+      { wape: 12, champion_model: "a" }, // below custom watch (10), but above default watch (15)? No, 12 > 10 = watch
+      { wape: 18, champion_model: "b" }, // above custom attention (15)
+      { wape: 5, champion_model: "c" },  // below all
+    ];
+
+    const opts: AlertThresholdOptions = {
+      wapeThresholds: { attention: 15, watch: 10 },
+    };
+
+    const counts = countAlertsByType(seriesList, opts);
+    expect(counts.attention).toBe(1); // wape 18 > 15
+    expect(counts.watch).toBe(1);     // wape 12 > 10 but <= 15
+  });
+});
+
+// ────────────────────────────────────────────
+// custom thresholds
+// ────────────────────────────────────────────
+
+describe("custom thresholds", () => {
+  const baseSeries: SeriesAlertData = {
+    wape: 5,
+    was_gated: false,
+    drift_detected: false,
+    is_first_run: false,
+    previous_champion: "naive",
+    champion_model: "naive",
+  };
+
+  it("uses custom WAPE thresholds when provided to getSeriesAlerts", () => {
+    const opts: AlertThresholdOptions = {
+      wapeThresholds: { attention: 10, watch: 5 },
+    };
+
+    // wape 7 is between custom watch (5) and custom attention (10) -> watch
+    const alerts = getSeriesAlerts({ ...baseSeries, wape: 7 }, opts);
+    expect(alerts).toContain("watch");
+    expect(alerts).not.toContain("attention");
+  });
+
+  it("triggers attention with stricter custom threshold", () => {
+    const opts: AlertThresholdOptions = {
+      wapeThresholds: { attention: 10, watch: 5 },
+    };
+
+    // wape 12 > custom attention (10) -> attention
+    const alerts = getSeriesAlerts({ ...baseSeries, wape: 12 }, opts);
+    expect(alerts).toContain("attention");
+    expect(alerts).not.toContain("watch");
+  });
+
+  it("no alert when below custom watch threshold", () => {
+    const opts: AlertThresholdOptions = {
+      wapeThresholds: { attention: 10, watch: 5 },
+    };
+
+    // wape 3 <= custom watch (5) -> no alert
+    const alerts = getSeriesAlerts({ ...baseSeries, wape: 3 }, opts);
+    expect(alerts).not.toContain("attention");
+    expect(alerts).not.toContain("watch");
+  });
+
+  it("uses looser custom thresholds", () => {
+    const opts: AlertThresholdOptions = {
+      wapeThresholds: { attention: 30, watch: 25 },
+    };
+
+    // wape 22 would normally be attention (>20), but with custom threshold it is below watch (25)
+    const alerts = getSeriesAlerts({ ...baseSeries, wape: 22 }, opts);
+    expect(alerts).not.toContain("attention");
+    expect(alerts).not.toContain("watch");
+  });
+
+  it("falls back to defaults when no options provided", () => {
+    // wape 17 with defaults -> watch (>15, <=20)
+    const alerts = getSeriesAlerts({ ...baseSeries, wape: 17 });
+    expect(alerts).toContain("watch");
+  });
+
+  it("countAlertsByType forwards custom thresholds", () => {
+    const seriesList: SeriesAlertData[] = [
+      { wape: 7, champion_model: "a" },
+      { wape: 12, champion_model: "b" },
+      { wape: 3, champion_model: "c" },
+    ];
+
+    // With defaults: 7 = none, 12 = none, 3 = none (all < 15)
+    const defaultCounts = countAlertsByType(seriesList);
+    expect(defaultCounts.attention).toBe(0);
+    expect(defaultCounts.watch).toBe(0);
+
+    // With custom: attention=10, watch=5
+    const opts: AlertThresholdOptions = {
+      wapeThresholds: { attention: 10, watch: 5 },
+    };
+    const customCounts = countAlertsByType(seriesList, opts);
+    expect(customCounts.attention).toBe(1); // 12 > 10
+    expect(customCounts.watch).toBe(1);     // 7 > 5 but <= 10
   });
 });

@@ -14,19 +14,32 @@ export interface SeriesAlertData {
   champion_model: string
 }
 
+export interface AlertThresholdOptions {
+  wapeThresholds?: {
+    attention: number
+    watch: number
+  }
+}
+
 /**
  * Détermine les alertes applicables à une série
  * basé sur les données de lumeniq.forecast_results
  * Seuils basés sur WAPE (typiquement plus élevé que SMAPE)
  */
-export function getSeriesAlerts(series: SeriesAlertData): AlertType[] {
+export function getSeriesAlerts(
+  series: SeriesAlertData,
+  options?: AlertThresholdOptions
+): AlertType[] {
   const alerts: AlertType[] = []
   const wape = series.wape ?? 0
 
+  const attention = options?.wapeThresholds?.attention ?? WAPE_THRESHOLD_ATTENTION
+  const watch = options?.wapeThresholds?.watch ?? WAPE_THRESHOLD_WATCH
+
   // Performance alerts (mutuellement exclusifs - prendre le pire)
-  if (wape > WAPE_THRESHOLD_ATTENTION) {
+  if (wape > attention) {
     alerts.push("attention")
-  } else if (wape > WAPE_THRESHOLD_WATCH) {
+  } else if (wape > watch) {
     alerts.push("watch")
   }
 
@@ -77,7 +90,8 @@ export function sortAlertsByPriority(alerts: AlertType[]): AlertType[] {
  * Compte les alertes par type pour un ensemble de séries
  */
 export function countAlertsByType(
-  seriesList: SeriesAlertData[]
+  seriesList: SeriesAlertData[],
+  options?: AlertThresholdOptions
 ): Record<AlertType, number> {
   const counts: Record<AlertType, number> = {
     attention: 0,
@@ -89,7 +103,7 @@ export function countAlertsByType(
   }
 
   for (const series of seriesList) {
-    const alerts = getSeriesAlerts(series)
+    const alerts = getSeriesAlerts(series, options)
     for (const alert of alerts) {
       counts[alert]++
     }
