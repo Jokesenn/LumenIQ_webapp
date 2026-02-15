@@ -31,6 +31,7 @@ import { getSeriesAlerts } from "@/lib/series-alerts";
 import { ResultsTour } from "@/components/onboarding";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import { HelpTooltip } from "@/components/ui/help-tooltip";
+import { useThresholds } from "@/lib/thresholds/context";
 
 function formatDistanceToNow(date: Date): string {
   const now = new Date();
@@ -81,6 +82,7 @@ export function ResultsContent({
   const [filters, setFilters] = useState<SeriesFilters>(DEFAULT_FILTERS);
   const [exporting, setExporting] = useState(false);
   const { showTour, completeTour } = useOnboarding();
+  const { thresholds } = useThresholds();
 
   const handleDownload = useCallback(async () => {
     if (!job?.id || exporting) return;
@@ -148,9 +150,9 @@ export function ResultsContent({
   const reliableSeriesPct = useMemo(() => {
     const scored = allSeries.filter((s: any) => s.champion_score != null);
     if (scored.length === 0) return null;
-    const reliable = scored.filter((s: any) => s.champion_score >= 70);
+    const reliable = scored.filter((s: any) => s.champion_score >= thresholds.reliability_score.yellow_max);
     return Math.round((reliable.length / scored.length) * 100);
-  }, [allSeries]);
+  }, [allSeries, thresholds]);
 
   const handleModelClick = (modelName: string) => {
     setModelFilter(modelName);
@@ -252,7 +254,7 @@ export function ResultsContent({
                   value={metrics?.championScore ?? 0}
                   unit="/100"
                   description="Qualité globale de vos prévisions"
-                  thresholds={{ good: 70, warning: 90 }}
+                  thresholds={{ good: thresholds.reliability_score.yellow_max, warning: thresholds.reliability_score.green_max }}
                   inverted={false}
                   delay={0}
                   helpKey="championScore"
@@ -264,7 +266,7 @@ export function ResultsContent({
                   value={metrics.global_mase * 100}
                   unit="/100"
                   description="< 100 = meilleur que la référence naïve"
-                  thresholds={{ good: 80, warning: 100 }}
+                  thresholds={{ good: thresholds.mase.green_max, warning: thresholds.mase.yellow_max }}
                   inverted={true}
                   delay={0.1}
                   helpKey="mase"
@@ -276,7 +278,7 @@ export function ResultsContent({
                   value={Math.abs(metrics?.global_bias_pct ?? 0)}
                   unit="%"
                   description={(metrics?.global_bias_pct ?? 0) >= 0 ? "Sur-estimation" : "Sous-estimation"}
-                  thresholds={{ good: 5, warning: 10 }}
+                  thresholds={{ good: thresholds.bias.green_max, warning: thresholds.bias.yellow_max }}
                   delay={0.3}
                   helpKey="bias"
                 />
@@ -304,7 +306,7 @@ export function ResultsContent({
                   value={reliableSeriesPct}
                   unit="%"
                   description="Séries avec un score ≥ 70/100"
-                  thresholds={{ good: 70, warning: 90 }}
+                  thresholds={{ good: thresholds.reliability_score.yellow_max, warning: thresholds.reliability_score.green_max }}
                   inverted={false}
                   delay={0.5}
                   helpKey="reliable_series"
@@ -432,7 +434,7 @@ export function ResultsContent({
                 // Dropdown filters — OR within category, AND between categories
                 const statusChecks: boolean[] = [];
                 if (filters.attention) {
-                  statusChecks.push((s.wape ?? 0) > 20);
+                  statusChecks.push((s.wape ?? 0) > thresholds.wape.yellow_max);
                 }
                 if (filters.modelChanged) {
                   const changed = !s.is_first_run && !!s.previous_champion && s.previous_champion !== s.champion_model;
