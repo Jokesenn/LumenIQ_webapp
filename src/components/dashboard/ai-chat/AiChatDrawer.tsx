@@ -39,6 +39,9 @@ export function AiChatDrawer({ open, onOpenChange }: AiChatDrawerProps) {
   const [xyzZCount, setXyzZCount] = useState(0);
   const lastKnownJobId = useRef<string | null>(null);
 
+  // Glow state for animated border: idle | thinking | streaming
+  const glowState = isLoading ? "thinking" : "idle";
+
   // Resolve jobId from URL or fallback to latest completed job
   useEffect(() => {
     const jobFromUrl = searchParams.get("job");
@@ -253,33 +256,39 @@ export function AiChatDrawer({ open, onOpenChange }: AiChatDrawerProps) {
       <SheetContent
         side="right"
         showCloseButton
-        className="w-[420px] sm:max-w-[420px] p-0 flex flex-col h-full gap-0 bg-zinc-950 border-white/10"
+        className="w-[420px] sm:max-w-[420px] p-0 flex flex-col h-full gap-0 bg-zinc-950 border-white/10 overflow-hidden"
       >
-        <SheetHeader className="px-6 py-4 border-b border-white/10 shrink-0">
-          <SheetTitle className="text-white text-lg font-display">
-            Assistant IA
-          </SheetTitle>
-          <SheetDescription className="sr-only">
-            Posez des questions sur vos résultats de forecast
-          </SheetDescription>
-        </SheetHeader>
-        <div className="h-px bg-gradient-to-r from-transparent via-indigo-500/30 to-transparent" />
+        <div
+          className="ai-drawer-glow flex flex-col h-full"
+          data-state={glowState}
+        >
+          <SheetHeader className="px-6 py-4 border-b border-white/10 shrink-0 bg-zinc-950/80 backdrop-blur-xl">
+            <SheetTitle className="text-white text-lg font-display flex items-center gap-2.5">
+              Assistant IA
+              <span className="ai-status-dot" />
+            </SheetTitle>
+            <SheetDescription className="sr-only">
+              Posez des questions sur vos résultats de forecast
+            </SheetDescription>
+          </SheetHeader>
+          <div className="ai-header-line" />
 
-        <ChatMessages
-          messages={messages}
-          isLoading={isLoading}
-          onRetry={handleRetry}
-          hasJobContext={!!resolvedJobId}
-        />
+          <ChatMessages
+            messages={messages}
+            isLoading={isLoading}
+            onRetry={handleRetry}
+            hasJobContext={!!resolvedJobId}
+          />
 
-        <SuggestedQuestions
-          summary={summarySnapshot}
-          xyzZCount={xyzZCount}
-          onSelect={sendMessage}
-          visible={!hasSentFirstMessage && !!resolvedJobId}
-        />
+          <SuggestedQuestions
+            summary={summarySnapshot}
+            xyzZCount={xyzZCount}
+            onSelect={sendMessage}
+            visible={!hasSentFirstMessage && !!resolvedJobId}
+          />
 
-        <ChatInput onSend={sendMessage} disabled={isLoading || !resolvedJobId} />
+          <ChatInput onSend={sendMessage} disabled={isLoading || !resolvedJobId} />
+        </div>
       </SheetContent>
     </Sheet>
   );

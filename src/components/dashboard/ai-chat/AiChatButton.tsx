@@ -25,11 +25,17 @@ export function AiChatButton({ onClick, isOpen }: AiChatButtonProps) {
             "w-14 h-14 rounded-full",
             "bg-violet-600 hover:bg-violet-500",
             "text-white shadow-lg shadow-violet-500/25",
-            "transition-colors cursor-pointer"
+            "transition-colors cursor-pointer",
+            "ai-fab-pulse"
           )}
           aria-label="Ouvrir l'assistant IA"
         >
-          <MessageCircle className="w-6 h-6" />
+          <motion.span
+            whileHover={{ rotate: 8 }}
+            transition={{ type: "spring", stiffness: 300, damping: 15 }}
+          >
+            <MessageCircle className="w-6 h-6" />
+          </motion.span>
         </motion.button>
       )}
     </AnimatePresence>
