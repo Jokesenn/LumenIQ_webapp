@@ -3,12 +3,21 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { RotateCcw } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { RotateCcw, Download, Loader2, AlertTriangle } from "lucide-react";
 import { useProfile, formatPlanName } from "@/hooks/use-profile";
 import { useSupabase, useUser } from "@/hooks/use-supabase";
 import { resetOnboarding } from "@/lib/onboarding";
 import { PLANS } from "@/lib/pricing-config";
 import { ThresholdSettings } from "@/components/dashboard/threshold-settings";
+import { exportUserData, deleteAccount } from "./actions";
 
 export default function SettingsPage() {
   const { user } = useUser();
@@ -23,6 +32,15 @@ export default function SettingsPage() {
     type: "success" | "error";
     text: string;
   } | null>(null);
+
+  // Export state
+  const [exporting, setExporting] = useState(false);
+
+  // Delete account state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   // Initialiser les valeurs du formulaire quand le profil est chargé
   useEffect(() => {
@@ -62,6 +80,54 @@ export default function SettingsPage() {
     } finally {
       setSaving(false);
     }
+  };
+
+  // Export des données (Article 20 RGPD)
+  const handleExportData = async () => {
+    setExporting(true);
+    try {
+      const result = await exportUserData();
+      if (!result.success || !result.data) {
+        throw new Error(result.error ?? "Erreur lors de l'export");
+      }
+
+      const blob = new Blob([JSON.stringify(result.data, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `lumeniq-export-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setSaveMessage({
+        type: "error",
+        text: err instanceof Error ? err.message : "Erreur lors de l'export",
+      });
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  // Suppression du compte (Article 17 RGPD)
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
+    setDeleteError(null);
+
+    const result = await deleteAccount();
+
+    if (!result.success) {
+      setDeleteError(result.error ?? "Erreur lors de la suppression");
+      setDeleting(false);
+      return;
+    }
+
+    // Déconnexion et redirection
+    await supabase.auth.signOut();
+    router.push("/login");
   };
 
   // Quota et prix depuis la source unique pricing-config
@@ -297,6 +363,35 @@ export default function SettingsPage() {
           </div>
         </div>
 
+        {/* Vos données (RGPD) */}
+        <div className="dash-card p-6">
+          <h3 className="dash-section-title mb-5">Vos données</h3>
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div>
+                <p className="font-medium text-sm text-white">Exporter mes données</p>
+                <p className="text-xs text-zinc-500">
+                  Téléchargez une copie de toutes vos données au format JSON
+                  (Article 20 RGPD)
+                </p>
+              </div>
+              <Button
+                variant="secondary"
+                onClick={handleExportData}
+                disabled={exporting}
+                className="gap-2 shrink-0"
+              >
+                {exporting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Download className="w-4 h-4" />
+                )}
+                {exporting ? "Export en cours..." : "Exporter"}
+              </Button>
+            </div>
+          </div>
+        </div>
+
         {/* Danger Zone */}
         <div className="md:col-span-2 dash-card p-6 !border-red-500/30">
           <h3 className="text-base font-semibold text-red-500 mb-4">
@@ -307,16 +402,15 @@ export default function SettingsPage() {
               <p className="font-medium text-sm text-white">Supprimer le compte</p>
               <p className="text-xs text-zinc-500">
                 Cette action est irréversible. Toutes vos données seront
-                supprimées.
+                définitivement supprimées.
               </p>
             </div>
             <Button
               variant="destructive"
               onClick={() => {
-                if (window.confirm("Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible et supprimera toutes vos données.")) {
-                  // TODO: Implémenter la suppression réelle via Supabase
-                  alert("La suppression de compte sera bientôt disponible. Contactez le support pour toute demande.");
-                }
+                setDeleteDialogOpen(true);
+                setDeleteConfirmText("");
+                setDeleteError(null);
               }}
             >
               Supprimer mon compte
@@ -324,6 +418,70 @@ export default function SettingsPage() {
           </div>
         </div>
       </div>
+
+      {/* Delete Account Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent className="bg-zinc-950 border-white/10 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-red-500 flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5" />
+              Supprimer votre compte
+            </DialogTitle>
+            <DialogDescription className="text-zinc-400">
+              Cette action est <strong className="text-red-400">irréversible</strong>.
+              Toutes vos données seront définitivement supprimées :
+              prévisions, résultats, fichiers et paramètres.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-2">
+            {deleteError && (
+              <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-sm text-red-400">
+                {deleteError}
+              </div>
+            )}
+
+            <div>
+              <label className="block text-sm text-zinc-400 mb-2">
+                Tapez <strong className="text-white">SUPPRIMER</strong> pour confirmer
+              </label>
+              <input
+                type="text"
+                value={deleteConfirmText}
+                onChange={(e) => setDeleteConfirmText(e.target.value)}
+                placeholder="SUPPRIMER"
+                disabled={deleting}
+                className="w-full px-4 py-3 bg-white/5 border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-transparent disabled:opacity-50"
+                autoComplete="off"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="ghost"
+              onClick={() => setDeleteDialogOpen(false)}
+              disabled={deleting}
+            >
+              Annuler
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteAccount}
+              disabled={deleteConfirmText !== "SUPPRIMER" || deleting}
+            >
+              {deleting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  Suppression...
+                </>
+              ) : (
+                "Supprimer définitivement"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

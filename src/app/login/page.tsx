@@ -113,6 +113,7 @@ function LoginContent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [consentChecked, setConsentChecked] = useState(false);
 
   const redirectTo = searchParams.get("redirectTo") || "/dashboard";
 
@@ -177,6 +178,7 @@ function LoginContent() {
     setMode(newMode);
     setError(null);
     setMessage(null);
+    setConsentChecked(false);
   };
 
   const getTitle = () => {
@@ -477,10 +479,34 @@ function LoginContent() {
                     </div>
                   )}
 
+                  {/* Consent checkbox (signup only) */}
+                  {mode === "signup" && (
+                    <label className="flex items-start gap-3 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        checked={consentChecked}
+                        onChange={(e) => setConsentChecked(e.target.checked)}
+                        className="mt-0.5 w-4 h-4 rounded border-white/20 bg-white/5 text-indigo-500 focus:ring-indigo-500/30 focus:ring-offset-0 accent-indigo-500"
+                        disabled={loading}
+                      />
+                      <span className="text-xs text-zinc-500 leading-relaxed">
+                        J&apos;accepte la{" "}
+                        <Link
+                          href="/politique-de-confidentialite"
+                          target="_blank"
+                          className="text-indigo-400 hover:text-indigo-300 underline underline-offset-2 transition-colors"
+                        >
+                          politique de confidentialit&eacute;
+                        </Link>{" "}
+                        et le traitement de mes donn&eacute;es personnelles
+                      </span>
+                    </label>
+                  )}
+
                   {/* Submit */}
                   <motion.button
                     type="submit"
-                    disabled={loading}
+                    disabled={loading || (mode === "signup" && !consentChecked)}
                     className={cn(
                       "relative w-full py-3.5 rounded-xl font-semibold text-sm transition-all overflow-hidden",
                       "bg-gradient-to-r from-indigo-500 to-violet-500 text-white",

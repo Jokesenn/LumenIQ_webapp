@@ -136,21 +136,6 @@ export function AiChatDrawer({ open, onOpenChange }: AiChatDrawerProps) {
       if (isLoadingRef.current) return;
       if (!resolvedJobId || !user?.id) return;
 
-      const webhookUrl = process.env.NEXT_PUBLIC_N8N_CHAT_WEBHOOK_URL;
-      if (!webhookUrl) {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: crypto.randomUUID(),
-            role: "assistant",
-            content: "Erreur de configuration : URL du webhook non définie.",
-            timestamp: new Date(),
-            error: true,
-          },
-        ]);
-        return;
-      }
-
       // Add user message
       const userMessage: ChatMessage = {
         id: crypto.randomUUID(),
@@ -173,12 +158,12 @@ export function AiChatDrawer({ open, onOpenChange }: AiChatDrawerProps) {
           content: m.content,
         }));
 
-        const response = await fetch(webhookUrl, {
+        // Appel via le proxy serveur authentifié (plus de NEXT_PUBLIC URL)
+        const response = await fetch("/api/webhook/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             jobId: resolvedJobId,
-            userId: user.id,
             question,
             history,
           }),

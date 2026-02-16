@@ -90,8 +90,8 @@ export default function TestUploadPage() {
               </li>
               <li>
                 <code className="px-1 py-0.5 bg-white/5 rounded text-xs">
-                  NEXT_PUBLIC_N8N_WEBHOOK_URL
-                </code> dans .env.local
+                  N8N_WEBHOOK_URL
+                </code> dans .env.local (server-only)
               </li>
               <li>Politique RLS sur forecast_jobs (INSERT)</li>
             </ul>

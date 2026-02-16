@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { PageTransition } from "@/components/providers/page-transition";
 import { ScrollProgress } from "@/components/shared/scroll-progress";
 import { Toaster } from "sonner";
+import { CookieBanner } from "@/components/shared/cookie-banner";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -96,6 +97,7 @@ export default function RootLayout({
               },
             }}
           />
+          <CookieBanner />
         </ThemeProvider>
       </body>
     </html>
