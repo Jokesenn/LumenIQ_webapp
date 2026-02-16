@@ -112,6 +112,35 @@ Fonction RPC `lumeniq.delete_user_data(target_user_id UUID)` :
 - Supprime dans l'ordre FK : `forecast_actions` -> `series_actuals` -> `forecast_results_months` -> `forecast_results` -> `forecast_series` -> `forecast_syntheses` -> `job_summaries` -> `job_monthly_aggregates` -> `state_store` -> `forecast_jobs` -> `user_preferences` -> `profiles`
 - Retourne le nombre total de lignes supprimees
 
+### 2.7 Nettoyage des index inutilises
+
+**Migration** : `drop_unused_indexes`
+
+8 index detectes comme jamais utilises par le linter Supabase, supprimes :
+
+| Index | Table |
+|-------|-------|
+| `idx_profiles_plan` | `profiles` |
+| `idx_forecast_results_alerts` | `forecast_results` |
+| `idx_actions_series` | `forecast_actions` |
+| `idx_api_logs_user` | `api_logs` |
+| `idx_api_logs_created_at` | `api_logs` |
+| `idx_syntheses_user_id` | `forecast_syntheses` |
+| `idx_syntheses_type` | `forecast_syntheses` |
+| `idx_usage_logs_user_period` | `usage_logs` |
+
+**Migration** : `add_foreign_key_indexes`
+
+3 index simples recrees pour couvrir les foreign keys exposees par la suppression :
+
+| Index | Table | Colonne |
+|-------|-------|---------|
+| `idx_api_logs_user_id` | `api_logs` | `user_id` |
+| `idx_forecast_syntheses_user_id` | `forecast_syntheses` | `user_id` |
+| `idx_usage_logs_user_id` | `usage_logs` | `user_id` |
+
+**Resultat net** : 5 index inutiles supprimes, 3 index FK conserves en version simplifiee.
+
 ---
 
 ## 3. Corrections de vulnerabilites applicatives
@@ -360,6 +389,8 @@ Appliquees sur le projet `kshtmftvjhsdlxpsvgyr` (production) :
 | 3 | `optimize_rls_policies_initplan` | ~35 politiques avec `(select auth.uid())` + role `authenticated` |
 | 4 | `fix_function_search_path` | 14 fonctions avec `SET search_path = ''` |
 | 5 | `create_delete_user_data_function` | Fonction RPC `delete_user_data` pour suppression RGPD |
+| 6 | `drop_unused_indexes` | Suppression de 8 index inutilises (detectes par le linter Supabase) |
+| 7 | `add_foreign_key_indexes` | Recreation de 3 index simples couvrant les foreign keys exposees |
 
 ---
 
