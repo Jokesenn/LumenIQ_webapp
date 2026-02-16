@@ -7,10 +7,8 @@ const footerLinks = {
     { label: "Fonctionnalités", href: "/features" },
     { label: "Tarifs", href: "/pricing" },
     { label: "Démo", href: "/demo" },
-    { label: "Blog", href: "#" },
   ],
   company: [
-    { label: "À propos", href: "#" },
     { label: "Contact", href: "/contact" },
   ],
   legal: [

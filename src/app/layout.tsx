@@ -60,7 +60,7 @@ export default function RootLayout({
               "@type": "Organization",
               "name": "LumenIQ",
               "url": "https://lumeniq.fr",
-              "logo": "https://lumeniq.fr/logo.png",
+              "logo": "https://lumeniq.fr/icon",
               "sameAs": [
                 "https://linkedin.com/company/lumeniq",
                 "https://x.com/lumeniq"

@@ -1,4 +1,12 @@
+import type { Metadata } from "next";
 import { Navbar, Footer } from "@/components/shared";
+
+export const metadata: Metadata = {
+  title: "Mentions légales | LumenIQ",
+  description:
+    "Mentions légales de LumenIQ SAS : éditeur, hébergement, propriété intellectuelle et conditions d'utilisation.",
+  alternates: { canonical: "/mentions-legales" },
+};
 
 export default function MentionsLegales() {
   return (

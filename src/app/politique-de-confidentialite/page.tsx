@@ -1,4 +1,12 @@
+import type { Metadata } from "next";
 import { Navbar, Footer } from "@/components/shared";
+
+export const metadata: Metadata = {
+  title: "Politique de confidentialité | LumenIQ",
+  description:
+    "Politique de confidentialité de LumenIQ : données collectées, finalités, droits RGPD, sous-traitants et sécurité.",
+  alternates: { canonical: "/politique-de-confidentialite" },
+};
 
 export default function PolitiqueDeConfidentialite() {
   return (
