@@ -1,6 +1,6 @@
 # Audit de Securite & Conformite RGPD — LumenIQ
 
-**Date** : 16 fevrier 2026
+**Date** : 16 fevrier 2026 (derniere mise a jour : 16 fevrier 2026)
 **Perimetre** : Backend (`Lumen_IQ/`) + Frontend (`LumenIQ_webapp/`) + Supabase + N8N
 **Projet Supabase** : `kshtmftvjhsdlxpsvgyr` (region `eu-central-1`)
 
@@ -10,14 +10,15 @@
 
 1. [Resume executif](#1-resume-executif)
 2. [RLS & Securite base de donnees](#2-rls--securite-base-de-donnees)
-3. [Headers de securite HTTP](#3-headers-de-securite-http)
-4. [Securisation des webhooks N8N](#4-securisation-des-webhooks-n8n)
-5. [Conformite RGPD](#5-conformite-rgpd)
-6. [Renforcement authentification](#6-renforcement-authentification)
-7. [Fichiers modifies](#7-fichiers-modifies)
-8. [Migrations Supabase appliquees](#8-migrations-supabase-appliquees)
-9. [Configuration serveur (VPS)](#9-configuration-serveur-vps)
-10. [Actions restantes](#10-actions-restantes)
+3. [Corrections de vulnerabilites applicatives](#3-corrections-de-vulnerabilites-applicatives)
+4. [Headers de securite HTTP](#4-headers-de-securite-http)
+5. [Securisation des webhooks N8N](#5-securisation-des-webhooks-n8n)
+6. [Conformite RGPD](#6-conformite-rgpd)
+7. [Renforcement authentification](#7-renforcement-authentification)
+8. [Fichiers modifies](#8-fichiers-modifies)
+9. [Migrations Supabase appliquees](#9-migrations-supabase-appliquees)
+10. [Configuration serveur (VPS)](#10-configuration-serveur-vps)
+11. [Actions restantes](#11-actions-restantes)
 
 ---
 
@@ -31,6 +32,8 @@ L'audit a couvert l'ensemble du flux de donnees : upload CSV dans la webapp, sto
 - 14 fonctions avec search_path mutable (risque d'injection)
 - URLs N8N exposees dans le bundle JavaScript client
 - Aucun header de securite HTTP
+- Open redirect dans le callback d'authentification
+- Acces aux fichiers de resultats sans verification d'ownership
 - Pas de politique de confidentialite ni de mecanismes RGPD
 - Suppression de compte non fonctionnelle
 - Mot de passe minimum 6 caracteres sans exigence de complexite
@@ -111,7 +114,51 @@ Fonction RPC `lumeniq.delete_user_data(target_user_id UUID)` :
 
 ---
 
-## 3. Headers de securite HTTP
+## 3. Corrections de vulnerabilites applicatives
+
+### 3.1 Open redirect dans le callback d'authentification
+
+**Fichier** : `src/app/auth/callback/route.ts`
+
+**Avant** : le parametre `next` etait utilise directement pour la redirection apres authentification, permettant a un attaquant de rediriger vers un site externe via un lien malveillant (`/auth/callback?next=https://evil.com`).
+
+**Apres** : validation stricte du parametre `next` :
+```typescript
+const rawNext = searchParams.get('next') ?? '/dashboard'
+const next = rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/dashboard'
+```
+- Seuls les chemins relatifs commencant par `/` sont acceptes
+- Les URLs de type `//evil.com` (protocol-relative) sont rejetees
+- Fallback vers `/dashboard` en cas de valeur invalide
+
+### 3.2 Verification d'ownership pour le telechargement de resultats
+
+**Fichier** : `src/app/dashboard/results/actions.ts`
+
+**Avant** : la server action `getResultsDownloadUrl(jobId)` generait une URL signee pour n'importe quel `jobId` sans verifier que le job appartenait a l'utilisateur connecte. Un utilisateur pouvait potentiellement acceder aux resultats d'un autre utilisateur en devinant ou interceptant un `jobId`.
+
+**Apres** : verification en base de donnees avant de generer l'URL signee :
+```typescript
+const { data: job } = await supabase
+  .schema("lumeniq")
+  .from("forecast_jobs")
+  .select("id")
+  .eq("id", jobId)
+  .eq("user_id", user.id)
+  .single();
+
+if (!job) return null;
+```
+
+### 3.3 Alignement minLength du mot de passe
+
+**Fichier** : `src/app/login/page.tsx`
+
+Le champ password avait `minLength={6}` alors que la configuration Supabase a ete renforcee a 8 caracteres minimum. Aligne a `minLength={8}` pour une validation cote client coherente avec le backend.
+
+---
+
+## 4. Headers de securite HTTP
 
 **Fichier** : `next.config.ts`
 
@@ -133,9 +180,9 @@ Fonction RPC `lumeniq.delete_user_data(target_user_id UUID)` :
 
 ---
 
-## 4. Securisation des webhooks N8N
+## 5. Securisation des webhooks N8N
 
-### 4.1 Architecture avant/apres
+### 5.1 Architecture avant/apres
 
 **Avant** :
 ```
@@ -156,7 +203,7 @@ Client (browser) ---> /api/webhook/forecast (Next.js API route)
                            |-- Rejette si timestamp > 5 min
 ```
 
-### 4.2 Fichiers crees
+### 5.2 Fichiers crees
 
 | Fichier | Role |
 |---------|------|
@@ -164,7 +211,7 @@ Client (browser) ---> /api/webhook/forecast (Next.js API route)
 | `src/app/api/webhook/forecast/route.ts` | Proxy authentifie pour le declenchement de forecast |
 | `src/app/api/webhook/chat/route.ts` | Proxy authentifie pour le chat IA (timeout 55s) |
 
-### 4.3 Variables d'environnement
+### 5.3 Variables d'environnement
 
 Toutes les URLs N8N sont desormais **server-only** (pas de prefixe `NEXT_PUBLIC_`) :
 
@@ -174,7 +221,7 @@ N8N_CHAT_WEBHOOK_URL=https://n8n.srv811898.hstgr.cloud/webhook/1b5a2430-...
 N8N_WEBHOOK_SECRET=<secret HMAC 256 bits>
 ```
 
-### 4.4 Validation cote N8N
+### 5.4 Validation cote N8N
 
 Un noeud **Code** a ete ajoute dans les 2 workflows N8N (forecast-trigger + chat) pour valider la signature HMAC :
 - Verifie la presence du header `x-webhook-signature`
@@ -186,9 +233,9 @@ Prerequis serveur : `NODE_FUNCTION_ALLOW_BUILTIN=crypto` dans l'environnement Do
 
 ---
 
-## 5. Conformite RGPD
+## 6. Conformite RGPD
 
-### 5.1 Politique de confidentialite (Articles 13-14)
+### 6.1 Politique de confidentialite (Articles 13-14)
 
 **Fichier** : `src/app/politique-de-confidentialite/page.tsx`
 **URL** : `/politique-de-confidentialite`
@@ -205,7 +252,7 @@ Page statique avec 10 sections :
 9. Cookies (session uniquement, pas de traceur)
 10. Modifications
 
-### 5.2 Banniere cookies informative
+### 6.2 Banniere cookies informative
 
 **Fichier** : `src/components/shared/cookie-banner.tsx`
 **Integration** : `src/app/layout.tsx` (root layout)
@@ -216,7 +263,7 @@ Page statique avec 10 sections :
 - Bouton "Compris" -> `localStorage.setItem("lumeniq-cookie-consent", "ok")`
 - N'apparait plus apres acceptation
 
-### 5.3 Export de donnees (Article 20 — Portabilite)
+### 6.3 Export de donnees (Article 20 — Portabilite)
 
 **Fichier** : `src/app/dashboard/settings/actions.ts` (`exportUserData()`)
 **UI** : Section "Vos donnees" dans la page Parametres
@@ -227,7 +274,7 @@ Page statique avec 10 sections :
 - Supprime `stripe_customer_id` et `stripe_subscription_id` du profil
 - Telecharge un fichier JSON structure (`lumeniq-export-YYYY-MM-DD.json`)
 
-### 5.4 Suppression de compte (Article 17 — Droit a l'effacement)
+### 6.4 Suppression de compte (Article 17 — Droit a l'effacement)
 
 **Server action** : `deleteAccount()` dans `settings/actions.ts`
 **Migration** : `create_delete_user_data_function`
@@ -241,7 +288,7 @@ Flux de suppression :
 5. Suppression du compte Auth via client admin (`SUPABASE_SERVICE_ROLE_KEY`)
 6. Deconnexion + redirection vers `/login`
 
-### 5.5 Consentement a l'inscription
+### 6.5 Consentement a l'inscription
 
 **Fichier** : `src/app/login/page.tsx`
 
@@ -250,7 +297,7 @@ Flux de suppression :
 - Bouton "Creer mon compte" desactive tant que la checkbox n'est pas cochee
 - Reset lors du changement de mode (login/signup)
 
-### 5.6 Footer
+### 6.6 Footer
 
 **Fichier** : `src/components/shared/footer.tsx`
 
@@ -258,7 +305,7 @@ Lien "Politique de confidentialite" ajoute dans la section Legale (a cote de "Me
 
 ---
 
-## 6. Renforcement authentification
+## 7. Renforcement authentification
 
 Configuration appliquee dans Supabase Dashboard (Auth > Providers > Email) :
 
@@ -272,7 +319,7 @@ Impact sur les utilisateurs existants : les nouvelles regles s'appliquent a l'in
 
 ---
 
-## 7. Fichiers modifies
+## 8. Fichiers modifies
 
 ### Fichiers crees
 | Fichier | Description |
@@ -288,10 +335,12 @@ Impact sur les utilisateurs existants : les nouvelles regles s'appliquent a l'in
 | Fichier | Modification |
 |---------|-------------|
 | `next.config.ts` | Ajout de 6 headers de securite + CSP |
+| `src/app/auth/callback/route.ts` | Protection contre l'open redirect |
+| `src/app/dashboard/results/actions.ts` | Verification d'ownership avant telechargement |
 | `src/app/layout.tsx` | Integration CookieBanner |
 | `src/components/shared/footer.tsx` | Lien politique de confidentialite |
 | `src/components/shared/index.ts` | Export CookieBanner |
-| `src/app/login/page.tsx` | Checkbox consentement inscription |
+| `src/app/login/page.tsx` | Checkbox consentement inscription + minLength 8 |
 | `src/app/dashboard/settings/page.tsx` | Section export + modale suppression |
 | `src/hooks/useFileUpload.ts` | Appel via proxy `/api/webhook/forecast` |
 | `src/components/dashboard/ai-chat/AiChatDrawer.tsx` | Appel via proxy `/api/webhook/chat` |
@@ -300,7 +349,7 @@ Impact sur les utilisateurs existants : les nouvelles regles s'appliquent a l'in
 
 ---
 
-## 8. Migrations Supabase appliquees
+## 9. Migrations Supabase appliquees
 
 Appliquees sur le projet `kshtmftvjhsdlxpsvgyr` (production) :
 
@@ -314,7 +363,7 @@ Appliquees sur le projet `kshtmftvjhsdlxpsvgyr` (production) :
 
 ---
 
-## 9. Configuration serveur (VPS)
+## 10. Configuration serveur (VPS)
 
 ### Docker Compose (N8N)
 
@@ -334,12 +383,14 @@ Permet au noeud Code de N8N d'utiliser `require('crypto')` pour la validation HM
 
 ---
 
-## 10. Actions restantes
+## 11. Actions restantes
 
-| Action | Priorite | Condition |
-|--------|----------|-----------|
-| Activer "Prevent use of leaked passwords" | Moyenne | Passage au plan Pro Supabase |
-| Completer les informations legales dans `/mentions-legales` | Haute | Adresse, RCS, SIRET, directeur de publication |
-| Generer le secret HMAC N8N pour la production | Haute | Si un environnement de production distinct existe |
-| Configurer `SUPABASE_SERVICE_ROLE_KEY` en production | Haute | Deploiement Vercel |
-| Mettre a jour le `minLength` du champ password dans `login/page.tsx` | Basse | Aligner le `minLength={6}` avec le nouveau minimum de 8 |
+| Action | Priorite | Condition | Statut |
+|--------|----------|-----------|--------|
+| Activer "Prevent use of leaked passwords" | Moyenne | Passage au plan Pro Supabase | En attente |
+| Completer les informations legales dans `/mentions-legales` | Haute | Adresse, RCS, SIRET, directeur de publication | En attente |
+| Configurer `SUPABASE_SERVICE_ROLE_KEY` en production (Vercel) | Haute | Deploiement Vercel | En attente |
+| ~~Generer le secret HMAC N8N~~ | ~~Haute~~ | ~~—~~ | **Fait** |
+| ~~Mettre a jour le `minLength` du champ password~~ | ~~Basse~~ | ~~—~~ | **Fait** |
+| ~~Corriger l'open redirect dans auth/callback~~ | ~~Haute~~ | ~~—~~ | **Fait** |
+| ~~Ajouter la verification d'ownership dans results/actions~~ | ~~Haute~~ | ~~—~~ | **Fait** |
