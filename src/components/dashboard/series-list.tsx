@@ -92,7 +92,7 @@ export function SeriesList({
                         <p className="font-medium text-sm lg:text-base text-white truncate group-hover:text-indigo-400 transition-colors">
                           {s.series_id}
                         </p>
-                        <div className="hidden 2xl:flex shrink-0">
+                        <div className="hidden xl:flex shrink-0">
                           <SeriesAlertBadges
                             series={{
                               wape: s.wape,
