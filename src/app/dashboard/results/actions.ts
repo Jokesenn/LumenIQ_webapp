@@ -27,6 +27,17 @@ export async function getResultsDownloadUrl(jobId: string): Promise<string | nul
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
+  // Vérifier que le job appartient bien à l'utilisateur connecté
+  const { data: job } = await supabase
+    .schema("lumeniq")
+    .from("forecast_jobs")
+    .select("id")
+    .eq("id", jobId)
+    .eq("user_id", user.id)
+    .single();
+
+  if (!job) return null;
+
   // Lister les fichiers dans le dossier results/{user_id}/{job_id}
   const folderPath = `results/${user.id}/${jobId}`;
   const { data: files } = await supabase.storage
