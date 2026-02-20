@@ -360,7 +360,7 @@ Conversion functions in `@/lib/metrics.ts`:
 ### AI Chat (`components/dashboard/ai-chat/`)
 - Floating button (bottom-right) on all `/dashboard/*` pages
 - Sheet drawer with multi-turn conversation
-- Calls N8N webhook (`NEXT_PUBLIC_N8N_CHAT_WEBHOOK_URL`) with jobId, userId, question, history
+- Calls server-side proxy `/api/webhook/chat` (HMAC-signed, N8N URL server-only) with jobId, userId, question, history
 - Contextual suggestions based on job metrics (WAPE, bias, XYZ distribution)
 - Markdown responses rendered with `MarkdownRenderer`
 - State persists across dashboard navigation, resets on page reload
@@ -409,7 +409,7 @@ Conversion functions in `@/lib/metrics.ts`:
 ### Forecast Submission (`app/dashboard/forecast/`)
 - 4-step wizard: Import → Configuration → Calcul → Résultats
 - CSV/XLSX upload to Supabase Storage
-- N8N webhook trigger (`NEXT_PUBLIC_N8N_WEBHOOK_URL`) after job creation
+- N8N webhook trigger via server-side proxy `/api/webhook/forecast` (HMAC-signed) after job creation
 - Job polling via `useJobStatus` hook (3s interval)
 - User preferences (horizon, gating, confidence) via `useUserPreferences`
 - Success screen shows qualitative message based on WAPE ("Excellente précision" < 5%, "Bonne précision" < 15%, "Précision à surveiller" ≥ 15%)
@@ -418,10 +418,16 @@ Conversion functions in `@/lib/metrics.ts`:
 ## Environment Variables
 
 Required (set in `.env.local`):
+
+**Public (exposed to client):**
 - `NEXT_PUBLIC_SUPABASE_URL` — Supabase project URL
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Supabase anonymous key
-- `NEXT_PUBLIC_N8N_WEBHOOK_URL` — N8N webhook for forecast job trigger
-- `NEXT_PUBLIC_N8N_CHAT_WEBHOOK_URL` — N8N webhook for AI chat
+
+**Server-only (NOT exposed to client, no `NEXT_PUBLIC_` prefix):**
+- `N8N_WEBHOOK_URL` — N8N webhook for forecast job trigger (via proxy `/api/webhook/forecast`)
+- `N8N_CHAT_WEBHOOK_URL` — N8N webhook for AI chat (via proxy `/api/webhook/chat`)
+- `N8N_WEBHOOK_SECRET` — HMAC-SHA256 secret for webhook signature
+- `SUPABASE_SERVICE_ROLE_KEY` — Admin key for account deletion (RGPD)
 
 ## Testing
 
@@ -450,10 +456,34 @@ Used by `/pricing` page and referenced across the app.
 
 ### SEO & Social Sharing
 
-- `opengraph-image.tsx` — Dynamic Open Graph image generation
-- `twitter-image.tsx` — Twitter card image generation
-- `robots.ts` — Robots.txt generation
-- `sitemap.ts` — Sitemap generation
+- `opengraph-image.tsx` — Dynamic Open Graph image generation (fr_FR locale)
+- `twitter-image.tsx` — Dedicated Twitter card image (1200x600, `summary_large_image`)
+- `robots.ts` — Robots.txt: allows `/`, blocks `/dashboard/`, `/auth/`, `/api/`
+- `sitemap.ts` — 8 routes, static dates, differentiated priorities
+- Per-page `metadata` exports with unique title, description, canonical URLs (features, pricing, contact, demo, login)
+- JSON-LD structured data: Organization, SoftwareApplication, FAQPage (pricing), BreadcrumbList (features, pricing, contact, demo)
+- `/login` has `robots: { index: false, follow: false }`
+
+### Security Headers
+
+Configured in `next.config.ts` on all routes:
+- `Content-Security-Policy` — Restricts content sources (self + Supabase only)
+- `Strict-Transport-Security` — HSTS 1 year + preload + includeSubDomains
+- `X-Frame-Options: DENY` — Anti-clickjacking
+- `X-Content-Type-Options: nosniff` — Prevents MIME-sniffing
+- `Referrer-Policy: strict-origin-when-cross-origin`
+- `Permissions-Policy` — Disables camera, microphone, geolocation, payment
+
+### Accessibility
+
+- `<html lang="fr">` declared in root layout
+- Skip-to-content link (`sr-only focus:not-sr-only`)
+- ARIA labels on sections, FAQ, icons, menus
+- Radix UI primitives = native accessibility (focus trap, keyboard nav)
+- `prefers-reduced-motion` respected in `globals.css` (scroll-behavior), `animated-background.tsx`, and all Framer Motion animation components (`fade-in.tsx`, `parallax.tsx`, `tilt-card.tsx`, `text-reveal.tsx`, `stagger-children.tsx`) via `useReducedMotion()` hook
+- Contrast WCAG AAA in dark mode (~15:1 white on zinc-950)
+- Cmd+K palette accessible via keyboard
+- Toasts (sonner) with ARIA live regions
 
 ### Results Overview Gauge Cards — MASE "Indice predictif"
 

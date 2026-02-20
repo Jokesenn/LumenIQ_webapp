@@ -1,6 +1,6 @@
 # Audit de Securite & Conformite RGPD — LumenIQ
 
-**Date** : 16 fevrier 2026 (derniere mise a jour : 16 fevrier 2026)
+**Date** : 16 fevrier 2026 (derniere mise a jour : 20 fevrier 2026)
 **Perimetre** : Backend (`Lumen_IQ/`) + Frontend (`LumenIQ_webapp/`) + Supabase + N8N
 **Projet Supabase** : `kshtmftvjhsdlxpsvgyr` (region `eu-central-1`)
 
@@ -19,6 +19,7 @@
 9. [Migrations Supabase appliquees](#9-migrations-supabase-appliquees)
 10. [Configuration serveur (VPS)](#10-configuration-serveur-vps)
 11. [Actions restantes](#11-actions-restantes)
+12. [Renforcement backend API](#12-renforcement-backend-api-20-fevrier-2026)
 
 ---
 
@@ -425,3 +426,70 @@ Permet au noeud Code de N8N d'utiliser `require('crypto')` pour la validation HM
 | ~~Mettre a jour le `minLength` du champ password~~ | ~~Basse~~ | ~~—~~ | **Fait** |
 | ~~Corriger l'open redirect dans auth/callback~~ | ~~Haute~~ | ~~—~~ | **Fait** |
 | ~~Ajouter la verification d'ownership dans results/actions~~ | ~~Haute~~ | ~~—~~ | **Fait** |
+| ~~Ajouter CORS middleware sur le backend FastAPI~~ | ~~Haute~~ | ~~—~~ | **Fait** (20/02/2026) |
+| ~~Ajouter rate limiting sur le backend~~ | ~~Haute~~ | ~~—~~ | **Fait** (20/02/2026) |
+| ~~Supprimer traceback des erreurs Celery en prod~~ | ~~Moyenne~~ | ~~—~~ | **Fait** (20/02/2026) |
+| ~~Valider run_id comme UUID (path traversal)~~ | ~~Moyenne~~ | ~~—~~ | **Fait** (20/02/2026) |
+
+---
+
+## 12. Renforcement backend API (20 fevrier 2026)
+
+### 12.1 CORS Middleware
+
+**Fichier** : `forecast_api/app.py`
+
+Ajout de `CORSMiddleware` (FastAPI) avec origines explicites :
+
+```python
+_cors_origins = os.getenv("LUMENIQ_CORS_ORIGINS", "").split(",") or ["http://localhost:3000", "http://localhost:8000"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_cors_origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Authorization", "X-Job-Id", "X-User-Id", "X-Config-Override"],
+)
+```
+
+**Variable d'environnement** : `LUMENIQ_CORS_ORIGINS` (liste separee par virgules)
+
+### 12.2 Rate Limiting
+
+**Fichier** : `forecast_api/app.py`
+
+Middleware HTTP de limitation de debit par IP :
+- Fenetre : 60 secondes
+- Limite : 30 requetes par fenetre (configurable via `LUMENIQ_RATE_LIMIT`)
+- Endpoints exclus : `/health`, `/`, `/docs`, `/openapi.json`
+- Reponse 429 avec header `Retry-After`
+
+**Variable d'environnement** : `LUMENIQ_RATE_LIMIT` (defaut : 30)
+
+### 12.3 Protection des tracebacks
+
+**Fichier** : `forecast_api/celery_app.py`
+
+Le traceback complet des erreurs Celery n'est plus inclus dans le resultat Redis en production. Il est conditionne a la variable d'environnement `LUMENIQ_DEBUG` :
+
+```python
+if os.getenv('LUMENIQ_DEBUG', '').lower() in ('1', 'true'):
+    error_result['traceback'] = error_trace
+```
+
+**Risque mitige** : Exposition de chemins systeme, versions de librairies, et structure du code dans les messages d'erreur.
+
+### 12.4 Prevention path traversal (run_id)
+
+**Fichier** : `forecast_api/celery_app.py`
+
+Validation du format `run_id` avant utilisation dans un chemin de fichier (`os.path.join('/tmp/forecast_results', run_id)`) :
+
+```python
+import re
+if not re.match(r'^[a-zA-Z0-9_-]+$', result.run_id):
+    raise ValueError(f"Invalid run_id format: contains unsafe characters")
+```
+
+**Risque mitige** : Un `run_id` malveillant (ex: `../../etc/passwd`) pourrait etre utilise pour ecrire ou lire des fichiers hors du repertoire prevu.

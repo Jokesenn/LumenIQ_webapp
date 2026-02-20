@@ -2,7 +2,7 @@
 
 **Plateforme SaaS de forecasting professionnel pour PME e-commerce**
 
-Transformez vos historiques de ventes en prévisions fiables grâce à 21 modèles statistiques/ML, un routing ABC/XYZ intelligent et des rapports détaillés validés par backtesting.
+Transformez vos historiques de ventes en prévisions fiables grâce à 24+ modèles statistiques/ML, un routing ABC/XYZ intelligent et des rapports détaillés validés par backtesting.
 
 ![Next.js](https://img.shields.io/badge/Next.js-16.1-black?logo=next.js)
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)
@@ -14,17 +14,20 @@ Transformez vos historiques de ventes en prévisions fiables grâce à 21 modèl
 
 ## ✨ Fonctionnalités
 
-- **21 modèles de prévision** — Statistiques classiques, ML et modèles de fondation
+- **24+ modèles de prévision** — Statistiques classiques, ML et modèles de fondation
 - **Routing ABC/XYZ intelligent** — Sélection automatique du meilleur modèle par SKU
 - **Backtesting rigoureux** — Validation 5-fold cross-validation
 - **Rapports détaillés** — Métriques, insights et exports PDF
+- **Actions intelligentes** — Recommandations post-forecast (alertes stock, fiabilité, volumes) générées par IA
 - **Setup en 5 minutes** — Import CSV et résultats instantanés
 - **Dark/Light mode** — Interface moderne et adaptative
-- **Chatbot IA contextuel** — Posez des questions sur vos résultats de forecast (via webhook N8N)
+- **Chatbot IA contextuel** — Posez des questions sur vos résultats de forecast
 - **Export PDF** — Rapports par série avec graphiques capturés via html2canvas
 - **Palette de commandes** — Navigation rapide Cmd+K (cmdk)
 - **Onboarding guidé** — Tour interactif de la page résultats (driver.js)
 - **Alertes séries** — Détection automatique de WAPE élevé, biais, volatilité Z
+- **Conformité RGPD** — Export de données, suppression de compte, politique de confidentialité
+- **Sécurité renforcée** — Headers CSP/HSTS, webhooks HMAC-SHA256, RLS Supabase, proxies server-side
 
 ## 🛠 Stack technique
 
@@ -68,9 +71,14 @@ src/
 │   │   ├── results/            # Résultats détaillés
 │   │   │   ├── loading.tsx     # Loading state résultats
 │   │   │   └── series/         # Détail par série
-│   │   └── settings/           # Paramètres utilisateur
+│   │   ├── actions/            # Tableau de bord actions (recommandations IA)
+│   │   └── settings/           # Paramètres utilisateur (export, suppression RGPD)
 │   ├── features/               # Page fonctionnalités (marketing)
-│   └── pricing/                # Tarification (marketing)
+│   ├── pricing/                # Tarification (marketing)
+│   ├── contact/                # Page contact (formulaire premium)
+│   ├── demo/                   # Visite produit interactive
+│   ├── mentions-legales/       # Mentions légales
+│   └── politique-de-confidentialite/ # Politique de confidentialité (RGPD)
 ├── components/
 │   ├── ui/                     # shadcn/ui (button, card, sheet, tooltip, badge, etc.)
 │   ├── landing/                # Sections landing page
@@ -88,6 +96,11 @@ src/
 │   │   ├── active-filters-bar.tsx
 │   │   ├── series-quick-select.tsx
 │   │   ├── AlertsSummaryCard.tsx
+│   │   ├── actions-board.tsx    # Tableau actions (page + drawer)
+│   │   ├── actions-summary.tsx  # Résumé exécutif actions
+│   │   ├── actions-drawer.tsx   # Panneau latéral actions
+│   │   ├── actions-fab.tsx      # Bouton flottant actions
+│   │   ├── action-card.tsx      # Carte action individuelle
 │   │   └── empty-dashboard.tsx
 │   ├── charts/                 # Visualisations Recharts
 │   ├── shared/                 # Navbar, Footer, Logo
@@ -107,7 +120,8 @@ src/
 │   ├── useExportPdf.ts         # Export PDF par série
 │   ├── useOnboarding.ts        # État du tour guidé
 │   ├── useSeriesNavigation.ts  # Navigation précédent/suivant
-│   └── useUserPreferences.ts   # Préférences utilisateur
+│   ├── useUserPreferences.ts   # Préférences utilisateur
+│   └── use-actions.ts          # Actions (page/drawer) + badge urgences
 ├── lib/
 │   ├── supabase/
 │   │   ├── server.ts           # Client Supabase SSR
@@ -184,26 +198,53 @@ npm run start
 | `npm run lint` | Vérification ESLint (flat config v9) |
 | `npx tsc` | Type-check (no emit) |
 
+## 🧪 Tests
+
+```bash
+npm test          # Tests unitaires (Vitest, single run)
+npm run test:watch # Mode watch
+```
+
+Tests actuels : logique alertes, configuration badges, cartes actions, terminologie business.
+
 ## 🔐 Variables d'environnement
 
 Créer un fichier `.env.local` à la racine du projet :
 
 ```env
-# Supabase
+# Supabase (publiques)
 NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
 
-# N8N Webhooks
-NEXT_PUBLIC_N8N_WEBHOOK_URL=https://xxx.app.n8n.cloud/webhook/xxx
-NEXT_PUBLIC_N8N_CHAT_WEBHOOK_URL=https://xxx.app.n8n.cloud/webhook/xxx
+# N8N Webhooks (server-only, pas de prefixe NEXT_PUBLIC_)
+N8N_WEBHOOK_URL=https://xxx.app.n8n.cloud/webhook/xxx
+N8N_CHAT_WEBHOOK_URL=https://xxx.app.n8n.cloud/webhook/xxx
+N8N_WEBHOOK_SECRET=<secret HMAC 256 bits>
+
+# Supabase Admin (server-only, pour suppression de compte RGPD)
+SUPABASE_SERVICE_ROLE_KEY=eyJ...
 ```
 
-| Variable | Description |
-|----------|-------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | URL du projet Supabase |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clé anonyme Supabase (publishable) |
-| `NEXT_PUBLIC_N8N_WEBHOOK_URL` | Webhook N8N pour lancer un forecast |
-| `NEXT_PUBLIC_N8N_CHAT_WEBHOOK_URL` | Webhook N8N pour le chatbot IA |
+| Variable | Scope | Description |
+|----------|-------|-------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Public | URL du projet Supabase |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public | Clé anonyme Supabase (publishable) |
+| `N8N_WEBHOOK_URL` | Server | Webhook N8N pour lancer un forecast (via proxy `/api/webhook/forecast`) |
+| `N8N_CHAT_WEBHOOK_URL` | Server | Webhook N8N pour le chatbot IA (via proxy `/api/webhook/chat`) |
+| `N8N_WEBHOOK_SECRET` | Server | Secret HMAC-SHA256 pour signature des webhooks |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server | Clé admin Supabase pour suppression de compte |
+
+> **Note sécurité** : Les URLs N8N ne sont plus exposées dans le bundle client. Les appels transitent par des API routes Next.js server-side avec signature HMAC-SHA256.
+
+## 🔒 Sécurité
+
+- **Headers HTTP** : CSP, HSTS (1 an + preload), X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
+- **Webhooks** : Proxies server-side avec signature HMAC-SHA256 et protection anti-replay (5 min)
+- **Base de données** : ~35 politiques RLS optimisées, fonctions avec `SET search_path = ''`
+- **Auth** : Mot de passe minimum 8 caractères, validation côté client et serveur
+- **RGPD** : Export de données, suppression de compte, politique de confidentialité, bannière cookies
+
+Voir [`SECURITY_AUDIT.md`](SECURITY_AUDIT.md) pour le rapport complet.
 
 ## 🔗 Liens
 
