@@ -4,8 +4,7 @@ export const metadata: Metadata = {
   title: "Connexion | LumenIQ",
   description:
     "Connectez-vous à votre espace LumenIQ pour accéder à vos prévisions, résultats et recommandations.",
-  alternates: { canonical: "/login" },
-  robots: { index: false, follow: true },
+  robots: { index: false, follow: false },
 };
 
 export default function LoginLayout({
