@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
   ScatterChart,
@@ -14,11 +14,12 @@ import {
   ReferenceLine,
   Cell,
 } from "recharts";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ZoomOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getModelMeta } from "@/lib/model-labels";
 import { HelpTooltip } from "@/components/ui/help-tooltip";
 import { FadeIn } from "@/components/animations";
+import { motion, useReducedMotion } from "framer-motion";
 import { useThresholds } from "@/lib/thresholds/context";
 import { RESULTS_TAB_EVENT } from "@/components/dashboard/command-palette";
 
@@ -290,6 +291,44 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
     "forecast_sum"
   );
 
+  // Zoom state
+  const [zoomDomain, setZoomDomain] = useState<{
+    x: [number, number]; y: [number, number];
+  } | null>(null);
+
+  // Mobile detection
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  // Reduced motion
+  const prefersReducedMotion = useReducedMotion();
+
+  // Double-clic detection pour zoom
+  const clickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastClickDataRef = useRef<{
+    series_id: string; volume: number; reliability: number;
+  } | null>(null);
+  useEffect(() => {
+    return () => {
+      if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
+    };
+  }, []);
+
+  // Wrappers qui réinitialisent le zoom à chaque changement de filtre/axe
+  const handleSetActiveCluster = (cluster: ClusterId | null) => {
+    setActiveCluster(cluster);
+    setZoomDomain(null);
+  };
+  const handleSetXAxis = (axis: "forecast_sum" | "forecast_avg") => {
+    setXAxis(axis);
+    setZoomDomain(null);
+  };
+
   // --- Donnees enrichies avec cluster ---
   const enrichedSeries = useMemo(() => {
     return allSeries
@@ -389,6 +428,13 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
       : (volumes[mid - 1] + volumes[mid]) / 2;
   }, [filteredSeries]);
 
+  // Domaine X pour calculs de zoom
+  const xAxisExtent = useMemo(() => {
+    const volumes = filteredSeries.map((s) => s.volume);
+    if (volumes.length === 0) return [0, 100] as [number, number];
+    return [Math.min(...volumes), Math.max(...volumes)] as [number, number];
+  }, [filteredSeries]);
+
   // --- Navigation vers fiche serie ---
   const handleDotClick = (seriesId: string) => {
     router.push(
@@ -407,6 +453,42 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
     }
   };
 
+  // --- Clic / Double-clic sur point scatter ---
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleScatterClick = (data: any) => {
+    if (
+      clickTimerRef.current &&
+      lastClickDataRef.current?.series_id === data.series_id
+    ) {
+      // Double-clic → zoom 2x centré sur ce point
+      clearTimeout(clickTimerRef.current);
+      clickTimerRef.current = null;
+      lastClickDataRef.current = null;
+      const x = data.volume as number;
+      const y = data.reliability as number;
+      const currentX = zoomDomain?.x ?? xAxisExtent;
+      const currentY = zoomDomain?.y ?? ([0, 100] as [number, number]);
+      const xSpan = (currentX[1] - currentX[0]) / 4;
+      const ySpan = (currentY[1] - currentY[0]) / 4;
+      setZoomDomain({
+        x: [Math.max(0, x - xSpan), x + xSpan],
+        y: [Math.max(0, y - ySpan), Math.min(100, y + ySpan)],
+      });
+    } else {
+      // Premier clic → programmer navigation après délai
+      lastClickDataRef.current = {
+        series_id: data.series_id,
+        volume: data.volume,
+        reliability: data.reliability,
+      };
+      clickTimerRef.current = setTimeout(() => {
+        handleDotClick(data.series_id);
+        clickTimerRef.current = null;
+        lastClickDataRef.current = null;
+      }, 350);
+    }
+  };
+
   // --- Tooltip custom ---
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const CustomTooltip = ({ active, payload }: any) => {
@@ -418,7 +500,7 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
       : "—";
 
     return (
-      <div className="rounded-xl border border-zinc-700 bg-zinc-900/95 backdrop-blur-sm px-4 py-3 shadow-xl text-sm space-y-1.5 max-w-xs">
+      <div className="rounded-xl border border-zinc-700 bg-zinc-900/95 backdrop-blur-sm px-3 sm:px-4 py-2.5 sm:py-3 shadow-xl text-xs sm:text-sm space-y-1 sm:space-y-1.5 max-w-[260px] sm:max-w-xs">
         <p className="font-semibold text-white truncate">{d.series_id}</p>
         <div className="flex items-center gap-2">
           <span
@@ -473,7 +555,7 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
                   {CLUSTER_MAP.get(activeCluster)?.label}
                 </span>
                 <button
-                  onClick={() => setActiveCluster(null)}
+                  onClick={() => handleSetActiveCluster(null)}
                   className="ml-2 text-indigo-400 hover:text-indigo-300 underline"
                 >
                   Tout afficher
@@ -483,10 +565,10 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
           </p>
         </div>
 
-        {/* Toggle axe X */}
-        <div className="flex items-center gap-2 bg-zinc-800/50 rounded-lg p-1">
+        {/* Toggle axe X — masqué sur mobile */}
+        <div className="hidden sm:flex items-center gap-2 bg-zinc-800/50 rounded-lg p-1">
           <button
-            onClick={() => setXAxis("forecast_sum")}
+            onClick={() => handleSetXAxis("forecast_sum")}
             className={cn(
               "px-3 py-1.5 rounded-md text-sm transition-colors",
               xAxis === "forecast_sum"
@@ -497,7 +579,7 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
             Volume total
           </button>
           <button
-            onClick={() => setXAxis("forecast_avg")}
+            onClick={() => handleSetXAxis("forecast_avg")}
             className={cn(
               "px-3 py-1.5 rounded-md text-sm transition-colors",
               xAxis === "forecast_avg"
@@ -511,8 +593,25 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
       </div>
 
       {/* Scatterplot */}
+      <FadeIn delay={0.1}>
       <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-4 lg:p-6">
-        <ResponsiveContainer width="100%" height={480}>
+        {/* Bouton reset zoom */}
+        {zoomDomain && (
+          <div className="flex justify-end mb-3">
+            <button
+              onClick={() => setZoomDomain(null)}
+              className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs
+                         bg-zinc-800 border border-zinc-700 text-zinc-300
+                         hover:bg-zinc-700 hover:text-white transition-colors
+                         w-full sm:w-auto"
+            >
+              <ZoomOut className="w-3.5 h-3.5" />
+              Réinitialiser le zoom
+            </button>
+          </div>
+        )}
+        <div className="h-[300px] sm:h-[400px] lg:h-[480px]">
+        <ResponsiveContainer width="100%" height="100%">
           <ScatterChart
             margin={{ top: 20, right: 30, bottom: 20, left: 20 }}
           >
@@ -521,12 +620,14 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
               type="number"
               dataKey="volume"
               name={xAxisLabel}
+              domain={zoomDomain ? zoomDomain.x : ["auto", "auto"]}
+              allowDataOverflow={!!zoomDomain}
               tickFormatter={(v: number) =>
                 v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v.toFixed(0)
               }
               stroke="#52525b"
-              tick={{ fill: "#a1a1aa", fontSize: 12 }}
-              label={{
+              tick={{ fill: "#a1a1aa", fontSize: isMobile ? 10 : 12 }}
+              label={isMobile ? undefined : {
                 value: xAxisLabel,
                 position: "insideBottom",
                 offset: -10,
@@ -538,10 +639,11 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
               type="number"
               dataKey="reliability"
               name="Fiabilité"
-              domain={[0, 100]}
+              domain={zoomDomain ? zoomDomain.y : [0, 100]}
+              allowDataOverflow={!!zoomDomain}
               stroke="#52525b"
-              tick={{ fill: "#a1a1aa", fontSize: 12 }}
-              label={{
+              tick={{ fill: "#a1a1aa", fontSize: isMobile ? 10 : 12 }}
+              label={isMobile ? undefined : {
                 value: "Score de fiabilité (/100)",
                 angle: -90,
                 position: "insideLeft",
@@ -550,7 +652,7 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
                 fontSize: 12,
               }}
             />
-            <ZAxis type="number" dataKey="bubbleSize" range={[40, 400]} />
+            <ZAxis type="number" dataKey="bubbleSize" range={isMobile ? [20, 200] : [40, 400]} />
             <Tooltip
               content={<CustomTooltip />}
               cursor={{ strokeDasharray: "3 3" }}
@@ -582,7 +684,7 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
             <Scatter
               data={filteredSeries}
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onClick={(data: any) => handleDotClick(data.series_id)}
+              onClick={(data: any) => handleScatterClick(data)}
               cursor="pointer"
             >
               {filteredSeries.map((entry, index) => (
@@ -598,16 +700,19 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
             </Scatter>
           </ScatterChart>
         </ResponsiveContainer>
+        </div>
 
-        {/* Legende quadrants */}
-        <div className="grid grid-cols-2 gap-x-8 mt-2 text-xs text-zinc-500 px-4">
+        {/* Legende quadrants — masquée sur mobile */}
+        <div className="hidden sm:grid grid-cols-2 gap-x-8 mt-2 text-xs text-zinc-500 px-4">
           <span className="text-left">&larr; Petits volumes</span>
           <span className="text-right">Gros volumes &rarr;</span>
         </div>
       </div>
+      </FadeIn>
 
       {/* Filtres clusters (toggle pills) */}
-      <div className="flex flex-wrap gap-2">
+      <FadeIn delay={0.2}>
+      <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 sm:flex-wrap sm:overflow-visible sm:pb-0 sm:mx-0 sm:px-0 scrollbar-thin">
         {CLUSTERS.map((cluster) => {
           const stats = clusterStats.get(cluster.id);
           if (!stats || stats.count === 0) return null;
@@ -616,10 +721,10 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
             <button
               key={cluster.id}
               onClick={() =>
-                setActiveCluster(isActive ? null : cluster.id)
+                handleSetActiveCluster(isActive ? null : cluster.id)
               }
               className={cn(
-                "flex items-center gap-2 px-3 py-2 rounded-xl border text-sm transition-all",
+                "flex items-center gap-2 px-3 py-2 rounded-xl border text-sm transition-all shrink-0",
                 isActive
                   ? cluster.colorClass + " border-current"
                   : "border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-zinc-200"
@@ -642,28 +747,39 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
           );
         })}
       </div>
+      </FadeIn>
 
       {/* Cartes resume par cluster */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {CLUSTERS.map((cluster) => {
+        {CLUSTERS.map((cluster, index) => {
           const stats = clusterStats.get(cluster.id);
           if (!stats || stats.count === 0) return null;
 
           return (
-            <ClusterCard
+            <motion.div
               key={cluster.id}
-              cluster={cluster}
-              stats={stats}
-              totalVolume={totalVolume}
-              isHighlighted={activeCluster === cluster.id}
-              onToggle={() =>
-                setActiveCluster(
-                  activeCluster === cluster.id ? null : cluster.id
-                )
-              }
-              onNavigateToSeries={handleNavigateToSeries}
-              jobId={jobId}
-            />
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={prefersReducedMotion ? { duration: 0 } : {
+                delay: 0.3 + index * 0.08,
+                duration: 0.4,
+                ease: [0.21, 0.47, 0.32, 0.98],
+              }}
+            >
+              <ClusterCard
+                cluster={cluster}
+                stats={stats}
+                totalVolume={totalVolume}
+                isHighlighted={activeCluster === cluster.id}
+                onToggle={() =>
+                  handleSetActiveCluster(
+                    activeCluster === cluster.id ? null : cluster.id
+                  )
+                }
+                onNavigateToSeries={handleNavigateToSeries}
+                jobId={jobId}
+              />
+            </motion.div>
           );
         })}
       </div>
