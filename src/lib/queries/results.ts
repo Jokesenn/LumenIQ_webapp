@@ -264,7 +264,7 @@ export async function getJobSeriesList(
   let query = supabase
     .schema("lumeniq")
     .from("forecast_results")
-    .select("series_id, abc_class, xyz_class, wape, smape, champion_score, champion_model, behavior_tags, alerts, was_gated, drift_detected, is_first_run, previous_champion, cv")
+    .select("series_id, abc_class, xyz_class, wape, smape, champion_score, champion_model, behavior_tags, alerts, was_gated, drift_detected, is_first_run, previous_champion, cv, forecast_sum, forecast_avg")
     .eq("job_id", jobId)
     .eq("user_id", userId);
 
@@ -282,6 +282,8 @@ export async function getJobSeriesList(
     wape: r.wape != null ? Number(r.wape) * 100 : r.wape,
     smape: r.smape != null ? Number(r.smape) * 100 : r.smape,
     champion_score: toChampionScore(resolveSeriesErrorRatio(r)),
+    forecast_sum: r.forecast_sum != null ? Number(r.forecast_sum) : null,
+    forecast_avg: r.forecast_avg != null ? Number(r.forecast_avg) : null,
   }));
 
   // Enrichissement sparkline — échoue silencieusement si colonnes absentes

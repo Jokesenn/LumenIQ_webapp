@@ -15,7 +15,7 @@ export const DEFAULT_THRESHOLDS: ThresholdConfig[] = [
     metric_key: "reliability_score",
     label: "Score de fiabilité",
     unit: "%",
-    green_max: 90,
+    green_max: 80,
     yellow_max: 70,
     direction: "higher_is_better",
   },

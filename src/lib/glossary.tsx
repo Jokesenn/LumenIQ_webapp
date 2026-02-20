@@ -338,4 +338,24 @@ export const GLOSSARY: Record<string, ReactNode> = {
       </ul>
     </div>
   ),
+
+  portfolio: (
+    <div>
+      <p className="font-medium mb-2">Vue d&apos;ensemble de votre portefeuille</p>
+      <p className="text-white/70 text-sm mb-3">
+        Chaque bulle représente un produit, positionné selon son volume prévu (horizontal) et la fiabilité de sa prévision (vertical).
+      </p>
+      <ul className="text-sm space-y-1.5">
+        <li className="flex items-start gap-2">
+          <span className="text-white/80 font-medium">Couleur</span>
+          <span className="text-white/60">→ Type de comportement détecté</span>
+        </li>
+        <li className="flex items-start gap-2">
+          <span className="text-white/80 font-medium">Taille</span>
+          <span className="text-white/60">→ Importance business (classe A/B/C)</span>
+        </li>
+      </ul>
+      <p className="text-white/50 text-xs mt-3">Cliquez sur une bulle pour voir le détail du produit.</p>
+    </div>
+  ),
 };

@@ -32,6 +32,7 @@ import { ResultsTour } from "@/components/onboarding";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import { HelpTooltip } from "@/components/ui/help-tooltip";
 import { useThresholds } from "@/lib/thresholds/context";
+import { PortfolioView } from "@/components/dashboard/portfolio-view";
 
 function formatDistanceToNow(date: Date): string {
   const now = new Date();
@@ -47,7 +48,7 @@ function formatDistanceToNow(date: Date): string {
   return date.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
 }
 
-type TabType = "overview" | "series" | "reliability" | "synthesis";
+type TabType = "overview" | "series" | "portfolio" | "reliability" | "synthesis";
 
 interface ResultsContentProps {
   job: any;
@@ -138,7 +139,7 @@ export function ResultsContent({
   useEffect(() => {
     const handler = (e: Event) => {
       const tab = (e as CustomEvent<string>).detail;
-      const valid: TabType[] = ["overview", "series", "reliability", "synthesis"];
+      const valid: TabType[] = ["overview", "series", "portfolio", "reliability", "synthesis"];
       if (valid.includes(tab as TabType)) {
         setActiveTab(tab as TabType);
       }
@@ -168,6 +169,7 @@ export function ResultsContent({
   const tabs: { id: TabType; label: string }[] = [
     { id: "overview", label: "Vue d'ensemble" },
     { id: "series", label: "Séries" },
+    { id: "portfolio", label: "Portfolio" },
     { id: "reliability", label: "Fiabilité" },
     { id: "synthesis", label: "Synthèse IA" },
   ];
@@ -456,6 +458,12 @@ export function ResultsContent({
               variant="default"
             />
           </div>
+        </FadeIn>
+      </div>
+
+      <div className={cn(activeTab !== "portfolio" && "hidden")}>
+        <FadeIn>
+          <PortfolioView allSeries={allSeries} jobId={job?.id ?? ""} />
         </FadeIn>
       </div>
 

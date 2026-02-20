@@ -17,6 +17,7 @@ import {
 import { MODEL_FAMILIES, type ModelFamily } from "@/lib/model-labels";
 import type { EnrichedModelData } from "@/lib/reliability-utils";
 import { cn } from "@/lib/utils";
+import { useThresholds } from "@/lib/thresholds/context";
 
 interface ReliabilityBubbleChartProps {
   data: EnrichedModelData[];
@@ -54,6 +55,9 @@ function BubbleTooltip({ active, payload }: { active?: boolean; payload?: any[] 
 const FAMILY_ORDER: (ModelFamily | "other")[] = ["decomposition", "classical", "ml", "advanced", "other"];
 
 export function ReliabilityBubbleChart({ data, className }: ReliabilityBubbleChartProps) {
+  const { thresholds } = useThresholds();
+  const reliabilityThreshold = thresholds.reliability_score?.green_max ?? 80;
+
   const familyGroups = useMemo(() => {
     const groups: Record<string, EnrichedModelData[]> = {};
     for (const d of data) {
@@ -134,11 +138,11 @@ export function ReliabilityBubbleChart({ data, className }: ReliabilityBubbleCha
             name="Poids"
           />
           <ReferenceLine
-            y={80}
+            y={reliabilityThreshold}
             stroke="rgba(255,255,255,0.15)"
             strokeDasharray="6 4"
             label={{
-              value: "Seuil de fiabilité",
+              value: `Seuil de fiabilité ${reliabilityThreshold}%`,
               position: "insideTopLeft",
               fill: "#52525b",
               fontSize: 10,
