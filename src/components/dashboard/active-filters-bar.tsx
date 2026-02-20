@@ -3,6 +3,8 @@
 import { X } from "lucide-react"
 import type { SeriesFilters } from "./series-filters-dropdown"
 import { DEFAULT_FILTERS } from "./series-filters-dropdown"
+import { CLUSTER_MAP } from "./portfolio-view"
+import type { ClusterId } from "./portfolio-view"
 
 const ABC_SHORT: Record<string, string> = {
   A: "Classe A",
@@ -37,7 +39,8 @@ export function ActiveFiltersBar({
     filters.attention ||
     filters.modelChanged ||
     filters.abcClasses.length > 0 ||
-    filters.xyzClasses.length > 0
+    filters.xyzClasses.length > 0 ||
+    !!filters.cluster
   const hasAny = hasDropdownFilters || !!selectedCell || !!modelFilter
 
   if (!hasAny) return null
@@ -106,6 +109,15 @@ export function ActiveFiltersBar({
           }
         />
       ))}
+
+      {filters.cluster && (
+        <FilterChip
+          label={CLUSTER_MAP.get(filters.cluster as ClusterId)?.label ?? filters.cluster}
+          onRemove={() =>
+            onFiltersChange({ ...filters, cluster: null })
+          }
+        />
+      )}
 
       <button
         className="ml-auto text-xs text-zinc-500 hover:text-white transition-colors"

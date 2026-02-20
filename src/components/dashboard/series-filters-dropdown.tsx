@@ -14,6 +14,7 @@ export interface SeriesFilters {
   modelChanged: boolean
   abcClasses: ("A" | "B" | "C")[]
   xyzClasses: ("X" | "Y" | "Z")[]
+  cluster: string | null
 }
 
 export const DEFAULT_FILTERS: SeriesFilters = {
@@ -21,6 +22,7 @@ export const DEFAULT_FILTERS: SeriesFilters = {
   modelChanged: false,
   abcClasses: [],
   xyzClasses: [],
+  cluster: null,
 }
 
 export interface SeriesFilterCounts {
@@ -57,7 +59,8 @@ export function SeriesFiltersDropdown({
     (filters.attention ? 1 : 0) +
     (filters.modelChanged ? 1 : 0) +
     filters.abcClasses.length +
-    filters.xyzClasses.length
+    filters.xyzClasses.length +
+    (filters.cluster ? 1 : 0)
 
   return (
     <Popover>

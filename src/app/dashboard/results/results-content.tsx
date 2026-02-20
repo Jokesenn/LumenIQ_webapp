@@ -32,7 +32,8 @@ import { ResultsTour } from "@/components/onboarding";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import { HelpTooltip } from "@/components/ui/help-tooltip";
 import { useThresholds } from "@/lib/thresholds/context";
-import { PortfolioView } from "@/components/dashboard/portfolio-view";
+import { PortfolioView, assignCluster } from "@/components/dashboard/portfolio-view";
+import type { ClusterId } from "@/components/dashboard/portfolio-view";
 
 function formatDistanceToNow(date: Date): string {
   const now = new Date();
@@ -163,6 +164,13 @@ export function ResultsContent({
   const handleModelClick = (modelName: string) => {
     setModelFilter(modelName);
     setSelectedCell(null);
+    setActiveTab("series");
+  };
+
+  const handleClusterNavigate = (clusterId: ClusterId) => {
+    setFilters({ ...DEFAULT_FILTERS, cluster: clusterId });
+    setSelectedCell(null);
+    setModelFilter(null);
     setActiveTab("series");
   };
 
@@ -452,6 +460,12 @@ export function ResultsContent({
                 if (filters.abcClasses.length > 0 && !filters.abcClasses.includes(s.abc_class as "A" | "B" | "C")) return false;
                 if (filters.xyzClasses.length > 0 && !filters.xyzClasses.includes(s.xyz_class as "X" | "Y" | "Z")) return false;
 
+                // Cluster filter (from portfolio CTA)
+                if (filters.cluster) {
+                  const seriesCluster = assignCluster(s);
+                  if (seriesCluster !== filters.cluster) return false;
+                }
+
                 return true;
               })}
               jobId={job?.id ?? ""}
@@ -463,7 +477,7 @@ export function ResultsContent({
 
       <div className={cn(activeTab !== "portfolio" && "hidden")}>
         <FadeIn>
-          <PortfolioView allSeries={allSeries} jobId={job?.id ?? ""} />
+          <PortfolioView allSeries={allSeries} jobId={job?.id ?? ""} onClusterNavigate={handleClusterNavigate} />
         </FadeIn>
       </div>
 

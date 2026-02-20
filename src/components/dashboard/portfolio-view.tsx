@@ -14,11 +14,13 @@ import {
   ReferenceLine,
   Cell,
 } from "recharts";
+import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getModelMeta } from "@/lib/model-labels";
 import { HelpTooltip } from "@/components/ui/help-tooltip";
 import { FadeIn } from "@/components/animations";
 import { useThresholds } from "@/lib/thresholds/context";
+import { RESULTS_TAB_EVENT } from "@/components/dashboard/command-palette";
 
 // ============================================================
 // TYPES
@@ -43,13 +45,14 @@ interface SeriesData {
 interface PortfolioViewProps {
   allSeries: SeriesData[];
   jobId: string;
+  onClusterNavigate?: (clusterId: ClusterId) => void;
 }
 
 // ============================================================
 // CLUSTERS
 // ============================================================
 
-type ClusterId =
+export type ClusterId =
   | "stable"
   | "seasonal"
   | "trendy"
@@ -130,13 +133,16 @@ const CLUSTERS: ClusterDef[] = [
   },
 ];
 
-const CLUSTER_MAP = new Map(CLUSTERS.map((c) => [c.id, c]));
+export const CLUSTER_MAP = new Map(CLUSTERS.map((c) => [c.id, c]));
 
 /**
  * Assigne un cluster a une serie.
  * Priorite : volatile > intermittent > trendy > seasonal > stable > other
  */
-function assignCluster(series: SeriesData): ClusterId {
+export function assignCluster(series: {
+  behavior_tags?: string[] | null;
+  xyz_class?: string | null;
+}): ClusterId {
   const tags = series.behavior_tags ?? [];
   const xyz = series.xyz_class ?? "X";
 
@@ -163,10 +169,119 @@ function assignCluster(series: SeriesData): ClusterId {
 }
 
 // ============================================================
+// TYPES S3 — Stats enrichies par cluster
+// ============================================================
+
+interface ClusterStatsData {
+  count: number;
+  totalVolume: number;
+  totalWape: number;
+  models: Map<string, number>;
+  abcCounts: { A: number; B: number; C: number };
+  reliabilityBuckets: {
+    excellent: number;
+    good: number;
+    moderate: number;
+    poor: number;
+  };
+  alertCount: number;
+  atRiskSeries: { id: string; reliability: number }[];
+  seriesIds: string[];
+}
+
+// ============================================================
+// MINI COMPOSANTS S3
+// ============================================================
+
+function ReliabilityBar({
+  buckets,
+}: {
+  buckets: ClusterStatsData["reliabilityBuckets"];
+}) {
+  const total =
+    buckets.excellent + buckets.good + buckets.moderate + buckets.poor;
+  if (total === 0) return null;
+
+  const segments = [
+    { key: "excellent", count: buckets.excellent, color: "bg-emerald-500" },
+    { key: "good", count: buckets.good, color: "bg-blue-500" },
+    { key: "moderate", count: buckets.moderate, color: "bg-amber-500" },
+    { key: "poor", count: buckets.poor, color: "bg-red-500" },
+  ];
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex h-2 rounded-full overflow-hidden bg-zinc-800">
+        {segments.map(
+          (seg) =>
+            seg.count > 0 && (
+              <div
+                key={seg.key}
+                className={cn("h-full", seg.color)}
+                style={{ width: `${(seg.count / total) * 100}%` }}
+              />
+            )
+        )}
+      </div>
+      <div className="flex gap-3 text-[10px] text-zinc-500">
+        {segments.map(
+          (seg) =>
+            seg.count > 0 && (
+              <span key={seg.key} className="flex items-center gap-1">
+                <span
+                  className={cn("w-1.5 h-1.5 rounded-full", seg.color)}
+                />
+                {seg.count}
+              </span>
+            )
+        )}
+      </div>
+    </div>
+  );
+}
+
+function AbcBar({ counts }: { counts: { A: number; B: number; C: number } }) {
+  const total = counts.A + counts.B + counts.C;
+  if (total === 0) return null;
+
+  const segments = [
+    { key: "A", count: counts.A, color: "bg-violet-500", label: "A" },
+    { key: "B", count: counts.B, color: "bg-indigo-400", label: "B" },
+    { key: "C", count: counts.C, color: "bg-zinc-500", label: "C" },
+  ];
+
+  return (
+    <div className="flex items-center gap-2 text-[11px]">
+      <span className="text-zinc-500 shrink-0">ABC</span>
+      <div className="flex h-1.5 rounded-full overflow-hidden bg-zinc-800 flex-1">
+        {segments.map(
+          (seg) =>
+            seg.count > 0 && (
+              <div
+                key={seg.key}
+                className={cn("h-full", seg.color)}
+                style={{ width: `${(seg.count / total) * 100}%` }}
+              />
+            )
+        )}
+      </div>
+      <div className="flex gap-2 text-zinc-500 shrink-0">
+        {segments.map((seg) => (
+          <span key={seg.key}>
+            {seg.count}
+            {seg.label}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
 // COMPOSANT PRINCIPAL
 // ============================================================
 
-export function PortfolioView({ allSeries, jobId }: PortfolioViewProps) {
+export function PortfolioView({ allSeries, jobId, onClusterNavigate }: PortfolioViewProps) {
   const router = useRouter();
   const { thresholds } = useThresholds();
   const reliabilityThreshold = thresholds.reliability_score?.green_max ?? 80;
@@ -199,22 +314,19 @@ export function PortfolioView({ allSeries, jobId }: PortfolioViewProps) {
 
   // --- Stats par cluster ---
   const clusterStats = useMemo(() => {
-    const stats = new Map<
-      ClusterId,
-      {
-        count: number;
-        totalVolume: number;
-        totalWape: number;
-        models: Map<string, number>;
-      }
-    >();
+    const stats = new Map<ClusterId, ClusterStatsData>();
 
     for (const s of enrichedSeries) {
-      const existing = stats.get(s.cluster) ?? {
+      const existing: ClusterStatsData = stats.get(s.cluster) ?? {
         count: 0,
         totalVolume: 0,
         totalWape: 0,
         models: new Map(),
+        abcCounts: { A: 0, B: 0, C: 0 },
+        reliabilityBuckets: { excellent: 0, good: 0, moderate: 0, poor: 0 },
+        alertCount: 0,
+        atRiskSeries: [],
+        seriesIds: [],
       };
       existing.count++;
       existing.totalVolume += s.forecast_sum ?? 0;
@@ -225,7 +337,38 @@ export function PortfolioView({ allSeries, jobId }: PortfolioViewProps) {
           (existing.models.get(s.champion_model) ?? 0) + 1
         );
       }
+
+      // ABC distribution
+      const abc = (s.abc_class ?? "C") as "A" | "B" | "C";
+      if (abc in existing.abcCounts) {
+        existing.abcCounts[abc]++;
+      } else {
+        existing.abcCounts.C++;
+      }
+
+      // Buckets de fiabilite (champion_score est deja 0-100)
+      const rel = s.champion_score ?? 0;
+      if (rel >= 85) existing.reliabilityBuckets.excellent++;
+      else if (rel >= 70) existing.reliabilityBuckets.good++;
+      else if (rel >= 50) existing.reliabilityBuckets.moderate++;
+      else existing.reliabilityBuckets.poor++;
+
+      // Alertes (wape > 20 = serie en alerte)
+      if ((s.wape ?? 0) > 20) existing.alertCount++;
+
+      // Toutes les series pour at-risk
+      existing.atRiskSeries.push({ id: s.series_id, reliability: rel });
+
+      // IDs pour navigation
+      existing.seriesIds.push(s.series_id);
+
       stats.set(s.cluster, existing);
+    }
+
+    // Garder seulement les 3 series les moins fiables
+    for (const [, data] of stats) {
+      data.atRiskSeries.sort((a, b) => a.reliability - b.reliability);
+      data.atRiskSeries = data.atRiskSeries.slice(0, 3);
     }
 
     return stats;
@@ -251,6 +394,17 @@ export function PortfolioView({ allSeries, jobId }: PortfolioViewProps) {
     router.push(
       `/dashboard/results/series?job=${jobId}&series=${encodeURIComponent(seriesId)}`
     );
+  };
+
+  // --- Navigation vers onglet Series depuis CTA cluster ---
+  const handleNavigateToSeries = (clusterId: ClusterId) => {
+    if (onClusterNavigate) {
+      onClusterNavigate(clusterId);
+    } else {
+      window.dispatchEvent(
+        new CustomEvent(RESULTS_TAB_EVENT, { detail: "series" })
+      );
+    }
   };
 
   // --- Tooltip custom ---
@@ -495,85 +649,199 @@ export function PortfolioView({ allSeries, jobId }: PortfolioViewProps) {
           const stats = clusterStats.get(cluster.id);
           if (!stats || stats.count === 0) return null;
 
-          const avgWape = stats.totalWape / stats.count;
-          const avgReliability = 100 - avgWape;
-          const volumePct =
-            totalVolume > 0
-              ? ((stats.totalVolume / totalVolume) * 100).toFixed(1)
-              : "0";
-
-          // Modele le plus frequent dans ce cluster
-          let topModel = "—";
-          let topModelCount = 0;
-          for (const [model, count] of stats.models) {
-            if (count > topModelCount) {
-              topModel = model;
-              topModelCount = count;
-            }
-          }
-          const topModelLabel =
-            topModel !== "—" ? getModelMeta(topModel).label : "—";
-
-          const isHighlighted = activeCluster === cluster.id;
-
           return (
-            <button
+            <ClusterCard
               key={cluster.id}
-              onClick={() =>
+              cluster={cluster}
+              stats={stats}
+              totalVolume={totalVolume}
+              isHighlighted={activeCluster === cluster.id}
+              onToggle={() =>
                 setActiveCluster(
                   activeCluster === cluster.id ? null : cluster.id
                 )
               }
-              className={cn(
-                "rounded-2xl border p-4 text-left transition-all hover:border-zinc-600",
-                isHighlighted
-                  ? "border-indigo-500/50 bg-indigo-500/5"
-                  : "border-zinc-800 bg-zinc-900/50"
-              )}
-            >
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <span
-                    className="w-3 h-3 rounded-full"
-                    style={{ backgroundColor: cluster.color }}
-                  />
-                  <span className="font-semibold text-white text-sm">
-                    {cluster.icon} {cluster.label}
-                  </span>
-                </div>
-                <span className="text-xs text-zinc-500">
-                  {stats.count} produit{stats.count > 1 ? "s" : ""}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-3 gap-2 text-center mb-3">
-                <div>
-                  <p className="text-lg font-bold text-white">
-                    {avgReliability.toFixed(0)}
-                  </p>
-                  <p className="text-[11px] text-zinc-500">
-                    Fiabilité moy.
-                  </p>
-                </div>
-                <div>
-                  <p className="text-lg font-bold text-white">{volumePct}%</p>
-                  <p className="text-[11px] text-zinc-500">du volume</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-white truncate">
-                    {topModelLabel}
-                  </p>
-                  <p className="text-[11px] text-zinc-500">Méthode top</p>
-                </div>
-              </div>
-
-              <p className="text-xs text-zinc-400 leading-relaxed">
-                {cluster.advice}
-              </p>
-            </button>
+              onNavigateToSeries={handleNavigateToSeries}
+              jobId={jobId}
+            />
           );
         })}
       </div>
+    </div>
+  );
+}
+
+// ============================================================
+// CLUSTER CARD — Mini dashboard par groupe
+// ============================================================
+
+interface ClusterCardProps {
+  cluster: ClusterDef;
+  stats: ClusterStatsData;
+  totalVolume: number;
+  isHighlighted: boolean;
+  onToggle: () => void;
+  onNavigateToSeries: (clusterId: ClusterId) => void;
+  jobId: string;
+}
+
+function ClusterCard({
+  cluster,
+  stats,
+  totalVolume,
+  isHighlighted,
+  onToggle,
+  onNavigateToSeries,
+  jobId,
+}: ClusterCardProps) {
+  const router = useRouter();
+
+  const avgWape = stats.totalWape / stats.count;
+  const avgReliability = 100 - avgWape;
+  const volumePct =
+    totalVolume > 0
+      ? ((stats.totalVolume / totalVolume) * 100).toFixed(1)
+      : "0";
+
+  // Modele le plus frequent
+  let topModel = "—";
+  let topModelCount = 0;
+  for (const [model, count] of stats.models) {
+    if (count > topModelCount) {
+      topModel = model;
+      topModelCount = count;
+    }
+  }
+  const topModelLabel =
+    topModel !== "—" ? getModelMeta(topModel).label : "—";
+
+  const hasAlerts = stats.alertCount > 0;
+  const hasAtRisk =
+    stats.atRiskSeries.length > 0 && stats.atRiskSeries[0].reliability < 70;
+
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={onToggle}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onToggle();
+        }
+      }}
+      className={cn(
+        "rounded-2xl border p-4 text-left transition-all hover:border-zinc-600 cursor-pointer",
+        isHighlighted
+          ? "border-indigo-500/50 bg-indigo-500/5"
+          : "border-zinc-800 bg-zinc-900/50"
+      )}
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <span
+            className="w-3 h-3 rounded-full"
+            style={{ backgroundColor: cluster.color }}
+          />
+          <span className="font-semibold text-white text-sm">
+            {cluster.icon} {cluster.label}
+          </span>
+        </div>
+        <span className="text-xs text-zinc-500">
+          {stats.count} produit{stats.count > 1 ? "s" : ""}
+        </span>
+      </div>
+
+      {/* Stats row — 3 ou 4 colonnes selon alertes */}
+      <div
+        className={cn(
+          "grid gap-2 text-center mb-3",
+          hasAlerts ? "grid-cols-4" : "grid-cols-3"
+        )}
+      >
+        <div>
+          <p className="text-lg font-bold text-white">
+            {avgReliability.toFixed(0)}
+          </p>
+          <p className="text-[11px] text-zinc-500">Fiabilité</p>
+        </div>
+        <div>
+          <p className="text-lg font-bold text-white">{volumePct}%</p>
+          <p className="text-[11px] text-zinc-500">du volume</p>
+        </div>
+        <div>
+          <p className="text-sm font-medium text-white truncate">
+            {topModelLabel}
+          </p>
+          <p className="text-[11px] text-zinc-500">Méthode</p>
+        </div>
+        {hasAlerts && (
+          <div>
+            <p className="text-lg font-bold text-amber-400">
+              {stats.alertCount}
+            </p>
+            <p className="text-[11px] text-zinc-500">Alertes</p>
+          </div>
+        )}
+      </div>
+
+      {/* Mini barre repartition fiabilite */}
+      <div className="mb-2">
+        <ReliabilityBar buckets={stats.reliabilityBuckets} />
+      </div>
+
+      {/* Mini barre ABC */}
+      <div className="mb-3">
+        <AbcBar counts={stats.abcCounts} />
+      </div>
+
+      {/* Series a surveiller */}
+      {hasAtRisk && (
+        <div className="space-y-1 mb-3">
+          <p className="text-[11px] text-zinc-500 font-medium">
+            ⚠️ À surveiller
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {stats.atRiskSeries
+              .filter((s) => s.reliability < 70)
+              .map((s) => (
+                <button
+                  key={s.id}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    router.push(
+                      `/dashboard/results/series?job=${jobId}&series=${encodeURIComponent(s.id)}`
+                    );
+                  }}
+                  className="text-[11px] px-2 py-0.5 rounded-md bg-red-500/10 text-red-400
+                             border border-red-500/20 hover:bg-red-500/20 transition-colors truncate max-w-[140px]"
+                  title={`${s.id} — Fiabilité ${s.reliability.toFixed(0)}/100`}
+                >
+                  {s.id} ({s.reliability.toFixed(0)})
+                </button>
+              ))}
+          </div>
+        </div>
+      )}
+
+      {/* Conseil business */}
+      <p className="text-xs text-zinc-400 leading-relaxed">
+        {cluster.advice}
+      </p>
+
+      {/* CTA — Voir les produits */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onNavigateToSeries(cluster.id);
+        }}
+        className="w-full mt-3 pt-3 border-t border-zinc-800 flex items-center justify-center gap-2
+                   text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
+      >
+        Voir les {stats.count} produit{stats.count > 1 ? "s" : ""}
+        <ArrowRight className="w-3 h-3" />
+      </button>
     </div>
   );
 }
