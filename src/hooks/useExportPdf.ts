@@ -1,8 +1,6 @@
 "use client";
 
 import { useCallback, useState, createElement } from "react";
-import { pdf } from "@react-pdf/renderer";
-import { SeriesPdfReport } from "@/components/export/SeriesPdfReport";
 import type { SeriesPdfData, ForecastPoint } from "@/types/export";
 
 /**
@@ -182,6 +180,12 @@ export function useExportPdf() {
       setError(null);
 
       try {
+        // Dynamic imports — keep @react-pdf/renderer out of the main bundle
+        const [{ pdf }, { SeriesPdfReport }] = await Promise.all([
+          import("@react-pdf/renderer"),
+          import("@/components/export/SeriesPdfReport"),
+        ]);
+
         const chartImage = await captureChart(chartRef);
 
         const doc = createElement(SeriesPdfReport, {
