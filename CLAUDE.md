@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-LumenIQ is a SaaS forecasting platform for SME retail/e-commerce businesses. It transforms sales histories into forecasts using 24+ statistical/ML models with ABC/XYZ routing. The frontend is a French-language application.
+LumenIQ is a SaaS forecasting platform for SME retail/e-commerce businesses. It transforms sales histories into forecasts using 32 registered statistical/ML models (24 unique) with ABC/XYZ routing. The frontend is a French-language application.
 
 ## Tech Stack
 
@@ -61,7 +61,7 @@ src/
 │   │   │   ├── page.tsx
 │   │   │   └── history-content.tsx
 │   │   ├── results/
-│   │   │   ├── page.tsx         # Tabs: overview, series, reliability, synthesis
+│   │   │   ├── page.tsx         # Tabs: overview, series, reliability, portfolio, synthesis
 │   │   │   ├── loading.tsx
 │   │   │   ├── results-content.tsx
 │   │   │   ├── results-client.tsx  # Dynamic import wrapper (avoids SSR hydration mismatch)
@@ -77,6 +77,7 @@ src/
 │   ├── contact/page.tsx         # Contact form (constellation animation, premium inputs)
 │   ├── demo/page.tsx            # Interactive product tour (4-step timeline, auto-play)
 │   ├── mentions-legales/page.tsx # Legal mentions page
+│   ├── politique-de-confidentialite/page.tsx # Privacy policy page (RGPD)
 │   └── test-upload/page.tsx     # Dev-only: CSV upload test page
 │
 ├── components/
@@ -135,6 +136,8 @@ src/
 │   │   ├── actions-drawer.tsx   # Sheet drawer for actions panel on results page
 │   │   ├── actions-fab.tsx      # Floating action button (amber) with urgent count badge
 │   │   ├── action-card.tsx      # Individual action card (priority, dismiss, navigate)
+│   │   ├── portfolio-view.tsx   # Portfolio scatter plot (series by cluster, 6 behavioral groups)
+│   │   ├── threshold-settings.tsx # Editable metric thresholds UI (green/yellow/red zones)
 │   │   └── results/            # Results-page-specific
 │   │       ├── SeriesAlertBadges.tsx
 │   │       ├── ExportPdfButton.tsx
@@ -235,6 +238,10 @@ src/
 │   ├── onboarding.ts            # Tour completion state (localStorage)
 │   ├── pricing-config.ts        # Central pricing plan config (Standard/ML/Premium: models, series, features)
 │   ├── mock-data.ts             # Development mock data
+│   ├── webhook-signature.ts     # HMAC-SHA256 signing for N8N webhooks (format: t=<ts>,v1=<hash>)
+│   ├── thresholds/
+│   │   ├── context.tsx          # ThresholdsProvider + useThresholds() hook (Supabase-backed)
+│   │   └── defaults.ts          # Default metric thresholds (5 metrics: reliability, wape, model_score, mase, bias)
 │   ├── supabase/
 │   │   ├── server.ts            # Server-side Supabase client (SSR, schema: lumeniq)
 │   │   └── client.ts            # Browser-side Supabase client (singleton, schema: lumeniq)
@@ -277,7 +284,7 @@ src/
 - Types are in `src/types/database.ts` — regenerate with Supabase CLI when schema changes
 - Server queries use `createClient()` from `@/lib/supabase/server`
 - Client queries use `createClient()` from `@/lib/supabase/client` (singleton, schema pre-configured) with `.schema("lumeniq")` when needed for typed queries
-- Key tables: `profiles`, `forecast_jobs`, `forecast_results`, `forecast_results_months`, `series_actuals`, `forecast_syntheses`, `job_summaries`, `forecast_series`, `job_monthly_aggregates`, `user_preferences`, `forecast_actions`
+- Key tables: `profiles`, `forecast_jobs`, `forecast_results`, `forecast_results_months`, `series_actuals`, `forecast_syntheses`, `job_summaries`, `forecast_series`, `job_monthly_aggregates`, `user_preferences`, `forecast_actions`, `user_thresholds`
 
 ### Auth
 - Supabase Auth with SSR via `@supabase/ssr`
@@ -309,6 +316,16 @@ src/
 | Score (in series list) | Fiabilité | Series list right column |
 
 - **Model names**: Use `getModelMeta(technicalName).label` from `@/lib/model-labels.ts` to display French labels (e.g., `hw_multiplicative` → "Holt-Winters multiplicatif"). Never show raw technical model names to users.
+
+### Webhook Signature (`lib/webhook-signature.ts`)
+- `signWebhookPayload(body)` → `{ signature: "t=<timestamp>,v1=<hmac_hex>", timestamp }`
+- Algorithm: HMAC-SHA256 over `<timestamp>.<body>` using `N8N_WEBHOOK_SECRET`
+- Replay protection: N8N verifies timestamp is within 5 minutes
+- Used by both `/api/webhook/forecast` and `/api/webhook/chat` routes
+
+### API Routes (`app/api/webhook/`)
+- **`/api/webhook/forecast/route.ts`** — Server-side proxy to N8N for job submission. Verifies job ownership, resolves user plan for config routing, signs payload with HMAC-SHA256.
+- **`/api/webhook/chat/route.ts`** — Server-side proxy to N8N for AI chat. Verifies user auth and job ownership, forwards question + conversation history, returns markdown response.
 
 ### Queries Pattern
 - **Server-side** (pages): import from `@/lib/queries/results` or `@/lib/queries/dashboard`, use `createClient()` from `@/lib/supabase/server`
@@ -375,6 +392,27 @@ Conversion functions in `@/lib/metrics.ts`:
 - Priority levels: urgent (red), warning (orange), info (blue), clear (green)
 - Recurrence badges ("3e fois") and trend indicators ("Dégradation" / "Amélioration") from multi-run enrichment
 
+### Portfolio View (`components/dashboard/portfolio-view.tsx`)
+- Interactive scatter plot of all series, grouped by 6 behavioral clusters: stable, seasonal, trendy, intermittent, volatile, other
+- X-axis: forecast volume (sum/avg), Y-axis: reliability score (/100), bubble size: ABC class importance
+- Filter pills per cluster, click navigates to series detail, double-click zooms 2x
+- Per-cluster summary cards: count, avg reliability, volume %, top model, ABC breakdown, at-risk series, business advice
+- Responsive mobile layout, Framer Motion animations
+- Threshold visualization lines (reliability seuil, median volume)
+- Accessible as a tab on the results page alongside overview, series, reliability, synthesis
+
+### Threshold System (`lib/thresholds/`, `components/dashboard/threshold-settings.tsx`)
+- User-customizable metric color thresholds (green/yellow/red zones) for 5 dashboard metrics:
+  - `reliability_score` (Score de fiabilité): ≥80 green, ≥70 yellow
+  - `wape` (Erreur pondérée): ≤15 green, ≤20 yellow
+  - `model_score` (Score modèle): ≥80 green, ≥50 yellow
+  - `mase` (Indice prédictif): ≤80 green, ≤100 yellow
+  - `bias` (Biais prévision): ≤5 green, ≤10 yellow
+- `ThresholdsProvider` + `useThresholds()` hook: fetches from `user_thresholds` table, merges with defaults
+- `getColor(metricKey, value)` returns zone ("green" | "yellow" | "red")
+- `threshold-settings.tsx`: editable grid UI with live color bar preview, debounced save to Supabase, per-metric reset
+- Used by portfolio view and results pages for consistent color coding
+
 ### Results Download (`app/dashboard/results/actions.ts`)
 - "Télécharger" button on results overview page
 - Downloads the .zip file from Supabase Storage bucket `forecasts` at path `results/{user_id}/{job_id}`
@@ -435,8 +473,8 @@ Required (set in `.env.local`):
 - **Config**: `vitest.config.ts` at project root
 - **Test files**: `src/**/__tests__/*.test.{ts,tsx}`
 - **Commands**: `npm test` (single run), `npm run test:watch` (watch mode)
-- **Current tests**: Unit tests for alert logic (`series-alerts`), alert badge config (`alert-badge`), action card config (`action-card`)
-- Tests validate: alert thresholds, priority ordering, absence of technical jargon in user-facing labels, color coherence with severity levels
+- **Current tests**: Unit tests for alert logic (`series-alerts`), alert badge config (`alert-badge`), action card config (`action-card`), threshold calculations (`thresholds`)
+- Tests validate: alert thresholds, priority ordering, absence of technical jargon in user-facing labels, color coherence with severity levels, threshold color zone logic
 
 ### Marketing Pages (recent additions)
 
@@ -444,6 +482,7 @@ Required (set in `.env.local`):
 - **`/demo`** — Interactive product tour: 4-step timeline (import, analysis, results, actions), auto-play with pause/resume controls, TiltCard hover effects, bento grid of feature highlights
 - **`/features`** — Features overview with redesigned ABC/XYZ and backtesting visuals ("Geometric Showcase" design)
 - **`/mentions-legales`** — Legal mentions page
+- **`/politique-de-confidentialite`** — Privacy policy page (RGPD compliance)
 
 ### Pricing Configuration (`lib/pricing-config.ts`)
 

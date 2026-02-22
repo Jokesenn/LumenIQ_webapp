@@ -2,7 +2,7 @@
 
 **Plateforme SaaS de forecasting professionnel pour PME e-commerce**
 
-Transformez vos historiques de ventes en prévisions fiables grâce à 24+ modèles statistiques/ML, un routing ABC/XYZ intelligent et des rapports détaillés validés par backtesting.
+Transformez vos historiques de ventes en prévisions fiables grâce à 24 modèles statistiques/ML, un routing ABC/XYZ intelligent et des rapports détaillés validés par backtesting.
 
 ![Next.js](https://img.shields.io/badge/Next.js-16.1-black?logo=next.js)
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)
@@ -14,7 +14,7 @@ Transformez vos historiques de ventes en prévisions fiables grâce à 24+ modè
 
 ## ✨ Fonctionnalités
 
-- **24+ modèles de prévision** — Statistiques classiques, ML et modèles de fondation
+- **24 modèles de prévision** — Statistiques classiques, ML et modèles de fondation
 - **Routing ABC/XYZ intelligent** — Sélection automatique du meilleur modèle par SKU
 - **Backtesting rigoureux** — Validation 5-fold cross-validation
 - **Rapports détaillés** — Métriques, insights et exports PDF
@@ -26,6 +26,8 @@ Transformez vos historiques de ventes en prévisions fiables grâce à 24+ modè
 - **Palette de commandes** — Navigation rapide Cmd+K (cmdk)
 - **Onboarding guidé** — Tour interactif de la page résultats (driver.js)
 - **Alertes séries** — Détection automatique de WAPE élevé, biais, volatilité Z
+- **Vue Portfolio** — Scatter plot interactif des séries par cluster comportemental (stable, saisonnier, tendance, intermittent, volatile)
+- **Seuils personnalisables** — Zones vert/jaune/rouge par métrique avec sauvegarde Supabase
 - **Conformité RGPD** — Export de données, suppression de compte, politique de confidentialité
 - **Sécurité renforcée** — Headers CSP/HSTS, webhooks HMAC-SHA256, RLS Supabase, proxies server-side
 
@@ -101,6 +103,8 @@ src/
 │   │   ├── actions-drawer.tsx   # Panneau latéral actions
 │   │   ├── actions-fab.tsx      # Bouton flottant actions
 │   │   ├── action-card.tsx      # Carte action individuelle
+│   │   ├── portfolio-view.tsx   # Vue portfolio scatter plot (6 clusters)
+│   │   ├── threshold-settings.tsx # Seuils métriques personnalisables
 │   │   └── empty-dashboard.tsx
 │   ├── charts/                 # Visualisations Recharts
 │   ├── shared/                 # Navbar, Footer, Logo
@@ -137,11 +141,17 @@ src/
 │   ├── linkify-skus.ts         # Liens SKU dans markdown
 │   ├── parse-markdown-sections.ts # Parsing sections H2
 │   ├── glossary.tsx            # Contenu tooltips d'aide
+│   ├── webhook-signature.ts    # Signature HMAC-SHA256 (t=<ts>,v1=<hash>)
+│   ├── thresholds/
+│   │   ├── context.tsx         # ThresholdsProvider + useThresholds() hook
+│   │   └── defaults.ts         # Seuils par défaut (5 métriques)
+│   ├── pricing-config.ts       # Configuration plans (Standard/ML/Premium)
 │   ├── onboarding.ts           # État tour (localStorage)
 │   └── mock-data.ts            # Données mock (dev)
 ├── types/
 │   ├── database.ts             # Types schéma Supabase (généré)
 │   ├── forecast.ts             # Types job & webhook
+│   ├── actions.ts              # Types actions forecast
 │   ├── export.ts               # Types export PDF
 │   └── preferences.ts          # Types préférences utilisateur
 ```
