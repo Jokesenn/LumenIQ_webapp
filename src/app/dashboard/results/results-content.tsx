@@ -176,10 +176,10 @@ export function ResultsContent({
 
   const tabs: { id: TabType; label: string }[] = [
     { id: "overview", label: "Vue d'ensemble" },
-    { id: "series", label: "Séries" },
     { id: "portfolio", label: "Portfolio" },
-    { id: "reliability", label: "Fiabilité" },
+    { id: "series", label: "Séries" },
     { id: "synthesis", label: "Synthèse IA" },
+    { id: "reliability", label: "Fiabilité" },
   ];
 
   const formatDuration = (seconds: number) => {
