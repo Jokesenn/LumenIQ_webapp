@@ -155,21 +155,21 @@ export function CommandPalette({ open: controlledOpen, onOpenChange }: CommandPa
             <LayoutDashboard className="mr-2 h-4 w-4" />
             Vue d&apos;ensemble
           </CommandItem>
-          <CommandItem onSelect={() => runCommand(() => goToTab("series"))}>
-            <List className="mr-2 h-4 w-4" />
-            Séries
-          </CommandItem>
           <CommandItem onSelect={() => runCommand(() => goToTab("portfolio"))}>
             <ScatterChart className="mr-2 h-4 w-4" />
             Portfolio
           </CommandItem>
-          <CommandItem onSelect={() => runCommand(() => goToTab("reliability"))}>
-            <BarChart3 className="mr-2 h-4 w-4" />
-            Fiabilité
+          <CommandItem onSelect={() => runCommand(() => goToTab("series"))}>
+            <List className="mr-2 h-4 w-4" />
+            Séries
           </CommandItem>
           <CommandItem onSelect={() => runCommand(() => goToTab("synthesis"))}>
             <Sparkles className="mr-2 h-4 w-4" />
             Synthèse IA
+          </CommandItem>
+          <CommandItem onSelect={() => runCommand(() => goToTab("reliability"))}>
+            <BarChart3 className="mr-2 h-4 w-4" />
+            Fiabilité
           </CommandItem>
           <CommandItem onSelect={() => runCommand(() => router.push("/dashboard/actions"))}>
             <Zap className="mr-2 h-4 w-4" />
