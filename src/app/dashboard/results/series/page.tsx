@@ -9,6 +9,7 @@ import {
   getJobSeriesList,
   getSeriesActions,
 } from "@/lib/queries/results";
+import { formatDateByFrequency } from "@/lib/date-format";
 import { SeriesContent } from "./series-content";
 
 interface SeriesPageProps {
@@ -32,23 +33,32 @@ export default async function SeriesPage({ searchParams }: SeriesPageProps) {
 
   const decodedSeriesId = decodeURIComponent(seriesId);
 
-  const [{ job }, seriesDetails, chartData, modelComparison, allSeries, forecastData, seriesActions] = await Promise.all([
-    getJobWithSummary(jobId, user.id),
+  // Phase 1: fetch job to get frequency for date formatting
+  const { job } = await getJobWithSummary(jobId, user.id);
+
+  if (!job) {
+    redirect(`/dashboard/results?job=${jobId}`);
+  }
+
+  const frequency = (job as any).frequency ?? null;
+
+  // Phase 2: fetch everything else with frequency-aware chart formatting
+  const [seriesDetails, chartData, modelComparison, allSeries, forecastData, seriesActions] = await Promise.all([
     getSeriesDetails(jobId, decodedSeriesId, user.id),
-    getSeriesChartData(jobId, decodedSeriesId, user.id),
+    getSeriesChartData(jobId, decodedSeriesId, user.id, frequency),
     getSeriesModelComparison(jobId, decodedSeriesId, user.id),
     getJobSeriesList(jobId, user.id).catch(() => []),
     getSeriesForecastData(jobId, decodedSeriesId, user.id).catch(() => []),
     getSeriesActions(jobId, decodedSeriesId, user.id).catch(() => []),
   ]);
 
-  if (!job || !seriesDetails) {
+  if (!seriesDetails) {
     redirect(`/dashboard/results?job=${jobId}`);
   }
 
-  // Transform forecast data for PDF export
+  // Transform forecast data for PDF export (frequency-aware dates)
   const forecastPoints = forecastData.map((f: { ds: string; yhat: number; yhat_lower: number | null; yhat_upper: number | null }) => ({
-    date: new Date(f.ds).toLocaleDateString("fr-FR", { month: "short", year: "2-digit" }),
+    date: formatDateByFrequency(f.ds, frequency),
     forecast: Number(f.yhat),
     lower: f.yhat_lower != null ? Number(f.yhat_lower) : null,
     upper: f.yhat_upper != null ? Number(f.yhat_upper) : null,

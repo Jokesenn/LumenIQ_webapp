@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { ForecastJob, JobSummary } from "@/types/database";
 import { toChampionScore, resolveSeriesErrorRatio } from "@/lib/metrics";
+import { formatDateByFrequency } from "@/lib/date-format";
 import type { ForecastAction } from "@/types/actions";
 
 // Récupérer un job par ID avec son summary
@@ -124,7 +125,7 @@ export async function getTopBottomSeries(jobId: string, userId: string, limit = 
 }
 
 // Données graphique agrégé pour un job
-export async function getJobChartData(jobId: string, userId: string) {
+export async function getJobChartData(jobId: string, userId: string, frequency?: string | null) {
   const supabase = await createClient();
 
   const { data } = await supabase
@@ -146,7 +147,7 @@ export async function getJobChartData(jobId: string, userId: string) {
     const firstForecast = isBridge ? data[firstForecastIdx] : null;
 
     return {
-      date: new Date(row.ds).toLocaleDateString("fr-FR", { month: "short", year: "2-digit" }),
+      date: formatDateByFrequency(row.ds, frequency),
       actual: !row.is_forecast ? row.actual_sum : undefined,
       // Bridge: the last actual row also carries forecast values so the lines connect
       forecast: row.is_forecast
@@ -354,7 +355,7 @@ export async function getSeriesActuals(jobId: string, seriesId: string, userId: 
 }
 
 // Combine actuals + forecast pour le graphique série
-export async function getSeriesChartData(jobId: string, seriesId: string, userId: string) {
+export async function getSeriesChartData(jobId: string, seriesId: string, userId: string, frequency?: string | null) {
   const [actuals, forecasts] = await Promise.all([
     getSeriesActuals(jobId, seriesId, userId),
     getSeriesForecastData(jobId, seriesId, userId),
@@ -365,7 +366,7 @@ export async function getSeriesChartData(jobId: string, seriesId: string, userId
   actuals.forEach((a) => {
     const dateKey = new Date(a.ds).toISOString().split("T")[0];
     dataMap.set(dateKey, {
-      date: new Date(a.ds).toLocaleDateString("fr-FR", { month: "short", year: "2-digit" }),
+      date: formatDateByFrequency(a.ds, frequency),
       actual: Number(a.y),
       isOutlier: a.is_outlier,
     });
@@ -374,7 +375,7 @@ export async function getSeriesChartData(jobId: string, seriesId: string, userId
   forecasts.forEach((f) => {
     const dateKey = new Date(f.ds).toISOString().split("T")[0];
     const existing = dataMap.get(dateKey) || {
-      date: new Date(f.ds).toLocaleDateString("fr-FR", { month: "short", year: "2-digit" }),
+      date: formatDateByFrequency(f.ds, frequency),
     };
     dataMap.set(dateKey, {
       ...existing,
@@ -574,16 +575,19 @@ export async function getJobResults(jobId: string, userId: string) {
 
 // Toutes les données d'un job (forme attendue par la page results)
 export async function getJobFullData(jobId: string, userId: string) {
-  const [withSummary, chartRows, matrixRows, modelRows, results] = await Promise.all([
-    getJobWithSummary(jobId, userId),
-    getJobChartData(jobId, userId),
+  // Phase 1: fetch job to get frequency
+  const withSummary = await getJobWithSummary(jobId, userId);
+  const job = withSummary.job as ForecastJob | null;
+  const summary = withSummary.summary as JobSummary | null;
+  const frequency = (job as any)?.frequency ?? null;
+
+  // Phase 2: fetch everything else with frequency-aware formatting
+  const [chartRows, matrixRows, modelRows, results] = await Promise.all([
+    getJobChartData(jobId, userId, frequency),
     getJobAbcXyzMatrix(jobId, userId),
     getJobModelPerformance(jobId, userId),
     getJobResults(jobId, userId),
   ]);
-
-  const job = withSummary.job as ForecastJob | null;
-  const summary = withSummary.summary as JobSummary | null;
 
   // Déduire abcDistribution et xyzDistribution depuis la matrice
   const abcDistribution: AbcDistribution[] = ["A", "B", "C"].map((cls) => {

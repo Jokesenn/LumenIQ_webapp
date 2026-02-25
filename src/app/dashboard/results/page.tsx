@@ -60,9 +60,17 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
     jobId = latestJob.id;
   }
 
-  // Fetch all data in parallel
+  // Phase 1: fetch job to get frequency for date formatting
+  const { job, summary } = await getJobWithSummary(jobId, user.id).catch(() => ({ job: null, summary: null }));
+
+  if (!job) {
+    redirect("/dashboard/history");
+  }
+
+  const frequency = (job as any).frequency ?? null;
+
+  // Phase 2: fetch everything else with frequency-aware chart formatting
   const [
-    { job, summary },
     metrics,
     topBottom,
     chartData,
@@ -71,19 +79,14 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
     syntheses,
     allSeries,
   ] = await Promise.all([
-    getJobWithSummary(jobId, user.id).catch(() => ({ job: null, summary: null })),
     getJobMetrics(jobId, user.id).catch(() => null),
     getTopBottomSeries(jobId, user.id).catch(() => ({ top: [], bottom: [] })),
-    getJobChartData(jobId, user.id).catch(() => []),
+    getJobChartData(jobId, user.id, frequency).catch(() => []),
     getJobAbcXyzMatrix(jobId, user.id).catch(() => []),
     getJobModelPerformance(jobId, user.id).catch(() => []),
     getJobSynthesis(jobId, user.id).catch(() => []),
     getJobSeriesList(jobId, user.id).catch(() => []),
   ]);
-
-  if (!job) {
-    redirect("/dashboard/history");
-  }
 
   const validTabs = ["overview", "series", "reliability", "synthesis"];
   const initialTab = validTabs.includes(params.tab ?? "") ? params.tab as "overview" | "series" | "reliability" | "synthesis" : undefined;
