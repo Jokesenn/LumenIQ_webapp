@@ -18,6 +18,10 @@ export interface ForecastConfigOverride {
   horizon_months: number
   gating_enabled: boolean
   confidence_interval: number
+  // Mapping des noms de colonnes CSV → noms canoniques du pipeline backend
+  date_col?: string       // ex: "date" → remplace le défaut "ds"
+  target_col?: string     // ex: "qty"  → remplace le défaut "y"
+  series_id_col?: string  // ex: "serie_id" → remplace le défaut "series_id"
 }
 
 // Valeurs par défaut

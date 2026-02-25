@@ -164,7 +164,17 @@ export default function ForecastPage() {
     }
 
     setStep(3);
-    await uploadAndCreateJob(file, user.id, forecastOptions);
+
+    // Enrichir le config override avec les noms de colonnes détectés par csv-analyzer
+    // afin que le backend renomme correctement les colonnes CSV → noms canoniques (ds, y, series_id)
+    const configWithColumns: typeof forecastOptions = {
+      ...forecastOptions,
+      ...(analysis?.dateColumn && { date_col: analysis.dateColumn }),
+      ...(analysis?.valueColumns[0] && { target_col: analysis.valueColumns[0] }),
+      ...(analysis?.seriesIdColumn && { series_id_col: analysis.seriesIdColumn }),
+    };
+
+    await uploadAndCreateJob(file, user.id, configWithColumns);
     // Le useEffect gérera le passage à l'étape suivante via useJobStatus
   };
 
