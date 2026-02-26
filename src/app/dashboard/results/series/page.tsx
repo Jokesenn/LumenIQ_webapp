@@ -41,11 +41,12 @@ export default async function SeriesPage({ searchParams }: SeriesPageProps) {
   }
 
   const frequency = (job as any).frequency ?? null;
+  const aggregationApplied = (job as any).aggregation_applied === true;
 
   // Phase 2: fetch everything else with frequency-aware chart formatting
   const [seriesDetails, chartData, modelComparison, allSeries, forecastData, seriesActions] = await Promise.all([
     getSeriesDetails(jobId, decodedSeriesId, user.id),
-    getSeriesChartData(jobId, decodedSeriesId, user.id, frequency),
+    getSeriesChartData(jobId, decodedSeriesId, user.id, frequency, aggregationApplied),
     getSeriesModelComparison(jobId, decodedSeriesId, user.id),
     getJobSeriesList(jobId, user.id).catch(() => []),
     getSeriesForecastData(jobId, decodedSeriesId, user.id).catch(() => []),

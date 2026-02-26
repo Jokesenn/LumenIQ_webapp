@@ -357,7 +357,7 @@ export async function getSeriesActuals(jobId: string, seriesId: string, userId: 
 }
 
 // Combine actuals + forecast pour le graphique série
-export async function getSeriesChartData(jobId: string, seriesId: string, userId: string, frequency?: string | null) {
+export async function getSeriesChartData(jobId: string, seriesId: string, userId: string, frequency?: string | null, aggregationApplied?: boolean) {
   const [actuals, forecasts] = await Promise.all([
     getSeriesActuals(jobId, seriesId, userId),
     getSeriesForecastData(jobId, seriesId, userId),
@@ -365,19 +365,37 @@ export async function getSeriesChartData(jobId: string, seriesId: string, userId
 
   const dataMap = new Map<string, Record<string, unknown>>();
 
-  actuals.forEach((a) => {
-    const dateKey = new Date(a.ds).toISOString().split("T")[0];
-    dataMap.set(dateKey, {
-      date: formatDateByFrequency(a.ds, frequency),
-      actual: Number(a.y),
-      isOutlier: a.is_outlier,
+  if (aggregationApplied) {
+    // Actuals are at source frequency (e.g. weekly) but forecasts are monthly.
+    // Aggregate actuals to monthly so date keys match forecasts.
+    const monthlyActuals = new Map<string, number>();
+    for (const a of actuals) {
+      const d = new Date(a.ds);
+      // Build a month-start key (YYYY-MM-01) matching forecast_results_months dates
+      const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-01`;
+      monthlyActuals.set(monthKey, (monthlyActuals.get(monthKey) ?? 0) + Number(a.y));
+    }
+    for (const [monthKey, total] of monthlyActuals) {
+      dataMap.set(monthKey, {
+        date: formatDateByFrequency(monthKey, "MS"),
+        actual: Math.round(total * 100) / 100,
+      });
+    }
+  } else {
+    actuals.forEach((a) => {
+      const dateKey = new Date(a.ds).toISOString().split("T")[0];
+      dataMap.set(dateKey, {
+        date: formatDateByFrequency(a.ds, frequency),
+        actual: Number(a.y),
+        isOutlier: a.is_outlier,
+      });
     });
-  });
+  }
 
   forecasts.forEach((f) => {
     const dateKey = new Date(f.ds).toISOString().split("T")[0];
     const existing = dataMap.get(dateKey) || {
-      date: formatDateByFrequency(f.ds, frequency),
+      date: formatDateByFrequency(f.ds, aggregationApplied ? "MS" : frequency),
     };
     dataMap.set(dateKey, {
       ...existing,
