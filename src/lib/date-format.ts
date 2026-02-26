@@ -8,7 +8,7 @@
 
 type FreqFamily = "H" | "D" | "W" | "M" | "Q";
 
-function classifyFreq(freq: string): FreqFamily {
+export function classifyFreq(freq: string): FreqFamily {
   if (!freq) return "M";
 
   const upper = freq.toUpperCase();
@@ -86,4 +86,20 @@ export function formatDateByFrequency(
         year: "2-digit",
       });
   }
+}
+
+/**
+ * Return a French human-readable label for a frequency string.
+ */
+export function formatFrequencyLabel(freq: string | null): string {
+  if (!freq) return "Mensuel";
+  const family = classifyFreq(freq);
+  const labels: Record<string, string> = {
+    H: "Horaire",
+    D: "Journalier",
+    W: "Hebdomadaire",
+    M: "Mensuel",
+    Q: "Trimestriel",
+  };
+  return labels[family] ?? "Mensuel";
 }

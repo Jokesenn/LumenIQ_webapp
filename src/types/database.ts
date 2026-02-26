@@ -128,6 +128,8 @@ export interface Database {
           completed_at: string | null
           compute_time_seconds: number | null
           models_evaluated: number | null
+          engine_frequency: string | null
+          aggregation_applied: boolean | null
         }
         Insert: {
           id?: string
@@ -157,6 +159,8 @@ export interface Database {
           completed_at?: string | null
           compute_time_seconds?: number | null
           models_evaluated?: number | null
+          engine_frequency?: string | null
+          aggregation_applied?: boolean | null
         }
         Update: {
           id?: string
@@ -186,6 +190,8 @@ export interface Database {
           completed_at?: string | null
           compute_time_seconds?: number | null
           models_evaluated?: number | null
+          engine_frequency?: string | null
+          aggregation_applied?: boolean | null
         }
       }
       forecast_results: {
@@ -722,3 +728,17 @@ export type JobMonthlyAggregateInsert = Database['lumeniq']['Tables']['job_month
 export type UserPreferencesRow = Database['lumeniq']['Tables']['user_preferences']['Row']
 export type UserPreferencesInsert = Database['lumeniq']['Tables']['user_preferences']['Insert']
 export type UserPreferencesUpdate = Database['lumeniq']['Tables']['user_preferences']['Update']
+
+export interface ForecastResultDetail {
+  id: string
+  job_id: string
+  user_id: string
+  series_id: string
+  ds: string
+  yhat: number
+  yhat_lower: number | null
+  yhat_upper: number | null
+  model_name: string
+  freq: string
+  created_at: string
+}

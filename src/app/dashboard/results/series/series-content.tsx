@@ -37,6 +37,8 @@ import { useThresholds } from "@/lib/thresholds/context";
 import { AlertBadge } from "@/components/ui/alert-badge";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
+import { formatFrequencyLabel } from "@/lib/date-format";
+import { formatDateByFrequency } from "@/lib/date-format";
 
 const ALERT_GLOSSARY_MAP: Record<string, string | undefined> = {
   attention: "attention",
@@ -104,6 +106,91 @@ export function SeriesContent({
   };
 
   const { thresholds } = useThresholds();
+  const [granularity, setGranularity] = useState<"monthly" | "source">("monthly");
+  const [sourceChartData, setSourceChartData] = useState<any[] | null>(null);
+  const [loadingSource, setLoadingSource] = useState(false);
+  const isAggregated = job?.aggregation_applied === true;
+
+  useEffect(() => {
+    if (granularity !== "source" || !isAggregated || sourceChartData) return;
+
+    setLoadingSource(true);
+    const fetchDetailData = async () => {
+      const supabase = createClient();
+
+      const [actualsRes, forecastsRes] = await Promise.all([
+        supabase
+          .schema("lumeniq")
+          .from("series_actuals")
+          .select("ds, y, is_outlier")
+          .eq("job_id", job.id)
+          .eq("series_id", series.series_id)
+          .order("ds", { ascending: true }),
+        supabase
+          .schema("lumeniq")
+          .from("forecast_results_detail")
+          .select("ds, yhat, yhat_lower, yhat_upper")
+          .eq("job_id", job.id)
+          .eq("series_id", series.series_id)
+          .order("ds", { ascending: true }),
+      ]);
+
+      const actuals = actualsRes.data || [];
+      const forecasts = forecastsRes.data || [];
+
+      const dataMap = new Map<string, Record<string, unknown>>();
+
+      actuals.forEach((a: any) => {
+        const dateKey = new Date(a.ds).toISOString().split("T")[0];
+        dataMap.set(dateKey, {
+          date: formatDateByFrequency(a.ds, job.frequency),
+          actual: Number(a.y),
+          isOutlier: a.is_outlier,
+        });
+      });
+
+      forecasts.forEach((f: any) => {
+        const dateKey = new Date(f.ds).toISOString().split("T")[0];
+        const existing = dataMap.get(dateKey) || {
+          date: formatDateByFrequency(f.ds, job.frequency),
+        };
+        dataMap.set(dateKey, {
+          ...existing,
+          forecast: Number(f.yhat),
+          forecastLower: f.yhat_lower != null ? Number(f.yhat_lower) : undefined,
+          forecastUpper: f.yhat_upper != null ? Number(f.yhat_upper) : undefined,
+        });
+      });
+
+      const sorted = Array.from(dataMap.entries())
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([, value]) => value);
+
+      // Bridge gap
+      const lastActualIdx = sorted.findLastIndex((d) => d.actual !== undefined);
+      const firstForecastOnlyIdx = sorted.findIndex(
+        (d) => d.forecast !== undefined && d.actual === undefined,
+      );
+      if (
+        lastActualIdx >= 0 &&
+        firstForecastOnlyIdx > lastActualIdx &&
+        sorted[lastActualIdx].forecast === undefined
+      ) {
+        const actualVal = sorted[lastActualIdx].actual as number;
+        sorted[lastActualIdx] = {
+          ...sorted[lastActualIdx],
+          forecast: actualVal,
+          forecastLower: actualVal,
+          forecastUpper: actualVal,
+        };
+      }
+
+      setSourceChartData(sorted);
+    };
+
+    fetchDetailData().catch(() => setSourceChartData([])).finally(() => setLoadingSource(false));
+  }, [granularity, isAggregated, sourceChartData, job?.id, series?.series_id, job?.frequency]);
+
   const reliabilityGreen = thresholds.reliability_score.green_max;
   const reliabilityYellow = thresholds.reliability_score.yellow_max;
 
@@ -326,7 +413,44 @@ export function SeriesContent({
               </div>
             </div>
           </div>
-          {chartData.length > 0 ? (
+          {isAggregated && (
+            <div className="flex items-center gap-2 mb-4">
+              <div className="inline-flex rounded-lg bg-zinc-800/50 p-0.5">
+                <button
+                  className={cn(
+                    "px-3 py-1 text-xs font-medium rounded-md transition-colors",
+                    granularity === "monthly"
+                      ? "bg-indigo-500/20 text-indigo-400"
+                      : "text-zinc-400 hover:text-zinc-300"
+                  )}
+                  onClick={() => setGranularity("monthly")}
+                >
+                  Mensuel
+                </button>
+                <button
+                  className={cn(
+                    "px-3 py-1 text-xs font-medium rounded-md transition-colors",
+                    granularity === "source"
+                      ? "bg-indigo-500/20 text-indigo-400"
+                      : "text-zinc-400 hover:text-zinc-300"
+                  )}
+                  onClick={() => setGranularity("source")}
+                >
+                  {formatFrequencyLabel(job?.frequency)}
+                </button>
+              </div>
+              <span className="text-xs text-zinc-500">
+                Données {formatFrequencyLabel(job?.frequency).toLowerCase()} agrégées en mensuel
+              </span>
+            </div>
+          )}
+          {(granularity === "source" && loadingSource) ? (
+            <div className="h-[400px] flex items-center justify-center text-zinc-500">
+              Chargement des données...
+            </div>
+          ) : (granularity === "source" && sourceChartData && sourceChartData.length > 0) ? (
+            <AnimatedAreaChart data={sourceChartData} height={400} showConfidence />
+          ) : chartData.length > 0 ? (
             <AnimatedAreaChart data={chartData} height={400} showConfidence />
           ) : (
             <div className="h-[400px] flex items-center justify-center text-zinc-500">

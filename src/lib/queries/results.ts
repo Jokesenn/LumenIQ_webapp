@@ -1,7 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { ForecastJob, JobSummary } from "@/types/database";
+import type { ForecastResultDetail } from "@/types/database";
 import { toChampionScore, resolveSeriesErrorRatio } from "@/lib/metrics";
 import { formatDateByFrequency } from "@/lib/date-format";
+import { formatFrequencyLabel } from "@/lib/date-format";
 import type { ForecastAction } from "@/types/actions";
 
 // Récupérer un job par ID avec son summary
@@ -635,4 +637,165 @@ export async function getJobFullData(jobId: string, userId: string) {
     chartData,
     results,
   };
+}
+
+// ========== QUERIES POUR VUE DETAIL (FRÉQUENCE SOURCE) ==========
+
+// Données forecast détaillées (fréquence source) pour une série
+export async function getSeriesDetailForecastData(
+  jobId: string, seriesId: string, userId: string
+): Promise<ForecastResultDetail[]> {
+  const supabase = await createClient();
+
+  const { data } = await supabase
+    .schema("lumeniq")
+    .from("forecast_results_detail")
+    .select("*")
+    .eq("job_id", jobId)
+    .eq("series_id", seriesId)
+    .eq("user_id", userId)
+    .order("ds", { ascending: true });
+
+  return (data || []) as ForecastResultDetail[];
+}
+
+// Combine actuals (fréquence source) + forecast detail pour le graphique série
+export async function getSeriesDetailChartData(
+  jobId: string, seriesId: string, userId: string, frequency: string
+) {
+  const [actuals, forecasts] = await Promise.all([
+    getSeriesActuals(jobId, seriesId, userId),
+    getSeriesDetailForecastData(jobId, seriesId, userId),
+  ]);
+
+  const dataMap = new Map<string, Record<string, unknown>>();
+
+  actuals.forEach((a) => {
+    const dateKey = new Date(a.ds).toISOString().split("T")[0];
+    dataMap.set(dateKey, {
+      date: formatDateByFrequency(a.ds, frequency),
+      actual: Number(a.y),
+      isOutlier: a.is_outlier,
+    });
+  });
+
+  forecasts.forEach((f) => {
+    const dateKey = new Date(f.ds).toISOString().split("T")[0];
+    const existing = dataMap.get(dateKey) || {
+      date: formatDateByFrequency(f.ds, frequency),
+    };
+    dataMap.set(dateKey, {
+      ...existing,
+      forecast: Number(f.yhat),
+      forecastLower: f.yhat_lower != null ? Number(f.yhat_lower) : undefined,
+      forecastUpper: f.yhat_upper != null ? Number(f.yhat_upper) : undefined,
+    });
+  });
+
+  const sorted = Array.from(dataMap.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([, value]) => value);
+
+  // Bridge gap between actuals and forecast
+  const lastActualIdx = sorted.findLastIndex((d) => d.actual !== undefined);
+  const firstForecastOnlyIdx = sorted.findIndex(
+    (d) => d.forecast !== undefined && d.actual === undefined,
+  );
+  if (
+    lastActualIdx >= 0 &&
+    firstForecastOnlyIdx > lastActualIdx &&
+    sorted[lastActualIdx].forecast === undefined
+  ) {
+    const actualVal = sorted[lastActualIdx].actual as number;
+    sorted[lastActualIdx] = {
+      ...sorted[lastActualIdx],
+      forecast: actualVal,
+      forecastLower: actualVal,
+      forecastUpper: actualVal,
+    };
+  }
+
+  return sorted;
+}
+
+// Données agrégées au niveau job à la fréquence source
+export async function getJobDetailChartData(
+  jobId: string, userId: string, frequency: string
+) {
+  const supabase = await createClient();
+
+  // Fetch all detail forecasts for this job
+  const { data: forecasts } = await supabase
+    .schema("lumeniq")
+    .from("forecast_results_detail")
+    .select("ds, yhat, yhat_lower, yhat_upper")
+    .eq("job_id", jobId)
+    .eq("user_id", userId)
+    .order("ds", { ascending: true });
+
+  // Fetch all actuals for this job
+  const { data: actuals } = await supabase
+    .schema("lumeniq")
+    .from("series_actuals")
+    .select("ds, y")
+    .eq("job_id", jobId)
+    .eq("user_id", userId)
+    .order("ds", { ascending: true });
+
+  // Aggregate by date
+  const actualMap = new Map<string, number>();
+  for (const a of actuals || []) {
+    const key = new Date(a.ds).toISOString().split("T")[0];
+    actualMap.set(key, (actualMap.get(key) ?? 0) + Number(a.y ?? 0));
+  }
+
+  const forecastMap = new Map<string, { sum: number; lower: number; upper: number }>();
+  for (const f of forecasts || []) {
+    const key = new Date(f.ds).toISOString().split("T")[0];
+    const prev = forecastMap.get(key) ?? { sum: 0, lower: 0, upper: 0 };
+    forecastMap.set(key, {
+      sum: prev.sum + Number(f.yhat),
+      lower: prev.lower + Number(f.yhat_lower ?? f.yhat),
+      upper: prev.upper + Number(f.yhat_upper ?? f.yhat),
+    });
+  }
+
+  // Merge into chart data
+  const allDates = new Set([...actualMap.keys(), ...forecastMap.keys()]);
+  const sorted = Array.from(allDates).sort();
+
+  const chartData = sorted.map((dateKey) => {
+    const hasActual = actualMap.has(dateKey);
+    const hasForecast = forecastMap.has(dateKey);
+    const fc = forecastMap.get(dateKey);
+
+    return {
+      date: formatDateByFrequency(dateKey, frequency),
+      actual: hasActual ? actualMap.get(dateKey) : undefined,
+      forecast: hasForecast ? fc!.sum : undefined,
+      forecastLower: hasForecast ? fc!.lower : undefined,
+      forecastUpper: hasForecast ? fc!.upper : undefined,
+    };
+  });
+
+  // Bridge gap
+  const lastActualIdx = chartData.findLastIndex((d) => d.actual !== undefined);
+  const firstForecastOnlyIdx = chartData.findIndex(
+    (d) => d.forecast !== undefined && d.actual === undefined,
+  );
+  if (
+    lastActualIdx >= 0 &&
+    firstForecastOnlyIdx > lastActualIdx &&
+    chartData[lastActualIdx].forecast === undefined
+  ) {
+    const actualVal = chartData[lastActualIdx].actual as number;
+    chartData[lastActualIdx] = {
+      ...chartData[lastActualIdx],
+      forecast: actualVal,
+      forecastLower: actualVal,
+      forecastUpper: actualVal,
+    };
+  }
+
+  return chartData;
 }

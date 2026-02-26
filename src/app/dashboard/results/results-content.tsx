@@ -34,6 +34,8 @@ import { HelpTooltip } from "@/components/ui/help-tooltip";
 import { useThresholds } from "@/lib/thresholds/context";
 import { PortfolioView, assignCluster } from "@/components/dashboard/portfolio-view";
 import type { ClusterId } from "@/components/dashboard/portfolio-view";
+import { formatFrequencyLabel } from "@/lib/date-format";
+import { createClient as createBrowserClient } from "@/lib/supabase/client";
 
 function formatDistanceToNow(date: Date): string {
   const now = new Date();
@@ -85,6 +87,97 @@ export function ResultsContent({
   const [exporting, setExporting] = useState(false);
   const { showTour, completeTour } = useOnboarding();
   const { thresholds } = useThresholds();
+  const [granularity, setGranularity] = useState<"monthly" | "source">("monthly");
+  const [sourceChartData, setSourceChartData] = useState<any[] | null>(null);
+  const [loadingSource, setLoadingSource] = useState(false);
+  const isAggregated = (job as any)?.aggregation_applied === true;
+
+  useEffect(() => {
+    if (granularity !== "source" || !isAggregated || sourceChartData) return;
+
+    setLoadingSource(true);
+    const fetchDetailData = async () => {
+      const supabase = createBrowserClient();
+      const frequency = (job as any)?.frequency;
+
+      const [forecastsRes, actualsRes] = await Promise.all([
+        supabase
+          .schema("lumeniq")
+          .from("forecast_results_detail")
+          .select("ds, yhat, yhat_lower, yhat_upper")
+          .eq("job_id", job?.id)
+          .eq("user_id", job?.user_id)
+          .order("ds", { ascending: true }),
+        supabase
+          .schema("lumeniq")
+          .from("series_actuals")
+          .select("ds, y")
+          .eq("job_id", job?.id)
+          .eq("user_id", job?.user_id)
+          .order("ds", { ascending: true }),
+      ]);
+
+      const { formatDateByFrequency } = await import("@/lib/date-format");
+
+      // Aggregate actuals by date
+      const actualMap = new Map<string, number>();
+      for (const a of actualsRes.data || []) {
+        const key = new Date(a.ds).toISOString().split("T")[0];
+        actualMap.set(key, (actualMap.get(key) ?? 0) + Number(a.y ?? 0));
+      }
+
+      // Aggregate forecasts by date
+      const forecastMap = new Map<string, { sum: number; lower: number; upper: number }>();
+      for (const f of forecastsRes.data || []) {
+        const key = new Date(f.ds).toISOString().split("T")[0];
+        const prev = forecastMap.get(key) ?? { sum: 0, lower: 0, upper: 0 };
+        forecastMap.set(key, {
+          sum: prev.sum + Number(f.yhat),
+          lower: prev.lower + Number(f.yhat_lower ?? f.yhat),
+          upper: prev.upper + Number(f.yhat_upper ?? f.yhat),
+        });
+      }
+
+      const allDates = new Set([...actualMap.keys(), ...forecastMap.keys()]);
+      const sorted = Array.from(allDates).sort();
+
+      const data = sorted.map((dateKey) => {
+        const hasActual = actualMap.has(dateKey);
+        const hasForecast = forecastMap.has(dateKey);
+        const fc = forecastMap.get(dateKey);
+        return {
+          date: formatDateByFrequency(dateKey, frequency),
+          actual: hasActual ? actualMap.get(dateKey) : undefined,
+          forecast: hasForecast ? fc!.sum : undefined,
+          forecastLower: hasForecast ? fc!.lower : undefined,
+          forecastUpper: hasForecast ? fc!.upper : undefined,
+        };
+      });
+
+      // Bridge gap
+      const lastActualIdx = data.findLastIndex((d) => d.actual !== undefined);
+      const firstForecastOnlyIdx = data.findIndex(
+        (d) => d.forecast !== undefined && d.actual === undefined,
+      );
+      if (
+        lastActualIdx >= 0 &&
+        firstForecastOnlyIdx > lastActualIdx &&
+        data[lastActualIdx].forecast === undefined
+      ) {
+        const actualVal = data[lastActualIdx].actual as number;
+        data[lastActualIdx] = {
+          ...data[lastActualIdx],
+          forecast: actualVal,
+          forecastLower: actualVal,
+          forecastUpper: actualVal,
+        };
+      }
+
+      setSourceChartData(data);
+    };
+
+    fetchDetailData().catch(() => setSourceChartData([])).finally(() => setLoadingSource(false));
+  }, [granularity, isAggregated, sourceChartData, job?.id, job?.user_id]);
 
   const handleDownload = useCallback(async () => {
     if (!job?.id || exporting) return;
@@ -218,6 +311,11 @@ export function ResultsContent({
                   <FileText className="w-4 h-4" />
                   {metrics?.n_series_total ?? 0} séries
                 </span>
+                {isAggregated && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/10 px-2 py-0.5 text-xs text-indigo-400">
+                    Données {formatFrequencyLabel((job as any)?.frequency).toLowerCase()} → agrégées en mensuel
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -339,12 +437,50 @@ export function ResultsContent({
                 </h2>
                 <HelpTooltip termKey="forecast_graph" />
               </div>
-              <div className={cn(chartData.length === 0 && "hidden")}>
-                <AnimatedAreaChart data={chartData.length > 0 ? chartData : [{ date: "", actual: 0 }]} height={350} showConfidence />
-              </div>
-              <div className={cn("h-[350px] flex items-center justify-center text-zinc-500", chartData.length > 0 && "hidden")}>
-                Aucune donnée disponible
-              </div>
+              {isAggregated && (
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="inline-flex rounded-lg bg-zinc-800/50 p-0.5">
+                    <button
+                      className={cn(
+                        "px-3 py-1 text-xs font-medium rounded-md transition-colors",
+                        granularity === "monthly"
+                          ? "bg-indigo-500/20 text-indigo-400"
+                          : "text-zinc-400 hover:text-zinc-300"
+                      )}
+                      onClick={() => setGranularity("monthly")}
+                    >
+                      Mensuel
+                    </button>
+                    <button
+                      className={cn(
+                        "px-3 py-1 text-xs font-medium rounded-md transition-colors",
+                        granularity === "source"
+                          ? "bg-indigo-500/20 text-indigo-400"
+                          : "text-zinc-400 hover:text-zinc-300"
+                      )}
+                      onClick={() => setGranularity("source")}
+                    >
+                      {formatFrequencyLabel((job as any)?.frequency)}
+                    </button>
+                  </div>
+                </div>
+              )}
+              {(granularity === "source" && loadingSource) ? (
+                <div className="h-[350px] flex items-center justify-center text-zinc-500">
+                  Chargement des données...
+                </div>
+              ) : (granularity === "source" && sourceChartData && sourceChartData.length > 0) ? (
+                <AnimatedAreaChart data={sourceChartData} height={350} showConfidence />
+              ) : (
+                <>
+                  <div className={cn(chartData.length === 0 && "hidden")}>
+                    <AnimatedAreaChart data={chartData.length > 0 ? chartData : [{ date: "", actual: 0 }]} height={350} showConfidence />
+                  </div>
+                  <div className={cn("h-[350px] flex items-center justify-center text-zinc-500", chartData.length > 0 && "hidden")}>
+                    Aucune donnée disponible
+                  </div>
+                </>
+              )}
             </div>
           </FadeIn>
 
