@@ -111,6 +111,13 @@ export function SeriesContent({
   const [loadingSource, setLoadingSource] = useState(false);
   const isAggregated = job?.aggregation_applied === true;
 
+  // Reset source chart data when navigating to a different series
+  const [prevSeriesId, setPrevSeriesId] = useState(series?.series_id);
+  if (series?.series_id !== prevSeriesId) {
+    setPrevSeriesId(series?.series_id);
+    setSourceChartData(null);
+  }
+
   useEffect(() => {
     if (granularity !== "source" || !isAggregated || sourceChartData) return;
 
