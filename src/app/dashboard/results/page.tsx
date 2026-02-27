@@ -68,6 +68,10 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
   }
 
   const frequency = (job as any).frequency ?? null;
+  const aggregationApplied = (job as any).aggregation_applied === true;
+  // When aggregation was applied, job_monthly_aggregates contains monthly data
+  // so we force monthly formatting regardless of source frequency
+  const chartFrequency = aggregationApplied ? null : frequency;
 
   // Phase 2: fetch everything else with frequency-aware chart formatting
   const [
@@ -81,7 +85,7 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
   ] = await Promise.all([
     getJobMetrics(jobId, user.id).catch(() => null),
     getTopBottomSeries(jobId, user.id).catch(() => ({ top: [], bottom: [] })),
-    getJobChartData(jobId, user.id, frequency).catch(() => []),
+    getJobChartData(jobId, user.id, chartFrequency).catch(() => []),
     getJobAbcXyzMatrix(jobId, user.id).catch(() => []),
     getJobModelPerformance(jobId, user.id).catch(() => []),
     getJobSynthesis(jobId, user.id).catch(() => []),

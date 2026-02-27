@@ -100,6 +100,9 @@ export function ResultsContent({
       const supabase = createBrowserClient();
       const frequency = (job as any)?.frequency;
 
+      // Supabase default limit is 1000 rows — source-frequency data can
+      // easily exceed this (e.g. 50 series × 156 weeks = 7800 rows).
+      // Use an explicit large range to fetch all rows.
       const [forecastsRes, actualsRes] = await Promise.all([
         supabase
           .schema("lumeniq")
@@ -107,14 +110,16 @@ export function ResultsContent({
           .select("ds, yhat, yhat_lower, yhat_upper")
           .eq("job_id", job?.id)
           .eq("user_id", job?.user_id)
-          .order("ds", { ascending: true }),
+          .order("ds", { ascending: true })
+          .range(0, 49999),
         supabase
           .schema("lumeniq")
           .from("series_actuals")
           .select("ds, y")
           .eq("job_id", job?.id)
           .eq("user_id", job?.user_id)
-          .order("ds", { ascending: true }),
+          .order("ds", { ascending: true })
+          .range(0, 49999),
       ]);
 
       const { formatDateByFrequency } = await import("@/lib/date-format");

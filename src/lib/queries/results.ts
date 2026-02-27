@@ -743,22 +743,26 @@ export async function getJobDetailChartData(
   const supabase = await createClient();
 
   // Fetch all detail forecasts for this job
+  // Explicit range to override Supabase default 1000-row limit
   const { data: forecasts } = await supabase
     .schema("lumeniq")
     .from("forecast_results_detail")
     .select("ds, yhat, yhat_lower, yhat_upper")
     .eq("job_id", jobId)
     .eq("user_id", userId)
-    .order("ds", { ascending: true });
+    .order("ds", { ascending: true })
+    .range(0, 49999);
 
   // Fetch all actuals for this job
+  // Explicit range to override Supabase default 1000-row limit
   const { data: actuals } = await supabase
     .schema("lumeniq")
     .from("series_actuals")
     .select("ds, y")
     .eq("job_id", jobId)
     .eq("user_id", userId)
-    .order("ds", { ascending: true });
+    .order("ds", { ascending: true })
+    .range(0, 49999);
 
   // Aggregate by date
   const actualMap = new Map<string, number>();
