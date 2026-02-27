@@ -40,6 +40,7 @@ export const MODEL_LABELS: Record<string, { label: string; family: ModelFamily }
   hw_additive:              { label: "Holt-Winters additif",       family: "decomposition" },
   theta:                    { label: "Theta classique",            family: "decomposition" },
   seasonal_rolling_mean:    { label: "Moyenne mobile saisonnière", family: "classical" },
+  rolling_mean_long:          { label: "Moyenne mobile étendue",    family: "classical" },
 };
 
 export function getModelMeta(technicalName: string): ModelMeta {
