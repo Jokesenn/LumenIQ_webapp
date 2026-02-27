@@ -41,6 +41,7 @@ export const MODEL_LABELS: Record<string, { label: string; family: ModelFamily }
   theta:                    { label: "Theta classique",            family: "decomposition" },
   seasonal_rolling_mean:    { label: "Moyenne mobile saisonnière", family: "classical" },
   rolling_mean_long:          { label: "Moyenne mobile étendue",    family: "classical" },
+  tbats:                      { label: "TBATS",                      family: "decomposition" },
 };
 
 export function getModelMeta(technicalName: string): ModelMeta {
