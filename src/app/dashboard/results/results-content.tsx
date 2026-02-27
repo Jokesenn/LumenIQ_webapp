@@ -100,69 +100,35 @@ export function ResultsContent({
       const supabase = createBrowserClient();
       const frequency = (job as any)?.frequency;
 
-      // Supabase default limit is 1000 rows — source-frequency data can
-      // easily exceed this (e.g. 50 series × 156 weeks = 7800 rows).
-      // Use an explicit large range to fetch all rows.
-      const [forecastsRes, actualsRes] = await Promise.all([
-        supabase
-          .schema("lumeniq")
-          .from("forecast_results_detail")
-          .select("ds, yhat, yhat_lower, yhat_upper")
-          .eq("job_id", job?.id)
-          .eq("user_id", job?.user_id)
-          .order("ds", { ascending: true })
-          .range(0, 49999),
-        supabase
-          .schema("lumeniq")
-          .from("series_actuals")
-          .select("ds, y")
-          .eq("job_id", job?.id)
-          .eq("user_id", job?.user_id)
-          .order("ds", { ascending: true })
-          .range(0, 49999),
-      ]);
+      // Use server-side RPC to aggregate across all series by date.
+      // This avoids the Supabase PostgREST 1000-row default limit
+      // (e.g. 50 series × 156 weeks = 7800 raw rows → ~215 aggregated rows).
+      const { data: rpcData, error } = await supabase
+        .schema("lumeniq")
+        .rpc("get_job_source_chart_data", {
+          p_job_id: job?.id,
+          p_user_id: job?.user_id,
+        });
+
+      if (error || !rpcData?.length) {
+        setSourceChartData([]);
+        return;
+      }
 
       const { formatDateByFrequency } = await import("@/lib/date-format");
 
-      // Aggregate actuals by date
-      const actualMap = new Map<string, number>();
-      for (const a of actualsRes.data || []) {
-        const key = new Date(a.ds).toISOString().split("T")[0];
-        actualMap.set(key, (actualMap.get(key) ?? 0) + Number(a.y ?? 0));
-      }
-
-      // Aggregate forecasts by date
-      const forecastMap = new Map<string, { sum: number; lower: number; upper: number }>();
-      for (const f of forecastsRes.data || []) {
-        const key = new Date(f.ds).toISOString().split("T")[0];
-        const prev = forecastMap.get(key) ?? { sum: 0, lower: 0, upper: 0 };
-        forecastMap.set(key, {
-          sum: prev.sum + Number(f.yhat),
-          lower: prev.lower + Number(f.yhat_lower ?? f.yhat),
-          upper: prev.upper + Number(f.yhat_upper ?? f.yhat),
-        });
-      }
-
-      const allDates = new Set([...actualMap.keys(), ...forecastMap.keys()]);
-      const sorted = Array.from(allDates).sort();
-
-      const data = sorted.map((dateKey) => {
-        const hasActual = actualMap.has(dateKey);
-        const hasForecast = forecastMap.has(dateKey);
-        const fc = forecastMap.get(dateKey);
-        return {
-          date: formatDateByFrequency(dateKey, frequency),
-          actual: hasActual ? actualMap.get(dateKey) : undefined,
-          forecast: hasForecast ? fc!.sum : undefined,
-          forecastLower: hasForecast ? fc!.lower : undefined,
-          forecastUpper: hasForecast ? fc!.upper : undefined,
-        };
-      });
+      const data = (rpcData as any[]).map((row: any) => ({
+        date: formatDateByFrequency(row.ds, frequency),
+        actual: !row.is_forecast ? row.actual_sum : undefined,
+        forecast: row.is_forecast ? row.forecast_sum : undefined,
+        forecastLower: row.is_forecast ? row.forecast_lower_sum : undefined,
+        forecastUpper: row.is_forecast ? row.forecast_upper_sum : undefined,
+      }));
 
       // Bridge gap
-      const lastActualIdx = data.findLastIndex((d) => d.actual !== undefined);
+      const lastActualIdx = data.findLastIndex((d: any) => d.actual !== undefined);
       const firstForecastOnlyIdx = data.findIndex(
-        (d) => d.forecast !== undefined && d.actual === undefined,
+        (d: any) => d.forecast !== undefined && d.actual === undefined,
       );
       if (
         lastActualIdx >= 0 &&
