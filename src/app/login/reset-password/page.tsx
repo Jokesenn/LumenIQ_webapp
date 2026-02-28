@@ -43,7 +43,7 @@ export default function ResetPasswordPage() {
       if (error) throw error;
 
       setMessage("Mot de passe mis à jour avec succès !");
-      
+
       // Rediriger vers le dashboard après 2 secondes
       setTimeout(() => {
         router.push("/dashboard");
@@ -58,39 +58,39 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)]">
+    <div className="min-h-screen bg-zinc-950">
       <Navbar />
 
       <main className="pt-20">
         <section className="min-h-[calc(100vh-80px)] flex items-center justify-center py-10 px-6">
-          <div className="w-full max-w-[420px] bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border)] p-10">
+          <div className="w-full max-w-[420px] glass-card p-10">
             <div className="text-center mb-8">
               <div className="flex justify-center mb-4">
                 <Logo size={48} />
               </div>
-              <h1 className="text-2xl font-bold mb-2">
+              <h1 className="text-2xl font-bold text-white mb-2">
                 Nouveau mot de passe
               </h1>
-              <p className="text-sm text-[var(--text-secondary)]">
+              <p className="text-sm text-zinc-400">
                 Choisissez un nouveau mot de passe sécurisé
               </p>
             </div>
 
             {error && (
-              <div className="mb-5 p-3 bg-[var(--danger)]/10 border border-[var(--danger)]/30 rounded-lg text-sm text-[var(--danger)]">
+              <div className="mb-5 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-sm text-red-400">
                 {error}
               </div>
             )}
 
             {message && (
-              <div className="mb-5 p-3 bg-[var(--success)]/10 border border-[var(--success)]/30 rounded-lg text-sm text-[var(--success)]">
+              <div className="mb-5 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-sm text-emerald-500">
                 {message}
               </div>
             )}
 
             <form onSubmit={handleSubmit}>
               <div className="mb-5">
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-sm font-medium text-zinc-300 mb-2">
                   Nouveau mot de passe
                 </label>
                 <input
@@ -100,13 +100,13 @@ export default function ResetPasswordPage() {
                   placeholder="••••••••"
                   required
                   minLength={6}
-                  className="w-full px-4 py-3 bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent"
                   disabled={loading}
                 />
               </div>
 
               <div className="mb-6">
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-sm font-medium text-zinc-300 mb-2">
                   Confirmer le mot de passe
                 </label>
                 <input
@@ -116,14 +116,14 @@ export default function ResetPasswordPage() {
                   placeholder="••••••••"
                   required
                   minLength={6}
-                  className="w-full px-4 py-3 bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent"
                   disabled={loading}
                 />
               </div>
 
               <Button
                 type="submit"
-                className="w-full justify-center"
+                className="w-full justify-center bg-indigo-500 hover:bg-indigo-600 text-white"
                 disabled={loading}
               >
                 {loading ? (

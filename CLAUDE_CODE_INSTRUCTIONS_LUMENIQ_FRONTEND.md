@@ -1,14 +1,18 @@
 # Instructions Claude Code - Refonte Frontend LumenIQ
 
-## Contexte Projet
+> **OBSOLETE** — Ce fichier est le brief de design initial utilisé lors de la refonte UI.
+> La refonte est terminée. Référez-vous à `CLAUDE.md` pour la documentation à jour du projet.
+> Ce fichier est conservé uniquement comme référence historique des choix de design initiaux.
 
-Tu travailles sur **LumenIQ**, une plateforme SaaS de forecasting pour PME retail/e-commerce. Le repo `lumeniq_webapp` existe déjà avec :
-- Next.js 14+ (App Router)
-- Tailwind CSS + shadcn/ui
-- Supabase Auth + connexions DB fonctionnelles
-- Dashboard avec KPIs connectés
+## Contexte Projet (historique)
 
-**Objectif** : Refondre le design vers un style "dark SaaS moderne" (inspiration: ai-predictive.aura.build) tout en **préservant** toute la logique métier et les connexions Supabase existantes.
+Ce brief a été utilisé pour refondre **LumenIQ** d'un design basique vers un style "dark SaaS moderne". Le projet utilise maintenant :
+- Next.js 16 (App Router) — mis à jour depuis Next.js 14
+- Tailwind CSS v4 + shadcn/ui (new-york style) + Framer Motion
+- Supabase Auth SSR + lumeniq schema
+- Dashboard complet avec KPIs, charts, AI chat, PDF export
+
+Les sections ci-dessous sont les instructions originales et ne reflètent plus l'état actuel du code.
 
 ---
 

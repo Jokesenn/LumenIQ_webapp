@@ -24,6 +24,7 @@ export interface CsvAnalysis {
 // Noms de colonnes typiques pour identifier les séries en format long
 const SERIES_ID_PATTERNS = [
   'series_id',
+  'serie_id',
   'unique_id',
   'sku',
   'product_id',
@@ -31,6 +32,7 @@ const SERIES_ID_PATTERNS = [
   'product',
   'item',
   'series',
+  'serie',
   'sku_id',
   'article',
   'reference',
@@ -178,7 +180,33 @@ function parseDate(value: string): Date | null {
 }
 
 /**
- * Calcule la fréquence à partir des écarts entre dates
+ * Détecte la fréquence à partir d'un tableau d'écarts en jours
+ */
+function detectFrequencyFromGaps(gaps: number[]): { frequency: Frequency; seasonalityPeriod: number | null } {
+  if (gaps.length === 0) {
+    return { frequency: 'unknown', seasonalityPeriod: null }
+  }
+
+  // Calculer la médiane des écarts
+  const sortedGaps = [...gaps].sort((a, b) => a - b)
+  const median = sortedGaps[Math.floor(sortedGaps.length / 2)]
+
+  // Déterminer la fréquence et la saisonnalité
+  if (median <= 1.5) {
+    return { frequency: 'daily', seasonalityPeriod: 365 }
+  } else if (median <= 8) {
+    return { frequency: 'weekly', seasonalityPeriod: 52 }
+  } else if (median <= 35) {
+    return { frequency: 'monthly', seasonalityPeriod: 12 }
+  } else if (median <= 100) {
+    return { frequency: 'quarterly', seasonalityPeriod: 4 }
+  } else {
+    return { frequency: 'yearly', seasonalityPeriod: null }
+  }
+}
+
+/**
+ * Calcule la fréquence à partir des écarts entre dates consécutives
  */
 function detectFrequency(dates: Date[]): { frequency: Frequency; seasonalityPeriod: number | null } {
   if (dates.length < 2) {
@@ -197,26 +225,7 @@ function detectFrequency(dates: Date[]): { frequency: Frequency; seasonalityPeri
     }
   }
 
-  if (gaps.length === 0) {
-    return { frequency: 'unknown', seasonalityPeriod: null }
-  }
-
-  // Calculer la médiane des écarts
-  gaps.sort((a, b) => a - b)
-  const median = gaps[Math.floor(gaps.length / 2)]
-
-  // Déterminer la fréquence et la saisonnalité
-  if (median <= 1.5) {
-    return { frequency: 'daily', seasonalityPeriod: 365 }
-  } else if (median <= 8) {
-    return { frequency: 'weekly', seasonalityPeriod: 52 }
-  } else if (median <= 35) {
-    return { frequency: 'monthly', seasonalityPeriod: 12 }
-  } else if (median <= 100) {
-    return { frequency: 'quarterly', seasonalityPeriod: 4 }
-  } else {
-    return { frequency: 'yearly', seasonalityPeriod: null }
-  }
+  return detectFrequencyFromGaps(gaps)
 }
 
 /**
@@ -328,34 +337,53 @@ export async function analyzeCsvFile(file: File): Promise<CsvAnalysis> {
     let valueColumns: string[] = []
     const dates: Date[] = []
     const sampleDates: string[] = []
+    const intraSeriesGaps: number[] = []
+    let globalMinDate: Date | null = null
+    let globalMaxDate: Date | null = null
 
     if (isLongFormat) {
       // === FORMAT LONG (TIDY) ===
-      // Compter les séries uniques
+      // Compter les séries uniques et collecter les dates par série
       const uniqueSeries = new Set<string>()
-      const firstSeriesId: string | null = allDataRows[0]?.[seriesIdColumnIndex] || null
+      const datesBySeries = new Map<string, Date[]>()
 
       for (const row of allDataRows) {
         const seriesId = row[seriesIdColumnIndex]
-        if (seriesId && seriesId.trim() !== '') {
-          uniqueSeries.add(seriesId.trim())
-        }
+        if (!seriesId || seriesId.trim() === '') continue
 
-        // Pour la détection de fréquence, ne prendre que les dates de la première série
-        if (dateColumnIndex >= 0 && seriesId === firstSeriesId) {
+        const trimmedId = seriesId.trim()
+        uniqueSeries.add(trimmedId)
+
+        if (dateColumnIndex >= 0) {
           const dateStr = row[dateColumnIndex]
           const date = parseDate(dateStr)
           if (date) {
-            dates.push(date)
-            if (sampleDates.length < 5) {
-              sampleDates.push(dateStr)
+            if (!datesBySeries.has(trimmedId)) {
+              datesBySeries.set(trimmedId, [])
+              // Collecter les dates d'exemple sur la première série rencontrée
+              if (sampleDates.length < 5) sampleDates.push(dateStr)
             }
+            datesBySeries.get(trimmedId)!.push(date)
+
+            // Tracker la plage temporelle globale (toutes séries confondues)
+            if (!globalMinDate || date < globalMinDate) globalMinDate = date
+            if (!globalMaxDate || date > globalMaxDate) globalMaxDate = date
           }
         }
       }
 
       seriesCount = uniqueSeries.size
-      historyPeriods = seriesCount > 0 ? Math.floor(rowCount / seriesCount) : 0
+
+      // Calculer tous les écarts intra-séries pour une détection de fréquence robuste.
+      // Utiliser toutes les séries évite le biais dû aux séries creuses/intermittentes
+      // qui peuvent avoir des écarts anormalement grands.
+      for (const [, seriesDates] of datesBySeries) {
+        const sorted = [...seriesDates].sort((a, b) => a.getTime() - b.getTime())
+        for (let i = 1; i < sorted.length; i++) {
+          const diffDays = (sorted[i].getTime() - sorted[i - 1].getTime()) / (1000 * 60 * 60 * 24)
+          if (diffDays > 0) intraSeriesGaps.push(diffDays)
+        }
+      }
 
       // Trouver la colonne de valeur
       for (let col = 0; col < headers.length; col++) {
@@ -389,11 +417,10 @@ export async function analyzeCsvFile(file: File): Promise<CsvAnalysis> {
       }
 
       seriesCount = valueColumns.length
-      historyPeriods = rowCount
 
-      // Parser les dates pour la détection de fréquence
+      // Parser toutes les dates pour la détection de fréquence et la plage temporelle
       if (dateColumnIndex >= 0) {
-        for (const row of allDataRows.slice(0, 100)) {
+        for (const row of allDataRows) {
           const dateStr = row[dateColumnIndex]
           const date = parseDate(dateStr)
           if (date) {
@@ -401,13 +428,29 @@ export async function analyzeCsvFile(file: File): Promise<CsvAnalysis> {
             if (sampleDates.length < 5) {
               sampleDates.push(dateStr)
             }
+            if (!globalMinDate || date < globalMinDate) globalMinDate = date
+            if (!globalMaxDate || date > globalMaxDate) globalMaxDate = date
           }
         }
       }
     }
 
     // Détecter la fréquence
-    const { frequency, seasonalityPeriod } = detectFrequency(dates)
+    // Format long : utiliser les écarts intra-séries (toutes séries confondues) pour éviter
+    // le biais des séries intermittentes/creuses qui fausseraient la médiane globale.
+    // Format wide : les dates sont déjà celles d'une unique série par colonne.
+    const { frequency, seasonalityPeriod } = isLongFormat
+      ? detectFrequencyFromGaps(intraSeriesGaps)
+      : detectFrequency(dates)
+
+    // Calculer l'historique à partir de la plage temporelle réelle (min → max toutes séries),
+    // convertie en nombre de périodes selon la fréquence détectée.
+    // L'ancienne formule (rowCount / seriesCount) donnait la moyenne de points par série,
+    // pas la couverture temporelle réelle — sous-estimant fortement pour les datasets mixtes.
+    if (globalMinDate && globalMaxDate && frequency !== 'unknown') {
+      const spanDays = (globalMaxDate.getTime() - globalMinDate.getTime()) / (1000 * 60 * 60 * 24)
+      historyPeriods = Math.round(spanDays / frequencyToPeriodDays(frequency))
+    }
 
     return {
       seriesCount,
@@ -438,6 +481,20 @@ export async function analyzeCsvFile(file: File): Promise<CsvAnalysis> {
       format: 'wide',
       seriesIdColumn: null,
     }
+  }
+}
+
+/**
+ * Retourne le nombre de jours correspondant à une période de la fréquence donnée
+ */
+function frequencyToPeriodDays(frequency: Frequency): number {
+  switch (frequency) {
+    case 'daily': return 1
+    case 'weekly': return 7
+    case 'monthly': return 30.44
+    case 'quarterly': return 91.31
+    case 'yearly': return 365.25
+    default: return 1
   }
 }
 

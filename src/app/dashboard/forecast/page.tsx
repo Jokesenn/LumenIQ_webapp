@@ -13,7 +13,13 @@ import {
 import { useFileUpload } from "@/hooks/useFileUpload";
 import { useUser } from "@/hooks/use-supabase";
 import { useJobStatus, getJobStatusLabel } from "@/hooks/useJobStatus";
+import { useUserPreferences } from "@/hooks/useUserPreferences";
+import { ForecastOptions } from "@/components/forecast/ForecastOptions";
+import { EnrichedWaiting } from "@/components/forecast/enriched-waiting";
+import type { ForecastConfigOverride, HorizonMonths, ConfidenceInterval } from "@/types/preferences";
+import { DEFAULT_PREFERENCES } from "@/types/preferences";
 import type { UploadStep } from "@/types/forecast";
+import { useThresholds } from "@/lib/thresholds/context";
 
 export default function ForecastPage() {
   const [step, setStep] = useState(1);
@@ -23,12 +29,13 @@ export default function ForecastPage() {
   const [analyzing, setAnalyzing] = useState(false);
   const [analyzeError, setAnalyzeError] = useState<string | null>(null);
   const [activeJobId, setActiveJobId] = useState<string | null>(null);
+  const [forecastOptions, setForecastOptions] = useState<ForecastConfigOverride>(DEFAULT_PREFERENCES);
   const router = useRouter();
+  const { thresholds } = useThresholds();
 
   // Hooks pour l'upload réel
   const { user, loading: userLoading } = useUser();
   const {
-    uploading,
     step: uploadStep,
     uploadProgress,
     error: uploadError,
@@ -37,11 +44,24 @@ export default function ForecastPage() {
     reset: resetUpload,
   } = useFileUpload();
 
+  // Hook pour les préférences forecast
+  const {
+    preferences,
+    loading: prefsLoading,
+    save: savePreferences,
+    hasChanged: prefsHaveChanged,
+  } = useUserPreferences();
+
+  // Synchroniser les options locales quand les préférences sont chargées
+  useEffect(() => {
+    if (!prefsLoading) {
+      setForecastOptions(preferences);
+    }
+  }, [preferences, prefsLoading]);
+
   // Hook pour poller le statut du job (activé seulement à l'étape 3 après upload)
   const {
     job,
-    loading: jobLoading,
-    error: jobError,
     isComplete,
     isFailed,
     isProcessing,
@@ -66,12 +86,8 @@ export default function ForecastPage() {
     }
   }, [isComplete, job]);
 
-  // Quand le job échoue, afficher l'erreur
-  useEffect(() => {
-    if (isFailed && job) {
-      // Rester à l'étape 3 pour afficher l'erreur
-    }
-  }, [isFailed, job]);
+  // Quand le job échoue, on reste à l'étape 3 pour afficher l'erreur
+  // (pas besoin d'effet — le rendu conditionnel dans le JSX gère cet état)
 
   const handleDrop = async (
     e: React.DragEvent | React.ChangeEvent<HTMLInputElement>
@@ -124,17 +140,37 @@ export default function ForecastPage() {
     setAnalysis(null);
     setAnalyzeError(null);
     setActiveJobId(null);
+    setForecastOptions(preferences);
     resetUpload();
   };
 
   const startForecast = async () => {
     if (!file || !user) {
-      setAnalyzeError("Vous devez être connecté pour lancer un forecast");
+      setAnalyzeError("Vous devez être connecté pour lancer une prévision");
       return;
     }
 
+    // Sauvegarder les préférences si modifiées (non-bloquant)
+    if (prefsHaveChanged(forecastOptions)) {
+      try {
+        await savePreferences(forecastOptions);
+      } catch (err) {
+        console.warn("Échec sauvegarde préférences (non-bloquant):", err);
+      }
+    }
+
     setStep(3);
-    await uploadAndCreateJob(file, user.id);
+
+    // Enrichir le config override avec les noms de colonnes détectés par csv-analyzer
+    // afin que le backend renomme correctement les colonnes CSV → noms canoniques (ds, y, series_id)
+    const configWithColumns: typeof forecastOptions = {
+      ...forecastOptions,
+      ...(analysis?.dateColumn && { date_col: analysis.dateColumn }),
+      ...(analysis?.valueColumns[0] && { target_col: analysis.valueColumns[0] }),
+      ...(analysis?.seriesIdColumn && { series_id_col: analysis.seriesIdColumn }),
+    };
+
+    await uploadAndCreateJob(file, user.id, configWithColumns);
     // Le useEffect gérera le passage à l'étape suivante via useJobStatus
   };
 
@@ -214,38 +250,40 @@ export default function ForecastPage() {
     return 30 + jobProgress * 0.7;
   };
 
+  const wizardSteps = ["Import", "Configuration", "Calcul", "Résultats"];
+
   return (
     <div className="animate-fade">
       <div className="mb-8">
-        <h1 className="text-[28px] font-bold mb-2">Nouveau forecast</h1>
-        <p className="text-[var(--text-secondary)]">
-          Mode Express — Upload, configuration automatique, résultats en 5 min
+        <h1 className="dash-page-title">Nouvelle prévision</h1>
+        <p className="text-zinc-400">
+          Mode Express — Import, configuration automatique, résultats en 5 min
         </p>
       </div>
 
       {/* Progress Steps */}
-      <div className="flex items-center gap-2 mb-10 p-5 bg-[var(--bg-secondary)] rounded-xl border border-[var(--border)]">
-        {["Upload", "Configuration", "Calcul", "Résultats"].map((s, i) => (
+      <div className="flex items-center gap-2 mb-10 p-5 dash-card">
+        {wizardSteps.map((s, i) => (
           <div key={s} className="flex items-center gap-2 flex-1">
-            <div
-              className={`flex items-center gap-2 ${
-                step > i ? "opacity-100" : "opacity-40"
-              }`}
-            >
+            <div className="flex items-center gap-2">
               <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold ${
-                  step > i
-                    ? "bg-[var(--accent)] text-white"
+                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold transition-colors ${
+                  step > i + 1
+                    ? "bg-indigo-500/20 text-indigo-400"
                     : step === i + 1
-                    ? "border-2 border-[var(--accent)] text-[var(--text-muted)]"
-                    : "bg-[var(--bg-surface)] text-[var(--text-muted)]"
+                    ? "bg-indigo-500 text-white ring-4 ring-indigo-500/20"
+                    : "bg-zinc-800 text-zinc-500"
                 }`}
               >
                 {step > i + 1 ? <Check size={14} /> : i + 1}
               </div>
               <span
-                className={`text-sm ${
-                  step === i + 1 ? "font-semibold" : "font-normal"
+                className={`text-sm font-display transition-colors ${
+                  step === i + 1
+                    ? "font-semibold text-white"
+                    : step > i + 1
+                    ? "text-zinc-300"
+                    : "text-zinc-500"
                 }`}
               >
                 {s}
@@ -253,8 +291,8 @@ export default function ForecastPage() {
             </div>
             {i < 3 && (
               <div
-                className={`flex-1 h-0.5 ${
-                  step > i + 1 ? "bg-[var(--accent)]" : "bg-[var(--border)]"
+                className={`flex-1 h-0.5 transition-colors ${
+                  step > i + 1 ? "bg-indigo-500" : "bg-white/10"
                 }`}
               />
             )}
@@ -272,10 +310,10 @@ export default function ForecastPage() {
           onDragLeave={() => setIsDragging(false)}
           onDrop={handleDrop}
           onClick={() => document.getElementById("file-input")?.click()}
-          className={`rounded-2xl border-2 border-dashed p-20 text-center cursor-pointer transition-all ${
+          className={`dash-empty-hex rounded-2xl border-2 border-dashed p-20 text-center cursor-pointer transition-all ${
             isDragging
-              ? "bg-[var(--accent-muted)] border-[var(--accent)]"
-              : "bg-[var(--bg-secondary)] border-[var(--border)]"
+              ? "bg-indigo-500/5 border-indigo-500"
+              : "bg-white/5 border-white/10 hover:border-indigo-500/50 hover:bg-white/[0.07]"
           }`}
         >
           <input
@@ -285,29 +323,31 @@ export default function ForecastPage() {
             className="hidden"
             onChange={handleDrop}
           />
-          <div className="w-20 h-20 rounded-2xl bg-[var(--accent-muted)] flex items-center justify-center mx-auto mb-6">
-            <Upload size={36} className="text-[var(--accent)]" />
+          <div className={`w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 transition-colors ${
+            isDragging ? "bg-indigo-500/15" : "bg-indigo-500/10"
+          }`}>
+            <Upload size={36} className={`transition-colors ${isDragging ? "text-indigo-400" : "text-zinc-500"}`} />
           </div>
-          <h2 className="text-xl font-semibold mb-2">
+          <h2 className="text-xl font-semibold text-white mb-2">
             Glissez votre fichier ici
           </h2>
-          <p className="text-[var(--text-secondary)] mb-4">
+          <p className="text-zinc-400 mb-4">
             ou cliquez pour parcourir
           </p>
-          <p className="text-sm text-[var(--text-muted)]">
-            Formats acceptés : CSV, XLSX • Max 50 MB
+          <p className="text-sm text-zinc-500">
+            Formats acceptés : CSV, XLSX - Max 50 MB
           </p>
         </div>
       )}
 
       {/* Step 1.5: Analyzing */}
       {step === 1 && analyzing && (
-        <div className="bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border)] p-16 text-center">
-          <div className="w-20 h-20 rounded-2xl bg-[var(--accent-muted)] flex items-center justify-center mx-auto mb-6">
-            <Loader2 size={36} className="text-[var(--accent)] animate-spin" />
+        <div className="dash-card p-16 text-center">
+          <div className="w-20 h-20 rounded-2xl bg-indigo-500/10 flex items-center justify-center mx-auto mb-6">
+            <Loader2 size={36} className="text-indigo-400 animate-spin" />
           </div>
-          <h2 className="text-xl font-semibold mb-2">Analyse en cours...</h2>
-          <p className="text-[var(--text-secondary)]">
+          <h2 className="text-xl font-semibold text-white mb-2">Analyse en cours...</h2>
+          <p className="text-zinc-400">
             Détection des séries, fréquence et configuration optimale
           </p>
         </div>
@@ -315,19 +355,19 @@ export default function ForecastPage() {
 
       {/* Error state for step 1 */}
       {step === 1 && analyzeError && !analyzing && (
-        <div className="mt-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+        <div className="mt-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
           <div className="flex items-start gap-3">
             <AlertCircle
               size={20}
-              className="text-red-500 flex-shrink-0 mt-0.5"
+              className="text-red-400 flex-shrink-0 mt-0.5"
             />
             <div>
-              <p className="font-medium text-red-500">Erreur d&apos;analyse</p>
-              <p className="text-sm text-[var(--text-secondary)] mt-1">
+              <p className="font-medium text-red-400">Erreur d&apos;analyse</p>
+              <p className="text-sm text-zinc-400 mt-1">
                 {analyzeError}
               </p>
               {analysis?.errors && analysis.errors.length > 0 && (
-                <ul className="text-sm text-[var(--text-muted)] mt-2 list-disc list-inside">
+                <ul className="text-sm text-zinc-500 mt-2 list-disc list-inside">
                   {analysis.errors.map((err, i) => (
                     <li key={i}>{err}</li>
                   ))}
@@ -340,24 +380,24 @@ export default function ForecastPage() {
 
       {/* Step 2: Configuration */}
       {step === 2 && analysis && (
-        <div className="bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border)] p-8">
+        <div className="dash-card p-8">
           <div className="flex items-center gap-4 mb-8">
-            <div className="w-12 h-12 rounded-xl bg-[var(--success)]/20 flex items-center justify-center">
-              <Check size={24} className="text-[var(--success)]" />
+            <div className="w-12 h-12 rounded-xl bg-emerald-500/15 flex items-center justify-center">
+              <Check size={24} className="text-emerald-500" />
             </div>
             <div>
-              <p className="font-semibold">{file?.name || "fichier.csv"}</p>
-              <p className="text-sm text-[var(--text-muted)]">
-                Fichier validé • Configuration automatique détectée
+              <p className="font-semibold text-white">{file?.name || "fichier.csv"}</p>
+              <p className="text-sm text-zinc-500">
+                Fichier validé - Configuration automatique détectée
               </p>
             </div>
           </div>
 
-          <h3 className="text-base font-semibold mb-4">
+          <h3 className="text-base font-semibold text-white mb-4">
             Configuration détectée
           </h3>
 
-          <div className="grid grid-cols-3 gap-4 mb-8">
+          <div className="grid grid-cols-3 gap-4 mb-6">
             <ConfigItem
               label="Fréquence"
               value={getFrequencyLabel(analysis.frequency)}
@@ -374,35 +414,57 @@ export default function ForecastPage() {
               )}
             />
             <ConfigItem label="Saisonnalité" value={getSeasonalityLabel()} />
-            <ConfigItem label="Horizon forecast" value={getDefaultHorizon()} />
-            <ConfigItem label="Routing" value="ABC/XYZ auto" />
+            <ConfigItem label="Horizon prévision" value={getDefaultHorizon()} />
+            <ConfigItem label="Calcul des prévisions" value="Automatique (ABC/XYZ)" />
+          </div>
+
+          {/* Options de calcul */}
+          <div className="mb-6">
+            <ForecastOptions
+              horizonMonths={forecastOptions.horizon_months as HorizonMonths}
+              onHorizonChange={(v) =>
+                setForecastOptions((prev) => ({ ...prev, horizon_months: v }))
+              }
+              gatingEnabled={forecastOptions.gating_enabled}
+              onGatingChange={(v) =>
+                setForecastOptions((prev) => ({ ...prev, gating_enabled: v }))
+              }
+              confidenceInterval={forecastOptions.confidence_interval as ConfidenceInterval}
+              onConfidenceChange={(v) =>
+                setForecastOptions((prev) => ({ ...prev, confidence_interval: v }))
+              }
+            />
           </div>
 
           {/* Warnings if any */}
           {analysis.errors.length > 0 && (
-            <div className="p-4 bg-yellow-500/10 rounded-lg mb-6 border-l-[3px] border-yellow-500">
-              <p className="text-sm text-yellow-600 dark:text-yellow-400">
+            <div className="p-4 bg-amber-500/10 rounded-lg mb-6 border-l-[3px] border-amber-500">
+              <p className="text-sm text-amber-400">
                 <strong>Attention :</strong> {analysis.errors.join(". ")}
               </p>
             </div>
           )}
 
-          <div className="p-4 bg-[var(--bg-surface)] rounded-lg mb-6 border-l-[3px] border-[var(--accent)]">
-            <p className="text-sm text-[var(--text-secondary)]">
-              <strong className="text-[var(--text-primary)]">
+          <div className="p-4 bg-white/5 rounded-lg mb-6 border-l-[3px] border-indigo-500">
+            <p className="text-sm text-zinc-400">
+              <strong className="text-white">
                 Mode Express activé :
               </strong>{" "}
               Configuration optimale détectée automatiquement. Jusqu&apos;à 21
-              modèles seront testés selon la classe ABC, avec backtesting
-              multi-fold.
+              méthodes seront testées selon l&apos;importance de chaque produit, avec
+              validation sur votre historique réel.
             </p>
           </div>
 
           <div className="flex gap-3">
-            <Button variant="secondary" onClick={handleReset}>
+            <Button variant="ghost" onClick={handleReset} className="text-zinc-400 hover:text-white">
               Retour
             </Button>
-            <Button onClick={startForecast} disabled={userLoading || !user}>
+            <Button
+              onClick={startForecast}
+              disabled={userLoading || !user}
+              className="bg-indigo-500 hover:bg-indigo-600 text-white"
+            >
               {userLoading ? (
                 <>
                   <Loader2 size={18} className="animate-spin" />
@@ -410,7 +472,7 @@ export default function ForecastPage() {
                 </>
               ) : (
                 <>
-                  Lancer le forecast
+                  Lancer la prévision
                   <ArrowRight size={18} />
                 </>
               )}
@@ -421,29 +483,29 @@ export default function ForecastPage() {
 
       {/* Step 3: Processing (Upload + Job Processing) */}
       {step === 3 && (
-        <div className="bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border)] p-8">
+        <div className="dash-card p-8">
           {/* Header */}
           <div className="flex items-center gap-4 mb-8">
-            <div className="w-14 h-14 rounded-2xl bg-[var(--accent-muted)] flex items-center justify-center">
+            <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center">
               {uploadStep === "error" || isFailed ? (
-                <AlertCircle size={28} className="text-red-500" />
+                <AlertCircle size={28} className="text-red-400" />
               ) : (
-                <Loader2 size={28} className="text-[var(--accent)] animate-spin" />
+                <Loader2 size={28} className="text-indigo-400 animate-spin" />
               )}
             </div>
             <div>
-              <h2 className="text-xl font-semibold">
+              <h2 className="text-xl font-semibold text-white">
                 {uploadStep === "error"
                   ? "Erreur d'upload"
                   : isFailed
                   ? "Erreur de traitement"
                   : uploadStep !== "complete"
-                  ? "Lancement du forecast..."
+                  ? "Lancement de la prévision..."
                   : "Traitement en cours..."}
               </h2>
-              <p className="text-sm text-[var(--text-muted)]">
+              <p className="text-sm text-zinc-500">
                 {file?.name || "fichier.csv"}
-                {job?.current_step && ` • ${job.current_step}`}
+                {job?.current_step && ` - ${job.current_step}`}
               </p>
             </div>
           </div>
@@ -451,16 +513,16 @@ export default function ForecastPage() {
           {/* Progress bar globale */}
           <div className="mb-8">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm text-[var(--text-secondary)]">
+              <span className="text-sm text-zinc-400">
                 Progression globale
               </span>
-              <span className="text-sm font-medium">
+              <span className="text-sm font-medium text-white">
                 {Math.round(getTotalProgress())}%
               </span>
             </div>
-            <div className="bg-[var(--bg-surface)] rounded-full h-3 overflow-hidden">
+            <div className="bg-white/10 rounded-full h-3 overflow-hidden">
               <div
-                className="h-full bg-[var(--accent)] rounded-full transition-all duration-500"
+                className="h-full bg-indigo-500 rounded-full transition-all duration-500"
                 style={{ width: `${getTotalProgress()}%` }}
               />
             </div>
@@ -469,18 +531,18 @@ export default function ForecastPage() {
           {/* Sub-steps */}
           <div className="space-y-4 mb-8">
             {/* Phase 1: Upload */}
-            <div className="p-4 bg-[var(--bg-surface)] rounded-lg">
-              <p className="text-xs text-[var(--text-muted)] mb-3 uppercase tracking-wide">
+            <div className="p-4 bg-white/5 rounded-lg">
+              <p className="text-xs text-zinc-500 mb-3 uppercase tracking-wide">
                 Phase 1 : Envoi
               </p>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <SubStepIndicator
-                    label="Upload du fichier"
+                    label="Envoi du fichier"
                     status={getUploadSubStepStatus("uploading")}
                   />
                   {uploadStep === "uploading" && (
-                    <span className="text-sm text-[var(--text-muted)]">
+                    <span className="text-sm text-zinc-500">
                       {Math.round(uploadProgress)}%
                     </span>
                   )}
@@ -490,7 +552,7 @@ export default function ForecastPage() {
                   status={getUploadSubStepStatus("creating_job")}
                 />
                 <SubStepIndicator
-                  label="Déclenchement du forecast"
+                  label="Déclenchement de la prévision"
                   status={getUploadSubStepStatus("triggering_webhook")}
                 />
               </div>
@@ -498,8 +560,8 @@ export default function ForecastPage() {
 
             {/* Phase 2: Traitement (visible après upload) */}
             {uploadStep === "complete" && (
-              <div className="p-4 bg-[var(--bg-surface)] rounded-lg">
-                <p className="text-xs text-[var(--text-muted)] mb-3 uppercase tracking-wide">
+              <div className="p-4 bg-white/5 rounded-lg">
+                <p className="text-xs text-zinc-500 mb-3 uppercase tracking-wide">
                   Phase 2 : Traitement
                 </p>
                 <div className="space-y-3">
@@ -528,7 +590,7 @@ export default function ForecastPage() {
                     }
                   />
                   <SubStepIndicator
-                    label="Backtesting des modèles"
+                    label="Validation sur historique"
                     status={
                       (job?.progress ?? 0) >= 70
                         ? "completed"
@@ -541,7 +603,7 @@ export default function ForecastPage() {
                   />
                   <div className="flex items-center justify-between">
                     <SubStepIndicator
-                      label="Génération des forecasts"
+                      label="Génération des prévisions"
                       status={
                         isComplete
                           ? "completed"
@@ -555,7 +617,7 @@ export default function ForecastPage() {
                     {job?.series_processed != null &&
                       job?.series_count != null &&
                       job.series_count > 0 && (
-                        <span className="text-sm text-[var(--text-muted)]">
+                        <span className="text-sm text-zinc-500">
                           {job.series_processed}/{job.series_count} séries
                         </span>
                       )}
@@ -567,17 +629,17 @@ export default function ForecastPage() {
 
           {/* Error message */}
           {(uploadStep === "error" || isFailed) && (
-            <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl mb-6">
+            <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl mb-6">
               <div className="flex items-start gap-3">
                 <AlertCircle
                   size={20}
-                  className="text-red-500 flex-shrink-0 mt-0.5"
+                  className="text-red-400 flex-shrink-0 mt-0.5"
                 />
                 <div>
-                  <p className="font-medium text-red-500">
+                  <p className="font-medium text-red-400">
                     {uploadStep === "error" ? "Erreur d'upload" : "Erreur de traitement"}
                   </p>
-                  <p className="text-sm text-[var(--text-secondary)] mt-1">
+                  <p className="text-sm text-zinc-400 mt-1">
                     {uploadError || job?.error_message || "Une erreur est survenue"}
                   </p>
                 </div>
@@ -589,20 +651,23 @@ export default function ForecastPage() {
           <div className="flex gap-3">
             {(uploadStep === "error" || isFailed) && (
               <>
-                <Button variant="secondary" onClick={handleReset}>
+                <Button variant="ghost" onClick={handleReset} className="text-zinc-400 hover:text-white">
                   Retour
                 </Button>
-                <Button onClick={startForecast}>Réessayer</Button>
+                <Button onClick={startForecast} className="bg-indigo-500 hover:bg-indigo-600 text-white">
+                  Réessayer
+                </Button>
               </>
             )}
 
             {/* Lien vers résultats pendant le traitement */}
             {uploadStep === "complete" && !isFailed && (
               <Button
-                variant="secondary"
+                variant="ghost"
                 onClick={() =>
                   router.push(`/dashboard/results?job=${activeJobId}`)
                 }
+                className="text-zinc-300 hover:text-white"
               >
                 Suivre sur la page résultats
                 <ArrowRight size={18} />
@@ -612,46 +677,61 @@ export default function ForecastPage() {
 
           {/* Info message */}
           {uploadStep === "complete" && !isFailed && (
-            <div className="mt-6 p-4 bg-[var(--bg-surface)] rounded-lg border-l-[3px] border-[var(--accent)]">
-              <p className="text-sm text-[var(--text-secondary)]">
-                <strong className="text-[var(--text-primary)]">
-                  Statut : {getJobStatusLabel(job?.status)}
-                </strong>
-                {" • "}
-                Vous pouvez quitter cette page, le traitement continue en arrière-plan.
-              </p>
-            </div>
+            <>
+              <div className="mt-6 p-4 bg-white/5 rounded-lg border-l-[3px] border-indigo-500">
+                <p className="text-sm text-zinc-400">
+                  <strong className="text-white">
+                    Statut : {getJobStatusLabel(job?.status)}
+                  </strong>
+                  {" - "}
+                  Vous pouvez quitter cette page, le traitement continue en arrière-plan.
+                </p>
+              </div>
+              <EnrichedWaiting />
+            </>
           )}
         </div>
       )}
 
       {/* Step 4: Complete */}
       {step === 4 && (
-        <div className="bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border)] p-16 text-center">
-          <div className="w-20 h-20 rounded-2xl bg-[var(--success)]/20 flex items-center justify-center mx-auto mb-6">
-            <Check size={36} className="text-[var(--success)]" />
+        <div className="dash-card-accent p-16 text-center">
+          <div className="w-20 h-20 rounded-2xl bg-emerald-500/15 flex items-center justify-center mx-auto mb-6">
+            <Check size={36} className="text-emerald-500" />
           </div>
 
-          <h2 className="text-2xl font-bold mb-2">Forecast terminé !</h2>
-          <p className="text-[var(--text-secondary)] mb-2">
+          <h2 className="text-2xl font-bold text-white mb-2">Prévision terminée !</h2>
+          <p className="text-zinc-400 mb-2">
             {job?.series_count ?? analysis?.seriesCount ?? 0} séries analysées
-            {job?.avg_smape !== undefined && job.avg_smape !== null && (
-              <> • SMAPE moyen : {job.avg_smape.toFixed(1)}%</>
-            )}
+            {(() => {
+              const avgErr = job?.avg_wape ?? job?.avg_smape;
+              if (avgErr == null) return null;
+              const wapeGreen = thresholds.wape.green_max / 100;
+              const wapeYellow = thresholds.wape.yellow_max / 100;
+              return (
+                <>
+                  {" — "}
+                  {avgErr < wapeGreen
+                    ? "Excellente précision"
+                    : avgErr < wapeYellow
+                      ? "Bonne précision"
+                      : "Précision à surveiller"}
+                </>
+              );
+            })()}
           </p>
-          {activeJobId && (
-            <p className="text-sm text-[var(--text-muted)] mb-8">
-              Job ID:{" "}
-              <span className="font-mono">{activeJobId.slice(0, 8)}...</span>
-              {job?.compute_time_seconds && (
-                <> • Durée : {Math.round(job.compute_time_seconds)}s</>
-              )}
+          {job?.compute_time_seconds && (
+            <p className="text-sm text-zinc-500 mb-8">
+              Durée de calcul : {job.compute_time_seconds >= 60
+                ? `${Math.floor(job.compute_time_seconds / 60)} min ${Math.round(job.compute_time_seconds % 60)}s`
+                : `${Math.round(job.compute_time_seconds)}s`}
             </p>
           )}
+          {!(job?.compute_time_seconds) && <div className="mb-8" />}
 
           <div className="flex gap-3 justify-center">
-            <Button variant="secondary" onClick={handleReset}>
-              Nouveau forecast
+            <Button variant="ghost" onClick={handleReset} className="text-zinc-400 hover:text-white">
+              Nouvelle prévision
             </Button>
             <Button
               size="large"
@@ -660,6 +740,7 @@ export default function ForecastPage() {
                   `/dashboard/results${activeJobId ? `?job=${activeJobId}` : ""}`
                 )
               }
+              className="bg-indigo-500 hover:bg-indigo-600 text-white shimmer"
             >
               Voir les résultats
               <ArrowRight size={20} />
@@ -673,9 +754,9 @@ export default function ForecastPage() {
 
 function ConfigItem({ label, value }: { label: string; value: string }) {
   return (
-    <div className="p-4 bg-[var(--bg-surface)] rounded-lg">
-      <p className="text-[11px] text-[var(--text-muted)] mb-1">{label}</p>
-      <p className="font-semibold text-sm">{value}</p>
+    <div className="p-4 bg-white/5 rounded-lg">
+      <p className="text-[11px] text-zinc-500 mb-1">{label}</p>
+      <p className="font-semibold text-sm text-white">{value}</p>
     </div>
   );
 }
@@ -692,12 +773,12 @@ function SubStepIndicator({
       <div
         className={`w-6 h-6 rounded-full flex items-center justify-center ${
           status === "completed"
-            ? "bg-[var(--success)]"
+            ? "bg-emerald-500"
             : status === "in_progress"
-            ? "bg-[var(--accent)]"
+            ? "bg-indigo-500"
             : status === "error"
             ? "bg-red-500"
-            : "bg-[var(--bg-secondary)] border border-[var(--border)]"
+            : "bg-white/10 border border-white/[0.08]"
         }`}
       >
         {status === "completed" && <Check size={14} className="text-white" />}
@@ -711,12 +792,12 @@ function SubStepIndicator({
       <span
         className={`text-sm ${
           status === "completed"
-            ? "text-[var(--success)]"
+            ? "text-emerald-500"
             : status === "in_progress"
-            ? "text-[var(--text-primary)] font-medium"
+            ? "text-white font-medium"
             : status === "error"
-            ? "text-red-500"
-            : "text-[var(--text-muted)]"
+            ? "text-red-400"
+            : "text-zinc-500"
         }`}
       >
         {label}

@@ -31,6 +31,7 @@ export function useJobStatus(
   const [error, setError] = useState<string | null>(null)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
   const isMountedRef = useRef(true)
+  const jobStatusRef = useRef<string | null>(null)
 
   const fetchJobStatus = useCallback(async () => {
     if (!jobId) {
@@ -42,6 +43,7 @@ export function useJobStatus(
     try {
       const supabase = createClient()
       const { data, error: fetchError } = await supabase
+        .schema('lumeniq')
         .from('forecast_jobs')
         .select('*')
         .eq('id', jobId)
@@ -54,7 +56,15 @@ export function useJobStatus(
         setError(fetchError.message)
         setJob(null)
       } else {
-        setJob(data as ForecastJob)
+        // Colonnes numeric PostgreSQL arrivent comme string via Supabase JS
+        // Les valeurs restent en ratio (0-1), la conversion en % se fait dans la couche d'affichage
+        const parsed = {
+          ...data,
+          avg_wape: data.avg_wape != null ? Number(data.avg_wape) : null,
+          avg_smape: data.avg_smape != null ? Number(data.avg_smape) : null,
+          avg_bias: data.avg_bias != null ? Number(data.avg_bias) : null,
+        }
+        setJob(parsed as ForecastJob)
         setError(null)
       }
     } catch (err) {
@@ -68,6 +78,11 @@ export function useJobStatus(
       }
     }
   }, [jobId])
+
+  // Mettre à jour la ref du statut quand job change
+  useEffect(() => {
+    jobStatusRef.current = job?.status ?? null
+  }, [job?.status])
 
   // Démarrer/arrêter le polling
   useEffect(() => {
@@ -84,8 +99,9 @@ export function useJobStatus(
 
     // Démarrer le polling
     intervalRef.current = setInterval(() => {
-      // Arrêter si le job est terminé ou en erreur
-      if (job?.status === 'completed' || job?.status === 'failed' || job?.status === 'cancelled') {
+      // Arrêter si le job est terminé ou en erreur (utilise la ref pour éviter la dépendance)
+      const currentStatus = jobStatusRef.current
+      if (currentStatus === 'completed' || currentStatus === 'failed' || currentStatus === 'cancelled') {
         if (intervalRef.current) {
           clearInterval(intervalRef.current)
           intervalRef.current = null
@@ -103,17 +119,7 @@ export function useJobStatus(
         intervalRef.current = null
       }
     }
-  }, [jobId, enabled, pollInterval, fetchJobStatus, job?.status])
-
-  // Arrêter le polling quand le job est terminé
-  useEffect(() => {
-    if (job?.status === 'completed' || job?.status === 'failed' || job?.status === 'cancelled') {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current)
-        intervalRef.current = null
-      }
-    }
-  }, [job?.status])
+  }, [jobId, enabled, pollInterval, fetchJobStatus])
 
   const isComplete = job?.status === 'completed'
   const isFailed = job?.status === 'failed' || job?.status === 'cancelled'

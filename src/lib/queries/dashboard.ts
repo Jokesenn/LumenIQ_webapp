@@ -1,240 +1,314 @@
-import type { SupabaseClient } from '@supabase/supabase-js'
-import type { Database, PlanType, ForecastJob, Profile, ForecastResult } from '@/types/database'
+import { createClient } from "@/lib/supabase/server";
+import { toChampionScore } from "@/lib/metrics";
+import { resolveGlobalErrorRatio } from "@/lib/chart-utils";
+import type { ForecastAction } from "@/types/actions";
 
-// ============================================
-// Types
-// ============================================
+const PLAN_LIMITS: Record<string, number> = {
+  standard: 50,
+  ml: 150,
+  premium: 300,
+};
 
-export interface DashboardStats {
-  seriesThisMonth: number
-  seriesLimit: number
-  forecastsThisMonth: number
-  averageSmape: number | null
-  daysUntilReset: number
-  plan: PlanType
+// Stats générales du dashboard (cockpit de décision)
+export async function getDashboardStats(userId: string) {
+  const supabase = await createClient();
+
+  // Nombre de forecasts ce mois
+  const startOfMonth = new Date();
+  startOfMonth.setDate(1);
+  startOfMonth.setHours(0, 0, 0, 0);
+
+  const { count: forecastsThisMonth } = await supabase
+    .schema("lumeniq")
+    .from("forecast_jobs")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", userId)
+    .eq("status", "completed")
+    .gte("created_at", startOfMonth.toISOString());
+
+  // Champion Score moyen global (basé sur WAPE, fallback SMAPE) — derniers 10 runs
+  const { data: scoreData } = await supabase
+    .schema("lumeniq")
+    .from("job_summaries")
+    .select("global_wape, global_smape")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(10);
+
+  const avgChampionScore =
+    scoreData?.length
+      ? scoreData.reduce((sum, d) => {
+          const cs = toChampionScore(resolveGlobalErrorRatio(d));
+          return sum + (cs ?? 0);
+        }, 0) / scoreData.length
+      : 0;
+
+  // Scores individuels pour calcul de tendance (dernier run vs avant-dernier)
+  const latestScore = scoreData?.[0] ? toChampionScore(resolveGlobalErrorRatio(scoreData[0])) : null;
+  const previousScore = scoreData?.[1] ? toChampionScore(resolveGlobalErrorRatio(scoreData[1])) : null;
+
+  // Dernière prévision complétée
+  const { data: lastJob } = await supabase
+    .schema("lumeniq")
+    .from("forecast_jobs")
+    .select("created_at")
+    .eq("user_id", userId)
+    .eq("status", "completed")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  // Profil utilisateur (quota + nom)
+  const { data: profile } = await supabase
+    .schema("lumeniq")
+    .from("profiles")
+    .select("plan, series_used_this_period, full_name, email")
+    .eq("id", userId)
+    .single();
+
+  const userName = profile?.full_name?.split(" ")[0]
+    ?? profile?.email?.split("@")[0]
+    ?? "";
+
+  // Jours jusqu'à la fin du mois (reset quota)
+  const now = new Date();
+  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  const daysUntilReset = Math.max(0, Math.ceil((endOfMonth.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+
+  return {
+    userName,
+    forecastsThisMonth: forecastsThisMonth || 0,
+    avgChampionScore,
+    latestScore,
+    previousScore,
+    lastForecastAt: lastJob?.created_at ?? null,
+    daysUntilReset,
+    quota: {
+      used: profile?.series_used_this_period ?? 0,
+      limit: PLAN_LIMITS[profile?.plan ?? "standard"] ?? 100,
+      plan: profile?.plan ?? "standard",
+    },
+  };
 }
 
-export interface ModelPerformanceItem {
-  model: string
-  smape: number
-  series: number
+// Données de tendance pour le sparkline (10 derniers runs)
+export interface TrendDataPoint {
+  jobId: string;
+  score: number;
+  date: string | null;
+  seriesCount: number;
 }
 
-// Type pour le client Supabase avec le schéma lumeniq
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type SupabaseClientType = SupabaseClient<Database, 'lumeniq', any>
+export async function getTrendData(userId: string): Promise<TrendDataPoint[]> {
+  const supabase = await createClient();
 
-// ============================================
-// Constants
-// ============================================
+  // Fetch les 10 plus récents (desc), puis on inverse pour l'affichage chronologique
+  const { data } = await supabase
+    .schema("lumeniq")
+    .from("job_summaries")
+    .select("job_id, global_wape, global_smape, created_at, n_series_total")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(10);
 
-export const PLAN_LIMITS: Record<PlanType, { series: number; history: number }> = {
-  standard: { series: 50, history: 30 },
-  ml: { series: 150, history: 60 },
-  premium: { series: 300, history: 90 },
-}
-
-// ============================================
-// Helper Functions
-// ============================================
-
-function getStartOfMonth(): string {
-  const now = new Date()
-  return new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
-}
-
-function calculateDaysUntilReset(currentPeriodStart: string | null): number {
-  if (!currentPeriodStart) {
-    // Default: assume period started at beginning of current month
-    const now = new Date()
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
-    return Math.max(0, Math.ceil((endOfMonth.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
-  }
-
-  const periodStart = new Date(currentPeriodStart)
-  // Period resets 30 days after start
-  const periodEnd = new Date(periodStart)
-  periodEnd.setDate(periodEnd.getDate() + 30)
-
-  const now = new Date()
-  const daysRemaining = Math.ceil((periodEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-
-  return Math.max(0, daysRemaining)
-}
-
-// ============================================
-// Query Functions
-// ============================================
-
-/**
- * Récupère les statistiques du dashboard pour un utilisateur
- */
-export async function getDashboardStats(
-  supabase: SupabaseClientType,
-  userId: string
-): Promise<DashboardStats> {
-  try {
-    // 1. Récupérer le profil utilisateur
-    const { data: profileData, error: profileError } = await supabase
-      .from('profiles')
-      .select('plan, series_used_this_period, current_period_start')
-      .eq('id', userId)
-      .single()
-
-    if (profileError) {
-      console.error('Error fetching profile:', profileError)
-      throw profileError
-    }
-
-    const profile = profileData as Pick<Profile, 'plan' | 'series_used_this_period' | 'current_period_start'> | null
-    const plan: PlanType = profile?.plan ?? 'standard'
-    const seriesThisMonth = profile?.series_used_this_period ?? 0
-    const seriesLimit = PLAN_LIMITS[plan]?.series ?? 50
-
-    // 2. Compter les forecasts du mois courant
-    const startOfMonth = getStartOfMonth()
-    const { count: forecastsCount, error: forecastsError } = await supabase
-      .from('forecast_jobs')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', userId)
-      .gte('created_at', startOfMonth)
-
-    if (forecastsError) {
-      console.error('Error counting forecasts:', forecastsError)
-    }
-
-    // 3. Calculer le SMAPE moyen depuis forecast_results
-    const { data: smapeRaw, error: smapeError } = await supabase
-      .from('forecast_results')
-      .select('smape')
-      .eq('user_id', userId)
-      .not('smape', 'is', null)
-
-    if (smapeError) {
-      console.error('Error fetching SMAPE:', smapeError)
-    }
-
-    const smapeData = smapeRaw as Pick<ForecastResult, 'smape'>[] | null
-
-    let averageSmape: number | null = null
-    if (smapeData && smapeData.length > 0) {
-      const validSmapes = smapeData
-        .filter((d) => d.smape !== null)
-        .map((d) => d.smape as number)
-      if (validSmapes.length > 0) {
-        averageSmape = Math.round((validSmapes.reduce((a, b) => a + b, 0) / validSmapes.length) * 10) / 10
-      }
-    }
-
-    // 4. Calculer les jours jusqu'au reset
-    const daysUntilReset = calculateDaysUntilReset(profile?.current_period_start ?? null)
-
+  return (data ?? []).reverse().map((d) => {
     return {
-      seriesThisMonth,
-      seriesLimit,
-      forecastsThisMonth: forecastsCount ?? 0,
-      averageSmape,
-      daysUntilReset,
-      plan,
-    }
-  } catch (error) {
-    console.error('Error in getDashboardStats:', error)
-    // Retourner des valeurs par défaut en cas d'erreur
-    return {
-      seriesThisMonth: 0,
-      seriesLimit: 50,
-      forecastsThisMonth: 0,
-      averageSmape: null,
-      daysUntilReset: 30,
-      plan: 'standard',
-    }
-  }
+      jobId: d.job_id,
+      score: toChampionScore(resolveGlobalErrorRatio(d)) ?? 0,
+      date: d.created_at,
+      seriesCount: d.n_series_total ?? 0,
+    };
+  });
 }
 
-/**
- * Récupère les derniers forecasts d'un utilisateur
- */
+// Actions urgentes pour le dashboard
+export interface UrgentActionsData {
+  counts: { urgent: number; warning: number; info: number };
+  total: number;
+  topActions: ForecastAction[];
+}
+
+export async function getUrgentActions(userId: string): Promise<UrgentActionsData> {
+  const supabase = await createClient();
+
+  // Compteur par priorité (actions actives uniquement)
+  const { data: allActive } = await supabase
+    .schema("lumeniq")
+    .from("forecast_actions")
+    .select("priority")
+    .eq("client_id", userId)
+    .eq("status", "active");
+
+  const counts = { urgent: 0, warning: 0, info: 0 };
+  (allActive ?? []).forEach((a) => {
+    const p = a.priority as keyof typeof counts;
+    if (p in counts) counts[p]++;
+  });
+
+  // Top 5 actions urgentes/warning
+  const { data: topActions } = await supabase
+    .schema("lumeniq")
+    .from("forecast_actions")
+    .select("*")
+    .eq("client_id", userId)
+    .eq("status", "active")
+    .in("priority", ["urgent", "warning"])
+    .order("priority", { ascending: true })
+    .order("created_at", { ascending: false })
+    .limit(5);
+
+  return {
+    counts,
+    total: (allActive ?? []).length,
+    topActions: (topActions ?? []) as ForecastAction[],
+  };
+}
+
+// Dernières prévisions enrichies (score + actions)
+export interface RecentForecastItem {
+  id: string;
+  filename: string | null;
+  status: string;
+  createdAt: string | null;
+  seriesCount: number;
+  score: number | null;
+  duration: number | null;
+  actions: { urgent: number; warning: number; total: number };
+}
+
 export async function getRecentForecasts(
-  supabase: SupabaseClientType,
   userId: string,
-  limit: number = 5
-): Promise<ForecastJob[]> {
-  try {
-    const { data, error } = await supabase
-      .from('forecast_jobs')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-      .limit(limit)
+  limit = 5
+): Promise<RecentForecastItem[]> {
+  const supabase = await createClient();
 
-    if (error) {
-      console.error('Error fetching recent forecasts:', error)
-      return []
-    }
+  const { data: jobs } = await supabase
+    .schema("lumeniq")
+    .from("forecast_jobs")
+    .select(`
+      id,
+      filename,
+      status,
+      created_at,
+      series_count
+    `)
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
 
-    return (data as ForecastJob[]) ?? []
-  } catch (error) {
-    console.error('Error in getRecentForecasts:', error)
-    return []
-  }
+  if (!jobs?.length) return [];
+
+  const jobIds = jobs.map((j) => j.id);
+
+  // Enrichir avec les summaries
+  const { data: summaries } = await supabase
+    .schema("lumeniq")
+    .from("job_summaries")
+    .select("job_id, global_wape, global_smape, duration_sec")
+    .in("job_id", jobIds);
+
+  const summaryMap = new Map(summaries?.map((s) => [s.job_id, s]));
+
+  // Compter les actions par job
+  const { data: actionsByJob } = await supabase
+    .schema("lumeniq")
+    .from("forecast_actions")
+    .select("job_id, priority")
+    .eq("client_id", userId)
+    .eq("status", "active")
+    .in("job_id", jobIds);
+
+  const actionCounts: Record<string, { urgent: number; warning: number; total: number }> = {};
+  (actionsByJob ?? []).forEach((a) => {
+    if (!actionCounts[a.job_id]) actionCounts[a.job_id] = { urgent: 0, warning: 0, total: 0 };
+    actionCounts[a.job_id].total++;
+    if (a.priority === "urgent") actionCounts[a.job_id].urgent++;
+    if (a.priority === "warning") actionCounts[a.job_id].warning++;
+  });
+
+  return jobs.map((job) => {
+    const summary = summaryMap.get(job.id);
+    const ratio = summary ? resolveGlobalErrorRatio(summary) : null;
+
+    return {
+      id: job.id,
+      filename: job.filename,
+      status: job.status ?? "pending",
+      createdAt: job.created_at,
+      seriesCount: job.series_count || 0,
+      score: toChampionScore(ratio),
+      duration: summary?.duration_sec ?? null,
+      actions: actionCounts[job.id] ?? { urgent: 0, warning: 0, total: 0 },
+    };
+  });
 }
 
-/**
- * Récupère les performances par modèle pour un utilisateur
- */
-export async function getModelPerformance(
-  supabase: SupabaseClientType,
-  userId: string
-): Promise<ModelPerformanceItem[]> {
-  try {
-    // Récupérer tous les résultats avec champion_model et smape
-    const { data: rawData, error } = await supabase
-      .from('forecast_results')
-      .select('champion_model, smape')
-      .eq('user_id', userId)
-      .not('champion_model', 'is', null)
-      .not('smape', 'is', null)
+// Historique complet des jobs pour la page /dashboard/history
+export interface HistoryJob {
+  id: string;
+  filename: string | null;
+  status: string;
+  createdAt: string | null;
+  completedAt: string | null;
+  seriesCount: number;
+  championScore: number | null;
+  smape: number | null;
+  duration: number | null;
+  topModel: string | null;
+}
 
-    if (error) {
-      console.error('Error fetching model performance:', error)
-      return []
-    }
+export async function getJobHistory(userId: string): Promise<HistoryJob[]> {
+  const supabase = await createClient();
 
-    const data = rawData as Pick<ForecastResult, 'champion_model' | 'smape'>[] | null
+  const { data: jobs } = await supabase
+    .schema("lumeniq")
+    .from("forecast_jobs")
+    .select(`
+      id,
+      filename,
+      status,
+      created_at,
+      completed_at,
+      series_count,
+      avg_wape,
+      avg_smape,
+      compute_time_seconds,
+      top_champion_model
+    `)
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
 
-    if (!data || data.length === 0) {
-      return []
-    }
+  if (!jobs?.length) return [];
 
-    // Grouper par modèle et calculer les stats
-    const modelMap = new Map<string, { totalSmape: number; count: number }>()
+  // Enrichir avec job_summaries pour fallback global_wape quand avg_smape est null
+  const jobIds = jobs.map((j) => j.id);
+  const { data: summaries } = await supabase
+    .schema("lumeniq")
+    .from("job_summaries")
+    .select("job_id, global_smape, global_wape")
+    .in("job_id", jobIds);
 
-    for (const result of data) {
-      const model = result.champion_model
-      const smape = result.smape as number
+  const summaryMap = new Map(summaries?.map((s) => [s.job_id, s]));
 
-      if (modelMap.has(model)) {
-        const existing = modelMap.get(model)!
-        existing.totalSmape += smape
-        existing.count += 1
-      } else {
-        modelMap.set(model, { totalSmape: smape, count: 1 })
-      }
-    }
+  return jobs.map((job) => {
+    const summary = summaryMap.get(job.id);
+    // Priority: job-level avg → summary-level global (wape → smape fallback)
+    const ratio = resolveGlobalErrorRatio({
+      global_wape: job.avg_wape ?? summary?.global_wape,
+      global_smape: job.avg_smape ?? summary?.global_smape,
+    });
 
-    // Convertir en tableau et calculer les moyennes
-    const performance: ModelPerformanceItem[] = Array.from(modelMap.entries()).map(
-      ([model, stats]) => ({
-        model,
-        smape: Math.round((stats.totalSmape / stats.count) * 10) / 10,
-        series: stats.count,
-      })
-    )
-
-    // Trier par nombre de séries décroissant
-    return performance.sort((a, b) => b.series - a.series)
-  } catch (error) {
-    console.error('Error in getModelPerformance:', error)
-    return []
-  }
+    return {
+      id: job.id,
+      filename: job.filename,
+      status: job.status ?? "pending",
+      createdAt: job.created_at,
+      completedAt: job.completed_at,
+      seriesCount: job.series_count || 0,
+      championScore: toChampionScore(ratio),
+      smape: ratio != null ? ratio * 100 : null,
+      duration: job.compute_time_seconds != null ? Number(job.compute_time_seconds) : null,
+      topModel: job.top_champion_model,
+    };
+  });
 }

@@ -3,7 +3,8 @@
 import { useState, useCallback } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { createClient } from '@/lib/supabase/client'
-import type { UploadStep, ForecastJobInsert, WebhookPayload, PlanType } from '@/types/forecast'
+import type { UploadStep, ForecastJobInsert, PlanType } from '@/types/forecast'
+import type { ForecastConfigOverride } from '@/types/preferences'
 
 interface UploadResult {
   jobId: string
@@ -18,7 +19,7 @@ interface UseFileUploadReturn {
   error: string | null
   uploadedPath: string | null
   jobId: string | null
-  uploadAndCreateJob: (file: File, userId: string) => Promise<UploadResult | null>
+  uploadAndCreateJob: (file: File, userId: string, configOverride?: ForecastConfigOverride) => Promise<UploadResult | null>
   reset: () => void
 }
 
@@ -53,7 +54,7 @@ export function useFileUpload(): UseFileUploadReturn {
     setJobId(null)
   }, [])
 
-  const uploadAndCreateJob = useCallback(async (file: File, userId: string): Promise<UploadResult | null> => {
+  const uploadAndCreateJob = useCallback(async (file: File, userId: string, configOverride?: ForecastConfigOverride): Promise<UploadResult | null> => {
     // Reset state
     setError(null)
     setUploadProgress(0)
@@ -138,6 +139,7 @@ export function useFileUpload(): UseFileUploadReturn {
         status: 'pending',
         progress: 0,
         plan_at_run: userPlan,
+        ...(configOverride && { horizon: configOverride.horizon_months }),
       }
 
       const { error: insertError } = await supabase
@@ -156,37 +158,29 @@ export function useFileUpload(): UseFileUploadReturn {
 
       setJobId(newJobId)
 
-      // Step 3: Trigger N8N webhook
+      // Step 3: Trigger forecast via server-side proxy (authentifié + HMAC)
       setStep('triggering_webhook')
 
-      const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL
+      try {
+        const response = await fetch('/api/webhook/forecast', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            job_id: newJobId,
+            plan: userPlan,
+            input_path: filePath,
+            filename: file.name,
+            ...(configOverride && { config_override: configOverride }),
+          }),
+        })
 
-      if (webhookUrl) {
-        const webhookPayload: WebhookPayload = {
-          job_id: newJobId,
-          user_id: userId,
-          plan: userPlan,
-          input_path: filePath,
-          filename: file.name,
+        if (!response.ok) {
+          // Log warning but don't block - N8N can retry or we can poll
+          console.warn(`Webhook proxy returned ${response.status}`)
         }
-
-        try {
-          const response = await fetch(webhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(webhookPayload),
-          })
-
-          if (!response.ok) {
-            // Log warning but don't block - N8N can retry or we can poll
-            console.warn(`Webhook returned ${response.status}: ${response.statusText}`)
-          }
-        } catch (webhookError) {
-          // Log warning but don't block the UX
-          console.warn('Webhook trigger failed (non-blocking):', webhookError)
-        }
-      } else {
-        console.warn('N8N webhook URL not configured')
+      } catch (webhookError) {
+        // Log warning but don't block the UX
+        console.warn('Webhook trigger failed (non-blocking):', webhookError)
       }
 
       // Complete

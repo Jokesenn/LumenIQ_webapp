@@ -4,8 +4,17 @@ import Link from "next/link";
 import { FileText, ChevronRight, AlertCircle, Loader2, CheckCircle2 } from "lucide-react";
 import type { ForecastJob } from "@/types/database";
 
+export type RecentForecastRow = Pick<ForecastJob, "id" | "filename" | "status"> & {
+  created_at?: string | null;
+  createdAt?: string | null;
+  series_count?: number;
+  seriesCount?: number;
+  avg_smape?: number | null;
+  smape?: number | null;
+};
+
 interface RecentForecastsProps {
-  forecasts: ForecastJob[];
+  forecasts: (ForecastJob | RecentForecastRow)[];
 }
 
 function formatDate(dateString: string | null): string {
@@ -18,17 +27,17 @@ function formatDate(dateString: string | null): string {
   });
 }
 
-function getStatusBadge(status: ForecastJob["status"], smape: number | null) {
+function getStatusBadge(status: string, smape: number | null | undefined) {
   switch (status) {
     case "completed":
       return (
-        <span className="px-2.5 py-1 bg-[var(--success)]/20 text-[var(--success)] rounded-full text-xs font-semibold">
-          {smape !== null ? `SMAPE ${smape}%` : "Terminé"}
+        <span className="px-2.5 py-1 bg-emerald-500/10 text-emerald-500 rounded-full text-xs font-semibold">
+          {smape != null ? `Fiabilité ${(100 - Number(smape)).toFixed(0)}` : "Terminé"}
         </span>
       );
     case "processing":
       return (
-        <span className="px-2.5 py-1 bg-[var(--accent)]/20 text-[var(--accent)] rounded-full text-xs font-semibold flex items-center gap-1">
+        <span className="px-2.5 py-1 bg-amber-500/10 text-amber-500 rounded-full text-xs font-semibold flex items-center gap-1.5">
           <Loader2 size={12} className="animate-spin" />
           En cours
         </span>
@@ -36,13 +45,13 @@ function getStatusBadge(status: ForecastJob["status"], smape: number | null) {
     case "pending":
     case "queued":
       return (
-        <span className="px-2.5 py-1 bg-[var(--text-muted)]/20 text-[var(--text-muted)] rounded-full text-xs font-semibold">
+        <span className="px-2.5 py-1 bg-zinc-500/10 text-zinc-500 rounded-full text-xs font-semibold">
           En attente
         </span>
       );
     case "failed":
       return (
-        <span className="px-2.5 py-1 bg-red-500/20 text-red-500 rounded-full text-xs font-semibold flex items-center gap-1">
+        <span className="px-2.5 py-1 bg-red-500/10 text-red-500 rounded-full text-xs font-semibold flex items-center gap-1.5">
           <AlertCircle size={12} />
           Échec
         </span>
@@ -52,53 +61,58 @@ function getStatusBadge(status: ForecastJob["status"], smape: number | null) {
   }
 }
 
-function getStatusIcon(status: ForecastJob["status"]) {
+function getStatusIcon(status: string) {
   switch (status) {
     case "completed":
-      return <CheckCircle2 size={18} className="text-[var(--success)]" />;
+      return <CheckCircle2 size={18} className="text-emerald-500" />;
     case "processing":
-      return <Loader2 size={18} className="text-[var(--accent)] animate-spin" />;
+      return <Loader2 size={18} className="text-amber-500 animate-spin" />;
     case "failed":
       return <AlertCircle size={18} className="text-red-500" />;
     default:
-      return <FileText size={18} className="text-[var(--accent)]" />;
+      return <FileText size={18} className="text-indigo-400" />;
   }
 }
 
 export function RecentForecasts({ forecasts }: RecentForecastsProps) {
   return (
-    <div className="bg-[var(--bg-secondary)] rounded-xl border border-[var(--border)] p-6">
+    <div className="dash-card p-6">
       <div className="flex justify-between items-center mb-5">
-        <h2 className="text-base font-semibold">Derniers forecasts</h2>
+        <h2 className="dash-section-title">Dernières prévisions</h2>
         <Link
           href="/dashboard/history"
-          className="text-[var(--accent)] text-sm flex items-center gap-1 hover:underline"
+          className="text-indigo-400 text-sm flex items-center gap-1 hover:text-indigo-300 transition-colors"
         >
           Voir tout <ChevronRight size={16} />
         </Link>
       </div>
 
-      <div className="space-y-3">
-        {forecasts.map((item) => (
-          <Link
-            key={item.id}
-            href={`/dashboard/results?job=${item.id}`}
-            className="flex items-center justify-between p-4 bg-[var(--bg-surface)] rounded-lg hover:bg-[var(--bg-hover)] transition-colors cursor-pointer"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-[var(--accent-muted)] flex items-center justify-center">
-                {getStatusIcon(item.status)}
+      <div className="space-y-2">
+        {forecasts.map((item) => {
+          const created = "created_at" in item ? item.created_at : item.createdAt;
+          const seriesCount = "series_count" in item ? item.series_count : item.seriesCount;
+          const smape = "avg_smape" in item ? item.avg_smape : item.smape;
+          return (
+            <Link
+              key={item.id}
+              href={`/dashboard/results?job=${item.id}`}
+              className="flex items-center justify-between p-4 bg-white/5 rounded-lg hover:bg-white/10 transition-colors duration-200 cursor-pointer"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center">
+                  {getStatusIcon(item.status ?? "pending")}
+                </div>
+                <div>
+                  <p className="font-medium text-sm text-white">{item.filename ?? "Sans nom"}</p>
+                  <p className="text-xs text-zinc-500">
+                    {formatDate(created ?? null)} • {seriesCount ?? 0} séries
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="font-medium text-sm">{item.filename}</p>
-                <p className="text-xs text-[var(--text-muted)]">
-                  {formatDate(item.created_at)} • {item.series_count ?? 0} séries
-                </p>
-              </div>
-            </div>
-            {getStatusBadge(item.status, item.avg_smape)}
-          </Link>
-        ))}
+              {getStatusBadge(item.status ?? "pending", smape ?? null)}
+            </Link>
+          );
+        })}
       </div>
     </div>
   );
