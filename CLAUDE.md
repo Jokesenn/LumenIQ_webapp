@@ -61,7 +61,7 @@ src/
 │   │   │   ├── page.tsx
 │   │   │   └── history-content.tsx
 │   │   ├── results/
-│   │   │   ├── page.tsx         # Tabs: overview, series, reliability, portfolio, synthesis
+│   │   │   ├── page.tsx         # Tabs: overview, portfolio, series, synthesis, reliability (business-first order)
 │   │   │   ├── loading.tsx
 │   │   │   ├── results-content.tsx
 │   │   │   ├── results-client.tsx  # Dynamic import wrapper (avoids SSR hydration mismatch)
@@ -230,7 +230,8 @@ src/
 │   ├── metrics.ts               # toChampionScore(), getChampionScoreColor(), getChampionScoreStatus()
 │   ├── model-labels.ts          # MODEL_LABELS, MODEL_FAMILIES, getModelMeta() — French labels for technical model names
 │   ├── reliability-utils.ts     # Utility functions for reliability tab
-│   ├── csv-analyzer.ts          # CSV parsing, format detection, frequency analysis
+│   ├── csv-analyzer.ts          # CSV parsing, format detection, frequency analysis, column mapping
+│   ├── date-format.ts           # Frequency-aware date formatting (formatDateByFrequency, formatFrequencyLabel, classifyFreq)
 │   ├── series-alerts.ts         # getSeriesAlerts(), sortAlertsByPriority(), countAlertsByType()
 │   ├── linkify-skus.ts          # SKU linkification in markdown content
 │   ├── parse-markdown-sections.ts  # Split markdown by H2 headers for accordions
@@ -284,7 +285,9 @@ src/
 - Types are in `src/types/database.ts` — regenerate with Supabase CLI when schema changes
 - Server queries use `createClient()` from `@/lib/supabase/server`
 - Client queries use `createClient()` from `@/lib/supabase/client` (singleton, schema pre-configured) with `.schema("lumeniq")` when needed for typed queries
-- Key tables: `profiles`, `forecast_jobs`, `forecast_results`, `forecast_results_months`, `series_actuals`, `forecast_syntheses`, `job_summaries`, `forecast_series`, `job_monthly_aggregates`, `user_preferences`, `forecast_actions`, `user_thresholds`
+- Key tables: `profiles`, `forecast_jobs`, `forecast_results`, `forecast_results_months`, `forecast_results_detail`, `series_actuals`, `forecast_syntheses`, `job_summaries`, `forecast_series`, `job_monthly_aggregates`, `user_preferences`, `forecast_actions`, `user_thresholds`
+- `forecast_jobs` includes `engine_frequency` (detected data frequency) and `aggregation_applied` (boolean, true when source data was temporally aggregated to monthly)
+- `forecast_results_detail` stores per-series forecast data at the source frequency (before temporal aggregation)
 
 ### Auth
 - Supabase Auth with SSR via `@supabase/ssr`
@@ -330,6 +333,9 @@ src/
 ### Queries Pattern
 - **Server-side** (pages): import from `@/lib/queries/results` or `@/lib/queries/dashboard`, use `createClient()` from `@/lib/supabase/server`
 - **Client-side** (hooks/components): import `createClient` from `@/lib/supabase/client`, call `.schema("lumeniq")` explicitly for typed queries
+- **RPC calls**: `getJobDetailChartData(jobId, userId, frequency)` uses Supabase RPC `get_job_source_chart_data` for server-side aggregation of chart data at source frequency — avoids PostgREST row limits and client-side aggregation
+- **Source-frequency data**: `getSeriesDetailForecastData(jobId, seriesId, userId)` queries `forecast_results_detail` for per-series data at the original (non-aggregated) frequency
+- **Two-phase fetching**: Charts first fetch the job to extract `engine_frequency` and `aggregation_applied`, then conditionally fetch source-frequency data only when aggregation was applied (lazy-loading pattern)
 
 ### Data Contract: Metric Storage (VERIFIED against real DB data)
 
@@ -367,7 +373,7 @@ Conversion functions in `@/lib/metrics.ts`:
 - Trend labels on action cards: Dégradation (red), Stable (neutral), Amélioration (green)
 
 ### Model Labels (`lib/model-labels.ts`)
-- `MODEL_LABELS`: maps 30+ technical model names to French labels and family categories
+- `MODEL_LABELS`: maps 30+ technical model names to French labels and family categories. Recent additions: `rolling_mean_long` → "Moyenne mobile étendue" (family: classical), `tbats` → "TBATS" (family: decomposition)
 - `MODEL_FAMILIES`: 4 families — Décomposition avancée (violet), Statistique classique (blue), Machine Learning (emerald), Statistique avancée (amber)
 - `getModelMeta(name)`: returns `{ label, family, familyColor }` — always use this for user-facing model names
 - `getFamilyMeta(name)`: returns `{ hex, bgClass, label }` — for color-coding by family
@@ -399,7 +405,7 @@ Conversion functions in `@/lib/metrics.ts`:
 - Per-cluster summary cards: count, avg reliability, volume %, top model, ABC breakdown, at-risk series, business advice
 - Responsive mobile layout, Framer Motion animations
 - Threshold visualization lines (reliability seuil, median volume)
-- Accessible as a tab on the results page alongside overview, series, reliability, synthesis
+- Accessible as the second tab on the results page (order: overview → portfolio → series → synthesis → reliability)
 
 ### Threshold System (`lib/thresholds/`, `components/dashboard/threshold-settings.tsx`)
 - User-customizable metric color thresholds (green/yellow/red zones) for 5 dashboard metrics:
@@ -428,6 +434,22 @@ Conversion functions in `@/lib/metrics.ts`:
 4. **Séries réussies** — count of successfully analyzed series
 5. **Séries fiables** — % of series with champion_score ≥ 70/100
 
+### Granularity Toggle (Temporally Aggregated Forecasts)
+- Toggle "Mensuel" / "Source" on overview and series pages for datasets with temporal aggregation (e.g., daily/weekly data aggregated to monthly)
+- Visible only when `aggregation_applied === true` on the job (set by backend when source frequency differs from forecast frequency)
+- **Mensuel** (default): shows monthly-aggregated forecast and actuals
+- **Source**: lazy-loads original-frequency data via `getSeriesDetailForecastData()` from `forecast_results_detail` table, and chart data via `getJobDetailChartData()` RPC
+- Actuals are aggregated to monthly via month-start key grouping when switching back to Mensuel view
+- Aggregation badge displayed in the job header when temporal aggregation was applied
+- Date axis formatting adapts to frequency via `formatDateByFrequency()` from `date-format.ts`
+- Source chart data is reset when navigating between series to prevent stale data display
+
+### Frequency-Aware Date Formatting (`lib/date-format.ts`)
+- `classifyFreq(freq: string): FreqFamily` — normalizes pandas frequency strings (e.g., "7D" → "W", "MS" → "M", "D" → "D") into families: H, D, W, M, Q
+- `formatDateByFrequency(ds, freq)` — formats date labels per frequency: H → "dd/MM HH:mm", D → "dd MMM", W → "dd MMM yy", M → "MMM yy", Q → "T1 25"
+- `formatFrequencyLabel(freq)` — returns French labels: Horaire, Journalier, Hebdomadaire, Mensuel, Trimestriel
+- Falls back to monthly formatting when frequency is null/undefined
+
 ### PDF Export (`components/export/`, `hooks/useExportPdf.ts`)
 - Series-level PDF report generation via `@react-pdf/renderer`
 - Chart capture via `html2canvas`
@@ -436,7 +458,7 @@ Conversion functions in `@/lib/metrics.ts`:
 
 ### Command Palette (`components/dashboard/command-palette.tsx`)
 - Cmd+K (Mac) / Ctrl+K (Windows) keyboard shortcut
-- Navigation to series, tabs, pages
+- Navigation to series, tabs, pages — tab order aligned with results page (overview → portfolio → series → synthesis → reliability)
 - Mounted in `DashboardShell` with `<Suspense>` boundary
 
 ### Onboarding Tour (`components/onboarding/`, `hooks/useOnboarding.ts`)
@@ -450,6 +472,8 @@ Conversion functions in `@/lib/metrics.ts`:
 - N8N webhook trigger via server-side proxy `/api/webhook/forecast` (HMAC-signed) after job creation
 - Job polling via `useJobStatus` hook (3s interval)
 - User preferences (horizon, gating, confidence) via `useUserPreferences`
+- CSV column mapping: `csv-analyzer.ts` detects date, value, and series_id columns automatically. Detected column names (`date_column`, `value_columns`) are stored on the `forecast_jobs` row and transmitted to the backend via the N8N webhook payload for correct CSV parsing
+- Multi-series frequency detection: the analyzer infers temporal frequency and span across all series in the CSV for display in the submission wizard
 - Success screen shows qualitative message based on WAPE ("Excellente précision" < 5%, "Bonne précision" < 15%, "Précision à surveiller" ≥ 15%)
 - Job ID hidden from end users on success screen
 
@@ -473,8 +497,8 @@ Required (set in `.env.local`):
 - **Config**: `vitest.config.ts` at project root
 - **Test files**: `src/**/__tests__/*.test.{ts,tsx}`
 - **Commands**: `npm test` (single run), `npm run test:watch` (watch mode)
-- **Current tests**: Unit tests for alert logic (`series-alerts`), alert badge config (`alert-badge`), action card config (`action-card`), threshold calculations (`thresholds`)
-- Tests validate: alert thresholds, priority ordering, absence of technical jargon in user-facing labels, color coherence with severity levels, threshold color zone logic
+- **Current tests**: Unit tests for alert logic (`series-alerts`), alert badge config (`alert-badge`), action card config (`action-card`), threshold calculations (`thresholds`), frequency formatting (`granularity-toggle`)
+- Tests validate: alert thresholds, priority ordering, absence of technical jargon in user-facing labels, color coherence with severity levels, threshold color zone logic, frequency label formatting (`formatFrequencyLabel`), frequency classification (`classifyFreq`)
 
 ### Marketing Pages (recent additions)
 
