@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import { serverEnv, publicEnv } from "@/lib/env";
 
 /**
  * Export toutes les données de l'utilisateur connecté (Article 20 RGPD — Portabilité).
@@ -133,19 +134,15 @@ export async function deleteAccount(): Promise<{
   }
 
   // 3. Supprimer l'utilisateur Auth via le client admin (service_role)
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!serviceRoleKey) {
+  let serviceRoleKey: string;
+  let supabaseUrl: string;
+  try {
+    serviceRoleKey = serverEnv.supabaseServiceRoleKey;
+    supabaseUrl = publicEnv.supabaseUrl;
+  } catch (error) {
     return {
       success: false,
-      error: "Configuration serveur incomplète (clé service manquante)",
-    };
-  }
-
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  if (!supabaseUrl) {
-    return {
-      success: false,
-      error: "Configuration serveur incomplète (URL Supabase manquante)",
+      error: "Configuration serveur incomplète",
     };
   }
 

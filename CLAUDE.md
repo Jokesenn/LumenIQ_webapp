@@ -491,6 +491,11 @@ Required (set in `.env.local`):
 - `N8N_WEBHOOK_SECRET` — HMAC-SHA256 secret for webhook signature
 - `SUPABASE_SERVICE_ROLE_KEY` — Admin key for account deletion (RGPD)
 
+**Centralized validation via `src/lib/env.ts`:**
+- All env vars are accessed via `serverEnv` (lazy getters, server-only) and `publicEnv` (eager, client-safe)
+- **PITFALL Next.js**: `NEXT_PUBLIC_*` vars must be accessed with **static dot notation** (`process.env.NEXT_PUBLIC_FOO`) for client-side inlining. Dynamic access (`process.env[name]`) returns `undefined` on the client. That's why `requirePublicEnv()` takes the value as a second parameter from a static reference.
+- Never add `process.env.*` calls outside of `env.ts` — always import from `@/lib/env`
+
 ## Testing
 
 - **Framework**: Vitest v4 with happy-dom environment

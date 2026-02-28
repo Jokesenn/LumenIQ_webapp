@@ -576,7 +576,7 @@ export async function getJobFullData(jobId: string, userId: string) {
   const withSummary = await getJobWithSummary(jobId, userId);
   const job = withSummary.job as ForecastJob | null;
   const summary = withSummary.summary as JobSummary | null;
-  const frequency = (job as any)?.frequency ?? null;
+  const frequency = job?.frequency ?? null;
 
   // Phase 2: fetch everything else with frequency-aware formatting
   const [chartRows, matrixRows, modelRows, results] = await Promise.all([

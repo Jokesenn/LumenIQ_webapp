@@ -7,6 +7,7 @@ import { AiChatButton, AiChatDrawer } from "@/components/dashboard/ai-chat";
 import { ActionsDrawer } from "@/components/dashboard/actions-drawer";
 import { ActionsFab } from "@/components/dashboard/actions-fab";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { SectionErrorBoundary } from "@/components/ui/section-error-boundary";
 import { ThresholdsProvider } from "@/lib/thresholds/context";
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
@@ -22,19 +23,17 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     mql.addEventListener("change", handleChange);
     return () => mql.removeEventListener("change", handleChange);
   }, []);
-  const [commandOpen, setCommandOpen] = useState(false);
-  const [chatOpen, setChatOpen] = useState(false);
-  const [actionsOpen, setActionsOpen] = useState(false);
+
+  type ActiveDrawer = 'none' | 'command' | 'chat' | 'actions';
+  const [activeDrawer, setActiveDrawer] = useState<ActiveDrawer>('none');
 
   // One-drawer-at-a-time logic
   const openChat = useCallback(() => {
-    setActionsOpen(false);
-    setChatOpen(true);
+    setActiveDrawer('chat');
   }, []);
 
   const openActions = useCallback(() => {
-    setChatOpen(false);
-    setActionsOpen(true);
+    setActiveDrawer('actions');
   }, []);
 
   // Keyboard shortcut: Cmd+Shift+A to toggle actions drawer
@@ -42,10 +41,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "a" && e.metaKey && e.shiftKey) {
         e.preventDefault();
-        setActionsOpen((prev) => {
-          if (!prev) setChatOpen(false);
-          return !prev;
-        });
+        setActiveDrawer((prev) => (prev === 'actions' ? 'none' : 'actions'));
       }
     };
     document.addEventListener("keydown", handler);
@@ -60,7 +56,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         <div className="flex-1 flex flex-col overflow-hidden">
           <Header
             onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
-            onOpenCommand={() => setCommandOpen(true)}
+            onOpenCommand={() => setActiveDrawer('command')}
           />
 
           <ErrorBoundary>
@@ -71,18 +67,28 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         </div>
 
         <Suspense>
-          <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} />
+          <CommandPalette open={activeDrawer === 'command'} onOpenChange={(open) => setActiveDrawer(open ? 'command' : 'none')} />
         </Suspense>
 
         <Suspense>
-          <AiChatDrawer open={chatOpen} onOpenChange={setChatOpen} />
+          <SectionErrorBoundary
+            sectionName="chat-drawer"
+            fallbackTitle="Le chat n'a pas pu être chargé"
+          >
+            <AiChatDrawer open={activeDrawer === 'chat'} onOpenChange={(open) => setActiveDrawer(open ? 'chat' : 'none')} />
+          </SectionErrorBoundary>
         </Suspense>
-        <AiChatButton onClick={openChat} isOpen={chatOpen} />
+        <AiChatButton onClick={openChat} isOpen={activeDrawer === 'chat'} />
 
         <Suspense>
-          <ActionsDrawer open={actionsOpen} onOpenChange={setActionsOpen} />
+          <SectionErrorBoundary
+            sectionName="actions-drawer"
+            fallbackTitle="Le panneau d'actions n'a pas pu être chargé"
+          >
+            <ActionsDrawer open={activeDrawer === 'actions'} onOpenChange={(open) => setActiveDrawer(open ? 'actions' : 'none')} />
+          </SectionErrorBoundary>
         </Suspense>
-        <ActionsFab onClick={openActions} isOpen={actionsOpen} />
+        <ActionsFab onClick={openActions} isOpen={activeDrawer === 'actions'} />
       </div>
     </ThresholdsProvider>
   );

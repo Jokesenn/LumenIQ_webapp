@@ -68,8 +68,8 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
     redirect("/dashboard/history");
   }
 
-  const frequency = (job as any).frequency ?? null;
-  const aggregationApplied = (job as any).aggregation_applied === true;
+  const frequency = job?.frequency ?? null;
+  const aggregationApplied = job?.aggregation_applied === true;
   // When aggregation was applied, job_monthly_aggregates contains monthly data
   // so we force monthly formatting regardless of source frequency
   const chartFrequency = aggregationApplied ? null : frequency;

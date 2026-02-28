@@ -11,9 +11,10 @@ import {
   computeFamilyAggregations,
 } from "@/lib/reliability-utils";
 
+import type { SeriesRow } from "@/types/results";
+
 interface ReliabilityTabProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  allSeries: Record<string, any>[];
+  allSeries: SeriesRow[];
   onModelClick: (modelName: string) => void;
 }
 

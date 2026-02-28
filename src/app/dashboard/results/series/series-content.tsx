@@ -31,7 +31,7 @@ import { ExportPdfButton } from "@/components/dashboard/results/ExportPdfButton"
 import type { SeriesListItem } from "@/types/forecast";
 import type { ForecastPoint } from "@/types/export";
 import type { ForecastAction } from "@/types/actions";
-import type { ResultsJob, SeriesDetail, ResultsChartPoint, ModelComparisonData } from "@/types/results";
+import type { ResultsJob, SeriesDetail, ResultsChartPoint, ModelComparisonData, ModelRankingEntry } from "@/types/results";
 import { ActionCard } from "@/components/dashboard/action-card";
 import { getSeriesAlerts, sortAlertsByPriority } from "@/lib/series-alerts";
 import { useThresholds } from "@/lib/thresholds/context";
@@ -106,9 +106,19 @@ export function SeriesContent({
     Z: "bg-red-500/20 text-red-400 border-red-500/30",
   };
 
+  interface SourceChartDataPoint {
+    date: string;
+    actual?: number;
+    isOutlier?: boolean;
+    forecast?: number;
+    forecastLower?: number;
+    forecastUpper?: number;
+    [key: string]: unknown;
+  }
+
   const { thresholds } = useThresholds();
   const [granularity, setGranularity] = useState<"monthly" | "source">("monthly");
-  const [sourceChartData, setSourceChartData] = useState<any[] | null>(null);
+  const [sourceChartData, setSourceChartData] = useState<SourceChartDataPoint[] | null>(null);
   const [loadingSource, setLoadingSource] = useState(false);
   const isAggregated = job?.aggregation_applied === true;
 
@@ -143,12 +153,25 @@ export function SeriesContent({
           .order("ds", { ascending: true }),
       ]);
 
-      const actuals = actualsRes.data || [];
-      const forecasts = forecastsRes.data || [];
+      interface ActualRow {
+        ds: string;
+        y: number;
+        is_outlier: boolean;
+      }
 
-      const dataMap = new Map<string, Record<string, unknown>>();
+      interface ForecastRow {
+        ds: string;
+        yhat: number;
+        yhat_lower: number | null;
+        yhat_upper: number | null;
+      }
 
-      actuals.forEach((a: any) => {
+      const actuals = (actualsRes.data as ActualRow[] | null) || [];
+      const forecasts = (forecastsRes.data as ForecastRow[] | null) || [];
+
+      const dataMap = new Map<string, SourceChartDataPoint>();
+
+      actuals.forEach((a: ActualRow) => {
         const dateKey = new Date(a.ds).toISOString().split("T")[0];
         dataMap.set(dateKey, {
           date: formatDateByFrequency(a.ds, job.frequency),
@@ -157,7 +180,7 @@ export function SeriesContent({
         });
       });
 
-      forecasts.forEach((f: any) => {
+      forecasts.forEach((f: ForecastRow) => {
         const dateKey = new Date(f.ds).toISOString().split("T")[0];
         const existing = dataMap.get(dateKey) || {
           date: formatDateByFrequency(f.ds, job.frequency),
@@ -471,7 +494,7 @@ export function SeriesContent({
               <div className="space-y-4">
                 {/* Podium – Top 3 */}
                 <div className="space-y-2">
-                  {modelComparison.ranking.slice(0, 3).map((model: any, index: number) => {
+                  {modelComparison.ranking.slice(0, 3).map((model: ModelRankingEntry, index: number) => {
                     const meta = getModelMeta(model.model);
                     const maxScore = modelComparison.ranking[0]?.score ?? 100;
                     const barWidth = maxScore > 0 ? (model.score / maxScore) * 100 : 0;
@@ -534,7 +557,7 @@ export function SeriesContent({
                   <div>
                     <p className="text-xs text-zinc-500 mb-2 px-1">Autres modèles</p>
                     <div className="max-h-[240px] overflow-y-auto space-y-1 pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-700">
-                      {modelComparison.ranking.slice(3).map((model: any, index: number) => {
+                      {modelComparison.ranking.slice(3).map((model: ModelRankingEntry, index: number) => {
                         const meta = getModelMeta(model.model);
                         const familyKey = Object.entries(MODEL_FAMILIES).find(
                           ([, v]) => v.label === meta.family

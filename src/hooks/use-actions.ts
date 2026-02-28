@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useUser } from "@/hooks/use-supabase";
 import { toast } from "sonner";
+import { safeValidateActions } from "@/lib/schemas/actions";
 import type {
   ForecastAction,
   ActionsSummary,
@@ -67,7 +68,12 @@ export function useActions(
         if (queryError) throw queryError;
         if (!isMountedRef.current) return;
 
-        const sorted = sortByPriority(data || []);
+        const { valid: validatedData, errors: validationErrors } = safeValidateActions(data || []);
+        if (validationErrors > 0) {
+          console.warn(`${validationErrors} action(s) failed validation in drawer mode`);
+        }
+
+        const sorted = sortByPriority(validatedData);
         setActions(sorted);
 
         // Fetch summary from the job
@@ -98,10 +104,15 @@ export function useActions(
         if (queryError) throw queryError;
         if (!isMountedRef.current) return;
 
-        const allActions = (data || []).map((row: Record<string, unknown>) => {
+        const allActionsRaw = (data || []).map((row: Record<string, unknown>) => {
           const { forecast_jobs, ...action } = row;
-          return action as unknown as ForecastAction;
+          return action;
         });
+
+        const { valid: allActions, errors: validationErrors } = safeValidateActions(allActionsRaw);
+        if (validationErrors > 0) {
+          console.warn(`${validationErrors} action(s) failed validation`);
+        }
 
         const sorted = sortByPriority(allActions);
         setActions(sorted);

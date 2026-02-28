@@ -69,7 +69,14 @@ export function ScoreTrendChart({ data, height = 250, className }: ScoreTrendCha
       transition={{ duration: 0.6, ease: [0.21, 0.47, 0.32, 0.98] }}
       className={className}
     >
-      <ResponsiveContainer width="100%" height={height}>
+      <div
+        role="img"
+        aria-label="Graphique de tendance des scores montrant l'évolution du score de fiabilité au fil du temps"
+      >
+        <span className="sr-only">
+          Graphique de tendance des scores. Ce graphique affiche l'évolution du score moyen de fiabilité au fil du temps avec une ligne de référence à 80 points.
+        </span>
+        <ResponsiveContainer width="100%" height={height}>
         <AreaChart data={chartData} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
           <defs>
             <linearGradient id="scoreFill" x1="0" y1="0" x2="0" y2="1">
@@ -135,6 +142,7 @@ export function ScoreTrendChart({ data, height = 250, className }: ScoreTrendCha
           />
         </AreaChart>
       </ResponsiveContainer>
+      </div>
     </motion.div>
   );
 }

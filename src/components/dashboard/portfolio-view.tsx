@@ -453,9 +453,14 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
     }
   };
 
+  interface ScatterDataPoint {
+    series_id: string;
+    volume: number;
+    reliability: number;
+  }
+
   // --- Clic / Double-clic sur point scatter ---
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleScatterClick = (data: any) => {
+  const handleScatterClick = (data: ScatterDataPoint) => {
     if (
       clickTimerRef.current &&
       lastClickDataRef.current?.series_id === data.series_id
@@ -489,9 +494,12 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
     }
   };
 
+  interface TooltipPayloadItem {
+    payload: ScatterDataPoint & { cluster: ClusterId; abc_class: string | null; xyz_class: string | null; champion_model: string | null };
+  }
+
   // --- Tooltip custom ---
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: TooltipPayloadItem[] }) => {
     if (!active || !payload?.length) return null;
     const d = payload[0].payload;
     const clusterDef = CLUSTER_MAP.get(d.cluster);
@@ -610,7 +618,14 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
             </button>
           </div>
         )}
-        <div className="h-[300px] sm:h-[400px] lg:h-[480px]">
+        <div
+          className="h-[300px] sm:h-[400px] lg:h-[480px]"
+          role="img"
+          aria-label="Vue portfolio des séries montrant la fiabilité en fonction du volume prévu"
+        >
+          <span className="sr-only">
+            Graphique portfolio montrant la distribution des séries par fiabilité et volume. Chaque bulle représente une série, dimensionnée par sa classe ABC. Les bulles sont coloriées par cluster : vert pour stable, bleu pour saisonnier, orange pour trendy, orange clair pour intermittent, rouge pour volatile, et gris pour non classifié.
+          </span>
         <ResponsiveContainer width="100%" height="100%">
           <ScatterChart
             margin={{ top: 20, right: 30, bottom: 20, left: 20 }}
@@ -684,7 +699,7 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
             <Scatter
               data={filteredSeries}
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onClick={(data: any) => handleScatterClick(data)}
+              onClick={(data: ScatterDataPoint) => handleScatterClick(data)}
               cursor="pointer"
             >
               {filteredSeries.map((entry, index) => (

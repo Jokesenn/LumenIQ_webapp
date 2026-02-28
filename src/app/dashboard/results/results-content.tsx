@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useReducer, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { getResultsDownloadUrl } from "./actions";
 import { Button } from "@/components/ui/button";
+import { SectionErrorBoundary } from "@/components/ui/section-error-boundary";
 import {
   MetricGaugeCard,
   AnimatedAreaChart,
@@ -63,6 +64,67 @@ function formatDistanceToNow(date: Date): string {
 
 type TabType = "overview" | "series" | "portfolio" | "reliability" | "synthesis";
 
+interface SourceChartDataPoint {
+  date: string;
+  actual?: number;
+  forecast?: number;
+  forecastLower?: number;
+  forecastUpper?: number;
+  [key: string]: unknown;
+}
+
+interface ResultsViewState {
+  granularity: "monthly" | "source";
+  sourceChartData: SourceChartDataPoint[] | null;
+  loadingSource: boolean;
+  activeTab: TabType;
+  selectedCell: { abc: string; xyz: string } | null;
+  modelFilter: string | null;
+  filters: SeriesFilters;
+}
+
+type ResultsViewAction =
+  | { type: "SET_GRANULARITY"; payload: "monthly" | "source" }
+  | { type: "SET_SOURCE_DATA"; payload: SourceChartDataPoint[] | null }
+  | { type: "SET_LOADING_SOURCE"; payload: boolean }
+  | { type: "SET_ACTIVE_TAB"; payload: TabType }
+  | { type: "SET_SELECTED_CELL"; payload: { abc: string; xyz: string } | null }
+  | { type: "SET_MODEL_FILTER"; payload: string | null }
+  | { type: "SET_FILTERS"; payload: SeriesFilters }
+  | { type: "RESET_SELECTION" };
+
+function resultsViewReducer(state: ResultsViewState, action: ResultsViewAction): ResultsViewState {
+  switch (action.type) {
+    case "SET_GRANULARITY":
+      return {
+        ...state,
+        granularity: action.payload,
+        sourceChartData: null,
+        loadingSource: false,
+      };
+    case "SET_SOURCE_DATA":
+      return { ...state, sourceChartData: action.payload };
+    case "SET_LOADING_SOURCE":
+      return { ...state, loadingSource: action.payload };
+    case "SET_ACTIVE_TAB":
+      return { ...state, activeTab: action.payload, selectedCell: null };
+    case "SET_SELECTED_CELL":
+      return { ...state, selectedCell: action.payload };
+    case "SET_MODEL_FILTER":
+      return { ...state, modelFilter: action.payload };
+    case "SET_FILTERS":
+      return { ...state, filters: action.payload };
+    case "RESET_SELECTION":
+      return {
+        ...state,
+        selectedCell: null,
+        modelFilter: null,
+      };
+    default:
+      return state;
+  }
+}
+
 interface ResultsContentProps {
   job: ResultsJob;
   summary: ResultsSummary | null;
@@ -90,22 +152,26 @@ export function ResultsContent({
   synthesis,
   initialTab,
 }: ResultsContentProps) {
-  const [activeTab, setActiveTab] = useState<TabType>(initialTab ?? "overview");
-  const [selectedCell, setSelectedCell] = useState<{ abc: string; xyz: string } | null>(null);
-  const [modelFilter, setModelFilter] = useState<string | null>(null);
-  const [filters, setFilters] = useState<SeriesFilters>(DEFAULT_FILTERS);
   const [exporting, setExporting] = useState(false);
   const { showTour, completeTour } = useOnboarding();
   const { thresholds } = useThresholds();
-  const [granularity, setGranularity] = useState<"monthly" | "source">("monthly");
-  const [sourceChartData, setSourceChartData] = useState<any[] | null>(null);
-  const [loadingSource, setLoadingSource] = useState(false);
+
+  const [viewState, dispatch] = useReducer(resultsViewReducer, {
+    granularity: "monthly",
+    sourceChartData: null,
+    loadingSource: false,
+    activeTab: (initialTab ?? "overview") as TabType,
+    selectedCell: null,
+    modelFilter: null,
+    filters: DEFAULT_FILTERS,
+  });
+
   const isAggregated = job?.aggregation_applied === true;
 
   useEffect(() => {
-    if (granularity !== "source" || !isAggregated || sourceChartData) return;
+    if (viewState.granularity !== "source" || !isAggregated || viewState.sourceChartData) return;
 
-    setLoadingSource(true);
+    dispatch({ type: "SET_LOADING_SOURCE", payload: true });
     const fetchDetailData = async () => {
       const supabase = createBrowserClient();
       const frequency = job?.frequency;
@@ -121,14 +187,23 @@ export function ResultsContent({
         });
 
       if (error || !rpcData?.length) {
-        setSourceChartData([]);
+        dispatch({ type: "SET_SOURCE_DATA", payload: [] });
         return;
       }
 
       const { formatDateByFrequency } = await import("@/lib/date-format");
       const { bridgeChartGap } = await import("@/lib/chart-utils");
 
-      const data = (rpcData as any[]).map((row: any) => ({
+      interface RpcChartDataRow {
+        ds: string;
+        actual_sum?: number;
+        forecast_sum?: number;
+        forecast_lower_sum?: number;
+        forecast_upper_sum?: number;
+        is_forecast: boolean;
+      }
+
+      const data = (rpcData as RpcChartDataRow[]).map((row: RpcChartDataRow) => ({
         date: formatDateByFrequency(row.ds, frequency),
         actual: !row.is_forecast ? row.actual_sum : undefined,
         forecast: row.is_forecast ? row.forecast_sum : undefined,
@@ -138,11 +213,11 @@ export function ResultsContent({
 
       bridgeChartGap(data);
 
-      setSourceChartData(data);
+      dispatch({ type: "SET_SOURCE_DATA", payload: data });
     };
 
-    fetchDetailData().catch(() => setSourceChartData([])).finally(() => setLoadingSource(false));
-  }, [granularity, isAggregated, sourceChartData, job?.id, job?.user_id]);
+    fetchDetailData().catch(() => dispatch({ type: "SET_SOURCE_DATA", payload: [] })).finally(() => dispatch({ type: "SET_LOADING_SOURCE", payload: false }));
+  }, [viewState.granularity, isAggregated, viewState.sourceChartData, job?.id, job?.user_id]);
 
   const handleDownload = useCallback(async () => {
     if (!job?.id || exporting) return;
@@ -190,7 +265,7 @@ export function ResultsContent({
   // Sync tab when navigating from another page via URL (?tab=...)
   useEffect(() => {
     if (initialTab) {
-      setActiveTab(initialTab);
+      dispatch({ type: "SET_ACTIVE_TAB", payload: initialTab });
     }
   }, [initialTab]);
 
@@ -200,7 +275,7 @@ export function ResultsContent({
       const tab = (e as CustomEvent<string>).detail;
       const valid: TabType[] = ["overview", "series", "portfolio", "reliability", "synthesis"];
       if (valid.includes(tab as TabType)) {
-        setActiveTab(tab as TabType);
+        dispatch({ type: "SET_ACTIVE_TAB", payload: tab as TabType });
       }
     };
     window.addEventListener(RESULTS_TAB_EVENT, handler);
@@ -220,16 +295,16 @@ export function ResultsContent({
   }, [allSeries, thresholds]);
 
   const handleModelClick = (modelName: string) => {
-    setModelFilter(modelName);
-    setSelectedCell(null);
-    setActiveTab("series");
+    dispatch({ type: "SET_MODEL_FILTER", payload: modelName });
+    dispatch({ type: "SET_SELECTED_CELL", payload: null });
+    dispatch({ type: "SET_ACTIVE_TAB", payload: "series" });
   };
 
   const handleClusterNavigate = (clusterId: ClusterId) => {
-    setFilters({ ...DEFAULT_FILTERS, cluster: clusterId });
-    setSelectedCell(null);
-    setModelFilter(null);
-    setActiveTab("series");
+    dispatch({ type: "SET_FILTERS", payload: { ...DEFAULT_FILTERS, cluster: clusterId } });
+    dispatch({ type: "SET_SELECTED_CELL", payload: null });
+    dispatch({ type: "SET_MODEL_FILTER", payload: null });
+    dispatch({ type: "SET_ACTIVE_TAB", payload: "series" });
   };
 
   const tabs: { id: TabType; label: string }[] = [
@@ -307,12 +382,12 @@ export function ResultsContent({
             <button
               key={tab.id}
               role="tab"
-              aria-selected={activeTab === tab.id}
+              aria-selected={viewState.activeTab === tab.id}
               aria-controls={`tabpanel-${tab.id}`}
               id={`tab-${tab.id}`}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => dispatch({ type: "SET_ACTIVE_TAB", payload: tab.id })}
               className={
-                activeTab === tab.id
+                viewState.activeTab === tab.id
                   ? "dash-tab-active"
                   : "dash-tab-inactive"
               }
@@ -325,7 +400,7 @@ export function ResultsContent({
       </FadeIn>
 
       {/* Tab Content - toujours le même arbre de composants pour éviter "Rendered more hooks" */}
-      <div role="tabpanel" id="tabpanel-overview" aria-labelledby="tab-overview" className={cn(activeTab !== "overview" && "hidden")}>
+      <div role="tabpanel" id="tabpanel-overview" aria-labelledby="tab-overview" className={cn(viewState.activeTab !== "overview" && "hidden")}>
         <div className="space-y-6">
           {/* Metric Gauges */}
           <FadeIn delay={0.2}>
@@ -399,58 +474,63 @@ export function ResultsContent({
 
           {/* Main Chart */}
           <FadeIn delay={0.3}>
-            <div className="dash-card p-6">
-              <div className="flex items-center gap-1.5 mb-6">
-                <h2 className="dash-section-title">
-                  Prévisions vs Ventes réelles (total)
-                </h2>
-                <HelpTooltip termKey="forecast_graph" />
+            <SectionErrorBoundary
+              sectionName="graphique-prévisions"
+              fallbackTitle="Le graphique n'a pas pu être affiché"
+            >
+              <div className="dash-card p-6">
+                <div className="flex items-center gap-1.5 mb-6">
+                  <h2 className="dash-section-title">
+                    Prévisions vs Ventes réelles (total)
+                  </h2>
+                  <HelpTooltip termKey="forecast_graph" />
+                </div>
+                {isAggregated && (
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="inline-flex rounded-lg bg-zinc-800/50 p-0.5">
+                      <button
+                        className={cn(
+                          "px-3 py-1 text-xs font-medium rounded-md transition-colors",
+                          viewState.granularity === "monthly"
+                            ? "bg-indigo-500/20 text-indigo-400"
+                            : "text-zinc-400 hover:text-zinc-300"
+                        )}
+                        onClick={() => dispatch({ type: "SET_GRANULARITY", payload: "monthly" })}
+                      >
+                        Mensuel
+                      </button>
+                      <button
+                        className={cn(
+                          "px-3 py-1 text-xs font-medium rounded-md transition-colors",
+                          viewState.granularity === "source"
+                            ? "bg-indigo-500/20 text-indigo-400"
+                            : "text-zinc-400 hover:text-zinc-300"
+                        )}
+                        onClick={() => dispatch({ type: "SET_GRANULARITY", payload: "source" })}
+                      >
+                        {formatFrequencyLabel(job?.frequency)}
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {(viewState.granularity === "source" && viewState.loadingSource) ? (
+                  <div className="h-[350px] flex items-center justify-center text-zinc-500">
+                    Chargement des données...
+                  </div>
+                ) : (viewState.granularity === "source" && viewState.sourceChartData && viewState.sourceChartData.length > 0) ? (
+                  <AnimatedAreaChart data={viewState.sourceChartData} height={350} showConfidence />
+                ) : (
+                  <>
+                    <div className={cn(chartData.length === 0 && "hidden")}>
+                      <AnimatedAreaChart data={chartData.length > 0 ? chartData : [{ date: "", actual: 0 }]} height={350} showConfidence />
+                    </div>
+                    <div className={cn("h-[350px] flex items-center justify-center text-zinc-500", chartData.length > 0 && "hidden")}>
+                      Aucune donnée disponible
+                    </div>
+                  </>
+                )}
               </div>
-              {isAggregated && (
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="inline-flex rounded-lg bg-zinc-800/50 p-0.5">
-                    <button
-                      className={cn(
-                        "px-3 py-1 text-xs font-medium rounded-md transition-colors",
-                        granularity === "monthly"
-                          ? "bg-indigo-500/20 text-indigo-400"
-                          : "text-zinc-400 hover:text-zinc-300"
-                      )}
-                      onClick={() => setGranularity("monthly")}
-                    >
-                      Mensuel
-                    </button>
-                    <button
-                      className={cn(
-                        "px-3 py-1 text-xs font-medium rounded-md transition-colors",
-                        granularity === "source"
-                          ? "bg-indigo-500/20 text-indigo-400"
-                          : "text-zinc-400 hover:text-zinc-300"
-                      )}
-                      onClick={() => setGranularity("source")}
-                    >
-                      {formatFrequencyLabel(job?.frequency)}
-                    </button>
-                  </div>
-                </div>
-              )}
-              {(granularity === "source" && loadingSource) ? (
-                <div className="h-[350px] flex items-center justify-center text-zinc-500">
-                  Chargement des données...
-                </div>
-              ) : (granularity === "source" && sourceChartData && sourceChartData.length > 0) ? (
-                <AnimatedAreaChart data={sourceChartData} height={350} showConfidence />
-              ) : (
-                <>
-                  <div className={cn(chartData.length === 0 && "hidden")}>
-                    <AnimatedAreaChart data={chartData.length > 0 ? chartData : [{ date: "", actual: 0 }]} height={350} showConfidence />
-                  </div>
-                  <div className={cn("h-[350px] flex items-center justify-center text-zinc-500", chartData.length > 0 && "hidden")}>
-                    Aucune donnée disponible
-                  </div>
-                </>
-              )}
-            </div>
+            </SectionErrorBoundary>
           </FadeIn>
 
           {/* Bottom Grid */}
@@ -482,121 +562,151 @@ export function ResultsContent({
             {/* Alerts Summary */}
             <FadeIn delay={0.45}>
               <div data-onboarding="alerts-panel">
-                <AlertsSummaryCard
-                  seriesList={allSeries.map((s) => ({
-                    wape: s.wape,
-                    was_gated: s.was_gated,
-                    drift_detected: s.drift_detected,
-                    is_first_run: s.is_first_run,
-                    previous_champion: s.previous_champion,
-                    champion_model: s.champion_model,
-                  }))}
-                  onFilterAlerts={() => setActiveTab("series")}
-                />
+                <SectionErrorBoundary
+                  sectionName="alertes-résumé"
+                  fallbackTitle="Le panneau d'alertes n'a pas pu être chargé"
+                >
+                  <AlertsSummaryCard
+                    seriesList={allSeries.map((s) => ({
+                      wape: s.wape,
+                      was_gated: s.was_gated,
+                      drift_detected: s.drift_detected,
+                      is_first_run: s.is_first_run,
+                      previous_champion: s.previous_champion,
+                      champion_model: s.champion_model,
+                    }))}
+                    onFilterAlerts={() => dispatch({ type: "SET_ACTIVE_TAB", payload: "series" })}
+                  />
+                </SectionErrorBoundary>
               </div>
             </FadeIn>
           </div>
 
           {/* ABC/XYZ Matrix */}
           <FadeIn delay={0.5}>
-            <div className="dash-card p-6" data-onboarding="abc-xyz-matrix">
-              <div className="flex items-center gap-1.5 mb-6">
-                <h2 className="dash-section-title">
-                  Classification ABC/XYZ
-                </h2>
-                <HelpTooltip termKey="abcxyz_matrix" />
+            <SectionErrorBoundary
+              sectionName="matrice-abc-xyz"
+              fallbackTitle="La matrice ABC/XYZ n'a pas pu être affichée"
+            >
+              <div className="dash-card p-6" data-onboarding="abc-xyz-matrix">
+                <div className="flex items-center gap-1.5 mb-6">
+                  <h2 className="dash-section-title">
+                    Classification ABC/XYZ
+                  </h2>
+                  <HelpTooltip termKey="abcxyz_matrix" />
+                </div>
+                <AbcXyzMatrix
+                  data={abcXyzData}
+                  selectedCell={viewState.selectedCell}
+                  onCellClick={(abc, xyz) => {
+                    dispatch({ type: "SET_SELECTED_CELL", payload: { abc, xyz } });
+                    dispatch({ type: "SET_MODEL_FILTER", payload: null });
+                    dispatch({ type: "SET_ACTIVE_TAB", payload: "series" });
+                  }}
+                />
               </div>
-              <AbcXyzMatrix
-                data={abcXyzData}
-                selectedCell={selectedCell}
-                onCellClick={(abc, xyz) => {
-                  setSelectedCell({ abc, xyz });
-                  setModelFilter(null);
-                  setActiveTab("series");
-                }}
-              />
-            </div>
+            </SectionErrorBoundary>
           </FadeIn>
         </div>
       </div>
 
-      <div role="tabpanel" id="tabpanel-series" aria-labelledby="tab-series" className={cn(activeTab !== "series" && "hidden")}>
+      <div role="tabpanel" id="tabpanel-series" aria-labelledby="tab-series" className={cn(viewState.activeTab !== "series" && "hidden")}>
         <FadeIn>
-          <div className="dash-card p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="dash-section-title">Toutes les séries</h2>
-              <div className="flex items-center gap-2">
-                <SeriesFiltersDropdown
-                  filters={filters}
-                  onFiltersChange={setFilters}
-                  counts={filterCounts}
-                />
-                <SeriesSortDropdown
-                  value={seriesNav.sortOption}
-                  onChange={seriesNav.setSortOption}
-                />
+          <SectionErrorBoundary
+            sectionName="liste-séries"
+            fallbackTitle="La liste des séries n'a pas pu être chargée"
+          >
+            <div className="dash-card p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="dash-section-title">Toutes les séries</h2>
+                <div className="flex items-center gap-2">
+                  <SeriesFiltersDropdown
+                    filters={viewState.filters}
+                    onFiltersChange={(newFilters) => dispatch({ type: "SET_FILTERS", payload: newFilters })}
+                    counts={filterCounts}
+                  />
+                  <SeriesSortDropdown
+                    value={seriesNav.sortOption}
+                    onChange={seriesNav.setSortOption}
+                  />
+                </div>
               </div>
+              <ActiveFiltersBar
+                filters={viewState.filters}
+                onFiltersChange={(newFilters) => dispatch({ type: "SET_FILTERS", payload: newFilters })}
+                selectedCell={viewState.selectedCell}
+                onClearCell={() => dispatch({ type: "SET_SELECTED_CELL", payload: null })}
+                modelFilter={viewState.modelFilter}
+                onClearModel={() => dispatch({ type: "SET_MODEL_FILTER", payload: null })}
+              />
+              <SeriesList
+                series={seriesNav.sortedSeries.filter((s) => {
+                  // Existing filters (matrix cell, model click)
+                  if (viewState.selectedCell && (s.abc_class !== viewState.selectedCell.abc || s.xyz_class !== viewState.selectedCell.xyz)) return false;
+                  if (viewState.modelFilter && s.champion_model !== viewState.modelFilter) return false;
+
+                  // Dropdown filters — OR within category, AND between categories
+                  const statusChecks: boolean[] = [];
+                  if (viewState.filters.attention) {
+                    statusChecks.push((s.wape ?? 0) > thresholds.wape.yellow_max);
+                  }
+                  if (viewState.filters.modelChanged) {
+                    const changed = !s.is_first_run && !!s.previous_champion && s.previous_champion !== s.champion_model;
+                    statusChecks.push(changed);
+                  }
+                  if (statusChecks.length > 0 && !statusChecks.some(Boolean)) return false;
+
+                  if (viewState.filters.abcClasses.length > 0 && !viewState.filters.abcClasses.includes(s.abc_class as "A" | "B" | "C")) return false;
+                  if (viewState.filters.xyzClasses.length > 0 && !viewState.filters.xyzClasses.includes(s.xyz_class as "X" | "Y" | "Z")) return false;
+
+                  // Cluster filter (from portfolio CTA)
+                  if (viewState.filters.cluster) {
+                    const seriesCluster = assignCluster(s);
+                    if (seriesCluster !== viewState.filters.cluster) return false;
+                  }
+
+                  return true;
+                })}
+                jobId={job?.id ?? ""}
+                variant="default"
+              />
             </div>
-            <ActiveFiltersBar
-              filters={filters}
-              onFiltersChange={setFilters}
-              selectedCell={selectedCell}
-              onClearCell={() => setSelectedCell(null)}
-              modelFilter={modelFilter}
-              onClearModel={() => setModelFilter(null)}
-            />
-            <SeriesList
-              series={seriesNav.sortedSeries.filter((s) => {
-                // Existing filters (matrix cell, model click)
-                if (selectedCell && (s.abc_class !== selectedCell.abc || s.xyz_class !== selectedCell.xyz)) return false;
-                if (modelFilter && s.champion_model !== modelFilter) return false;
-
-                // Dropdown filters — OR within category, AND between categories
-                const statusChecks: boolean[] = [];
-                if (filters.attention) {
-                  statusChecks.push((s.wape ?? 0) > thresholds.wape.yellow_max);
-                }
-                if (filters.modelChanged) {
-                  const changed = !s.is_first_run && !!s.previous_champion && s.previous_champion !== s.champion_model;
-                  statusChecks.push(changed);
-                }
-                if (statusChecks.length > 0 && !statusChecks.some(Boolean)) return false;
-
-                if (filters.abcClasses.length > 0 && !filters.abcClasses.includes(s.abc_class as "A" | "B" | "C")) return false;
-                if (filters.xyzClasses.length > 0 && !filters.xyzClasses.includes(s.xyz_class as "X" | "Y" | "Z")) return false;
-
-                // Cluster filter (from portfolio CTA)
-                if (filters.cluster) {
-                  const seriesCluster = assignCluster(s);
-                  if (seriesCluster !== filters.cluster) return false;
-                }
-
-                return true;
-              })}
-              jobId={job?.id ?? ""}
-              variant="default"
-            />
-          </div>
+          </SectionErrorBoundary>
         </FadeIn>
       </div>
 
-      <div role="tabpanel" id="tabpanel-portfolio" aria-labelledby="tab-portfolio" className={cn(activeTab !== "portfolio" && "hidden")}>
+      <div role="tabpanel" id="tabpanel-portfolio" aria-labelledby="tab-portfolio" className={cn(viewState.activeTab !== "portfolio" && "hidden")}>
         <FadeIn>
-          <PortfolioView allSeries={allSeries} jobId={job?.id ?? ""} onClusterNavigate={handleClusterNavigate} />
+          <SectionErrorBoundary
+            sectionName="portfolio-vue"
+            fallbackTitle="La vue portfolio n'a pas pu être chargée"
+          >
+            <PortfolioView allSeries={allSeries} jobId={job?.id ?? ""} onClusterNavigate={handleClusterNavigate} />
+          </SectionErrorBoundary>
         </FadeIn>
       </div>
 
-      <div role="tabpanel" id="tabpanel-reliability" aria-labelledby="tab-reliability" className={cn(activeTab !== "reliability" && "hidden")}>
-        <ReliabilityTab allSeries={allSeries} onModelClick={handleModelClick} />
+      <div role="tabpanel" id="tabpanel-reliability" aria-labelledby="tab-reliability" className={cn(viewState.activeTab !== "reliability" && "hidden")}>
+        <SectionErrorBoundary
+          sectionName="fiabilité-tab"
+          fallbackTitle="L'onglet Fiabilité n'a pas pu être chargé"
+        >
+          <ReliabilityTab allSeries={allSeries} onModelClick={handleModelClick} />
+        </SectionErrorBoundary>
       </div>
 
-      <div role="tabpanel" id="tabpanel-synthesis" aria-labelledby="tab-synthesis" className={cn(activeTab !== "synthesis" && "hidden")}>
+      <div role="tabpanel" id="tabpanel-synthesis" aria-labelledby="tab-synthesis" className={cn(viewState.activeTab !== "synthesis" && "hidden")}>
         <FadeIn>
-          <SynthesisCard
-            synthesis={synthesis}
-            jobId={job?.id}
-            skuList={allSeries.map((s) => s.series_id)}
-          />
+          <SectionErrorBoundary
+            sectionName="synthèse-ia"
+            fallbackTitle="La synthèse IA n'a pas pu être chargée"
+          >
+            <SynthesisCard
+              synthesis={synthesis}
+              jobId={job?.id}
+              skuList={allSeries.map((s) => s.series_id)}
+            />
+          </SectionErrorBoundary>
         </FadeIn>
       </div>
 

@@ -41,8 +41,8 @@ export default async function SeriesPage({ searchParams }: SeriesPageProps) {
     redirect(`/dashboard/results?job=${jobId}`);
   }
 
-  const frequency = (job as any).frequency ?? null;
-  const aggregationApplied = (job as any).aggregation_applied === true;
+  const frequency = job?.frequency ?? null;
+  const aggregationApplied = job?.aggregation_applied === true;
 
   // Phase 2: fetch everything else with frequency-aware chart formatting
   const [seriesDetails, chartData, modelComparison, allSeries, forecastData, seriesActions] = await Promise.all([
