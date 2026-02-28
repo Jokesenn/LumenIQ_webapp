@@ -1,25 +1,13 @@
-export type ActionPriority = "urgent" | "warning" | "info" | "clear";
-export type ActionStatus = "active" | "dismissed" | "resolved";
-export type ActionTrend = "worsening" | "stable" | "improving";
+// Types applicatifs pour le systeme d'actions
+// Les types de base (ForecastAction, ActionPriority, etc.) sont dans database.ts
+// Ce fichier definit les types d'application (summary, grouping) et re-exporte les types DB
 
-export interface ForecastAction {
-  id: string;
-  job_id: string;
-  client_id: string;
-  series_id: string | null;
-  priority: ActionPriority;
-  action_type: string;
-  title: string;
-  message: string;
-  suggestion: string | null;
-  context: Record<string, unknown>;
-  recurrence_count: number;
-  trend: ActionTrend | null;
-  first_seen_at: string | null;
-  status: ActionStatus;
-  dismissed_at: string | null;
-  created_at: string;
-}
+export type {
+  ActionPriority,
+  ActionStatus,
+  ActionTrend,
+  ForecastAction,
+} from "@/types/database";
 
 export interface ActionsSummary {
   lines: { icon: string; text: string }[];
@@ -32,5 +20,5 @@ export interface ActionsGroupedByJob {
   filename: string;
   run_date: string;
   summary: ActionsSummary | null;
-  actions: ForecastAction[];
+  actions: import("@/types/database").ForecastAction[];
 }

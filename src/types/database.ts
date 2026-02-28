@@ -1,4 +1,5 @@
-// Types générés pour le schéma Supabase 'lumeniq'
+// Types generés pour le schéma Supabase 'lumeniq'
+// Regeneré le 2026-02-28 depuis le schéma live Supabase
 
 // ============================================
 // ENUMs
@@ -9,6 +10,10 @@ export type XyzClass = 'X' | 'Y' | 'Z'
 export type JobStatus = 'pending' | 'queued' | 'processing' | 'completed' | 'failed' | 'cancelled'
 export type PlanType = 'standard' | 'ml' | 'premium'
 export type SynthesisType = 'executive' | 'detailed' | 'inventory' | 'custom'
+export type ActionPriority = 'urgent' | 'warning' | 'info' | 'clear'
+export type ActionStatus = 'active' | 'dismissed' | 'resolved'
+export type ActionTrend = 'worsening' | 'stable' | 'improving'
+export type ThresholdDirection = 'lower_is_better' | 'higher_is_better'
 
 // ============================================
 // Database Interface
@@ -130,6 +135,7 @@ export interface Database {
           models_evaluated: number | null
           engine_frequency: string | null
           aggregation_applied: boolean | null
+          actions_summary: Record<string, unknown> | null
         }
         Insert: {
           id?: string
@@ -161,6 +167,7 @@ export interface Database {
           models_evaluated?: number | null
           engine_frequency?: string | null
           aggregation_applied?: boolean | null
+          actions_summary?: Record<string, unknown> | null
         }
         Update: {
           id?: string
@@ -192,6 +199,7 @@ export interface Database {
           models_evaluated?: number | null
           engine_frequency?: string | null
           aggregation_applied?: boolean | null
+          actions_summary?: Record<string, unknown> | null
         }
       }
       forecast_results: {
@@ -345,6 +353,47 @@ export interface Database {
           created_at?: string | null
         }
       }
+      forecast_results_detail: {
+        Row: {
+          id: string
+          job_id: string
+          user_id: string
+          series_id: string
+          ds: string
+          yhat: number
+          yhat_lower: number | null
+          yhat_upper: number | null
+          model_name: string
+          freq: string
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          job_id: string
+          user_id: string
+          series_id: string
+          ds: string
+          yhat: number
+          yhat_lower?: number | null
+          yhat_upper?: number | null
+          model_name: string
+          freq: string
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          job_id?: string
+          user_id?: string
+          series_id?: string
+          ds?: string
+          yhat?: number
+          yhat_lower?: number | null
+          yhat_upper?: number | null
+          model_name?: string
+          freq?: string
+          created_at?: string | null
+        }
+      }
       series_actuals: {
         Row: {
           id: string
@@ -416,6 +465,91 @@ export interface Database {
           model_used?: string | null
           tokens_used?: number | null
           created_at?: string
+        }
+      }
+      forecast_actions: {
+        Row: {
+          id: string
+          job_id: string
+          client_id: string
+          series_id: string | null
+          priority: ActionPriority
+          action_type: string
+          title: string
+          message: string
+          suggestion: string | null
+          context: Record<string, unknown> | null
+          recurrence_count: number | null
+          trend: ActionTrend | null
+          first_seen_at: string | null
+          status: ActionStatus | null
+          dismissed_at: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          job_id: string
+          client_id: string
+          series_id?: string | null
+          priority: ActionPriority
+          action_type: string
+          title: string
+          message: string
+          suggestion?: string | null
+          context?: Record<string, unknown> | null
+          recurrence_count?: number | null
+          trend?: ActionTrend | null
+          first_seen_at?: string | null
+          status?: ActionStatus | null
+          dismissed_at?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          job_id?: string
+          client_id?: string
+          series_id?: string | null
+          priority?: ActionPriority
+          action_type?: string
+          title?: string
+          message?: string
+          suggestion?: string | null
+          context?: Record<string, unknown> | null
+          recurrence_count?: number | null
+          trend?: ActionTrend | null
+          first_seen_at?: string | null
+          status?: ActionStatus | null
+          dismissed_at?: string | null
+          created_at?: string | null
+        }
+      }
+      forecast_series: {
+        Row: {
+          id: number
+          job_id: string
+          user_id: string
+          series_id: string
+          history_sample: number[] | null
+          forecast_sample: number[] | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: never
+          job_id: string
+          user_id: string
+          series_id: string
+          history_sample?: number[] | null
+          forecast_sample?: number[] | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: never
+          job_id?: string
+          user_id?: string
+          series_id?: string
+          history_sample?: number[] | null
+          forecast_sample?: number[] | null
+          created_at?: string | null
         }
       }
       usage_logs: {
@@ -498,6 +632,7 @@ export interface Database {
           profile_metrics: Record<string, unknown> | null
           last_eval_ds: string | null
           updated_at: string | null
+          pack_at_selection: string | null
         }
         Insert: {
           id?: string
@@ -508,6 +643,7 @@ export interface Database {
           profile_metrics?: Record<string, unknown> | null
           last_eval_ds?: string | null
           updated_at?: string | null
+          pack_at_selection?: string | null
         }
         Update: {
           id?: string
@@ -518,6 +654,7 @@ export interface Database {
           profile_metrics?: Record<string, unknown> | null
           last_eval_ds?: string | null
           updated_at?: string | null
+          pack_at_selection?: string | null
         }
       }
       job_summaries: {
@@ -530,6 +667,7 @@ export interface Database {
           global_smape: number | null
           global_mape: number | null
           global_mase: number | null
+          global_champion_score: number | null
           global_bias_pct: number | null
           avg_interval_width_pct: number | null
           n_series_total: number
@@ -556,6 +694,7 @@ export interface Database {
           global_smape?: number | null
           global_mape?: number | null
           global_mase?: number | null
+          global_champion_score?: number | null
           global_bias_pct?: number | null
           avg_interval_width_pct?: number | null
           n_series_total: number
@@ -582,6 +721,7 @@ export interface Database {
           global_smape?: number | null
           global_mape?: number | null
           global_mase?: number | null
+          global_champion_score?: number | null
           global_bias_pct?: number | null
           avg_interval_width_pct?: number | null
           n_series_total?: number
@@ -670,6 +810,38 @@ export interface Database {
           updated_at?: string
         }
       }
+      user_thresholds: {
+        Row: {
+          id: string
+          user_id: string
+          metric_key: string
+          green_max: number
+          yellow_max: number
+          direction: ThresholdDirection | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          metric_key: string
+          green_max: number
+          yellow_max: number
+          direction?: ThresholdDirection | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          metric_key?: string
+          green_max?: number
+          yellow_max?: number
+          direction?: ThresholdDirection | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+      }
     }
     Views: Record<string, never>
     Functions: Record<string, never>
@@ -703,11 +875,21 @@ export type ForecastResultInsert = Database['lumeniq']['Tables']['forecast_resul
 export type ForecastResultMonth = Database['lumeniq']['Tables']['forecast_results_months']['Row']
 export type ForecastResultMonthInsert = Database['lumeniq']['Tables']['forecast_results_months']['Insert']
 
+export type ForecastResultDetail = Database['lumeniq']['Tables']['forecast_results_detail']['Row']
+export type ForecastResultDetailInsert = Database['lumeniq']['Tables']['forecast_results_detail']['Insert']
+
 export type SeriesActual = Database['lumeniq']['Tables']['series_actuals']['Row']
 export type SeriesActualInsert = Database['lumeniq']['Tables']['series_actuals']['Insert']
 
 export type ForecastSynthesis = Database['lumeniq']['Tables']['forecast_syntheses']['Row']
 export type ForecastSynthesisInsert = Database['lumeniq']['Tables']['forecast_syntheses']['Insert']
+
+export type ForecastAction = Database['lumeniq']['Tables']['forecast_actions']['Row']
+export type ForecastActionInsert = Database['lumeniq']['Tables']['forecast_actions']['Insert']
+export type ForecastActionUpdate = Database['lumeniq']['Tables']['forecast_actions']['Update']
+
+export type ForecastSeriesRow = Database['lumeniq']['Tables']['forecast_series']['Row']
+export type ForecastSeriesInsert = Database['lumeniq']['Tables']['forecast_series']['Insert']
 
 export type UsageLog = Database['lumeniq']['Tables']['usage_logs']['Row']
 export type UsageLogInsert = Database['lumeniq']['Tables']['usage_logs']['Insert']
@@ -729,16 +911,6 @@ export type UserPreferencesRow = Database['lumeniq']['Tables']['user_preferences
 export type UserPreferencesInsert = Database['lumeniq']['Tables']['user_preferences']['Insert']
 export type UserPreferencesUpdate = Database['lumeniq']['Tables']['user_preferences']['Update']
 
-export interface ForecastResultDetail {
-  id: string
-  job_id: string
-  user_id: string
-  series_id: string
-  ds: string
-  yhat: number
-  yhat_lower: number | null
-  yhat_upper: number | null
-  model_name: string
-  freq: string
-  created_at: string
-}
+export type UserThreshold = Database['lumeniq']['Tables']['user_thresholds']['Row']
+export type UserThresholdInsert = Database['lumeniq']['Tables']['user_thresholds']['Insert']
+export type UserThresholdUpdate = Database['lumeniq']['Tables']['user_thresholds']['Update']

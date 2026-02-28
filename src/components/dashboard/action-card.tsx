@@ -93,7 +93,7 @@ export function ActionCard({ action, compact, onDismiss, onNavigate }: ActionCar
             <h4 className="text-sm font-medium font-display text-white truncate">
               {action.title}
             </h4>
-            {action.recurrence_count > 1 && (
+            {(action.recurrence_count ?? 0) > 1 && (
               <span className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded bg-white/10 text-zinc-400">
                 <RotateCcw size={10} />
                 {action.recurrence_count}x
