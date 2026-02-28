@@ -14,6 +14,7 @@ import {
 } from "@/lib/queries/results";
 import { ResultsContent } from "./results-client";
 import { Upload } from "lucide-react";
+import type { SeriesRow } from "@/types/results";
 
 interface ResultsPageProps {
   searchParams: Promise<{ job?: string; tab?: string }>;
@@ -92,17 +93,17 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
     getJobSeriesList(jobId, user.id).catch(() => []),
   ]);
 
-  const validTabs = ["overview", "series", "reliability", "synthesis"];
-  const initialTab = validTabs.includes(params.tab ?? "") ? params.tab as "overview" | "series" | "reliability" | "synthesis" : undefined;
+  const validTabs = ["overview", "portfolio", "series", "synthesis", "reliability"];
+  const initialTab = validTabs.includes(params.tab ?? "") ? params.tab as "overview" | "portfolio" | "series" | "synthesis" | "reliability" : undefined;
 
   return (
     <ResultsContent
       job={job}
       summary={summary}
       metrics={metrics}
-      topPerformers={topBottom.top}
-      bottomPerformers={topBottom.bottom}
-      allSeries={allSeries}
+      topPerformers={topBottom.top as SeriesRow[]}
+      bottomPerformers={topBottom.bottom as SeriesRow[]}
+      allSeries={allSeries as SeriesRow[]}
       chartData={chartData}
       abcXyzData={abcXyzData}
       modelPerformance={modelPerformance}

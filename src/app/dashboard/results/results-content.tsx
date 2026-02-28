@@ -36,6 +36,16 @@ import { PortfolioView, assignCluster } from "@/components/dashboard/portfolio-v
 import type { ClusterId } from "@/components/dashboard/portfolio-view";
 import { formatFrequencyLabel } from "@/lib/date-format";
 import { createClient as createBrowserClient } from "@/lib/supabase/client";
+import type {
+  ResultsJob,
+  ResultsSummary,
+  JobMetrics,
+  SeriesRow,
+  ResultsChartPoint,
+  AbcXyzCell,
+  ModelPerformanceRow,
+  SynthesisRow,
+} from "@/types/results";
 
 function formatDistanceToNow(date: Date): string {
   const now = new Date();
@@ -54,16 +64,16 @@ function formatDistanceToNow(date: Date): string {
 type TabType = "overview" | "series" | "portfolio" | "reliability" | "synthesis";
 
 interface ResultsContentProps {
-  job: any;
-  summary: any;
-  metrics: any;
-  topPerformers: any[];
-  bottomPerformers: any[];
-  allSeries: any[];
-  chartData: any[];
-  abcXyzData: any[];
-  modelPerformance: any[];
-  synthesis: any;
+  job: ResultsJob;
+  summary: ResultsSummary | null;
+  metrics: JobMetrics | null;
+  topPerformers: SeriesRow[];
+  bottomPerformers: SeriesRow[];
+  allSeries: SeriesRow[];
+  chartData: ResultsChartPoint[];
+  abcXyzData: AbcXyzCell[];
+  modelPerformance: ModelPerformanceRow[];
+  synthesis: SynthesisRow | null;
   initialTab?: TabType;
 }
 
@@ -90,7 +100,7 @@ export function ResultsContent({
   const [granularity, setGranularity] = useState<"monthly" | "source">("monthly");
   const [sourceChartData, setSourceChartData] = useState<any[] | null>(null);
   const [loadingSource, setLoadingSource] = useState(false);
-  const isAggregated = (job as any)?.aggregation_applied === true;
+  const isAggregated = job?.aggregation_applied === true;
 
   useEffect(() => {
     if (granularity !== "source" || !isAggregated || sourceChartData) return;
@@ -98,7 +108,7 @@ export function ResultsContent({
     setLoadingSource(true);
     const fetchDetailData = async () => {
       const supabase = createBrowserClient();
-      const frequency = (job as any)?.frequency;
+      const frequency = job?.frequency;
 
       // Use server-side RPC to aggregate across all series by date.
       // This avoids the Supabase PostgREST 1000-row default limit
@@ -116,6 +126,7 @@ export function ResultsContent({
       }
 
       const { formatDateByFrequency } = await import("@/lib/date-format");
+      const { bridgeChartGap } = await import("@/lib/chart-utils");
 
       const data = (rpcData as any[]).map((row: any) => ({
         date: formatDateByFrequency(row.ds, frequency),
@@ -125,24 +136,7 @@ export function ResultsContent({
         forecastUpper: row.is_forecast ? row.forecast_upper_sum : undefined,
       }));
 
-      // Bridge gap
-      const lastActualIdx = data.findLastIndex((d: any) => d.actual !== undefined);
-      const firstForecastOnlyIdx = data.findIndex(
-        (d: any) => d.forecast !== undefined && d.actual === undefined,
-      );
-      if (
-        lastActualIdx >= 0 &&
-        firstForecastOnlyIdx > lastActualIdx &&
-        data[lastActualIdx].forecast === undefined
-      ) {
-        const actualVal = data[lastActualIdx].actual as number;
-        data[lastActualIdx] = {
-          ...data[lastActualIdx],
-          forecast: actualVal,
-          forecastLower: actualVal,
-          forecastUpper: actualVal,
-        };
-      }
+      bridgeChartGap(data);
 
       setSourceChartData(data);
     };
@@ -219,9 +213,9 @@ export function ResultsContent({
   });
 
   const reliableSeriesPct = useMemo(() => {
-    const scored = allSeries.filter((s: any) => s.champion_score != null);
+    const scored = allSeries.filter((s) => s.champion_score != null);
     if (scored.length === 0) return null;
-    const reliable = scored.filter((s: any) => s.champion_score >= thresholds.reliability_score.yellow_max);
+    const reliable = scored.filter((s) => (s.champion_score ?? 0) >= thresholds.reliability_score.yellow_max);
     return Math.round((reliable.length / scored.length) * 100);
   }, [allSeries, thresholds]);
 
@@ -284,7 +278,7 @@ export function ResultsContent({
                 </span>
                 {isAggregated && (
                   <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/10 px-2 py-0.5 text-xs text-indigo-400">
-                    Données {formatFrequencyLabel((job as any)?.frequency).toLowerCase()} → agrégées en mensuel
+                    Données {formatFrequencyLabel(job?.frequency).toLowerCase()} → agrégées en mensuel
                   </span>
                 )}
               </div>
@@ -308,10 +302,14 @@ export function ResultsContent({
 
       {/* Tabs */}
       <FadeIn delay={0.1}>
-        <div className="dash-tab-bar">
+        <div className="dash-tab-bar" role="tablist" aria-label="Sections des résultats">
           {tabs.map((tab) => (
             <button
               key={tab.id}
+              role="tab"
+              aria-selected={activeTab === tab.id}
+              aria-controls={`tabpanel-${tab.id}`}
+              id={`tab-${tab.id}`}
               onClick={() => setActiveTab(tab.id)}
               className={
                 activeTab === tab.id
@@ -327,7 +325,7 @@ export function ResultsContent({
       </FadeIn>
 
       {/* Tab Content - toujours le même arbre de composants pour éviter "Rendered more hooks" */}
-      <div className={cn(activeTab !== "overview" && "hidden")}>
+      <div role="tabpanel" id="tabpanel-overview" aria-labelledby="tab-overview" className={cn(activeTab !== "overview" && "hidden")}>
         <div className="space-y-6">
           {/* Metric Gauges */}
           <FadeIn delay={0.2}>
@@ -379,7 +377,7 @@ export function ResultsContent({
                   </div>
                   {(metrics?.n_series_failed ?? 0) > 0 && (
                     <p className="text-xs text-red-400 mt-1">
-                      {metrics.n_series_failed} échecs
+                      {metrics!.n_series_failed} échecs
                     </p>
                   )}
                 </div>
@@ -431,7 +429,7 @@ export function ResultsContent({
                       )}
                       onClick={() => setGranularity("source")}
                     >
-                      {formatFrequencyLabel((job as any)?.frequency)}
+                      {formatFrequencyLabel(job?.frequency)}
                     </button>
                   </div>
                 </div>
@@ -485,7 +483,7 @@ export function ResultsContent({
             <FadeIn delay={0.45}>
               <div data-onboarding="alerts-panel">
                 <AlertsSummaryCard
-                  seriesList={allSeries.map((s: any) => ({
+                  seriesList={allSeries.map((s) => ({
                     wape: s.wape,
                     was_gated: s.was_gated,
                     drift_detected: s.drift_detected,
@@ -522,7 +520,7 @@ export function ResultsContent({
         </div>
       </div>
 
-      <div className={cn(activeTab !== "series" && "hidden")}>
+      <div role="tabpanel" id="tabpanel-series" aria-labelledby="tab-series" className={cn(activeTab !== "series" && "hidden")}>
         <FadeIn>
           <div className="dash-card p-6">
             <div className="flex items-center justify-between mb-4">
@@ -582,22 +580,22 @@ export function ResultsContent({
         </FadeIn>
       </div>
 
-      <div className={cn(activeTab !== "portfolio" && "hidden")}>
+      <div role="tabpanel" id="tabpanel-portfolio" aria-labelledby="tab-portfolio" className={cn(activeTab !== "portfolio" && "hidden")}>
         <FadeIn>
           <PortfolioView allSeries={allSeries} jobId={job?.id ?? ""} onClusterNavigate={handleClusterNavigate} />
         </FadeIn>
       </div>
 
-      <div className={cn(activeTab !== "reliability" && "hidden")}>
+      <div role="tabpanel" id="tabpanel-reliability" aria-labelledby="tab-reliability" className={cn(activeTab !== "reliability" && "hidden")}>
         <ReliabilityTab allSeries={allSeries} onModelClick={handleModelClick} />
       </div>
 
-      <div className={cn(activeTab !== "synthesis" && "hidden")}>
+      <div role="tabpanel" id="tabpanel-synthesis" aria-labelledby="tab-synthesis" className={cn(activeTab !== "synthesis" && "hidden")}>
         <FadeIn>
           <SynthesisCard
             synthesis={synthesis}
             jobId={job?.id}
-            skuList={allSeries.map((s: any) => s.series_id as string)}
+            skuList={allSeries.map((s) => s.series_id)}
           />
         </FadeIn>
       </div>

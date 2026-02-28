@@ -4,6 +4,7 @@ import type { ForecastResultDetail } from "@/types/database";
 import { toChampionScore, resolveSeriesErrorRatio } from "@/lib/metrics";
 import { formatDateByFrequency } from "@/lib/date-format";
 import { formatFrequencyLabel } from "@/lib/date-format";
+import { bridgeChartGap, resolveGlobalErrorRatio } from "@/lib/chart-utils";
 import type { ForecastAction } from "@/types/actions";
 
 // Récupérer un job par ID avec son summary
@@ -54,11 +55,7 @@ export async function getJobMetrics(jobId: string, userId: string) {
     global_smape: data.global_smape != null ? Number(data.global_smape) * 100 : null,
     global_mase: data.global_mase != null ? Number(data.global_mase) : null,
     global_bias_pct: data.global_bias_pct != null ? Number(data.global_bias_pct) : null,
-    championScore: toChampionScore(
-      data.global_wape != null ? Number(data.global_wape)
-        : data.global_smape != null ? Number(data.global_smape)
-        : null
-    ),
+    championScore: toChampionScore(resolveGlobalErrorRatio(data)),
   };
 }
 
@@ -278,7 +275,7 @@ export async function getJobSeriesList(
     query = query.eq("xyz_class", filters.xyz);
   }
 
-  const { data } = await query.order("series_id", { ascending: true });
+  const { data } = await query.order("series_id", { ascending: true }).limit(1000);
 
   const rows = (data || []).map((r) => ({
     ...r,
@@ -409,27 +406,7 @@ export async function getSeriesChartData(jobId: string, seriesId: string, userId
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([, value]) => value);
 
-  // Bridge the gap between actuals and forecast so the lines connect visually.
-  // Find the last point that has an actual value and the first point that has
-  // only a forecast value, then copy the forecast value onto that last-actual
-  // point so Recharts draws a continuous transition.
-  const lastActualIdx = sorted.findLastIndex((d) => d.actual !== undefined);
-  const firstForecastOnlyIdx = sorted.findIndex(
-    (d) => d.forecast !== undefined && d.actual === undefined,
-  );
-  if (
-    lastActualIdx >= 0 &&
-    firstForecastOnlyIdx > lastActualIdx &&
-    sorted[lastActualIdx].forecast === undefined
-  ) {
-    const actualVal = sorted[lastActualIdx].actual as number;
-    sorted[lastActualIdx] = {
-      ...sorted[lastActualIdx],
-      forecast: actualVal,
-      forecastLower: actualVal,
-      forecastUpper: actualVal,
-    };
-  }
+  bridgeChartGap(sorted);
 
   return sorted;
 }
@@ -714,24 +691,7 @@ export async function getSeriesDetailChartData(
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([, value]) => value);
 
-  // Bridge gap between actuals and forecast
-  const lastActualIdx = sorted.findLastIndex((d) => d.actual !== undefined);
-  const firstForecastOnlyIdx = sorted.findIndex(
-    (d) => d.forecast !== undefined && d.actual === undefined,
-  );
-  if (
-    lastActualIdx >= 0 &&
-    firstForecastOnlyIdx > lastActualIdx &&
-    sorted[lastActualIdx].forecast === undefined
-  ) {
-    const actualVal = sorted[lastActualIdx].actual as number;
-    sorted[lastActualIdx] = {
-      ...sorted[lastActualIdx],
-      forecast: actualVal,
-      forecastLower: actualVal,
-      forecastUpper: actualVal,
-    };
-  }
+  bridgeChartGap(sorted);
 
   return sorted;
 }
@@ -752,32 +712,24 @@ export async function getJobDetailChartData(
 
   if (!rpcData?.length) return [];
 
-  const chartData = (rpcData as any[]).map((row: any) => ({
+  interface RpcChartRow {
+    ds: string;
+    is_forecast: boolean;
+    actual_sum: number | null;
+    forecast_sum: number | null;
+    forecast_lower_sum: number | null;
+    forecast_upper_sum: number | null;
+  }
+
+  const chartData = (rpcData as RpcChartRow[]).map((row) => ({
     date: formatDateByFrequency(row.ds, frequency),
-    actual: !row.is_forecast ? row.actual_sum : undefined,
-    forecast: row.is_forecast ? row.forecast_sum : undefined,
-    forecastLower: row.is_forecast ? row.forecast_lower_sum : undefined,
-    forecastUpper: row.is_forecast ? row.forecast_upper_sum : undefined,
+    actual: !row.is_forecast ? (row.actual_sum ?? undefined) : undefined,
+    forecast: row.is_forecast ? (row.forecast_sum ?? undefined) : undefined,
+    forecastLower: row.is_forecast ? (row.forecast_lower_sum ?? undefined) : undefined,
+    forecastUpper: row.is_forecast ? (row.forecast_upper_sum ?? undefined) : undefined,
   }));
 
-  // Bridge gap
-  const lastActualIdx = chartData.findLastIndex((d) => d.actual !== undefined);
-  const firstForecastOnlyIdx = chartData.findIndex(
-    (d) => d.forecast !== undefined && d.actual === undefined,
-  );
-  if (
-    lastActualIdx >= 0 &&
-    firstForecastOnlyIdx > lastActualIdx &&
-    chartData[lastActualIdx].forecast === undefined
-  ) {
-    const actualVal = chartData[lastActualIdx].actual as number;
-    chartData[lastActualIdx] = {
-      ...chartData[lastActualIdx],
-      forecast: actualVal,
-      forecastLower: actualVal,
-      forecastUpper: actualVal,
-    };
-  }
+  bridgeChartGap(chartData);
 
   return chartData;
 }

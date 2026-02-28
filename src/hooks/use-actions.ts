@@ -241,7 +241,13 @@ export function useActions(
               .from("forecast_actions")
               .update({ status: "active", dismissed_at: null })
               .in("id", ids)
-              .then(() => fetchActions());
+              .then(
+                () => fetchActions(),
+                () => {
+                  toast.error("Erreur lors de l'annulation");
+                  fetchActions();
+                }
+              );
           },
         },
         duration: 6000,
@@ -283,8 +289,10 @@ export function useUrgentCount(): number {
 
     fetchCount();
 
-    // Poll every 30 seconds
-    const interval = setInterval(fetchCount, 30_000);
+    // Poll every 30 seconds, pause when tab is hidden
+    const interval = setInterval(() => {
+      if (document.visibilityState === "visible") fetchCount();
+    }, 30_000);
     return () => {
       cancelled = true;
       clearInterval(interval);

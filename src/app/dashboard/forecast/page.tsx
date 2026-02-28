@@ -86,12 +86,8 @@ export default function ForecastPage() {
     }
   }, [isComplete, job]);
 
-  // Quand le job échoue, afficher l'erreur
-  useEffect(() => {
-    if (isFailed && job) {
-      // Rester à l'étape 3 pour afficher l'erreur
-    }
-  }, [isFailed, job]);
+  // Quand le job échoue, on reste à l'étape 3 pour afficher l'erreur
+  // (pas besoin d'effet — le rendu conditionnel dans le JSX gère cet état)
 
   const handleDrop = async (
     e: React.DragEvent | React.ChangeEvent<HTMLInputElement>

@@ -31,6 +31,7 @@ import { ExportPdfButton } from "@/components/dashboard/results/ExportPdfButton"
 import type { SeriesListItem } from "@/types/forecast";
 import type { ForecastPoint } from "@/types/export";
 import type { ForecastAction } from "@/types/actions";
+import type { ResultsJob, SeriesDetail, ResultsChartPoint, ModelComparisonData } from "@/types/results";
 import { ActionCard } from "@/components/dashboard/action-card";
 import { getSeriesAlerts, sortAlertsByPriority } from "@/lib/series-alerts";
 import { useThresholds } from "@/lib/thresholds/context";
@@ -49,10 +50,10 @@ const ALERT_GLOSSARY_MAP: Record<string, string | undefined> = {
 };
 
 interface SeriesContentProps {
-  job: any;
-  series: any;
-  chartData: any[];
-  modelComparison: any;
+  job: ResultsJob;
+  series: SeriesDetail;
+  chartData: ResultsChartPoint[];
+  modelComparison: ModelComparisonData | null;
   allSeries: SeriesListItem[];
   forecastPoints?: ForecastPoint[];
   seriesActions?: ForecastAction[];
@@ -173,24 +174,8 @@ export function SeriesContent({
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([, value]) => value);
 
-      // Bridge gap
-      const lastActualIdx = sorted.findLastIndex((d) => d.actual !== undefined);
-      const firstForecastOnlyIdx = sorted.findIndex(
-        (d) => d.forecast !== undefined && d.actual === undefined,
-      );
-      if (
-        lastActualIdx >= 0 &&
-        firstForecastOnlyIdx > lastActualIdx &&
-        sorted[lastActualIdx].forecast === undefined
-      ) {
-        const actualVal = sorted[lastActualIdx].actual as number;
-        sorted[lastActualIdx] = {
-          ...sorted[lastActualIdx],
-          forecast: actualVal,
-          forecastLower: actualVal,
-          forecastUpper: actualVal,
-        };
-      }
+      const { bridgeChartGap } = await import("@/lib/chart-utils");
+      bridgeChartGap(sorted);
 
       setSourceChartData(sorted);
     };
@@ -329,7 +314,7 @@ export function SeriesContent({
                 champion_score: series.champion_score,
                 mape: series.mape,
                 champion_model: series.champion_model ?? "N/A",
-                cv: series.cv ?? series.cv_coefficient,
+                cv: series.cv ?? series.cv_coefficient ?? null,
                 horizon: series.forecast_horizon ?? 12,
                 total_value: series.forecast_sum,
                 was_gated: series.was_gated,
@@ -476,9 +461,9 @@ export function SeriesContent({
               <h2 className="dash-section-title">
                 Comparaison des modèles
               </h2>
-              {modelComparison?.modelsTested > 0 && (
+              {(modelComparison?.modelsTested ?? 0) > 0 && (
                 <span className="text-xs text-zinc-500 bg-white/5 px-2.5 py-1 rounded-full">
-                  {modelComparison.modelsTested} testés
+                  {modelComparison!.modelsTested} testés
                 </span>
               )}
             </div>

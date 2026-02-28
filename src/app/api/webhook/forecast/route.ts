@@ -75,10 +75,12 @@ export async function POST(request: Request) {
       "Content-Type": "application/json",
     };
 
-    // Signer si le secret est configuré (graceful degradation)
+    // Signer si le secret est configuré
     if (process.env.N8N_WEBHOOK_SECRET) {
       const { signature } = signWebhookPayload(payloadString);
       headers["X-Webhook-Signature"] = signature;
+    } else if (process.env.NODE_ENV === "production") {
+      console.warn("[webhook/forecast] N8N_WEBHOOK_SECRET non configuré — requête envoyée sans signature HMAC");
     }
 
     const response = await fetch(webhookUrl, {

@@ -141,8 +141,16 @@ export async function deleteAccount(): Promise<{
     };
   }
 
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!supabaseUrl) {
+    return {
+      success: false,
+      error: "Configuration serveur incomplète (URL Supabase manquante)",
+    };
+  }
+
   const adminClient = createSupabaseClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    supabaseUrl,
     serviceRoleKey
   );
 

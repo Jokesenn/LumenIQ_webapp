@@ -11,6 +11,7 @@ import {
 } from "@/lib/queries/results";
 import { formatDateByFrequency } from "@/lib/date-format";
 import { SeriesContent } from "./series-content";
+import type { ResultsChartPoint, ModelComparisonData } from "@/types/results";
 
 interface SeriesPageProps {
   searchParams: Promise<{ job?: string; series?: string }>;
@@ -69,8 +70,8 @@ export default async function SeriesPage({ searchParams }: SeriesPageProps) {
     <SeriesContent
       job={job}
       series={seriesDetails}
-      chartData={chartData}
-      modelComparison={modelComparison}
+      chartData={chartData as ResultsChartPoint[]}
+      modelComparison={modelComparison as ModelComparisonData | null}
       allSeries={allSeries}
       forecastPoints={forecastPoints}
       seriesActions={seriesActions}

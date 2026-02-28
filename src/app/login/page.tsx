@@ -14,7 +14,6 @@ import {
   ArrowRight,
   Shield,
   Server,
-  Lock as LockIcon,
   Sparkles,
   ChevronLeft,
 } from "lucide-react";
@@ -277,7 +276,7 @@ function LoginContent() {
           {[
             { icon: Shield, label: "Conforme RGPD" },
             { icon: Server, label: "Hébergé en UE" },
-            { icon: LockIcon, label: "Chiffrement AES-256" },
+            { icon: Lock, label: "Chiffrement AES-256" },
           ].map(({ icon: Icon, label }) => (
             <div
               key={label}

@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { toChampionScore } from "@/lib/metrics";
+import { resolveGlobalErrorRatio } from "@/lib/chart-utils";
 import type { ForecastAction } from "@/types/actions";
 
 const PLAN_LIMITS: Record<string, number> = {
@@ -37,21 +38,14 @@ export async function getDashboardStats(userId: string) {
   const avgChampionScore =
     scoreData?.length
       ? scoreData.reduce((sum, d) => {
-          const ratio = d.global_wape != null ? Number(d.global_wape)
-            : d.global_smape != null ? Number(d.global_smape)
-            : null;
-          const cs = toChampionScore(ratio);
+          const cs = toChampionScore(resolveGlobalErrorRatio(d));
           return sum + (cs ?? 0);
         }, 0) / scoreData.length
       : 0;
 
   // Scores individuels pour calcul de tendance (dernier run vs avant-dernier)
-  const resolveRatio = (d: { global_wape: unknown; global_smape: unknown }) =>
-    d.global_wape != null ? Number(d.global_wape)
-      : d.global_smape != null ? Number(d.global_smape)
-      : null;
-  const latestScore = scoreData?.[0] ? toChampionScore(resolveRatio(scoreData[0])) : null;
-  const previousScore = scoreData?.[1] ? toChampionScore(resolveRatio(scoreData[1])) : null;
+  const latestScore = scoreData?.[0] ? toChampionScore(resolveGlobalErrorRatio(scoreData[0])) : null;
+  const previousScore = scoreData?.[1] ? toChampionScore(resolveGlobalErrorRatio(scoreData[1])) : null;
 
   // Dernière prévision complétée
   const { data: lastJob } = await supabase
@@ -118,12 +112,9 @@ export async function getTrendData(userId: string): Promise<TrendDataPoint[]> {
     .limit(10);
 
   return (data ?? []).reverse().map((d) => {
-    const ratio = d.global_wape != null ? Number(d.global_wape)
-      : d.global_smape != null ? Number(d.global_smape)
-      : null;
     return {
       jobId: d.job_id,
-      score: toChampionScore(ratio) ?? 0,
+      score: toChampionScore(resolveGlobalErrorRatio(d)) ?? 0,
       date: d.created_at,
       seriesCount: d.n_series_total ?? 0,
     };
@@ -237,9 +228,7 @@ export async function getRecentForecasts(
 
   return jobs.map((job) => {
     const summary = summaryMap.get(job.id);
-    const ratio = summary?.global_wape != null ? Number(summary.global_wape)
-      : summary?.global_smape != null ? Number(summary.global_smape)
-      : null;
+    const ratio = summary ? resolveGlobalErrorRatio(summary) : null;
 
     return {
       id: job.id,
@@ -303,11 +292,11 @@ export async function getJobHistory(userId: string): Promise<HistoryJob[]> {
 
   return jobs.map((job) => {
     const summary = summaryMap.get(job.id);
-    const ratio = job.avg_wape != null ? Number(job.avg_wape)
-      : summary?.global_wape != null ? Number(summary.global_wape)
-      : job.avg_smape != null ? Number(job.avg_smape)
-      : summary?.global_smape != null ? Number(summary.global_smape)
-      : null;
+    // Priority: job-level avg → summary-level global (wape → smape fallback)
+    const ratio = resolveGlobalErrorRatio({
+      global_wape: job.avg_wape ?? summary?.global_wape,
+      global_smape: job.avg_smape ?? summary?.global_smape,
+    });
 
     return {
       id: job.id,
