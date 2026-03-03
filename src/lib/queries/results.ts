@@ -42,7 +42,7 @@ export async function getJobMetrics(jobId: string, userId: string) {
   const { data } = await supabase
     .schema("lumeniq")
     .from("job_summaries")
-    .select("global_wape, global_smape, global_mase, global_bias_pct, n_series_total, n_series_success, n_series_failed")
+    .select("global_wape, global_smape, global_mase, global_bias_pct, n_series_total, n_series_success, n_series_failed, n_series_dormant")
     .eq("job_id", jobId)
     .eq("user_id", userId)
     .single();
@@ -55,6 +55,7 @@ export async function getJobMetrics(jobId: string, userId: string) {
     global_smape: data.global_smape != null ? Number(data.global_smape) * 100 : null,
     global_mase: data.global_mase != null ? Number(data.global_mase) : null,
     global_bias_pct: data.global_bias_pct != null ? Number(data.global_bias_pct) : null,
+    n_series_dormant: data.n_series_dormant ?? 0,
     championScore: toChampionScore(resolveGlobalErrorRatio(data)),
   };
 }

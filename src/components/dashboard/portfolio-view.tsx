@@ -54,6 +54,7 @@ interface PortfolioViewProps {
 // ============================================================
 
 export type ClusterId =
+  | "dormant"
   | "stable"
   | "seasonal"
   | "trendy"
@@ -72,6 +73,16 @@ interface ClusterDef {
 }
 
 const CLUSTERS: ClusterDef[] = [
+  {
+    id: "dormant",
+    label: "Inactifs",
+    color: "#71717a",
+    colorClass: "bg-zinc-500/15 text-zinc-400 border-zinc-500/30",
+    icon: "⚫",
+    description: "Aucune vente depuis 6+ mois",
+    advice:
+      "Confirmez l'arrêt du produit ou retirez-le de vos imports.",
+  },
   {
     id: "stable",
     label: "Pilotes automatiques",
@@ -146,6 +157,8 @@ export function assignCluster(series: {
 }): ClusterId {
   const tags = series.behavior_tags ?? [];
   const xyz = series.xyz_class ?? "X";
+
+  if (tags.includes("dormant")) return "dormant";
 
   if (
     xyz === "Z" ||

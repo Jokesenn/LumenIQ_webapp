@@ -450,6 +450,14 @@ export function ResultsContent({
                     <p className="text-sm text-zinc-400">Séries analysées avec succès</p>
                     <HelpTooltip termKey="series_count" />
                   </div>
+                  {(() => {
+                    const dormantCount = allSeries.filter(s => s.champion_model === "zero_forecast").length;
+                    return dormantCount > 0 ? (
+                      <p className="text-xs text-zinc-500 mt-1">
+                        dont {dormantCount} inactive{dormantCount > 1 ? "s" : ""}
+                      </p>
+                    ) : null;
+                  })()}
                   {(metrics?.n_series_failed ?? 0) > 0 && (
                     <p className="text-xs text-red-400 mt-1">
                       {metrics!.n_series_failed} échecs

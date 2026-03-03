@@ -24,6 +24,7 @@ export interface JobMetrics {
   n_series_total: number;
   n_series_success: number;
   n_series_failed: number;
+  n_series_dormant: number;
   championScore: number | null;
 }
 
