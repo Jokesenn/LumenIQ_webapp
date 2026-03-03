@@ -263,6 +263,15 @@ export const GLOSSARY: Record<string, ReactNode> = {
     </div>
   ),
 
+  dormant: (
+    <div>
+      <p className="font-medium mb-2">Série inactive</p>
+      <p className="text-white/70 text-sm">
+        Série inactive depuis plus de 6 mois. Une prévision à zéro est appliquée automatiquement sans modélisation.
+      </p>
+    </div>
+  ),
+
   gated: (
     <div>
       <p className="font-medium mb-2">Prévisions stables</p>

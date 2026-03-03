@@ -31,6 +31,13 @@ export function getSeriesAlerts(
   options?: AlertThresholdOptions
 ): AlertType[] {
   const alerts: AlertType[] = []
+
+  // Série dormante — aucune autre alerte pertinente
+  if (series.champion_model === "zero_forecast") {
+    alerts.push("dormant")
+    return alerts
+  }
+
   const wape = series.wape ?? 0
 
   const attention = options?.wapeThresholds?.attention ?? WAPE_THRESHOLD_ATTENTION
@@ -79,8 +86,9 @@ export function sortAlertsByPriority(alerts: AlertType[]): AlertType[] {
     watch: 2,
     drift: 3,
     "model-changed": 4,
-    new: 5,
-    gated: 6,
+    dormant: 5,
+    new: 6,
+    gated: 7,
   }
 
   return [...alerts].sort((a, b) => priority[a] - priority[b])
@@ -97,6 +105,7 @@ export function countAlertsByType(
     attention: 0,
     watch: 0,
     drift: 0,
+    dormant: 0,
     new: 0,
     "model-changed": 0,
     gated: 0,

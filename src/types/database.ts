@@ -673,6 +673,7 @@ export interface Database {
           n_series_total: number
           n_series_success: number
           n_series_failed: number
+          n_series_dormant: number
           winner_models: Record<string, number> | null
           winner_categories: Record<string, number> | null
           top_model: string | null
@@ -700,6 +701,7 @@ export interface Database {
           n_series_total: number
           n_series_success?: number
           n_series_failed?: number
+          n_series_dormant?: number
           winner_models?: Record<string, number> | null
           winner_categories?: Record<string, number> | null
           top_model?: string | null
@@ -727,6 +729,7 @@ export interface Database {
           n_series_total?: number
           n_series_success?: number
           n_series_failed?: number
+          n_series_dormant?: number
           winner_models?: Record<string, number> | null
           winner_categories?: Record<string, number> | null
           top_model?: string | null

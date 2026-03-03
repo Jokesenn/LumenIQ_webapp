@@ -6,6 +6,7 @@ import {
   Sparkles,
   RefreshCw,
   Zap,
+  MinusCircle,
   type LucideIcon,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -33,7 +34,7 @@ const alertBadgeVariants = cva(
   }
 )
 
-export type AlertType = "attention" | "watch" | "drift" | "new" | "model-changed" | "gated"
+export type AlertType = "attention" | "watch" | "drift" | "dormant" | "new" | "model-changed" | "gated"
 
 interface BadgeConfig {
   label: string
@@ -67,17 +68,23 @@ const BADGE_CONFIG: Record<AlertType, BadgeConfig> = {
     variant: "purple",
     priority: 4,
   },
+  dormant: {
+    label: "Série inactive",
+    icon: MinusCircle,
+    variant: "info",
+    priority: 5,
+  },
   new: {
     label: "Nouveau produit",
     icon: Sparkles,
     variant: "info",
-    priority: 5,
+    priority: 6,
   },
   gated: {
     label: "Prévisions stables",
     icon: Zap,
     variant: "success",
-    priority: 6,
+    priority: 7,
   },
 }
 
