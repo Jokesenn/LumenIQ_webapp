@@ -4,7 +4,7 @@ import type { ForecastResultDetail } from "@/types/database";
 import { toChampionScore, resolveSeriesErrorRatio } from "@/lib/metrics";
 import { formatDateByFrequency } from "@/lib/date-format";
 import { formatFrequencyLabel } from "@/lib/date-format";
-import { bridgeChartGap, resolveGlobalErrorRatio } from "@/lib/chart-utils";
+import { bridgeChartGap, fillZeroGap, resolveGlobalErrorRatio } from "@/lib/chart-utils";
 import type { ForecastAction } from "@/types/actions";
 
 // Récupérer un job par ID avec son summary
@@ -388,6 +388,16 @@ export async function getSeriesChartData(jobId: string, seriesId: string, userId
         isOutlier: a.is_outlier,
       });
     });
+  }
+
+  // Fill gap between last actual and first forecast with zero-valued entries
+  // (e.g. dormant series: last sale Dec 2023, forecast starts Jan 2026)
+  if (forecasts.length > 0) {
+    const actualKeys = Array.from(dataMap.keys()).sort();
+    const lastActualKey = actualKeys.length > 0 ? actualKeys[actualKeys.length - 1] : undefined;
+    const firstForecastKey = new Date(forecasts[0].ds).toISOString().split("T")[0];
+    const freq = aggregationApplied ? "MS" : frequency;
+    fillZeroGap(dataMap, lastActualKey, firstForecastKey, freq, formatDateByFrequency);
   }
 
   forecasts.forEach((f) => {

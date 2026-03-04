@@ -180,6 +180,15 @@ export function SeriesContent({
         });
       });
 
+      // Fill gap between last actual and first forecast with zeros
+      if (forecasts.length > 0) {
+        const actualKeys = Array.from(dataMap.keys()).sort();
+        const lastActualKey = actualKeys.length > 0 ? actualKeys[actualKeys.length - 1] : undefined;
+        const firstForecastKey = new Date(forecasts[0].ds).toISOString().split("T")[0];
+        const { fillZeroGap } = await import("@/lib/chart-utils");
+        fillZeroGap(dataMap, lastActualKey, firstForecastKey, job.frequency, formatDateByFrequency);
+      }
+
       forecasts.forEach((f: ForecastRow) => {
         const dateKey = new Date(f.ds).toISOString().split("T")[0];
         const existing = dataMap.get(dateKey) || {
