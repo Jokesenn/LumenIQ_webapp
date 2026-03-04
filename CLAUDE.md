@@ -232,6 +232,7 @@ src/
 │   ├── reliability-utils.ts     # Utility functions for reliability tab
 │   ├── csv-analyzer.ts          # CSV parsing, format detection, frequency analysis, column mapping
 │   ├── date-format.ts           # Frequency-aware date formatting (formatDateByFrequency, formatFrequencyLabel, classifyFreq)
+│   ├── chart-utils.ts           # fillZeroGap(), bridgeChartGap(), resolveGlobalErrorRatio() — chart data gap filling + visual bridging
 │   ├── series-alerts.ts         # getSeriesAlerts(), sortAlertsByPriority(), countAlertsByType()
 │   ├── linkify-skus.ts          # SKU linkification in markdown content
 │   ├── parse-markdown-sections.ts  # Split markdown by H2 headers for accordions
@@ -449,6 +450,14 @@ Conversion functions in `@/lib/metrics.ts`:
 - `formatDateByFrequency(ds, freq)` — formats date labels per frequency: H → "dd/MM HH:mm", D → "dd MMM", W → "dd MMM yy", M → "MMM yy", Q → "T1 25"
 - `formatFrequencyLabel(freq)` — returns French labels: Horaire, Journalier, Hebdomadaire, Mensuel, Trimestriel
 - Falls back to monthly formatting when frequency is null/undefined
+
+### Chart Gap Filling for Dormant Series (`lib/chart-utils.ts`)
+- `fillZeroGap(dataMap, lastActualKey, firstForecastKey, frequency, formatFn)` — fills missing periods between the last actual data point and the first forecast with `actual: 0` entries
+- Prevents visual jumps on charts for dormant/end-of-life series (e.g., last sale Dec 2023 → forecast Jan 2026 now shows ~24 months of zeros)
+- Frequency-aware: steps by month (M/Q), week (W/7D), or day (D) based on `classifyFreq()`
+- Used in both `getSeriesChartData()` (server-side, monthly view in `results.ts`) and source-frequency view (client-side, `series-content.tsx`)
+- `bridgeChartGap(data)` — copies the last actual value into the forecast field at the junction point so Recharts draws a continuous transition line between the two series
+- `resolveGlobalErrorRatio(data)` — fallback chain for global error metrics: `global_wape` → `global_smape`
 
 ### PDF Export (`components/export/`, `hooks/useExportPdf.ts`)
 - Series-level PDF report generation via `@react-pdf/renderer`
