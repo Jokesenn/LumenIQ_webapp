@@ -11,7 +11,7 @@ const cspDirectives = [
   "default-src 'self'",
 
   // Scripts : self + inline nécessaire pour JSON-LD (dangerouslySetInnerHTML) et l'hydratation Next.js
-  "script-src 'self' 'unsafe-inline'",
+  "script-src 'self' 'unsafe-inline' 'strict-dynamic'",
 
   // Styles : inline nécessaire pour Tailwind, Framer Motion, et les styles dynamiques
   "style-src 'self' 'unsafe-inline'",
