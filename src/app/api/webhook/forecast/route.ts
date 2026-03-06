@@ -89,6 +89,7 @@ export async function POST(request: Request) {
       method: "POST",
       headers,
       body: payloadString,
+      signal: AbortSignal.timeout(55000),
     });
 
     if (!response.ok) {
@@ -103,6 +104,12 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof DOMException && error.name === "TimeoutError") {
+      return NextResponse.json(
+        { error: "Le service de prévision met trop de temps à répondre" },
+        { status: 504 }
+      );
+    }
     console.error("Webhook proxy error:", error);
     return NextResponse.json({ error: "Erreur interne" }, { status: 500 });
   }
