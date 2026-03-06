@@ -454,6 +454,7 @@ Conversion functions in `@/lib/metrics.ts`:
 ### Chart Gap Filling for Dormant Series (`lib/chart-utils.ts`)
 - `fillZeroGap(dataMap, lastActualKey, firstForecastKey, frequency, formatFn)` — fills missing periods between the last actual data point and the first forecast with `actual: 0` entries
 - Prevents visual jumps on charts for dormant/end-of-life series (e.g., last sale Dec 2023 → forecast Jan 2026 now shows ~24 months of zeros)
+- For active weekly series, the backend cross-month boundary fix ensures no gap exists between last actual and first forecast (e.g., Dec 22 → Dec 29), so `fillZeroGap()` has nothing to fill and returns early
 - Frequency-aware: steps by month (M/Q), week (W/7D), or day (D) based on `classifyFreq()`
 - Used in both `getSeriesChartData()` (server-side, monthly view in `results.ts`) and source-frequency view (client-side, `series-content.tsx`)
 - `bridgeChartGap(data)` — copies the last actual value into the forecast field at the junction point so Recharts draws a continuous transition line between the two series
