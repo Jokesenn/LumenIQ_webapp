@@ -81,8 +81,9 @@ export const serverEnv = {
   get n8nWebhookSecret(): string | undefined {
     const secret = optionalServerEnv('N8N_WEBHOOK_SECRET');
     if (!secret && process.env.NODE_ENV === 'production') {
-      console.warn(
-        '[env] N8N_WEBHOOK_SECRET not configured in production — webhook requests will be sent without HMAC signature'
+      throw new Error(
+        'N8N_WEBHOOK_SECRET is required in production — '
+        + 'webhook requests cannot be sent without HMAC signature.'
       );
     }
     return secret;
