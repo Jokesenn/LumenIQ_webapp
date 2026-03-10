@@ -1,12 +1,54 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+// --- Nonce-based Content Security Policy ---
+// Generates a unique nonce per request. Modern browsers seeing 'strict-dynamic'
+// ignore 'unsafe-inline' and 'self' for script-src, restoring XSS protection.
+// 'unsafe-inline' is kept as fallback for older browsers that don't support nonces.
+function buildCspHeader(nonce: string): string {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://kshtmftvjhsdlxpsvgyr.supabase.co'
+  const supabaseWs = supabaseUrl.replace('https://', 'wss://')
+  const isDev = process.env.NODE_ENV === 'development'
+
+  const directives = [
+    "default-src 'self'",
+    // In dev: unsafe-eval needed for HMR/Fast Refresh. In prod: strict nonce-only.
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' ${isDev ? "'unsafe-eval'" : ''}`,
+    // Styles: unsafe-inline kept for Tailwind, Framer Motion, dynamic styles
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob:",
+    "font-src 'self'",
+    `connect-src 'self' ${supabaseUrl} ${supabaseWs} ${isDev ? 'ws://localhost:* http://localhost:*' : ''}`,
+    "worker-src 'self' blob:",
+    "frame-src 'none'",
+    "object-src 'none'",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "upgrade-insecure-requests",
+  ]
+
+  return directives.join('; ')
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
+  // --- Generate nonce and CSP ---
+  const nonce = Buffer.from(crypto.randomUUID()).toString('base64')
+  const cspHeaderValue = buildCspHeader(nonce)
+
+  // Set nonce on request headers so server components can read it
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set('x-nonce', nonce)
+  requestHeaders.set('Content-Security-Policy', cspHeaderValue)
+
   let supabaseResponse = NextResponse.next({
-    request,
+    request: { headers: requestHeaders },
   })
+
+  // Apply CSP to response
+  supabaseResponse.headers.set('Content-Security-Policy', cspHeaderValue)
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -28,8 +70,10 @@ export async function middleware(request: NextRequest) {
             request.cookies.set(name, value)
           )
           supabaseResponse = NextResponse.next({
-            request,
+            request: { headers: requestHeaders },
           })
+          // Re-apply CSP after Supabase recreates the response
+          supabaseResponse.headers.set('Content-Security-Policy', cspHeaderValue)
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
           )
@@ -63,5 +107,14 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/login', '/auth/:path*'],
+  matcher: [
+    /*
+     * Match all request paths except:
+     * - _next/static (static files)
+     * - _next/image (image optimization)
+     * - favicon.ico, sitemap.xml, robots.txt (metadata files)
+     * - public assets (images, etc.)
+     */
+    '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
+  ],
 }

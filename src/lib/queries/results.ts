@@ -4,7 +4,7 @@ import type { ForecastResultDetail } from "@/types/database";
 import { toChampionScore, resolveSeriesErrorRatio } from "@/lib/metrics";
 import { formatDateByFrequency } from "@/lib/date-format";
 import { formatFrequencyLabel } from "@/lib/date-format";
-import { bridgeChartGap, resolveGlobalErrorRatio } from "@/lib/chart-utils";
+import { bridgeChartGap, fillZeroGap, resolveGlobalErrorRatio } from "@/lib/chart-utils";
 import type { ForecastAction } from "@/types/actions";
 
 // Récupérer un job par ID avec son summary
@@ -42,7 +42,7 @@ export async function getJobMetrics(jobId: string, userId: string) {
   const { data } = await supabase
     .schema("lumeniq")
     .from("job_summaries")
-    .select("global_wape, global_smape, global_mase, global_bias_pct, n_series_total, n_series_success, n_series_failed")
+    .select("global_wape, global_smape, global_mase, global_bias_pct, n_series_total, n_series_success, n_series_failed, n_series_dormant")
     .eq("job_id", jobId)
     .eq("user_id", userId)
     .single();
@@ -55,6 +55,7 @@ export async function getJobMetrics(jobId: string, userId: string) {
     global_smape: data.global_smape != null ? Number(data.global_smape) * 100 : null,
     global_mase: data.global_mase != null ? Number(data.global_mase) : null,
     global_bias_pct: data.global_bias_pct != null ? Number(data.global_bias_pct) : null,
+    n_series_dormant: data.n_series_dormant ?? 0,
     championScore: toChampionScore(resolveGlobalErrorRatio(data)),
   };
 }
@@ -389,6 +390,16 @@ export async function getSeriesChartData(jobId: string, seriesId: string, userId
     });
   }
 
+  // Fill gap between last actual and first forecast with zero-valued entries
+  // (e.g. dormant series: last sale Dec 2023, forecast starts Jan 2026)
+  if (forecasts.length > 0) {
+    const actualKeys = Array.from(dataMap.keys()).sort();
+    const lastActualKey = actualKeys.length > 0 ? actualKeys[actualKeys.length - 1] : undefined;
+    const firstForecastKey = new Date(forecasts[0].ds).toISOString().split("T")[0];
+    const freq = aggregationApplied ? "MS" : frequency;
+    fillZeroGap(dataMap, lastActualKey, firstForecastKey, freq, formatDateByFrequency);
+  }
+
   forecasts.forEach((f) => {
     const dateKey = new Date(f.ds).toISOString().split("T")[0];
     const existing = dataMap.get(dateKey) || {
@@ -576,7 +587,7 @@ export async function getJobFullData(jobId: string, userId: string) {
   const withSummary = await getJobWithSummary(jobId, userId);
   const job = withSummary.job as ForecastJob | null;
   const summary = withSummary.summary as JobSummary | null;
-  const frequency = (job as any)?.frequency ?? null;
+  const frequency = job?.frequency ?? null;
 
   // Phase 2: fetch everything else with frequency-aware formatting
   const [chartRows, matrixRows, modelRows, results] = await Promise.all([

@@ -197,7 +197,8 @@ export function useExportPdf() {
         });
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const blob = await pdf(doc as any).toBlob();
+        // @ts-expect-error - @react-pdf/renderer types don't match our usage but it works correctly
+        const blob = await pdf(doc).toBlob();
 
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");

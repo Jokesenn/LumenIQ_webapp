@@ -34,18 +34,30 @@ interface AnimatedAreaChartProps {
 
 const HIDDEN_TOOLTIP_NAMES = new Set(["CI lower", "CI upper", "Intervalle"]);
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+interface TooltipEntry {
+  name: string;
+  value: number | string | null;
+  color: string;
+}
+
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: TooltipEntry[];
+  label?: string;
+}
+
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (!active || !payload?.length) return null;
 
   const visible = payload.filter(
-    (e: any) => !HIDDEN_TOOLTIP_NAMES.has(e.name) && e.value != null,
+    (e: TooltipEntry) => !HIDDEN_TOOLTIP_NAMES.has(e.name) && e.value != null,
   );
   if (visible.length === 0) return null;
 
   return (
     <div className="bg-zinc-900/95 backdrop-blur-xl border border-white/10 rounded-xl p-3 shadow-xl">
       <p className="text-xs text-zinc-400 mb-2">{label}</p>
-      {visible.map((entry: any, i: number) => (
+      {visible.map((entry: TooltipEntry, i: number) => (
         <div key={i} className="flex items-center gap-2 text-sm">
           <div
             className="w-2 h-2 rounded-full"
@@ -95,7 +107,14 @@ export function AnimatedAreaChart({
       transition={{ duration: 0.5 }}
       className={cn("w-full", className)}
     >
-      <ResponsiveContainer width="100%" height={height}>
+      <div
+        role="img"
+        aria-label="Graphique de tendance des prévisions montrant les valeurs réelles et prévues au fil du temps"
+      >
+        <span className="sr-only">
+          Graphique de tendance des prévisions. Ce graphique affiche les valeurs historiques réelles en bleu et les prévisions futures en violet, avec des intervalles de confiance optionnels.
+        </span>
+        <ResponsiveContainer width="100%" height={height}>
         <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
           <defs>
             {/* Gradient pour actuals */}
@@ -223,6 +242,7 @@ export function AnimatedAreaChart({
           />
         </AreaChart>
       </ResponsiveContainer>
+      </div>
     </motion.div>
   );
 }

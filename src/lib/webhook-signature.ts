@@ -1,4 +1,5 @@
 import { createHmac } from "crypto";
+import { serverEnv } from "@/lib/env";
 
 /**
  * Signe un payload pour les webhooks N8N avec HMAC-SHA256.
@@ -17,7 +18,7 @@ export function signWebhookPayload(body: string): {
   signature: string;
   timestamp: number;
 } {
-  const secret = process.env.N8N_WEBHOOK_SECRET;
+  const secret = serverEnv.n8nWebhookSecret;
   if (!secret) {
     throw new Error("N8N_WEBHOOK_SECRET is not configured");
   }

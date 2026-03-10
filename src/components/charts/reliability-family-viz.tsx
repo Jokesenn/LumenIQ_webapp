@@ -20,8 +20,11 @@ interface ReliabilityFamilyVizProps {
   className?: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function FamilyTooltip({ active, payload }: { active?: boolean; payload?: any[] }) {
+interface FamilyTooltipPayload {
+  payload: FamilyAggregation;
+}
+
+function FamilyTooltip({ active, payload }: { active?: boolean; payload?: FamilyTooltipPayload[] }) {
   if (!active || !payload?.length) return null;
   const d = payload[0]?.payload as FamilyAggregation | undefined;
   if (!d) return null;
@@ -44,8 +47,17 @@ function truncateLabel(text: string, maxLen: number): string {
   return text.length > maxLen ? text.slice(0, maxLen - 1) + "…" : text;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function CustomTreemapContent(props: Record<string, any>) {
+interface CustomTreemapContentProps {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  family?: string;
+  seriesCount?: number;
+  hex?: string;
+}
+
+function CustomTreemapContent(props: CustomTreemapContentProps) {
   const { x, y, width, height, family, seriesCount, hex } = props;
   if (width < 4 || height < 4) return null;
 
@@ -168,7 +180,14 @@ export function ReliabilityFamilyViz({
 
       <div className="transition-all duration-300">
         {mode === "donut" ? (
-          <div className="relative">
+          <div
+            className="relative"
+            role="img"
+            aria-label="Répartition par famille de modèles montrant le nombre de séries pour chaque méthode"
+          >
+            <span className="sr-only">
+              Graphique de répartition par famille de modèles. Ce graphique affiche la répartition des séries par famille de prévision, avec un score moyen affiché au centre.
+            </span>
             {/* Glow effect behind the donut */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="w-28 h-28 rounded-full bg-indigo-500/10 blur-2xl" />
@@ -176,8 +195,7 @@ export function ReliabilityFamilyViz({
             <ResponsiveContainer width="100%" height={280}>
               <PieChart>
                 <Pie
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  data={families as unknown as Record<string, any>[]}
+                  data={families as unknown as Array<Record<string, unknown>>}
                   dataKey="seriesCount"
                   nameKey="family"
                   cx="50%"
@@ -204,15 +222,23 @@ export function ReliabilityFamilyViz({
             </div>
           </div>
         ) : (
-          <ResponsiveContainer width="100%" height={280}>
-            <Treemap
-              data={treemapData}
-              dataKey="size"
-              nameKey="name"
-              stroke="none"
-              content={<CustomTreemapContent />}
-            />
-          </ResponsiveContainer>
+          <div
+            role="img"
+            aria-label="Répartition par famille de modèles en vue treemap"
+          >
+            <span className="sr-only">
+              Vue treemap de la répartition par famille de modèles. Chaque rectangle représente une famille de modèles, dimensionné par le nombre de séries.
+            </span>
+            <ResponsiveContainer width="100%" height={280}>
+              <Treemap
+                data={treemapData as unknown as Array<Record<string, unknown>>}
+                dataKey="size"
+                nameKey="name"
+                stroke="none"
+                content={<CustomTreemapContent {...({} as CustomTreemapContentProps)} />}
+              />
+            </ResponsiveContainer>
+          </div>
         )}
       </div>
 

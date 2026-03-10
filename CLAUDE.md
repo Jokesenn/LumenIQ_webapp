@@ -232,6 +232,7 @@ src/
 │   ├── reliability-utils.ts     # Utility functions for reliability tab
 │   ├── csv-analyzer.ts          # CSV parsing, format detection, frequency analysis, column mapping
 │   ├── date-format.ts           # Frequency-aware date formatting (formatDateByFrequency, formatFrequencyLabel, classifyFreq)
+│   ├── chart-utils.ts           # fillZeroGap(), bridgeChartGap(), resolveGlobalErrorRatio() — chart data gap filling + visual bridging
 │   ├── series-alerts.ts         # getSeriesAlerts(), sortAlertsByPriority(), countAlertsByType()
 │   ├── linkify-skus.ts          # SKU linkification in markdown content
 │   ├── parse-markdown-sections.ts  # Split markdown by H2 headers for accordions
@@ -450,6 +451,15 @@ Conversion functions in `@/lib/metrics.ts`:
 - `formatFrequencyLabel(freq)` — returns French labels: Horaire, Journalier, Hebdomadaire, Mensuel, Trimestriel
 - Falls back to monthly formatting when frequency is null/undefined
 
+### Chart Gap Filling for Dormant Series (`lib/chart-utils.ts`)
+- `fillZeroGap(dataMap, lastActualKey, firstForecastKey, frequency, formatFn)` — fills missing periods between the last actual data point and the first forecast with `actual: 0` entries
+- Prevents visual jumps on charts for dormant/end-of-life series (e.g., last sale Dec 2023 → forecast Jan 2026 now shows ~24 months of zeros)
+- For active weekly series, the backend cross-month boundary fix ensures no gap exists between last actual and first forecast (e.g., Dec 22 → Dec 29), so `fillZeroGap()` has nothing to fill and returns early
+- Frequency-aware: steps by month (M/Q), week (W/7D), or day (D) based on `classifyFreq()`
+- Used in both `getSeriesChartData()` (server-side, monthly view in `results.ts`) and source-frequency view (client-side, `series-content.tsx`)
+- `bridgeChartGap(data)` — copies the last actual value into the forecast field at the junction point so Recharts draws a continuous transition line between the two series
+- `resolveGlobalErrorRatio(data)` — fallback chain for global error metrics: `global_wape` → `global_smape`
+
 ### PDF Export (`components/export/`, `hooks/useExportPdf.ts`)
 - Series-level PDF report generation via `@react-pdf/renderer`
 - Chart capture via `html2canvas`
@@ -490,6 +500,11 @@ Required (set in `.env.local`):
 - `N8N_CHAT_WEBHOOK_URL` — N8N webhook for AI chat (via proxy `/api/webhook/chat`)
 - `N8N_WEBHOOK_SECRET` — HMAC-SHA256 secret for webhook signature
 - `SUPABASE_SERVICE_ROLE_KEY` — Admin key for account deletion (RGPD)
+
+**Centralized validation via `src/lib/env.ts`:**
+- All env vars are accessed via `serverEnv` (lazy getters, server-only) and `publicEnv` (eager, client-safe)
+- **PITFALL Next.js**: `NEXT_PUBLIC_*` vars must be accessed with **static dot notation** (`process.env.NEXT_PUBLIC_FOO`) for client-side inlining. Dynamic access (`process.env[name]`) returns `undefined` on the client. That's why `requirePublicEnv()` takes the value as a second parameter from a static reference.
+- Never add `process.env.*` calls outside of `env.ts` — always import from `@/lib/env`
 
 ## Testing
 

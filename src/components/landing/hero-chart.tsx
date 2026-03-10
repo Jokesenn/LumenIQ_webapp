@@ -54,7 +54,14 @@ export function HeroChart() {
         </span>
       </div>
 
-      <ResponsiveContainer width="100%" height={250}>
+      <div
+        role="img"
+        aria-label="Graphique de prévisions 2025 montrant les valeurs réelles et prévues avec intervalles de confiance"
+      >
+        <span className="sr-only">
+          Graphique de prévisions pour l'année 2025. Affiche les données réelles historiques en gris et les prévisions futures en indigo avec des intervalles de confiance.
+        </span>
+        <ResponsiveContainer width="100%" height={250}>
         <ComposedChart data={forecastData}>
           <defs>
             <linearGradient id="ciBand" x1="0" y1="0" x2="0" y2="1">
@@ -128,6 +135,7 @@ export function HeroChart() {
           />
         </ComposedChart>
       </ResponsiveContainer>
+      </div>
 
       <div className="grid grid-cols-3 gap-4 mt-5">
         <MetricMini label="Séries" value="47" />

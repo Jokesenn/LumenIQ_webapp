@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { signWebhookPayload } from "@/lib/webhook-signature";
+import { serverEnv } from "@/lib/env";
 
 /**
  * POST /api/webhook/chat
@@ -61,8 +62,10 @@ export async function POST(request: Request) {
     };
 
     // 5. Envoyer au webhook N8N avec signature HMAC
-    const webhookUrl = process.env.N8N_CHAT_WEBHOOK_URL;
-    if (!webhookUrl) {
+    let webhookUrl: string;
+    try {
+      webhookUrl = serverEnv.n8nChatWebhookUrl;
+    } catch (error) {
       return NextResponse.json(
         { error: "Chat webhook non configuré" },
         { status: 503 }
@@ -75,7 +78,8 @@ export async function POST(request: Request) {
       "Content-Type": "application/json",
     };
 
-    if (process.env.N8N_WEBHOOK_SECRET) {
+    const webhookSecret = serverEnv.n8nWebhookSecret;
+    if (webhookSecret) {
       const { signature } = signWebhookPayload(payloadString);
       headers["X-Webhook-Signature"] = signature;
     }

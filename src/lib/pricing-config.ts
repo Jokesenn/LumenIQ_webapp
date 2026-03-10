@@ -88,3 +88,9 @@ export const MODEL_COUNTS = {
   premium: PLANS.premium.models,
 };
 
+export const PLAN_SERIES_LIMITS: Record<string, number> = {
+  standard: PLANS.standard.series,
+  ml: PLANS.ml.series,
+  premium: PLANS.premium.series,
+};
+

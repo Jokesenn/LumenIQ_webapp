@@ -24,8 +24,11 @@ interface ReliabilityBubbleChartProps {
   className?: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function BubbleTooltip({ active, payload }: { active?: boolean; payload?: any[] }) {
+interface TooltipPayload {
+  payload: EnrichedModelData;
+}
+
+function BubbleTooltip({ active, payload }: { active?: boolean; payload?: TooltipPayload[] }) {
   if (!active || !payload?.length) return null;
   const d = payload[0]?.payload as EnrichedModelData | undefined;
   if (!d) return null;
@@ -96,7 +99,14 @@ export function ReliabilityBubbleChart({ data, className }: ReliabilityBubbleCha
           Couverture et fiabilité par méthode
         </h3>
       </div>
-      <ResponsiveContainer width="100%" height={400}>
+      <div
+        role="img"
+        aria-label="Graphique de fiabilité par série montrant la couverture et la fiabilité de chaque méthode de prévision"
+      >
+        <span className="sr-only">
+          Graphique de fiabilité par série. Ce graphique montre la couverture et la fiabilité de chaque méthode de prévision, avec les bulles dimensionnées par leur poids relatif.
+        </span>
+        <ResponsiveContainer width="100%" height={400}>
         <ScatterChart margin={{ top: 30, right: 30, bottom: 30, left: 20 }}>
           <defs>
             {familyGroups.map((g) => (
@@ -168,6 +178,7 @@ export function ReliabilityBubbleChart({ data, className }: ReliabilityBubbleCha
           ))}
         </ScatterChart>
       </ResponsiveContainer>
+      </div>
     </motion.div>
   );
 }

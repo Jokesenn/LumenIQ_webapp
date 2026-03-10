@@ -268,26 +268,32 @@ export default function SettingsPage() {
         <div className="dash-card p-6">
           <h3 className="dash-section-title mb-5">Préférences</h3>
           <div className="space-y-4">
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center opacity-50">
               <div>
-                <p className="font-medium text-sm text-white">Notifications email</p>
+                <p className="font-medium text-sm text-white">
+                  Notifications email
+                  <span className="ml-2 px-1.5 py-0.5 bg-zinc-700 rounded text-[10px] text-zinc-400 font-medium">Bientôt</span>
+                </p>
                 <p className="text-xs text-zinc-500">
                   Recevoir les alertes par email
                 </p>
               </div>
-              <ToggleSwitch defaultChecked />
+              <ToggleSwitch disabled />
             </div>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center opacity-50">
               <div>
-                <p className="font-medium text-sm text-white">Rapport hebdomadaire</p>
+                <p className="font-medium text-sm text-white">
+                  Rapport hebdomadaire
+                  <span className="ml-2 px-1.5 py-0.5 bg-zinc-700 rounded text-[10px] text-zinc-400 font-medium">Bientôt</span>
+                </p>
                 <p className="text-xs text-zinc-500">
                   Résumé de vos prévisions chaque lundi
                 </p>
               </div>
-              <ToggleSwitch />
+              <ToggleSwitch disabled />
             </div>
             <p className="text-[11px] text-zinc-600 italic">
-              Ces préférences seront bientôt sauvegardées automatiquement.
+              Ces fonctionnalités seront disponibles prochainement.
             </p>
           </div>
         </div>
@@ -486,20 +492,23 @@ export default function SettingsPage() {
   );
 }
 
-function ToggleSwitch({ defaultChecked = false }: { defaultChecked?: boolean }) {
+function ToggleSwitch({ defaultChecked = false, disabled = false }: { defaultChecked?: boolean; disabled?: boolean }) {
   const [checked, setChecked] = useState(defaultChecked);
 
   return (
     <button
-      onClick={() => setChecked(!checked)}
+      onClick={() => !disabled && setChecked(!checked)}
+      disabled={disabled}
       className={`w-11 h-6 rounded-full relative transition-colors ${
-        checked ? "bg-indigo-500" : "bg-white/10"
-      } border ${checked ? "border-indigo-500" : "border-white/[0.08]"}`}
+        disabled ? "bg-white/5 cursor-not-allowed" : checked ? "bg-indigo-500" : "bg-white/10"
+      } border ${
+        disabled ? "border-white/[0.04]" : checked ? "border-indigo-500" : "border-white/[0.08]"
+      }`}
     >
       <div
-        className={`w-[18px] h-[18px] rounded-full bg-white absolute top-[2px] transition-all ${
-          checked ? "left-[22px]" : "left-[2px]"
-        }`}
+        className={`w-[18px] h-[18px] rounded-full absolute top-[2px] transition-all ${
+          disabled ? "bg-white/30" : "bg-white"
+        } ${checked ? "left-[22px]" : "left-[2px]"}`}
       />
     </button>
   );

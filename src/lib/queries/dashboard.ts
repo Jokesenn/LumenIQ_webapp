@@ -1,13 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { toChampionScore } from "@/lib/metrics";
 import { resolveGlobalErrorRatio } from "@/lib/chart-utils";
+import { PLAN_SERIES_LIMITS } from "@/lib/pricing-config";
 import type { ForecastAction } from "@/types/actions";
-
-const PLAN_LIMITS: Record<string, number> = {
-  standard: 50,
-  ml: 150,
-  premium: 300,
-};
 
 // Stats générales du dashboard (cockpit de décision)
 export async function getDashboardStats(userId: string) {
@@ -85,7 +80,7 @@ export async function getDashboardStats(userId: string) {
     daysUntilReset,
     quota: {
       used: profile?.series_used_this_period ?? 0,
-      limit: PLAN_LIMITS[profile?.plan ?? "standard"] ?? 100,
+      limit: PLAN_SERIES_LIMITS[profile?.plan ?? "standard"] ?? 100,
       plan: profile?.plan ?? "standard",
     },
   };

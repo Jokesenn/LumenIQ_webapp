@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { signWebhookPayload } from "@/lib/webhook-signature";
+import { serverEnv } from "@/lib/env";
 
 /**
  * POST /api/webhook/forecast
@@ -61,8 +62,10 @@ export async function POST(request: Request) {
     };
 
     // 5. Envoyer au webhook N8N avec signature HMAC
-    const webhookUrl = process.env.N8N_WEBHOOK_URL;
-    if (!webhookUrl) {
+    let webhookUrl: string;
+    try {
+      webhookUrl = serverEnv.n8nWebhookUrl;
+    } catch (error) {
       return NextResponse.json(
         { error: "Webhook non configuré" },
         { status: 503 }
@@ -76,17 +79,17 @@ export async function POST(request: Request) {
     };
 
     // Signer si le secret est configuré
-    if (process.env.N8N_WEBHOOK_SECRET) {
+    const webhookSecret = serverEnv.n8nWebhookSecret;
+    if (webhookSecret) {
       const { signature } = signWebhookPayload(payloadString);
       headers["X-Webhook-Signature"] = signature;
-    } else if (process.env.NODE_ENV === "production") {
-      console.warn("[webhook/forecast] N8N_WEBHOOK_SECRET non configuré — requête envoyée sans signature HMAC");
     }
 
     const response = await fetch(webhookUrl, {
       method: "POST",
       headers,
       body: payloadString,
+      signal: AbortSignal.timeout(55000),
     });
 
     if (!response.ok) {
@@ -101,6 +104,12 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof DOMException && error.name === "TimeoutError") {
+      return NextResponse.json(
+        { error: "Le service de prévision met trop de temps à répondre" },
+        { status: 504 }
+      );
+    }
     console.error("Webhook proxy error:", error);
     return NextResponse.json({ error: "Erreur interne" }, { status: 500 });
   }
