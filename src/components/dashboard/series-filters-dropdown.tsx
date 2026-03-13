@@ -68,25 +68,25 @@ export function SeriesFiltersDropdown({
         <Button
           variant="outline"
           size="sm"
-          className="h-9 gap-2 bg-white/5 border-white/[0.08] text-zinc-300 hover:bg-white/10 hover:text-white"
+          className="h-9 gap-2 bg-[var(--color-bg-surface)] border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-bg-surface)] hover:text-[var(--color-text)]"
         >
           <Filter className="size-4" />
           Filtres
           {activeCount > 0 && (
-            <span className="flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-semibold bg-indigo-500 text-white rounded-full">
+            <span className="flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-semibold bg-[var(--color-copper)] text-white rounded-full">
               {activeCount}
             </span>
           )}
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-64 p-0 bg-zinc-900 border-white/[0.08] backdrop-blur-xl"
+        className="w-64 p-0 bg-white border-[var(--color-border)] backdrop-blur-xl"
         align="end"
       >
         <div className="p-3 space-y-3">
           {/* Statut */}
           <div>
-            <h4 className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2">
+            <h4 className="text-xs font-medium text-[var(--color-text-tertiary)] uppercase tracking-wider mb-2">
               Statut
             </h4>
             <div className="space-y-2">
@@ -97,10 +97,10 @@ export function SeriesFiltersDropdown({
                     onFiltersChange({ ...filters, attention: !!checked })
                   }
                 />
-                <span className="text-sm text-zinc-300 group-hover:text-white">
+                <span className="text-sm text-[var(--color-text)] group-hover:text-[var(--color-text)]">
                   Fiabilité faible
                 </span>
-                <span className="ml-auto text-xs text-zinc-500">
+                <span className="ml-auto text-xs text-[var(--color-text-tertiary)]">
                   ({counts.attention})
                 </span>
               </label>
@@ -111,21 +111,21 @@ export function SeriesFiltersDropdown({
                     onFiltersChange({ ...filters, modelChanged: !!checked })
                   }
                 />
-                <span className="text-sm text-zinc-300 group-hover:text-white">
+                <span className="text-sm text-[var(--color-text)] group-hover:text-[var(--color-text)]">
                   Méthode adaptée
                 </span>
-                <span className="ml-auto text-xs text-zinc-500">
+                <span className="ml-auto text-xs text-[var(--color-text-tertiary)]">
                   ({counts.modelChanged})
                 </span>
               </label>
             </div>
           </div>
 
-          <div className="border-t border-white/[0.06]" />
+          <div className="border-t border-[var(--color-border)]" />
 
           {/* Classe ABC */}
           <div>
-            <h4 className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2">
+            <h4 className="text-xs font-medium text-[var(--color-text-tertiary)] uppercase tracking-wider mb-2">
               Classe ABC
             </h4>
             <div className="space-y-2">
@@ -143,10 +143,10 @@ export function SeriesFiltersDropdown({
                       onFiltersChange({ ...filters, abcClasses: newClasses })
                     }}
                   />
-                  <span className="text-sm text-zinc-300 group-hover:text-white">
+                  <span className="text-sm text-[var(--color-text)] group-hover:text-[var(--color-text)]">
                     {ABC_LABELS[cls]}
                   </span>
-                  <span className="ml-auto text-xs text-zinc-500">
+                  <span className="ml-auto text-xs text-[var(--color-text-tertiary)]">
                     ({counts.abc[cls] ?? 0})
                   </span>
                 </label>
@@ -154,11 +154,11 @@ export function SeriesFiltersDropdown({
             </div>
           </div>
 
-          <div className="border-t border-white/[0.06]" />
+          <div className="border-t border-[var(--color-border)]" />
 
           {/* Classe XYZ */}
           <div>
-            <h4 className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2">
+            <h4 className="text-xs font-medium text-[var(--color-text-tertiary)] uppercase tracking-wider mb-2">
               Classe XYZ
             </h4>
             <div className="space-y-2">
@@ -176,10 +176,10 @@ export function SeriesFiltersDropdown({
                       onFiltersChange({ ...filters, xyzClasses: newClasses })
                     }}
                   />
-                  <span className="text-sm text-zinc-300 group-hover:text-white">
+                  <span className="text-sm text-[var(--color-text)] group-hover:text-[var(--color-text)]">
                     {XYZ_LABELS[cls]}
                   </span>
-                  <span className="ml-auto text-xs text-zinc-500">
+                  <span className="ml-auto text-xs text-[var(--color-text-tertiary)]">
                     ({counts.xyz[cls] ?? 0})
                   </span>
                 </label>
@@ -190,11 +190,11 @@ export function SeriesFiltersDropdown({
           {/* Réinitialiser */}
           {activeCount > 0 && (
             <>
-              <div className="border-t border-white/[0.06]" />
+              <div className="border-t border-[var(--color-border)]" />
               <Button
                 variant="ghost"
                 size="sm"
-                className="w-full text-zinc-500 hover:text-white"
+                className="w-full text-[var(--color-text-tertiary)] hover:text-[var(--color-text)]"
                 onClick={() => onFiltersChange(DEFAULT_FILTERS)}
               >
                 Réinitialiser

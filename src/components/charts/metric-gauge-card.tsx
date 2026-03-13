@@ -93,7 +93,7 @@ export function MetricGaugeCard({
 
         {/* Label */}
         <div className="flex items-center gap-1.5 mt-4">
-          <h3 className="text-base sm:text-lg font-semibold text-white font-display">{label}</h3>
+          <h3 className="text-base sm:text-lg font-semibold text-[var(--color-text)] font-display">{label}</h3>
           {helpKey && <HelpTooltip termKey={helpKey} />}
         </div>
 
@@ -104,14 +104,14 @@ export function MetricGaugeCard({
 
         {/* Description */}
         {description && (
-          <p className="text-xs text-zinc-500 mt-2 text-center">{description}</p>
+          <p className="text-xs text-[var(--color-text-tertiary)] mt-2 text-center">{description}</p>
         )}
 
         {/* Benchmark comparison */}
         {comparison && benchmark && (
-          <div className="mt-4 pt-4 border-t border-white/5 w-full">
+          <div className="mt-4 pt-4 border-t border-[var(--color-border)] w-full">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-zinc-400">vs {benchmark.label}</span>
+              <span className="text-[var(--color-text-secondary)]">vs {benchmark.label}</span>
               <div className={cn(
                 "flex items-center gap-1",
                 comparison.isGood ? "text-emerald-400" : "text-red-400"

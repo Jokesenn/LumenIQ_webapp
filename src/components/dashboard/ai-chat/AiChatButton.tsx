@@ -23,8 +23,8 @@ export function AiChatButton({ onClick, isOpen }: AiChatButtonProps) {
             "fixed bottom-6 right-6 z-50",
             "flex items-center justify-center",
             "w-14 h-14 rounded-full",
-            "bg-violet-600 hover:bg-violet-500",
-            "text-white shadow-lg shadow-violet-500/25",
+            "bg-[var(--color-copper)] hover:bg-amber-700",
+            "text-white shadow-lg shadow-amber-700/25",
             "transition-colors cursor-pointer",
             "ai-fab-pulse"
           )}

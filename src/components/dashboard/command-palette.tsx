@@ -143,7 +143,7 @@ export function CommandPalette({ open: controlledOpen, onOpenChange }: CommandPa
       onOpenChange={setOpen}
       title="Palette de commandes"
       description="Rechercher une série, naviguer ou exécuter une action"
-      className="bg-zinc-950/95 backdrop-blur-2xl"
+      className="bg-[var(--color-bg)]/95 backdrop-blur-2xl"
     >
       <CommandInput placeholder="Rechercher ou exécuter..." />
       <CommandList>
@@ -205,7 +205,7 @@ export function CommandPalette({ open: controlledOpen, onOpenChange }: CommandPa
                       <span className="px-1.5 py-0.5 text-xs rounded bg-emerald-500/20 text-emerald-400">
                         {s.abc_class}
                       </span>
-                      <span className="px-1.5 py-0.5 text-xs rounded bg-violet-500/20 text-violet-400">
+                      <span className="px-1.5 py-0.5 text-xs rounded bg-amber-700/20 text-amber-700">
                         {s.xyz_class}
                       </span>
                     </div>
@@ -255,11 +255,11 @@ export function CommandPaletteTrigger({
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-2 px-3 py-1.5 text-sm text-zinc-400 bg-white/5 rounded-lg hover:bg-white/10 hover:text-zinc-300 transition-colors"
+      className="flex items-center gap-2 px-3 py-1.5 text-sm text-[var(--color-text-secondary)] bg-[var(--color-bg-surface)] rounded-lg hover:bg-[var(--color-bg-surface)] hover:text-[var(--color-text)] transition-colors"
     >
       <Search className="w-4 h-4" />
       <span className="hidden sm:inline">Rechercher...</span>
-      <kbd className="ml-1 hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium bg-white/10 rounded text-zinc-500">
+      <kbd className="ml-1 hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium bg-[var(--color-bg-surface)] rounded text-[var(--color-text-tertiary)]">
         {isMac ? "⌘K" : "Ctrl+K"}
       </kbd>
     </button>

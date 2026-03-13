@@ -50,7 +50,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
   return (
     <ThresholdsProvider>
-      <div className="flex min-h-screen bg-zinc-950 bg-hex-pattern">
+      <div className="flex min-h-screen bg-[var(--color-bg)]">
         <Sidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} />
 
         <div className="flex-1 flex flex-col overflow-hidden">

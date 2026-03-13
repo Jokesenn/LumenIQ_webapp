@@ -152,20 +152,20 @@ function MetricRow({
     config.direction === "lower_is_better" ? "Jaune <=" : "Jaune >=";
 
   return (
-    <div className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+    <div className="p-4 rounded-xl bg-[var(--color-bg-surface)] border border-[var(--color-border)]">
       {/* Header row: label, badge, reset */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-white">
+          <span className="text-sm font-medium text-[var(--color-text)]">
             {config.label}
           </span>
-          <span className="text-xs text-zinc-500">{config.unit}</span>
+          <span className="text-xs text-[var(--color-text-tertiary)]">{config.unit}</span>
           {custom ? (
-            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-500/20 text-indigo-400">
+            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-700/10 text-amber-700">
               Personnalisé
             </span>
           ) : (
-            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-zinc-700/60 text-zinc-400">
+            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[var(--color-bg-surface)] text-[var(--color-text-secondary)]">
               Par défaut
             </span>
           )}
@@ -173,7 +173,7 @@ function MetricRow({
         {custom && (
           <button
             onClick={() => onReset(config.metric_key)}
-            className="flex items-center gap-1 text-xs text-zinc-500 hover:text-white transition-colors"
+            className="flex items-center gap-1 text-xs text-[var(--color-text-tertiary)] hover:text-[var(--color-text)] transition-colors"
             title="Réinitialiser"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -185,25 +185,25 @@ function MetricRow({
       {/* Inputs */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs text-zinc-400 mb-1">
+          <label className="block text-xs text-[var(--color-text-secondary)] mb-1">
             {greenLabel}
           </label>
           <input
             type="number"
             value={greenVal}
             onChange={(e) => handleGreenChange(e.target.value)}
-            className="w-full px-3 py-2 bg-white/5 border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent"
+            className="w-full px-3 py-2 bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-transparent"
           />
         </div>
         <div>
-          <label className="block text-xs text-zinc-400 mb-1">
+          <label className="block text-xs text-[var(--color-text-secondary)] mb-1">
             {yellowLabel}
           </label>
           <input
             type="number"
             value={yellowVal}
             onChange={(e) => handleYellowChange(e.target.value)}
-            className="w-full px-3 py-2 bg-white/5 border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-transparent"
+            className="w-full px-3 py-2 bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-transparent"
           />
         </div>
       </div>
@@ -245,14 +245,14 @@ export function ThresholdSettings() {
             variant="ghost"
             size="sm"
             onClick={() => resetAll()}
-            className="gap-1.5 text-zinc-400 hover:text-white"
+            className="gap-1.5 text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             Réinitialiser tout
           </Button>
         )}
       </div>
-      <p className="text-sm text-zinc-400 mb-5">
+      <p className="text-sm text-[var(--color-text-secondary)] mb-5">
         Personnalisez les seuils de coloration des métriques
       </p>
 

@@ -241,14 +241,14 @@ export function AiChatDrawer({ open, onOpenChange }: AiChatDrawerProps) {
       <SheetContent
         side="right"
         showCloseButton
-        className="w-[420px] sm:max-w-[420px] p-0 flex flex-col h-full gap-0 bg-zinc-950 border-white/10 overflow-hidden"
+        className="w-[420px] sm:max-w-[420px] p-0 flex flex-col h-full gap-0 bg-[var(--color-bg)] border-[var(--color-border)] overflow-hidden"
       >
         <div
           className="ai-drawer-glow flex flex-col h-full"
           data-state={glowState}
         >
-          <SheetHeader className="px-6 py-4 border-b border-white/10 shrink-0 bg-zinc-950/80 backdrop-blur-xl">
-            <SheetTitle className="text-white text-lg font-display flex items-center gap-2.5">
+          <SheetHeader className="px-6 py-4 border-b border-[var(--color-border)] shrink-0 bg-[var(--color-bg)]/80 backdrop-blur-xl">
+            <SheetTitle className="text-[var(--color-text)] text-lg font-display flex items-center gap-2.5">
               Assistant IA
               <span className="ai-status-dot" />
             </SheetTitle>

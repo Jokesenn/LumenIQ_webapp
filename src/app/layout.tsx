@@ -1,26 +1,10 @@
 import type { Metadata } from "next";
-import { Manrope, Syne } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { PageTransition } from "@/components/providers/page-transition";
 import { ScrollProgress } from "@/components/shared/scroll-progress";
 import { Toaster } from "sonner";
 import { CookieBanner } from "@/components/shared/cookie-banner";
 import "./globals.css";
-
-const manrope = Manrope({
-  variable: "--font-manrope",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
-  display: "swap",
-  fallback: ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
-});
-
-const syne = Syne({
-  variable: "--font-syne",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://lumeniq.fr"),
@@ -52,6 +36,7 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning>
       <head>
+        <meta name="theme-color" content="#FAFAF9" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -75,11 +60,11 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${manrope.variable} ${syne.variable} font-sans antialiased`}>
+      <body className="font-sans antialiased">
         <ScrollProgress />
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
@@ -87,13 +72,13 @@ export default function RootLayout({
             {children}
           </PageTransition>
           <Toaster
-            theme="dark"
+            theme="light"
             position="bottom-center"
             toastOptions={{
               style: {
-                background: "rgb(24 24 27)",
-                border: "1px solid rgba(255,255,255,0.08)",
-                color: "rgb(228 228 231)",
+                background: "#FFFFFF",
+                border: "1px solid #E5E5E0",
+                color: "#141414",
               },
             }}
           />

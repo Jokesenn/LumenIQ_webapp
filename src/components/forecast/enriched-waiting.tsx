@@ -46,13 +46,13 @@ export function EnrichedWaiting() {
   const tip = TIPS[currentIndex];
 
   return (
-    <div className="mt-6 p-5 bg-indigo-500/5 rounded-xl border border-indigo-500/10">
+    <div className="mt-6 p-5 bg-amber-700/5 rounded-xl border border-amber-700/10">
       <div className="flex items-start gap-3">
-        <div className="w-8 h-8 rounded-lg bg-indigo-500/15 flex items-center justify-center flex-shrink-0 mt-0.5">
-          <Lightbulb className="w-4 h-4 text-indigo-400" />
+        <div className="w-8 h-8 rounded-lg bg-amber-700/15 flex items-center justify-center flex-shrink-0 mt-0.5">
+          <Lightbulb className="w-4 h-4 text-amber-700" />
         </div>
         <div className="flex-1 min-h-[60px]">
-          <p className="text-xs text-indigo-400/70 uppercase tracking-wide mb-1">
+          <p className="text-xs text-amber-700/70 uppercase tracking-wide mb-1">
             Le saviez-vous ?
           </p>
           <AnimatePresence mode="wait">
@@ -63,8 +63,8 @@ export function EnrichedWaiting() {
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.3 }}
             >
-              <p className="text-sm font-medium text-white mb-1">{tip.title}</p>
-              <p className="text-sm text-zinc-400 leading-relaxed">{tip.body}</p>
+              <p className="text-sm font-medium text-[var(--color-text)] mb-1">{tip.title}</p>
+              <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">{tip.body}</p>
             </motion.div>
           </AnimatePresence>
         </div>
@@ -78,8 +78,8 @@ export function EnrichedWaiting() {
             onClick={() => setCurrentIndex(i)}
             className={`h-1.5 rounded-full transition-all ${
               i === currentIndex
-                ? "bg-indigo-400 w-4"
-                : "bg-white/10 hover:bg-white/20 w-1.5"
+                ? "bg-amber-700 w-4"
+                : "bg-[var(--color-border)] hover:bg-[var(--color-text-tertiary)] w-1.5"
             }`}
             aria-label={`Astuce ${i + 1}`}
           />

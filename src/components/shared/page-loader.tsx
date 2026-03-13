@@ -5,7 +5,7 @@ import { Logo } from "./logo";
 
 export function PageLoader() {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--color-bg)]">
       <div className="text-center">
         <motion.div
           animate={{
@@ -18,7 +18,7 @@ export function PageLoader() {
             ease: "easeInOut",
           }}
         >
-          <Logo variant="glow" />
+          <Logo />
         </motion.div>
 
         <motion.div
@@ -30,7 +30,7 @@ export function PageLoader() {
           {[0, 1, 2].map((i) => (
             <motion.div
               key={i}
-              className="w-2 h-2 bg-indigo-500 rounded-full"
+              className="w-2 h-2 bg-amber-700 rounded-full"
               animate={{
                 y: [0, -10, 0],
                 opacity: [0.3, 1, 0.3],

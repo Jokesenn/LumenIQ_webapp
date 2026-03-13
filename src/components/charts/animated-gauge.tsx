@@ -86,7 +86,7 @@ export function AnimatedGauge({
             fill="none"
             stroke="currentColor"
             strokeWidth={stroke}
-            className="text-white/5"
+            className="text-[var(--color-border)]"
           />
           {/* Animated progress circle */}
           <motion.circle
@@ -125,7 +125,7 @@ export function AnimatedGauge({
       </div>
 
       {/* Label */}
-      <span className="mt-3 text-sm text-zinc-400">{label}</span>
+      <span className="mt-3 text-sm text-[var(--color-text-secondary)]">{label}</span>
 
       {/* Trend */}
       {showTrend && (

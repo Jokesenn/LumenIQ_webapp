@@ -41,14 +41,14 @@ export function Navbar() {
         className={cn(
           "fixed top-0 left-0 right-0 z-50 transition-all duration-700",
           isScrolled
-            ? "bg-zinc-950/70 backdrop-blur-2xl border-b border-white/[0.04] shadow-[0_4px_30px_rgba(0,0,0,0.4)]"
+            ? "bg-[var(--color-bg)]/70 backdrop-blur-2xl border-b border-[var(--color-border)] shadow-[0_4px_30px_rgba(0,0,0,0.08)]"
             : "bg-transparent"
         )}
       >
         {/* Subtle gradient line at bottom when scrolled */}
         {isScrolled && (
           <motion.div
-            className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-500/20 to-transparent"
+            className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-700/20 to-transparent"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
@@ -66,7 +66,7 @@ export function Navbar() {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1 bg-white/[0.03] rounded-full px-1.5 py-1.5 border border-white/[0.04]">
+          <div className="hidden md:flex items-center gap-1 bg-[var(--color-bg-surface)] rounded-full px-1.5 py-1.5 border border-[var(--color-border)]">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
@@ -74,7 +74,7 @@ export function Navbar() {
                   <motion.div
                     className={cn(
                       "relative px-5 py-2 rounded-full text-sm font-medium transition-colors",
-                      isActive ? "text-white" : "text-zinc-400 hover:text-white"
+                      isActive ? "text-[var(--color-text)]" : "text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
                     )}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -83,7 +83,7 @@ export function Navbar() {
                     {isActive && (
                       <motion.div
                         layoutId="navbar-indicator"
-                        className="absolute inset-0 bg-white/[0.07] rounded-full -z-10 border border-white/[0.06]"
+                        className="absolute inset-0 bg-[var(--color-bg-surface)] rounded-full -z-10 border border-[var(--color-border)]"
                         transition={{ type: "spring", stiffness: 350, damping: 30 }}
                       />
                     )}
@@ -100,14 +100,14 @@ export function Navbar() {
             <Link href="/login">
               <Button
                 variant="ghost"
-                className="text-zinc-400 hover:text-white hover:bg-white/5 rounded-full px-5"
+                className="text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-surface)] rounded-full px-5"
               >
                 Connexion
               </Button>
             </Link>
 
             <Link href="/login?mode=signup">
-              <MagneticButton className="px-5 py-2.5 bg-indigo-500 hover:bg-indigo-600 rounded-full text-sm font-semibold text-white transition-all hover:shadow-[0_0_20px_rgba(99,102,241,0.3)]">
+              <MagneticButton className="px-5 py-2.5 bg-amber-700 hover:bg-amber-800 rounded-full text-sm font-semibold text-white transition-all hover:shadow-[0_0_20px_rgba(180,83,9,0.3)]">
                 Essai gratuit 3 mois
               </MagneticButton>
             </Link>
@@ -119,7 +119,7 @@ export function Navbar() {
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label={isMobileMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
             aria-expanded={isMobileMenuOpen}
-            className="md:hidden p-3 rounded-xl hover:bg-white/5"
+            className="md:hidden p-3 rounded-xl hover:bg-[var(--color-bg-surface)]"
           >
             <AnimatePresence mode="wait">
               {isMobileMenuOpen ? (
@@ -158,7 +158,7 @@ export function Navbar() {
             className="fixed inset-0 z-40 md:hidden"
           >
             <motion.div
-              className="absolute inset-0 bg-zinc-950/90 backdrop-blur-2xl"
+              className="absolute inset-0 bg-[var(--color-bg)]/90 backdrop-blur-2xl"
               onClick={() => setIsMobileMenuOpen(false)}
             />
 
@@ -167,7 +167,7 @@ export function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="absolute right-0 top-0 bottom-0 w-[80%] max-w-sm bg-zinc-900/95 backdrop-blur-xl border-l border-white/5 p-6 pt-24"
+              className="absolute right-0 top-0 bottom-0 w-[80%] max-w-sm bg-white/95 backdrop-blur-xl border-l border-[var(--color-border)] p-6 pt-24"
             >
               <div className="space-y-2">
                 {navLinks.map((link, i) => (
@@ -182,8 +182,8 @@ export function Navbar() {
                       className={cn(
                         "flex items-center justify-between p-4 rounded-xl transition-colors",
                         pathname === link.href
-                          ? "bg-indigo-500/10 text-white"
-                          : "text-zinc-400 hover:bg-white/5 hover:text-white"
+                          ? "bg-amber-700/10 text-[var(--color-text)]"
+                          : "text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-surface)] hover:text-[var(--color-text)]"
                       )}
                     >
                       <span className="font-medium">{link.label}</span>
@@ -194,18 +194,18 @@ export function Navbar() {
               </div>
 
               <motion.div
-                className="mt-8 pt-8 border-t border-white/5 space-y-3"
+                className="mt-8 pt-8 border-t border-[var(--color-border)] space-y-3"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
               >
                 <Link href="/login" className="block">
-                  <Button variant="outline" className="w-full justify-center border-white/10 rounded-xl">
+                  <Button variant="outline" className="w-full justify-center border-[var(--color-border)] rounded-xl">
                     Connexion
                   </Button>
                 </Link>
                 <Link href="/login?mode=signup" className="block">
-                  <Button className="w-full justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl">
+                  <Button className="w-full justify-center bg-amber-700 hover:bg-amber-800 rounded-xl">
                     Essai gratuit 3 mois
                   </Button>
                 </Link>

@@ -48,7 +48,7 @@ export function ReliabilityTab({ allSeries, onModelClick }: ReliabilityTabProps)
     return (
       <FadeIn>
         <div className="dash-card p-6">
-          <div className="h-[200px] flex items-center justify-center text-zinc-500">
+          <div className="h-[200px] flex items-center justify-center text-[var(--color-text-tertiary)]">
             Aucune donnée de fiabilité disponible
           </div>
         </div>
@@ -64,12 +64,12 @@ export function ReliabilityTab({ allSeries, onModelClick }: ReliabilityTabProps)
           <h2 className="dash-section-title mb-2">
             Fiabilité des prévisions
           </h2>
-          <p className="text-sm text-white/70">
-            <span className="text-white font-semibold">{summary.totalModels}</span> méthodes
+          <p className="text-sm text-[var(--color-text-secondary)]">
+            <span className="text-[var(--color-text)] font-semibold">{summary.totalModels}</span> méthodes
             ont été testées. Les{" "}
-            <span className="text-white font-semibold">{summary.coveringModels}</span> meilleures
+            <span className="text-[var(--color-text)] font-semibold">{summary.coveringModels}</span> meilleures
             couvrent{" "}
-            <span className="text-indigo-400 font-semibold">{summary.coveragePercent}%</span> de
+            <span className="text-amber-700 font-semibold">{summary.coveragePercent}%</span> de
             vos produits avec un score moyen de{" "}
             <span className="text-emerald-400 font-semibold">{summary.weightedAvgScore}/100</span>.
           </p>

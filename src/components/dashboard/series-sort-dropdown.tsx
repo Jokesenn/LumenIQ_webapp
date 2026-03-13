@@ -24,7 +24,7 @@ interface SeriesSortDropdownProps {
 export function SeriesSortDropdown({ value, onChange }: SeriesSortDropdownProps) {
   return (
     <Select value={value} onValueChange={(v) => onChange(v as SeriesSortOption)}>
-      <SelectTrigger className="w-[180px] bg-white/5 border-white/[0.08] text-zinc-300 h-9 text-sm">
+      <SelectTrigger className="w-[180px] bg-[var(--color-bg-surface)] border-[var(--color-border)] text-[var(--color-text)] h-9 text-sm">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
@@ -33,7 +33,7 @@ export function SeriesSortDropdown({ value, onChange }: SeriesSortDropdownProps)
           return (
             <SelectItem key={opt.value} value={opt.value}>
               <div className="flex items-center gap-2">
-                <Icon className="size-4 text-zinc-400" />
+                <Icon className="size-4 text-[var(--color-text-secondary)]" />
                 <span>{opt.label}</span>
               </div>
             </SelectItem>

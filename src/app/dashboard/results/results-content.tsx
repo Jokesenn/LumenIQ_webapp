@@ -334,7 +334,7 @@ export function ResultsContent({
             </Link>
             <div>
               <h1 className="dash-page-title">{job?.filename ?? "—"}</h1>
-              <div className="flex items-center gap-4 mt-1 text-sm text-zinc-400">
+              <div className="flex items-center gap-4 mt-1 text-sm text-[var(--color-text-secondary)]">
                 <span className="flex items-center gap-1">
                   <Calendar className="w-4 h-4" />
                   {job?.created_at
@@ -352,7 +352,7 @@ export function ResultsContent({
                   {metrics?.n_series_total ?? 0} séries
                 </span>
                 {isAggregated && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/10 px-2 py-0.5 text-xs text-indigo-400">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-700/10 px-2 py-0.5 text-xs text-amber-700">
                     Données {formatFrequencyLabel(job?.frequency).toLowerCase()} → agrégées en mensuel
                   </span>
                 )}
@@ -361,7 +361,7 @@ export function ResultsContent({
           </div>
 
           <Button
-            className="bg-indigo-500 hover:bg-indigo-600"
+            className="bg-[var(--color-copper)] hover:bg-[var(--color-copper)]"
             onClick={handleDownload}
             disabled={exporting}
           >
@@ -442,18 +442,18 @@ export function ResultsContent({
               </div>
               <div className="dash-card p-4 sm:p-6">
                 <div className="text-center">
-                  <p className="text-3xl sm:text-4xl font-bold text-white">
+                  <p className="text-3xl sm:text-4xl font-bold text-[var(--color-text)]">
                     {metrics?.n_series_success ?? 0}
-                    <span className="text-lg text-zinc-500">/{metrics?.n_series_total ?? 0}</span>
+                    <span className="text-lg text-[var(--color-text-tertiary)]">/{metrics?.n_series_total ?? 0}</span>
                   </p>
                   <div className="flex items-center justify-center gap-1 mt-2">
-                    <p className="text-sm text-zinc-400">Séries analysées avec succès</p>
+                    <p className="text-sm text-[var(--color-text-secondary)]">Séries analysées avec succès</p>
                     <HelpTooltip termKey="series_count" />
                   </div>
                   {(() => {
                     const dormantCount = allSeries.filter(s => s.champion_model === "zero_forecast").length;
                     return dormantCount > 0 ? (
-                      <p className="text-xs text-zinc-500 mt-1">
+                      <p className="text-xs text-[var(--color-text-tertiary)] mt-1">
                         dont {dormantCount} inactive{dormantCount > 1 ? "s" : ""}
                       </p>
                     ) : null;
@@ -495,13 +495,13 @@ export function ResultsContent({
                 </div>
                 {isAggregated && (
                   <div className="flex items-center gap-2 mb-4">
-                    <div className="inline-flex rounded-lg bg-zinc-800/50 p-0.5">
+                    <div className="inline-flex rounded-lg bg-[var(--color-bg-surface)] p-0.5">
                       <button
                         className={cn(
                           "px-3 py-1 text-xs font-medium rounded-md transition-colors",
                           viewState.granularity === "monthly"
-                            ? "bg-indigo-500/20 text-indigo-400"
-                            : "text-zinc-400 hover:text-zinc-300"
+                            ? "bg-amber-700/20 text-amber-700"
+                            : "text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
                         )}
                         onClick={() => dispatch({ type: "SET_GRANULARITY", payload: "monthly" })}
                       >
@@ -511,8 +511,8 @@ export function ResultsContent({
                         className={cn(
                           "px-3 py-1 text-xs font-medium rounded-md transition-colors",
                           viewState.granularity === "source"
-                            ? "bg-indigo-500/20 text-indigo-400"
-                            : "text-zinc-400 hover:text-zinc-300"
+                            ? "bg-amber-700/20 text-amber-700"
+                            : "text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
                         )}
                         onClick={() => dispatch({ type: "SET_GRANULARITY", payload: "source" })}
                       >
@@ -522,7 +522,7 @@ export function ResultsContent({
                   </div>
                 )}
                 {(viewState.granularity === "source" && viewState.loadingSource) ? (
-                  <div className="h-[350px] flex items-center justify-center text-zinc-500">
+                  <div className="h-[350px] flex items-center justify-center text-[var(--color-text-tertiary)]">
                     Chargement des données...
                   </div>
                 ) : (viewState.granularity === "source" && viewState.sourceChartData && viewState.sourceChartData.length > 0) ? (
@@ -532,7 +532,7 @@ export function ResultsContent({
                     <div className={cn(chartData.length === 0 && "hidden")}>
                       <AnimatedAreaChart data={chartData.length > 0 ? chartData : [{ date: "", actual: 0 }]} height={350} showConfidence />
                     </div>
-                    <div className={cn("h-[350px] flex items-center justify-center text-zinc-500", chartData.length > 0 && "hidden")}>
+                    <div className={cn("h-[350px] flex items-center justify-center text-[var(--color-text-tertiary)]", chartData.length > 0 && "hidden")}>
                       Aucune donnée disponible
                     </div>
                   </>

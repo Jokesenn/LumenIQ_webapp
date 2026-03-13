@@ -83,7 +83,7 @@ export function SeriesTabSkeleton() {
         {Array.from({ length: 8 }).map((_, i) => (
           <div
             key={i}
-            className="flex items-center justify-between p-3 rounded-xl bg-white/5"
+            className="flex items-center justify-between p-3 rounded-xl bg-[var(--color-bg-surface)]"
           >
             <div className="flex items-center gap-3">
               <Skeleton className="w-8 h-8 rounded-lg" />
@@ -137,7 +137,7 @@ export function ReliabilityTabSkeleton() {
       <div className="dash-card p-6">
         <Skeleton className="w-40 h-5 mb-4 rounded" />
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="flex items-center justify-between py-3 border-b border-white/5 last:border-0">
+          <div key={i} className="flex items-center justify-between py-3 border-b border-[var(--color-border)] last:border-0">
             <div className="flex items-center gap-3">
               <Skeleton className="w-3 h-3 rounded-full" />
               <div>

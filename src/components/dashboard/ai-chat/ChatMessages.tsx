@@ -15,11 +15,11 @@ interface ChatMessagesProps {
 function TypingIndicator() {
   return (
     <div className="flex justify-start">
-      <div className="bg-white/5 rounded-2xl rounded-bl-md px-4 py-3 flex gap-1.5">
+      <div className="bg-[var(--color-bg-surface)] rounded-2xl rounded-bl-md px-4 py-3 flex gap-1.5">
         {[0, 1, 2].map((i) => (
           <motion.span
             key={i}
-            className="w-2 h-2 rounded-full bg-white/40"
+            className="w-2 h-2 rounded-full bg-[var(--color-text-tertiary)]"
             animate={{ opacity: [0.3, 1, 0.3] }}
             transition={{
               duration: 1.2,
@@ -65,8 +65,8 @@ export function ChatMessages({
       <div className="flex flex-col gap-4 px-6 py-4">
         {/* Welcome message */}
         <div className="flex justify-start">
-          <div className="max-w-[85%] bg-white/5 text-white rounded-2xl rounded-bl-md px-4 py-2.5">
-            <p className="text-sm leading-relaxed text-white/70">
+          <div className="max-w-[85%] bg-[var(--color-bg-surface)] text-[var(--color-text)] rounded-2xl rounded-bl-md px-4 py-2.5">
+            <p className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
               {hasJobContext ? WELCOME_MESSAGE : NO_JOB_MESSAGE}
             </p>
           </div>

@@ -45,7 +45,7 @@ function getStatusBadge(status: string, smape: number | null | undefined) {
     case "pending":
     case "queued":
       return (
-        <span className="px-2.5 py-1 bg-zinc-500/10 text-zinc-500 rounded-full text-xs font-semibold">
+        <span className="px-2.5 py-1 bg-zinc-500/10 text-[var(--color-text-tertiary)] rounded-full text-xs font-semibold">
           En attente
         </span>
       );
@@ -70,7 +70,7 @@ function getStatusIcon(status: string) {
     case "failed":
       return <AlertCircle size={18} className="text-red-500" />;
     default:
-      return <FileText size={18} className="text-indigo-400" />;
+      return <FileText size={18} className="text-amber-700" />;
   }
 }
 
@@ -81,7 +81,7 @@ export function RecentForecasts({ forecasts }: RecentForecastsProps) {
         <h2 className="dash-section-title">Dernières prévisions</h2>
         <Link
           href="/dashboard/history"
-          className="text-indigo-400 text-sm flex items-center gap-1 hover:text-indigo-300 transition-colors"
+          className="text-amber-700 text-sm flex items-center gap-1 hover:text-amber-700 transition-colors"
         >
           Voir tout <ChevronRight size={16} />
         </Link>
@@ -96,15 +96,15 @@ export function RecentForecasts({ forecasts }: RecentForecastsProps) {
             <Link
               key={item.id}
               href={`/dashboard/results?job=${item.id}`}
-              className="flex items-center justify-between p-4 bg-white/5 rounded-lg hover:bg-white/10 transition-colors duration-200 cursor-pointer"
+              className="flex items-center justify-between p-4 bg-[var(--color-bg-surface)] rounded-lg hover:bg-[var(--color-bg-surface)] transition-colors duration-200 cursor-pointer"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-lg bg-amber-700/10 flex items-center justify-center">
                   {getStatusIcon(item.status ?? "pending")}
                 </div>
                 <div>
-                  <p className="font-medium text-sm text-white">{item.filename ?? "Sans nom"}</p>
-                  <p className="text-xs text-zinc-500">
+                  <p className="font-medium text-sm text-[var(--color-text)]">{item.filename ?? "Sans nom"}</p>
+                  <p className="text-xs text-[var(--color-text-tertiary)]">
                     {formatDate(created ?? null)} • {seriesCount ?? 0} séries
                   </p>
                 </div>

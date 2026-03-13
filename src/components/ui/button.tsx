@@ -5,17 +5,17 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-semibold transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-semibold transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-amber-700 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-bg)]",
   {
     variants: {
       variant: {
-        default: "bg-indigo-500 text-white hover:bg-indigo-600",
-        primary: "bg-indigo-500 text-white hover:bg-indigo-600",
-        secondary: "bg-transparent text-white border border-white/[0.08] hover:bg-white/5",
-        ghost: "bg-transparent text-zinc-400 hover:text-white hover:bg-white/5",
+        default: "bg-amber-700 text-white hover:bg-amber-800",
+        primary: "bg-amber-700 text-white hover:bg-amber-800",
+        secondary: "bg-transparent text-[var(--color-text)] border border-[var(--color-border)] hover:bg-[var(--color-bg-surface)]",
+        ghost: "bg-transparent text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-surface)]",
         destructive: "bg-red-500 text-white hover:bg-red-600",
-        outline: "border border-white/[0.08] bg-transparent hover:bg-white/5 hover:text-white",
-        link: "text-indigo-400 underline-offset-4 hover:underline",
+        outline: "border border-[var(--color-border)] bg-transparent hover:bg-[var(--color-bg-surface)] hover:text-[var(--color-text)]",
+        link: "text-amber-700 underline-offset-4 hover:underline",
       },
       size: {
         default: "h-10 px-5 py-2",

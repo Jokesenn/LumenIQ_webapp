@@ -51,14 +51,14 @@ function useAnimatedCounter(target: number, duration: number = 2000) {
 
 const variantStyles = {
   default: {
-    border: "border-white/5 hover:border-white/10",
-    iconBg: "bg-indigo-500/10 group-hover:bg-indigo-500/20",
-    iconColor: "text-indigo-400",
+    border: "border-[var(--color-border)] hover:border-[var(--color-border)]",
+    iconBg: "bg-amber-700/10 group-hover:bg-amber-700/20",
+    iconColor: "text-amber-700",
   },
   highlight: {
-    border: "border-indigo-500/30 hover:border-indigo-500/50",
-    iconBg: "bg-indigo-500/20 group-hover:bg-indigo-500/30",
-    iconColor: "text-indigo-400",
+    border: "border-amber-700/30 hover:border-amber-700/50",
+    iconBg: "bg-amber-700/20 group-hover:bg-amber-700/30",
+    iconColor: "text-amber-700",
   },
   warning: {
     border: "border-amber-500/30 hover:border-amber-500/50",
@@ -183,11 +183,11 @@ export function StatCard({
 
         <div className="space-y-1">
           <div className="flex items-center gap-1">
-            <p className="text-sm text-zinc-400">{label}</p>
+            <p className="text-sm text-[var(--color-text-secondary)]">{label}</p>
             {helpKey && <HelpTooltip termKey={helpKey} />}
           </div>
           <p
-            className="text-2xl sm:text-3xl font-bold font-display text-white tabular-nums truncate"
+            className="text-2xl sm:text-3xl font-bold font-display text-[var(--color-text)] tabular-nums truncate"
             title={typeof value === "string" ? value : undefined}
           >
             {typeof value === "number" ||
@@ -196,14 +196,14 @@ export function StatCard({
               : value}
           </p>
           {subtitle && (
-            <p className="text-xs text-zinc-500">{subtitle}</p>
+            <p className="text-xs text-[var(--color-text-tertiary)]">{subtitle}</p>
           )}
         </div>
 
         {/* Link indicator */}
         {href && (
           <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-            <ArrowRight className="w-4 h-4 text-zinc-500" />
+            <ArrowRight className="w-4 h-4 text-[var(--color-text-tertiary)]" />
           </div>
         )}
       </div>

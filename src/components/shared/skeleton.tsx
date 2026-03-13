@@ -11,7 +11,7 @@ export function Skeleton({ className }: SkeletonProps) {
   return (
     <motion.div
       className={cn(
-        "bg-zinc-800/50 rounded-lg overflow-hidden relative",
+        "bg-[var(--color-bg-surface)]/50 rounded-lg overflow-hidden relative",
         className
       )}
       initial={{ opacity: 0.5 }}
@@ -19,7 +19,7 @@ export function Skeleton({ className }: SkeletonProps) {
       transition={{ duration: 1.5, repeat: Infinity }}
     >
       <motion.div
-        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"
+        className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--color-bg-surface)] to-transparent"
         animate={{ x: ["-100%", "100%"] }}
         transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
       />
@@ -29,7 +29,7 @@ export function Skeleton({ className }: SkeletonProps) {
 
 export function CardSkeleton() {
   return (
-    <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5 space-y-4">
+    <div className="p-6 rounded-2xl bg-white/50 border border-[var(--color-border)] space-y-4">
       <div className="flex items-center justify-between">
         <Skeleton className="w-12 h-12 rounded-xl" />
         <Skeleton className="w-16 h-6 rounded-full" />

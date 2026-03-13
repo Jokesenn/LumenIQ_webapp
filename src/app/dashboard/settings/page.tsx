@@ -147,7 +147,7 @@ export default function SettingsPage() {
     <div className="animate-fade">
       <div className="mb-8">
         <h1 className="dash-page-title mb-2">Paramètres</h1>
-        <p className="text-zinc-400">
+        <p className="text-[var(--color-text-secondary)]">
           Gérez votre compte et vos préférences
         </p>
       </div>
@@ -171,7 +171,7 @@ export default function SettingsPage() {
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
+              <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
                 Nom complet
               </label>
               <input
@@ -180,27 +180,27 @@ export default function SettingsPage() {
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="Votre nom"
                 disabled={loading}
-                className="w-full px-4 py-3 bg-white/5 border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent disabled:opacity-50"
+                className="w-full px-4 py-3 bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] text-sm focus:outline-none focus:ring-2 focus:ring-amber-700/50 focus:border-transparent disabled:opacity-50"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-2">
+              <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
                 Email
               </label>
               <input
                 type="email"
                 value={email}
                 disabled
-                className="w-full px-4 py-3 bg-white/5 border border-white/[0.1] rounded-lg text-white text-sm opacity-60 cursor-not-allowed"
+                className="w-full px-4 py-3 bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] text-sm opacity-60 cursor-not-allowed"
               />
-              <p className="text-xs text-zinc-500 mt-1">
+              <p className="text-xs text-[var(--color-text-tertiary)] mt-1">
                 L&apos;email ne peut pas être modifié
               </p>
             </div>
             <Button
               onClick={handleSaveProfile}
               disabled={saving || loading}
-              className="mt-2 bg-indigo-500 hover:bg-indigo-600 text-white"
+              className="mt-2 bg-[var(--color-copper)] hover:bg-[var(--color-copper)] text-white"
             >
               {saving ? "Sauvegarde..." : "Sauvegarder"}
             </Button>
@@ -210,34 +210,34 @@ export default function SettingsPage() {
         {/* Subscription */}
         <div className="dash-card p-6">
           <h3 className="dash-section-title mb-5">Abonnement</h3>
-          <div className="p-5 bg-indigo-500/10 rounded-xl mb-5">
+          <div className="p-5 bg-amber-700/10 rounded-xl mb-5">
             <div className="flex justify-between items-center mb-3">
-              <span className="font-semibold text-white">
+              <span className="font-semibold text-[var(--color-text)]">
                 {loading ? (
                   <span className="animate-pulse">Chargement...</span>
                 ) : (
                   `Plan ${formatPlanName(profile?.plan ?? "standard")}`
                 )}
               </span>
-              <span className="text-2xl font-bold text-white">
+              <span className="text-2xl font-bold text-[var(--color-text)]">
                 €{profile ? getPlanPrice(profile.plan) : "--"}
-                <span className="text-sm font-normal text-zinc-400">/mois</span>
+                <span className="text-sm font-normal text-[var(--color-text-secondary)]">/mois</span>
               </span>
             </div>
-            <div className="flex justify-between text-sm text-zinc-400">
+            <div className="flex justify-between text-sm text-[var(--color-text-secondary)]">
               <span>Séries utilisées ce mois</span>
               <span>
                 {seriesUsed} / {seriesQuota}
               </span>
             </div>
-            <div className="mt-3 h-1.5 bg-white/10 rounded-full overflow-hidden">
+            <div className="mt-3 h-1.5 bg-[var(--color-bg-surface)] rounded-full overflow-hidden">
               <div
-                className="h-full bg-indigo-500 rounded-full transition-all"
+                className="h-full bg-[var(--color-copper)] rounded-full transition-all"
                 style={{ width: `${usagePercent}%` }}
               />
             </div>
             {profile?.subscription_status && (
-              <div className="mt-3 text-xs text-zinc-500">
+              <div className="mt-3 text-xs text-[var(--color-text-tertiary)]">
                 Statut : {profile.subscription_status === "trialing" ? "Période d'essai" : profile.subscription_status}
                 {profile.trial_ends_at && (
                   <span>
@@ -253,12 +253,12 @@ export default function SettingsPage() {
           <div className="flex gap-3">
             <Button variant="secondary" disabled className="opacity-60">
               Gérer la facturation
-              <span className="ml-2 text-[10px] bg-zinc-700 px-1.5 py-0.5 rounded">Bientôt</span>
+              <span className="ml-2 text-[10px] bg-[var(--color-bg-surface)] px-1.5 py-0.5 rounded">Bientôt</span>
             </Button>
             {profile?.plan !== "premium" && (
               <Button variant="ghost" disabled className="opacity-60">
                 {profile?.plan === "standard" ? "Passer au plan ML" : "Passer au plan Premium"}
-                <span className="ml-2 text-[10px] bg-zinc-700 px-1.5 py-0.5 rounded">Bientôt</span>
+                <span className="ml-2 text-[10px] bg-[var(--color-bg-surface)] px-1.5 py-0.5 rounded">Bientôt</span>
               </Button>
             )}
           </div>
@@ -270,11 +270,11 @@ export default function SettingsPage() {
           <div className="space-y-4">
             <div className="flex justify-between items-center opacity-50">
               <div>
-                <p className="font-medium text-sm text-white">
+                <p className="font-medium text-sm text-[var(--color-text)]">
                   Notifications email
-                  <span className="ml-2 px-1.5 py-0.5 bg-zinc-700 rounded text-[10px] text-zinc-400 font-medium">Bientôt</span>
+                  <span className="ml-2 px-1.5 py-0.5 bg-[var(--color-bg-surface)] rounded text-[10px] text-[var(--color-text-secondary)] font-medium">Bientôt</span>
                 </p>
-                <p className="text-xs text-zinc-500">
+                <p className="text-xs text-[var(--color-text-tertiary)]">
                   Recevoir les alertes par email
                 </p>
               </div>
@@ -282,17 +282,17 @@ export default function SettingsPage() {
             </div>
             <div className="flex justify-between items-center opacity-50">
               <div>
-                <p className="font-medium text-sm text-white">
+                <p className="font-medium text-sm text-[var(--color-text)]">
                   Rapport hebdomadaire
-                  <span className="ml-2 px-1.5 py-0.5 bg-zinc-700 rounded text-[10px] text-zinc-400 font-medium">Bientôt</span>
+                  <span className="ml-2 px-1.5 py-0.5 bg-[var(--color-bg-surface)] rounded text-[10px] text-[var(--color-text-secondary)] font-medium">Bientôt</span>
                 </p>
-                <p className="text-xs text-zinc-500">
+                <p className="text-xs text-[var(--color-text-tertiary)]">
                   Résumé de vos prévisions chaque lundi
                 </p>
               </div>
               <ToggleSwitch disabled />
             </div>
-            <p className="text-[11px] text-zinc-600 italic">
+            <p className="text-[11px] text-[var(--color-text-tertiary)] italic">
               Ces fonctionnalités seront disponibles prochainement.
             </p>
           </div>
@@ -317,7 +317,7 @@ export default function SettingsPage() {
           </div>
           {profile?.plan === "premium" && profile?.api_key ? (
             <div className="space-y-3">
-              <p className="text-sm text-zinc-400">
+              <p className="text-sm text-[var(--color-text-secondary)]">
                 Votre clé API pour automatiser vos prévisions
               </p>
               <div className="flex gap-2">
@@ -325,7 +325,7 @@ export default function SettingsPage() {
                   type="password"
                   value={profile.api_key}
                   readOnly
-                  className="flex-1 px-4 py-2 bg-white/5 border border-white/[0.08] rounded-lg text-sm font-mono text-white"
+                  className="flex-1 px-4 py-2 bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-lg text-sm font-mono text-[var(--color-text)]"
                 />
                 <Button
                   variant="secondary"
@@ -337,7 +337,7 @@ export default function SettingsPage() {
             </div>
           ) : (
             <>
-              <p className="text-sm text-zinc-400 mb-4">
+              <p className="text-sm text-[var(--color-text-secondary)] mb-4">
                 Passez au plan Premium pour accéder à l&apos;API REST et
                 automatiser vos prévisions.
               </p>
@@ -353,8 +353,8 @@ export default function SettingsPage() {
           <h3 className="dash-section-title mb-5">Aide</h3>
           <div className="flex justify-between items-center">
             <div>
-              <p className="font-medium text-sm text-white">Guide interactif</p>
-              <p className="text-xs text-zinc-500">
+              <p className="font-medium text-sm text-[var(--color-text)]">Guide interactif</p>
+              <p className="text-xs text-[var(--color-text-tertiary)]">
                 Relancer le tutoriel de la page résultats
               </p>
             </div>
@@ -375,8 +375,8 @@ export default function SettingsPage() {
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
-                <p className="font-medium text-sm text-white">Exporter mes données</p>
-                <p className="text-xs text-zinc-500">
+                <p className="font-medium text-sm text-[var(--color-text)]">Exporter mes données</p>
+                <p className="text-xs text-[var(--color-text-tertiary)]">
                   Téléchargez une copie de toutes vos données au format JSON
                   (Article 20 RGPD)
                 </p>
@@ -405,8 +405,8 @@ export default function SettingsPage() {
           </h3>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <p className="font-medium text-sm text-white">Supprimer le compte</p>
-              <p className="text-xs text-zinc-500">
+              <p className="font-medium text-sm text-[var(--color-text)]">Supprimer le compte</p>
+              <p className="text-xs text-[var(--color-text-tertiary)]">
                 Cette action est irréversible. Toutes vos données seront
                 définitivement supprimées.
               </p>
@@ -427,13 +427,13 @@ export default function SettingsPage() {
 
       {/* Delete Account Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent className="bg-zinc-950 border-white/10 text-white">
+        <DialogContent className="bg-[var(--color-bg)] border-[var(--color-border)] text-[var(--color-text)]">
           <DialogHeader>
             <DialogTitle className="text-red-500 flex items-center gap-2">
               <AlertTriangle className="w-5 h-5" />
               Supprimer votre compte
             </DialogTitle>
-            <DialogDescription className="text-zinc-400">
+            <DialogDescription className="text-[var(--color-text-secondary)]">
               Cette action est <strong className="text-red-400">irréversible</strong>.
               Toutes vos données seront définitivement supprimées :
               prévisions, résultats, fichiers et paramètres.
@@ -448,8 +448,8 @@ export default function SettingsPage() {
             )}
 
             <div>
-              <label className="block text-sm text-zinc-400 mb-2">
-                Tapez <strong className="text-white">SUPPRIMER</strong> pour confirmer
+              <label className="block text-sm text-[var(--color-text-secondary)] mb-2">
+                Tapez <strong className="text-[var(--color-text)]">SUPPRIMER</strong> pour confirmer
               </label>
               <input
                 type="text"
@@ -457,7 +457,7 @@ export default function SettingsPage() {
                 onChange={(e) => setDeleteConfirmText(e.target.value)}
                 placeholder="SUPPRIMER"
                 disabled={deleting}
-                className="w-full px-4 py-3 bg-white/5 border border-white/[0.1] rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-transparent disabled:opacity-50"
+                className="w-full px-4 py-3 bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] text-sm focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-transparent disabled:opacity-50"
                 autoComplete="off"
               />
             </div>
@@ -500,9 +500,9 @@ function ToggleSwitch({ defaultChecked = false, disabled = false }: { defaultChe
       onClick={() => !disabled && setChecked(!checked)}
       disabled={disabled}
       className={`w-11 h-6 rounded-full relative transition-colors ${
-        disabled ? "bg-white/5 cursor-not-allowed" : checked ? "bg-indigo-500" : "bg-white/10"
+        disabled ? "bg-[var(--color-bg-surface)] cursor-not-allowed" : checked ? "bg-[var(--color-copper)]" : "bg-[var(--color-bg-surface)]"
       } border ${
-        disabled ? "border-white/[0.04]" : checked ? "border-indigo-500" : "border-white/[0.08]"
+        disabled ? "border-[var(--color-border)]" : checked ? "border-[var(--color-copper)]" : "border-[var(--color-border)]"
       }`}
     >
       <div

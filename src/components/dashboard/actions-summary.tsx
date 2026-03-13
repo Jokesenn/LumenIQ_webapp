@@ -24,12 +24,12 @@ export function ActionsSummaryCard({ summary, loading }: ActionsSummaryCardProps
 
   return (
     <div className="dash-card p-5">
-      <h3 className="text-sm font-semibold font-display text-white/60 uppercase tracking-wider mb-3">
+      <h3 className="text-sm font-semibold font-display text-[var(--color-text-tertiary)] uppercase tracking-wider mb-3">
         Résumé
       </h3>
       <ul className="space-y-2">
         {summary.lines.map((line, i) => (
-          <li key={i} className="flex items-start gap-2.5 text-sm text-zinc-300">
+          <li key={i} className="flex items-start gap-2.5 text-sm text-[var(--color-text)]">
             <span className="shrink-0 mt-0.5">{line.icon}</span>
             <span>{line.text}</span>
           </li>

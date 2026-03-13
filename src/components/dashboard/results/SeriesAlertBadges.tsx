@@ -61,7 +61,7 @@ export function SeriesAlertBadges({
         return <AlertBadge key={alert} type={alert} size={size} />;
       })}
       {hiddenCount > 0 && (
-        <span className="text-xs text-zinc-500">+{hiddenCount}</span>
+        <span className="text-xs text-[var(--color-text-tertiary)]">+{hiddenCount}</span>
       )}
     </div>
   );

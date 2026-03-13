@@ -55,16 +55,16 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (visible.length === 0) return null;
 
   return (
-    <div className="bg-zinc-900/95 backdrop-blur-xl border border-white/10 rounded-xl p-3 shadow-xl">
-      <p className="text-xs text-zinc-400 mb-2">{label}</p>
+    <div className="bg-white backdrop-blur-xl border border-[var(--color-border)] rounded-xl p-3 shadow-xl">
+      <p className="text-xs text-[var(--color-text-secondary)] mb-2">{label}</p>
       {visible.map((entry: TooltipEntry, i: number) => (
         <div key={i} className="flex items-center gap-2 text-sm">
           <div
             className="w-2 h-2 rounded-full"
             style={{ backgroundColor: entry.color }}
           />
-          <span className="text-zinc-300">{entry.name}:</span>
-          <span className="font-medium text-white">
+          <span className="text-[var(--color-text)]">{entry.name}:</span>
+          <span className="font-medium text-[var(--color-text)]">
             {typeof entry.value === "number"
               ? entry.value.toLocaleString("fr-FR", { maximumFractionDigits: 0 })
               : entry.value}
@@ -119,24 +119,24 @@ export function AnimatedAreaChart({
           <defs>
             {/* Gradient pour actuals */}
             <linearGradient id="actualGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+              <stop offset="5%" stopColor="#B45309" stopOpacity={0.3} />
+              <stop offset="95%" stopColor="#B45309" stopOpacity={0} />
             </linearGradient>
             {/* Gradient pour forecast */}
             <linearGradient id="forecastGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+              <stop offset="5%" stopColor="#B45309" stopOpacity={0.3} />
+              <stop offset="95%" stopColor="#B45309" stopOpacity={0} />
             </linearGradient>
             {/* Gradient pour confidence interval band */}
             <linearGradient id="confidenceGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.15} />
-              <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.05} />
+              <stop offset="5%" stopColor="#B45309" stopOpacity={0.15} />
+              <stop offset="95%" stopColor="#B45309" stopOpacity={0.05} />
             </linearGradient>
           </defs>
 
           <CartesianGrid
             strokeDasharray="3 3"
-            stroke="rgba(255,255,255,0.05)"
+            stroke="rgba(0,0,0,0.06)"
             vertical={false}
           />
 
@@ -160,14 +160,14 @@ export function AnimatedAreaChart({
 
           <Legend
             wrapperStyle={{ paddingTop: 20 }}
-            formatter={(value) => <span className="text-zinc-400 text-sm">{value}</span>}
+            formatter={(value) => <span className="text-[var(--color-text-secondary)] text-sm">{value}</span>}
           />
 
           {/* Ligne de séparation actuals/forecast */}
           {splitDate && (
             <ReferenceLine
               x={splitDate}
-              stroke="rgba(255,255,255,0.2)"
+              stroke="rgba(0,0,0,0.15)"
               strokeDasharray="5 5"
               label={{
                 value: "Prévisions →",
@@ -214,13 +214,13 @@ export function AnimatedAreaChart({
           <Area
             type="monotone"
             dataKey="actual"
-            stroke="#6366f1"
+            stroke="#B45309"
             strokeWidth={2}
             fill="url(#actualGradient)"
             fillOpacity={1}
             name="Réel"
             dot={false}
-            activeDot={{ r: 6, fill: "#6366f1", stroke: "#fff", strokeWidth: 2 }}
+            activeDot={{ r: 6, fill: "#B45309", stroke: "#fff", strokeWidth: 2 }}
             onMouseEnter={() => setHoveredArea("actual")}
             onMouseLeave={() => setHoveredArea(null)}
           />
@@ -229,14 +229,14 @@ export function AnimatedAreaChart({
           <Area
             type="monotone"
             dataKey="forecast"
-            stroke="#8b5cf6"
+            stroke="#B45309"
             strokeWidth={2}
             strokeDasharray="5 5"
             fill="url(#forecastGradient)"
             fillOpacity={1}
             name="Prévision"
             dot={false}
-            activeDot={{ r: 6, fill: "#8b5cf6", stroke: "#fff", strokeWidth: 2 }}
+            activeDot={{ r: 6, fill: "#B45309", stroke: "#fff", strokeWidth: 2 }}
             onMouseEnter={() => setHoveredArea("forecast")}
             onMouseLeave={() => setHoveredArea(null)}
           />

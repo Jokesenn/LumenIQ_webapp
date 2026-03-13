@@ -44,13 +44,13 @@ export function SeriesQuickSelect({
         <Button
           variant="ghost"
           size="sm"
-          className="text-zinc-400 hover:text-white gap-1.5 h-8"
+          className="text-[var(--color-text-secondary)] hover:text-[var(--color-text)] gap-1.5 h-8"
         >
           <ChevronsUpDown className="size-4" />
           <span className="hidden sm:inline">Aller à...</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[320px] p-0 bg-zinc-900 border-white/[0.08] backdrop-blur-xl" align="end">
+      <PopoverContent className="w-[320px] p-0 bg-white border-[var(--color-border)] backdrop-blur-xl" align="end">
         <Command>
           <CommandInput placeholder="Rechercher une série..." />
           <CommandEmpty>Aucune série trouvée</CommandEmpty>
@@ -73,19 +73,19 @@ export function SeriesQuickSelect({
                     }}
                     className={cn(
                       "flex items-center justify-between",
-                      isCurrent && "bg-indigo-500/10"
+                      isCurrent && "bg-amber-700/10"
                     )}
                   >
                     <div className="flex items-center gap-2 min-w-0">
                       {isCurrent ? (
-                        <Check className="size-4 text-indigo-400 shrink-0" />
+                        <Check className="size-4 text-amber-700 shrink-0" />
                       ) : (
                         <div className="size-4 shrink-0" />
                       )}
                       <span
                         className={cn(
                           "font-medium truncate",
-                          isCurrent ? "text-indigo-400" : "text-white"
+                          isCurrent ? "text-amber-700" : "text-[var(--color-text)]"
                         )}
                       >
                         {s.series_id}
@@ -95,12 +95,12 @@ export function SeriesQuickSelect({
                       <span
                         className={cn(
                           "px-1.5 py-0.5 rounded",
-                          classColors[s.abc_class] ?? "bg-zinc-500/20 text-zinc-400"
+                          classColors[s.abc_class] ?? "bg-zinc-500/20 text-[var(--color-text-secondary)]"
                         )}
                       >
                         {s.abc_class}
                       </span>
-                      <span className="text-zinc-500 tabular-nums w-12 text-right">
+                      <span className="text-[var(--color-text-tertiary)] tabular-nums w-12 text-right">
                         {scoreDisplay}
                       </span>
                     </div>
