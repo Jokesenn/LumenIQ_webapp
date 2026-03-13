@@ -7,7 +7,7 @@ LumenIQ utilise le système de génération d'images Open Graph dynamique de Nex
 ## Files
 
 - `/src/app/opengraph-image.tsx` — Génère l'image OG (1200x630 px) pour Facebook, LinkedIn, Slack, etc.
-- `/src/app/twitter-image.tsx` — Réexporte `opengraph-image` pour Twitter (même image, format `summary_large_image`)
+- `/src/app/twitter-image.tsx` — Composant indépendant pour Twitter (1200x600 px, format `summary_large_image`). Maintient le même design visuel que l'image OG mais avec les dimensions spécifiques à Twitter (1200x600 vs 1200x630 pour OG)
 
 ## Convention Next.js
 

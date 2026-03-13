@@ -19,7 +19,7 @@ LumenIQ is a SaaS forecasting platform for SME retail/e-commerce businesses. It 
 - **Markdown**: react-markdown + remark-gfm
 - **Dates**: date-fns
 - **Compiler**: React Compiler (babel-plugin-react-compiler) enabled
-- **Testing**: Vitest + @testing-library/react + happy-dom
+- **Testing**: Vitest v4 + @testing-library/react + happy-dom
 
 ## Commands
 
@@ -39,224 +39,54 @@ npm run test:watch # Watch mode
 ├── middleware.ts                # Supabase auth middleware (at project root, NOT in src/)
 src/
 ├── app/                         # Next.js App Router pages
-│   ├── layout.tsx               # Root layout (Manrope+Syne fonts, ThemeProvider, PageTransition)
-│   ├── page.tsx                 # Landing page
+│   ├── layout.tsx               # Root layout (Manrope+Syne fonts, ThemeProvider)
 │   ├── globals.css              # Tailwind imports, design tokens, theme vars
-│   ├── robots.ts                # SEO robots.txt generation
-│   ├── sitemap.ts               # SEO sitemap generation
-│   ├── opengraph-image.tsx      # Open Graph image generation
-│   ├── twitter-image.tsx        # Twitter card image generation
 │   ├── auth/callback/route.ts   # OAuth/SSR callback handler
-│   ├── login/
-│   │   ├── page.tsx             # Login / signup / forgot-password tabs
-│   │   └── reset-password/page.tsx
+│   ├── login/                   # Login / signup / forgot-password
 │   ├── dashboard/               # Protected area (main app)
 │   │   ├── layout.tsx           # Auth check + DashboardShell wrapper
-│   │   ├── page.tsx             # Dashboard home (stats, charts, recent jobs)
-│   │   ├── loading.tsx          # Dashboard loading skeleton
 │   │   ├── dashboard-shell.tsx  # Client shell: Sidebar + Header + CommandPalette + AiChat
-│   │   ├── dashboard-content.tsx
 │   │   ├── forecast/page.tsx    # 4-step forecast submission wizard
-│   │   ├── history/
-│   │   │   ├── page.tsx
-│   │   │   └── history-content.tsx
-│   │   ├── results/
-│   │   │   ├── page.tsx         # Tabs: overview, portfolio, series, synthesis, reliability (business-first order)
-│   │   │   ├── loading.tsx
-│   │   │   ├── results-content.tsx
-│   │   │   ├── results-client.tsx  # Dynamic import wrapper (avoids SSR hydration mismatch)
-│   │   │   ├── actions.ts       # Server actions (getResultsDownloadUrl, etc.)
-│   │   │   └── series/
-│   │   │       ├── page.tsx     # Individual series detail (?job=&series=)
-│   │   │       ├── loading.tsx
-│   │   │       └── series-content.tsx
-│   │   ├── actions/page.tsx      # Actions board (full-page, grouped by run)
-│   │   └── settings/page.tsx    # Profile, subscription, preferences, API key, danger zone
-│   ├── features/page.tsx        # Features marketing page (ABC/XYZ, backtesting visuals)
-│   ├── pricing/page.tsx         # Pricing page (3 tiers + enterprise)
-│   ├── contact/page.tsx         # Contact form (constellation animation, premium inputs)
-│   ├── demo/page.tsx            # Interactive product tour (4-step timeline, auto-play)
-│   ├── mentions-legales/page.tsx # Legal mentions page
-│   ├── politique-de-confidentialite/page.tsx # Privacy policy page (RGPD)
-│   └── test-upload/page.tsx     # Dev-only: CSV upload test page
+│   │   ├── history/page.tsx      # Past forecast jobs list
+│   │   ├── results/             # Results tabs: overview, portfolio, series, synthesis, reliability
+│   │   ├── actions/page.tsx     # Actions board (full-page, grouped by run)
+│   │   └── settings/page.tsx    # Profile, subscription, preferences
+│   ├── features/ pricing/ contact/ demo/  # Marketing pages
+│   └── api/webhook/             # Server-side proxies (forecast + chat)
 │
 ├── components/
 │   ├── ui/                      # shadcn/ui base components (do NOT modify)
-│   │   ├── accordion.tsx
-│   │   ├── alert-badge.tsx
-│   │   ├── badge-with-tooltip.tsx
-│   │   ├── button.tsx
-│   │   ├── card.tsx
-│   │   ├── checkbox.tsx
-│   │   ├── command.tsx          # cmdk-based command component
-│   │   ├── dialog.tsx
-│   │   ├── dropdown-menu.tsx
-│   │   ├── help-tooltip.tsx
-│   │   ├── input.tsx
-│   │   ├── popover.tsx
-│   │   ├── scroll-area.tsx
-│   │   ├── select.tsx
-│   │   ├── sheet.tsx            # Side panel (used by AI Chat drawer)
-│   │   ├── skeleton.tsx
-│   │   ├── sparkline.tsx        # Mini inline chart
-│   │   ├── switch.tsx
-│   │   └── tooltip.tsx
-│   │
-│   ├── dashboard/               # Dashboard-specific components
-│   │   ├── index.ts             # Barrel export
-│   │   ├── header.tsx
-│   │   ├── sidebar.tsx
-│   │   ├── command-palette.tsx  # Cmd+K navigation palette
-│   │   ├── stat-card.tsx
-│   │   ├── recent-forecasts.tsx
-│   │   ├── empty-dashboard.tsx
-│   │   ├── reliability-tab.tsx    # Onglet Fiabilité (bubble chart + model perf)
-│   │   ├── reliability-detail-table.tsx # Detailed model metrics table
-│   │   ├── series-list.tsx
-│   │   ├── series-navigator.tsx
-│   │   ├── series-quick-select.tsx
-│   │   ├── series-filters-dropdown.tsx
-│   │   ├── series-sort-dropdown.tsx
-│   │   ├── active-filters-bar.tsx
-│   │   ├── AlertsSummaryCard.tsx
-│   │   ├── synthesis-card.tsx
-│   │   ├── synthesis-accordion.tsx
-│   │   ├── markdown-renderer.tsx  # react-markdown with dark theme styling
-│   │   ├── ai-chat/            # AI chatbot (N8N webhook)
-│   │   │   ├── index.ts
-│   │   │   ├── AiChatButton.tsx   # Floating action button
-│   │   │   ├── AiChatDrawer.tsx   # Sheet + orchestrator
-│   │   │   ├── ChatMessages.tsx
-│   │   │   ├── ChatMessage.tsx
-│   │   │   ├── ChatInput.tsx
-│   │   │   ├── SuggestedQuestions.tsx
-│   │   │   └── types.ts
-│   │   ├── actions-board.tsx    # Actions board (page + drawer modes)
-│   │   ├── actions-summary.tsx  # Executive summary card (3 lines)
-│   │   ├── actions-drawer.tsx   # Sheet drawer for actions panel on results page
-│   │   ├── actions-fab.tsx      # Floating action button (amber) with urgent count badge
-│   │   ├── action-card.tsx      # Individual action card (priority, dismiss, navigate)
-│   │   ├── portfolio-view.tsx   # Portfolio scatter plot (series by cluster, 6 behavioral groups)
-│   │   ├── threshold-settings.tsx # Editable metric thresholds UI (green/yellow/red zones)
-│   │   └── results/            # Results-page-specific
-│   │       ├── SeriesAlertBadges.tsx
-│   │       ├── ExportPdfButton.tsx
-│   │       └── results-skeletons.tsx
-│   │
-│   ├── charts/                  # Recharts-based visualizations
-│   │   ├── index.ts
-│   │   ├── abc-xyz-matrix.tsx
-│   │   ├── animated-area-chart.tsx
-│   │   ├── animated-gauge.tsx
-│   │   ├── metric-gauge-card.tsx
-│   │   ├── model-performance-chart.tsx
-│   │   ├── reliability-bubble-chart.tsx  # Bubble chart fiabilité par modèle
-│   │   ├── reliability-family-viz.tsx   # Treemap/pie of model families by series count
-│   │   ├── score-trend-chart.tsx        # Line chart of score trends over forecasts
-│   │   └── quota-progress.tsx
-│   │
+│   ├── dashboard/               # Dashboard-specific (series list, actions, reliability, ai-chat/)
+│   ├── charts/                  # Recharts visualizations (gauges, bubble, treemap, trends)
 │   ├── landing/                 # Landing page sections
-│   │   ├── index.ts
-│   │   ├── hero.tsx
-│   │   ├── hero-chart.tsx
-│   │   ├── features-section.tsx
-│   │   ├── how-it-works.tsx
-│   │   ├── comparison-section.tsx
-│   │   ├── cta-section.tsx
-│   │   ├── faq-section.tsx
-│   │   ├── pricing-preview.tsx
-│   │   └── roi-section.tsx          # ROI benefits with animated counters (16 days saved, -30% ruptures, 10x ROI)
-│   │
-│   ├── shared/                  # Global components (navbar, footer, logo)
-│   │   ├── index.ts
-│   │   ├── navbar.tsx
-│   │   ├── footer.tsx
-│   │   ├── logo.tsx
-│   │   ├── theme-toggle.tsx
-│   │   ├── page-loader.tsx
-│   │   └── scroll-progress.tsx
-│   │
+│   ├── shared/                  # Navbar, footer, logo, theme toggle
 │   ├── animations/              # Framer Motion wrappers
-│   │   ├── index.ts
-│   │   ├── fade-in.tsx
-│   │   ├── text-reveal.tsx
-│   │   ├── parallax.tsx
-│   │   ├── tilt-card.tsx
-│   │   ├── magnetic-button.tsx
-│   │   └── stagger-children.tsx
-│   │
-│   ├── backgrounds/             # Background effects
-│   │   ├── index.ts
-│   │   ├── animated-background.tsx
-│   │   └── floating-particles.tsx
-│   │
-│   ├── onboarding/              # Guided tours (driver.js)
-│   │   ├── index.ts
-│   │   └── results-tour.tsx
-│   │
-│   ├── forecast/                # Forecast submission components
-│   │   ├── ForecastOptions.tsx
-│   │   └── enriched-waiting.tsx
-│   │
-│   ├── export/                  # PDF export
-│   │   └── SeriesPdfReport.tsx
-│   │
-│   ├── upload/                  # File upload
-│   │   └── file-upload-zone.tsx
-│   │
-│   ├── skeletons/               # Loading skeletons
-│   │   └── index.tsx
-│   │
-│   ├── providers/               # Context providers
-│   │   └── page-transition.tsx
-│   │
-│   ├── error-boundary.tsx          # Error fallback component
-│   └── theme-provider.tsx
+│   ├── backgrounds/              # Visual effects (particles, gradients)
+│   ├── providers/                # React context providers
+│   ├── skeletons/                # Loading skeleton components
+│   └── forecast/ export/ upload/ onboarding/
 │
-├── hooks/                       # Custom React hooks
-│   ├── use-profile.ts           # User profile fetch from DB
-│   ├── use-supabase.ts          # useUser(), useSupabase(), useLogout()
-│   ├── useFileUpload.ts         # CSV upload → job creation → N8N webhook
-│   ├── useJobStatus.ts          # Job polling (3s interval, auto-stop)
-│   ├── useExportPdf.ts          # PDF export (html2canvas + react-pdf)
-│   ├── useOnboarding.ts         # Tour state (localStorage-based)
-│   ├── useSeriesNavigation.ts   # Series list navigation + sorting + URL sync
-│   ├── useUserPreferences.ts    # Forecast config preferences (horizon, gating, CI)
-│   └── use-actions.ts           # useActions() (page/drawer modes), useUrgentCount() (badge)
-│
+├── hooks/                       # Custom React hooks (auth, upload, job polling, actions, PDF)
 ├── lib/
-│   ├── utils.ts                 # cn() utility (clsx + tailwind-merge)
-│   ├── tokens.ts                # Design tokens & color schemas
-│   ├── metrics.ts               # toChampionScore(), getChampionScoreColor(), getChampionScoreStatus()
-│   ├── model-labels.ts          # MODEL_LABELS, MODEL_FAMILIES, getModelMeta() — French labels for technical model names
-│   ├── reliability-utils.ts     # Utility functions for reliability tab
-│   ├── csv-analyzer.ts          # CSV parsing, format detection, frequency analysis, column mapping
-│   ├── date-format.ts           # Frequency-aware date formatting (formatDateByFrequency, formatFrequencyLabel, classifyFreq)
-│   ├── chart-utils.ts           # fillZeroGap(), bridgeChartGap(), resolveGlobalErrorRatio() — chart data gap filling + visual bridging
-│   ├── series-alerts.ts         # getSeriesAlerts(), sortAlertsByPriority(), countAlertsByType()
-│   ├── linkify-skus.ts          # SKU linkification in markdown content
-│   ├── parse-markdown-sections.ts  # Split markdown by H2 headers for accordions
-│   ├── glossary.tsx             # Help tooltip content definitions (championScore, wape, smape, bias, reliable_series, attention, watch, drift, gated, model_changed, etc.)
-│   ├── onboarding.ts            # Tour completion state (localStorage)
-│   ├── pricing-config.ts        # Central pricing plan config (Standard/ML/Premium: models, series, features)
-│   ├── mock-data.ts             # Development mock data
-│   ├── webhook-signature.ts     # HMAC-SHA256 signing for N8N webhooks (format: t=<ts>,v1=<hash>)
-│   ├── thresholds/
-│   │   ├── context.tsx          # ThresholdsProvider + useThresholds() hook (Supabase-backed)
-│   │   └── defaults.ts          # Default metric thresholds (5 metrics: reliability, wape, model_score, mase, bias)
-│   ├── supabase/
-│   │   ├── server.ts            # Server-side Supabase client (SSR, schema: lumeniq)
-│   │   └── client.ts            # Browser-side Supabase client (singleton, schema: lumeniq)
-│   └── queries/
-│       ├── dashboard.ts         # getDashboardStats(), getModelPerformance(), etc.
-│       └── results.ts           # getJobMetrics(), getTopBottomSeries(), getSeriesDetails(), getSeriesActions(), etc.
+│   ├── env.ts                   # Centralized env var access (serverEnv/publicEnv)
+│   ├── metrics.ts               # toChampionScore(), resolveSeriesErrorRatio()
+│   ├── model-labels.ts          # French labels for technical model names
+│   ├── chart-utils.ts           # fillZeroGap(), bridgeChartGap()
+│   ├── series-alerts.ts         # Alert logic (WAPE thresholds, gating, drift)
+│   ├── date-format.ts           # Frequency-aware date formatting
+│   ├── glossary.tsx              # Alert glossary tooltips
+│   ├── linkify-skus.ts           # SKU linking in text
+│   ├── onboarding.ts             # Onboarding step definitions
+│   ├── parse-markdown-sections.ts # Markdown section parser
+│   ├── reliability-utils.ts      # Reliability tab computations (enriched models, family aggregations)
+│   ├── schemas/                  # Zod validation schemas
+│   │   └── actions.ts            # Action form schemas
+│   ├── tokens.ts                 # Design token utilities
+│   ├── supabase/                # Server + client Supabase clients (schema: lumeniq)
+│   ├── queries/                 # Server-side data fetching (dashboard.ts, results.ts)
+│   └── thresholds/              # User-customizable metric thresholds
 │
-└── types/
-    ├── database.ts              # Supabase-generated schema types (lumeniq schema)
-    ├── forecast.ts              # ForecastJob, ForecastResult, SeriesListItem, upload types
-    ├── export.ts                # PDF export types
-    ├── actions.ts               # ForecastAction, ActionsSummary, ActionsGroupedByJob
-    └── preferences.ts           # User preferences & defaults
+└── types/                       # TypeScript types (database.ts, forecast.ts, actions.ts, export.ts, preferences.ts, results.ts)
 ```
 
 ## Key Conventions
@@ -289,6 +119,8 @@ src/
 - Key tables: `profiles`, `forecast_jobs`, `forecast_results`, `forecast_results_months`, `forecast_results_detail`, `series_actuals`, `forecast_syntheses`, `job_summaries`, `forecast_series`, `job_monthly_aggregates`, `user_preferences`, `forecast_actions`, `user_thresholds`
 - `forecast_jobs` includes `engine_frequency` (detected data frequency) and `aggregation_applied` (boolean, true when source data was temporally aggregated to monthly)
 - `forecast_results_detail` stores per-series forecast data at the source frequency (before temporal aggregation)
+
+**Note**: `forecast_actions` uses `client_id` (not `user_id`) as its user foreign key. Queries must join via `job_id` → `forecast_jobs.user_id` for user-scoped access.
 
 ### Auth
 - Supabase Auth with SSR via `@supabase/ssr`
@@ -338,29 +170,7 @@ src/
 - **Source-frequency data**: `getSeriesDetailForecastData(jobId, seriesId, userId)` queries `forecast_results_detail` for per-series data at the original (non-aggregated) frequency
 - **Two-phase fetching**: Charts first fetch the job to extract `engine_frequency` and `aggregation_applied`, then conditionally fetch source-frequency data only when aggregation was applied (lazy-loading pattern)
 
-### Data Contract: Metric Storage (VERIFIED against real DB data)
-
-**All metrics are stored as ratios (0–1) in Supabase.** The frontend converts to display values in query functions. Exception: `champion_score` now contains MASE (unbounded, can be > 1) — the frontend does NOT use it.
-
-Verified DB values from `forecast_results`:
-| Column | DB value | Frontend conversion | Displayed as |
-|--------|----------|-------------------|-----------|
-| `champion_score` | 0.85 (MASE) | **NOT USED** by frontend | N/A (internal selection metric) |
-| `wape` | 0.0445 | `(1 - x) × 100` via `toChampionScore()` | 95.6 /100 (Score de fiabilité) |
-| `smape` | 0.0223 | Fallback only if wape is null | Legacy |
-| `mape` | 0.0450 | `× 100` | 4.50% (Erreur moyenne gauge) |
-| `bias_pct` | 0.5259 | `× 100` | Biais prévision |
-
-`global_mape` is populated in `job_summaries` for new jobs. For old jobs it is null — the MAPE gauge card is conditionally hidden.
-
-Conversion functions in `@/lib/metrics.ts`:
-- `toChampionScore(ratio)` → `(1 - ratio) × 100` (score inverse: 0 = pire, 100 = parfait)
-- `resolveSeriesErrorRatio(row)` → fallback chain: `wape` → `smape` (does NOT use `champion_score`)
-
-**`challengers` field** in `forecast_results`:
-- Old format (pre-2026-02): list `[{name, score, status}, ...]` with SMAPE scores
-- New format: dict `{model_name: wape_ratio, ...}` with WAPE scores for all candidates
-- Frontend (`getSeriesModelComparison`) handles both formats
+> **Data Contract**: See root `CLAUDE.md` for the authoritative metric storage convention (all metrics stored as ratios 0-1). Key frontend functions: `toChampionScore(ratio)` → `(1 - ratio) × 100`, `resolveSeriesErrorRatio(row)` → fallback chain: `wape` → `smape`. The `challengers` field has two formats (old: list with SMAPE, new: dict with WAPE) — `getSeriesModelComparison` handles both.
 
 ### Series Alerts
 - Alert logic in `@/lib/series-alerts.ts`: `getSeriesAlerts()` returns alert types based on WAPE thresholds (>20% = Fiabilité faible, >15% = Fiabilité modérée), gating, drift, model changes
@@ -374,7 +184,7 @@ Conversion functions in `@/lib/metrics.ts`:
 - Trend labels on action cards: Dégradation (red), Stable (neutral), Amélioration (green)
 
 ### Model Labels (`lib/model-labels.ts`)
-- `MODEL_LABELS`: maps 30+ technical model names to French labels and family categories. Recent additions: `rolling_mean_long` → "Moyenne mobile étendue" (family: classical), `tbats` → "TBATS" (family: decomposition)
+- `MODEL_LABELS`: maps 29 technical model names to French labels and family categories. Recent additions: `rolling_mean_long` → "Moyenne mobile étendue" (family: classical), `tbats` → "TBATS" (family: decomposition)
 - `MODEL_FAMILIES`: 4 families — Décomposition avancée (violet), Statistique classique (blue), Machine Learning (emerald), Statistique avancée (amber)
 - `getModelMeta(name)`: returns `{ label, family, familyColor }` — always use this for user-facing model names
 - `getFamilyMeta(name)`: returns `{ hex, bgClass, label }` — for color-coding by family
@@ -411,9 +221,9 @@ Conversion functions in `@/lib/metrics.ts`:
 ### Threshold System (`lib/thresholds/`, `components/dashboard/threshold-settings.tsx`)
 - User-customizable metric color thresholds (green/yellow/red zones) for 5 dashboard metrics:
   - `reliability_score` (Score de fiabilité): ≥80 green, ≥70 yellow
-  - `wape` (Erreur pondérée): ≤15 green, ≤20 yellow
+  - `wape` (Erreur pondérée (WAPE)): ≤15 green, ≤20 yellow
   - `model_score` (Score modèle): ≥80 green, ≥50 yellow
-  - `mase` (Indice prédictif): ≤80 green, ≤100 yellow
+  - `mase` (Indice prédictif (MASE)): ≤80 green, ≤100 yellow
   - `bias` (Biais prévision): ≤5 green, ≤10 yellow
 - `ThresholdsProvider` + `useThresholds()` hook: fetches from `user_thresholds` table, merges with defaults
 - `getColor(metricKey, value)` returns zone ("green" | "yellow" | "red")
@@ -515,13 +325,7 @@ Required (set in `.env.local`):
 - **Current tests**: Unit tests for alert logic (`series-alerts`), alert badge config (`alert-badge`), action card config (`action-card`), threshold calculations (`thresholds`), frequency formatting (`granularity-toggle`)
 - Tests validate: alert thresholds, priority ordering, absence of technical jargon in user-facing labels, color coherence with severity levels, threshold color zone logic, frequency label formatting (`formatFrequencyLabel`), frequency classification (`classifyFreq`)
 
-### Marketing Pages (recent additions)
-
-- **`/contact`** — Split-screen contact form: left side with animated constellation background, right side with premium input components (glow on focus), subject dropdown, message textarea, success state with confetti animation
-- **`/demo`** — Interactive product tour: 4-step timeline (import, analysis, results, actions), auto-play with pause/resume controls, TiltCard hover effects, bento grid of feature highlights
-- **`/features`** — Features overview with redesigned ABC/XYZ and backtesting visuals ("Geometric Showcase" design)
-- **`/mentions-legales`** — Legal mentions page
-- **`/politique-de-confidentialite`** — Privacy policy page (RGPD compliance)
+Marketing pages: `/features`, `/contact`, `/demo`, `/pricing`, `/mentions-legales`, `/politique-de-confidentialite` — see components in `app/` and `components/landing/`.
 
 ### Pricing Configuration (`lib/pricing-config.ts`)
 
@@ -563,30 +367,4 @@ Configured in `next.config.ts` on all routes:
 - Cmd+K palette accessible via keyboard
 - Toasts (sonner) with ARIA live regions
 
-### Results Overview Gauge Cards — MASE "Indice predictif"
-
-The MAPE gauge card has been replaced with a MASE-based "Indice predictif" card:
-- Source: `global_mase` from `job_summaries` (aggregated in backend `build_reports.py`)
-- Display: Lower is better (unlike Score de fiabilite)
-- Conditionally hidden for old jobs where the field is null
-
-### Additional Visualizations (recent additions)
-
-- **`reliability-family-viz.tsx`** — Treemap/pie chart of model families by series count
-- **`score-trend-chart.tsx`** — Line chart tracking score improvements across multiple forecast runs
-- **`reliability-detail-table.tsx`** — Detailed model metrics table for the reliability tab
-
-### Actions Drawer & FAB (recent additions)
-
-- **`actions-drawer.tsx`** — Sheet-based side panel for actions on the results page (alternative to full actions page)
-- **`actions-fab.tsx`** — Floating action button (amber) with urgent count badge, positioned bottom-right on dashboard pages
-
-## Git Structure
-
-Two independent git repositories:
-- Root (`/Lumen_IQ/`): Backend forecast engine on branch `dev`
-- Webapp (`/LumenIQ_webapp/`): Frontend on branch `main`
-
-## No CI/CD
-
-No GitHub Actions or other CI/CD pipelines are configured. Deployment is manual (likely Vercel).
+> **Git & CI**: See root `CLAUDE.md`. No CI/CD configured — deployment is manual (Vercel).

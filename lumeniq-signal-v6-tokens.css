@@ -1,0 +1,348 @@
+/*
+ * ════════════════════════════════════════════════════════════════
+ * LUMENIQ — Signal V6 Design Tokens
+ * Tailwind CSS v4 — @import "tailwindcss" syntax
+ * ════════════════════════════════════════════════════════════════
+ *
+ * USAGE: This file is placed at the repo root. Claude Code should read it
+ *        and integrate its content into src/app/globals.css after
+ *        @import "tailwindcss";
+ *        This file is self-contained: @theme tokens, shadcn :root overrides,
+ *        @font-face declarations, body base styles, and all utility classes.
+ *
+ * WCAG AUDIT STATUS (March 2026):
+ * ✅ All text/bg pairs pass AA (4.5:1) or AA-large (3:1)
+ * ✅ Copper #B45309 on bg: 4.81:1 (AA)
+ * ✅ White on copper buttons: 5.02:1 (AA)
+ * ✅ Tertiary corrected: #8A8A82 (3.33:1, AA-large only)
+ *    → Use tertiary ONLY for non-essential labels/captions
+ *
+ * FONTS:
+ * - Satoshi (Fontshare) — self-host recommended (woff2)
+ *   Download: https://www.fontshare.com/fonts/satoshi
+ * - IBM Plex Mono (Google Fonts or self-host)
+ * ════════════════════════════════════════════════════════════════
+ */
+
+/* ── INSERT AFTER @import "tailwindcss"; IN globals.css ── */
+
+@theme {
+  /* ══════════ COLORS ══════════ */
+
+  /* --- Background --- */
+  --color-bg: #FAFAF9;
+  --color-bg-card: #FFFFFF;
+  --color-bg-surface: #F3F3F0;
+
+  /* --- Border --- */
+  --color-border: #E5E5E0;
+  --color-border-med: #D0D0C8;
+
+  /* --- Copper (Brand Accent) --- */
+  --color-copper: #B45309;          /* Primary accent — AA on bg (4.81:1) */
+  --color-copper-hover: #9A4408;    /* Hover/active — AA+ (6.27:1) */
+  --color-copper-dark: #92400E;     /* High contrast variant — AAA on card (7.09:1) */
+  --color-copper-bg: #FEF3E2;       /* Copper tinted background */
+  --color-copper-bg-soft: #FFFBF5;  /* Very subtle copper tint */
+  --color-copper-ghost: oklch(0.65 0.15 65 / 0.04); /* Hover overlay */
+
+  /* --- Text --- */
+  --color-text: #141414;            /* Primary — AAA on bg (17.64:1) */
+  --color-text-secondary: #5C5C58;  /* Secondary — AA on bg (6.43:1) */
+  --color-text-tertiary: #8A8A82;   /* Tertiary — AA-large only (3.33:1) ⚠️ captions/labels only */
+
+  /* --- Semantic --- */
+  --color-success: #15803D;
+  --color-success-bg: #F0FDF4;
+  --color-warning: #A16207;
+  --color-warning-bg: #FEFCE8;
+  --color-error: #B91C1C;
+  --color-error-bg: #FEF2F2;
+
+  /* --- Chart --- */
+  --color-chart-actual: #141414;
+  --color-chart-forecast: #B45309;
+  --color-chart-grid: #EEEEE8;
+  --color-chart-band: oklch(0.65 0.15 65 / 0.08);
+
+  /* ══════════ TYPOGRAPHY ══════════ */
+
+  --font-display: 'Satoshi', system-ui, -apple-system, sans-serif;
+  --font-body: 'Satoshi', system-ui, -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Code', monospace;
+
+  /* ══════════ SPACING & RADIUS ══════════ */
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-full: 9999px;
+
+  /* ══════════ SHADOWS (Micro-textures — V6) ══════════ */
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
+  --shadow-card-hover: 0 2px 4px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-copper-glow: 0 1px 3px rgba(180, 83, 9, 0.15);
+  --shadow-nav: 0 1px 0 rgba(0, 0, 0, 0.03);
+
+  /* ══════════ BRAND DEVICES ══════════ */
+
+  --horizon-line-width: 3px;
+  --horizon-line-color: var(--color-copper);
+  --section-marker-width: 12px;
+  --section-marker-height: 2px;
+  --dot-grid-size: 16px;
+  --dot-grid-radius: 0.6px;
+  --dot-grid-opacity: 0.35;
+}
+
+/* ══════════ SHADCN/UI THEME OVERRIDES ══════════ */
+/* These HSL values map to Signal V6 palette for shadcn components */
+
+:root {
+  --background: 0 0% 98%;
+  --foreground: 0 0% 8%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 8%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 8%;
+  --primary: 30 92% 37%;          /* copper #B45309 */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 40 6% 94%;         /* surface #F3F3F0 */
+  --secondary-foreground: 0 0% 8%;
+  --muted: 40 6% 94%;
+  --muted-foreground: 40 3% 36%;  /* textSec #5C5C58 */
+  --accent: 40 6% 94%;
+  --accent-foreground: 0 0% 8%;
+  --destructive: 0 72% 42%;       /* error #B91C1C */
+  --destructive-foreground: 0 0% 100%;
+  --border: 40 5% 89%;            /* border #E5E5E0 */
+  --input: 40 5% 89%;
+  --ring: 30 92% 37%;             /* copper focus ring */
+  --radius: 0.5rem;
+}
+
+/* ══════════ FONT FACES ══════════ */
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Variable.woff2') format('woff2');
+  font-weight: 300 900;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-VariableItalic.woff2') format('woff2');
+  font-weight: 300 900;
+  font-display: swap;
+  font-style: italic;
+}
+
+/* IBM Plex Mono — load via <link> in layout.tsx:
+   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+*/
+
+/* ══════════ BASE STYLES ══════════ */
+
+body {
+  font-family: var(--font-body);
+  background: var(--color-bg);
+  color: var(--color-text);
+  /* Grain texture — subtle SVG noise for anti-AI feel */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.015'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* ══════════ UTILITY CLASSES ══════════ */
+
+/* --- Horizon Line (vertical copper accent) --- */
+.horizon-line {
+  width: var(--horizon-line-width);
+  background: var(--horizon-line-color);
+  border-radius: calc(var(--horizon-line-width) / 2);
+}
+
+/* --- Section Marker (small copper dash before titles) --- */
+.section-marker {
+  display: inline-block;
+  width: var(--section-marker-width);
+  height: var(--section-marker-height);
+  background: var(--color-copper);
+  border-radius: 1px;
+}
+
+/* --- Copper Numeral (key metrics) --- */
+.copper-num {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--color-copper);
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.copper-num-mono {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--color-copper);
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Dot Grid Background (forecast zone texture) --- */
+.dot-grid {
+  background-image: radial-gradient(
+    var(--color-text-tertiary) var(--dot-grid-radius),
+    transparent var(--dot-grid-radius)
+  );
+  background-size: var(--dot-grid-size) var(--dot-grid-size);
+  opacity: var(--dot-grid-opacity);
+}
+
+/* --- Grain Texture (subtle SVG noise on bg) --- */
+.grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.015'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* --- Card with Signal styling --- */
+.card-signal {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.card-signal:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* --- Card with copper left accent (active/highlighted) --- */
+.card-signal-accent {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-left: var(--horizon-line-width) solid var(--color-copper);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+/* --- Primary button --- */
+.btn-copper {
+  background: var(--color-copper);
+  color: white;
+  font-family: var(--font-display);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-copper-glow);
+  transition: background 0.15s ease;
+}
+
+.btn-copper:hover {
+  background: var(--color-copper-hover);
+}
+
+/* --- Secondary button (outline) --- */
+.btn-copper-outline {
+  background: transparent;
+  color: var(--color-copper);
+  border: 1.5px solid var(--color-copper);
+  font-family: var(--font-display);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  transition: background 0.15s ease;
+}
+
+.btn-copper-outline:hover {
+  background: var(--color-copper-bg-soft);
+}
+
+/* --- Ghost button --- */
+.btn-ghost {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  font-family: var(--font-body);
+  border-radius: var(--radius-md);
+  transition: background 0.15s ease;
+}
+
+.btn-ghost:hover {
+  background: var(--color-bg-surface);
+}
+
+/* --- Status badges --- */
+.badge-urgent {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--color-error);
+  background: rgba(185, 28, 28, 0.07);
+  padding: 2px 7px;
+  border-radius: 3px;
+}
+
+.badge-warning {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--color-warning);
+  background: rgba(161, 98, 7, 0.07);
+  padding: 2px 7px;
+  border-radius: 3px;
+}
+
+.badge-stable {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--color-success);
+  background: rgba(21, 128, 61, 0.07);
+  padding: 2px 7px;
+  border-radius: 3px;
+}
+
+.badge-copper {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--color-copper);
+  background: rgba(180, 83, 9, 0.07);
+  padding: 2px 7px;
+  border-radius: 3px;
+}
+
+/* --- ABC Classification --- */
+.abc-a { color: var(--color-success); font-family: var(--font-mono); font-weight: 700; }
+.abc-b { color: var(--color-warning); font-family: var(--font-mono); font-weight: 700; }
+.abc-c { color: var(--color-text-tertiary); font-family: var(--font-mono); font-weight: 700; }
+
+/* --- Active nav item --- */
+.nav-active {
+  color: var(--color-copper);
+  font-weight: 600;
+  border-bottom: 2px solid var(--color-copper);
+}
+
+/* ══════════ BRAND VOCABULARY REFERENCE (comments) ══════════
+ *
+ * ✅ USE                          ❌ AVOID
+ * ─────────────────────────────── ──────────────────────────
+ * Mise à jour                     Run / dernier run
+ * Score de fiabilité              WAPE / MAPE
+ * Erreur moyenne                  WAPE moyen
+ * Méthode de calcul               Modèle statistique
+ * RÉFÉRENCE                       AUJOURD'HUI
+ * Prévision                       Forecast / prédiction
+ * Meilleure méthode               Champion model
+ * Sélection automatique           Tournament / cross-val
+ * Évolution des données           Data drift
+ * Ligne de référence              Horizon line (internal)
+ *
+ * ═══════════════════════════════════════════════════════════
+ */
