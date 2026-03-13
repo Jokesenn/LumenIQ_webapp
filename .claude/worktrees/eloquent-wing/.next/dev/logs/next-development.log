@@ -1,0 +1,16 @@
+[00:37:09.618] Server  ERROR   ⨯ Error: Failed to load external module react/jsx-runtime: Error: Cannot find module '/Users/johannsenn/Documents/Git_repo/LumenIQ_webapp/.claude/worktrees/eloquent-wing/node_modules/react/jsx-runtime.js'
+[00:37:09.633] Server  ERROR   ⨯ Error: ENOENT: no such file or directory, open '/Users/johannsenn/Documents/Git_repo/LumenIQ_webapp/.claude/worktrees/eloquent-wing/.next/dev/server/pages/_error/client-build-manifest.json'
+[00:37:09.651] Server  ERROR   Error: ENOENT: no such file or directory, open '/Users/johannsenn/Documents/Git_repo/LumenIQ_webapp/.claude/worktrees/eloquent-wing/.next/dev/server/app/page/build-manifest.json'
+[00:37:09.672] Server  ERROR   Error: ENOENT: no such file or directory, open '/Users/johannsenn/Documents/Git_repo/LumenIQ_webapp/.claude/worktrees/eloquent-wing/.next/dev/server/pages/_app/pages-manifest.json'
+[00:37:09.758] Server  ERROR   Error: ENOENT: no such file or directory, open '/Users/johannsenn/Documents/Git_repo/LumenIQ_webapp/.claude/worktrees/eloquent-wing/.next/dev/server/pages/_app/pages-manifest.json'
+[00:37:10.027] Server  ERROR   PageNotFoundError: Cannot find module for page: route not found /page
+[00:37:10.028] Server  ERROR   Error: ENOENT: no such file or directory, scandir '/Users/johannsenn/Documents/Git_repo/LumenIQ_webapp/.claude/worktrees/eloquent-wing/src/app'
+[00:37:10.038] Server  ERROR   ⨯ Error: ENOENT: no such file or directory, open '/Users/johannsenn/Documents/Git_repo/LumenIQ_webapp/.claude/worktrees/eloquent-wing/.next/dev/server/pages/_app/pages-manifest.json'
+[00:37:10.047] Server  ERROR   Error: ENOENT: no such file or directory, open '/Users/johannsenn/Documents/Git_repo/LumenIQ_webapp/.claude/worktrees/eloquent-wing/.next/dev/server/pages/_app/pages-manifest.json'
+[00:37:10.049] Server  ERROR   Error: ENOENT: no such file or directory, scandir '/Users/johannsenn/Documents/Git_repo/LumenIQ_webapp/.claude/worktrees/eloquent-wing/src/app'
+[00:37:10.049] Server  ERROR   Error: ENOENT: no such file or directory, scandir '/Users/johannsenn/Documents/Git_repo/LumenIQ_webapp/.claude/worktrees/eloquent-wing/src/app'
+[00:37:10.050] Server  ERROR   Error: ENOENT: no such file or directory, scandir '/Users/johannsenn/Documents/Git_repo/LumenIQ_webapp/.claude/worktrees/eloquent-wing/src/app'
+[00:37:10.051] Server  ERROR   Error: ENOENT: no such file or directory, scandir '/Users/johannsenn/Documents/Git_repo/LumenIQ_webapp/.claude/worktrees/eloquent-wing/src/app'
+[00:37:10.052] Server  ERROR   Error: ENOENT: no such file or directory, scandir '/Users/johannsenn/Documents/Git_repo/LumenIQ_webapp/.claude/worktrees/eloquent-wing/src/app'
+[00:37:10.053] Server  ERROR   Error: ENOENT: no such file or directory, scandir '/Users/johannsenn/Documents/Git_repo/LumenIQ_webapp/.claude/worktrees/eloquent-wing/src/app'
+[00:37:25.969] Server  LOG     ✓ Compiled in 22.8s
