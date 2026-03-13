@@ -65,14 +65,14 @@ function StatusBadge({ status }: { status: string }) {
     case "pending":
     case "queued":
       return (
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-zinc-500/10 text-zinc-400 rounded-full text-xs font-semibold">
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-zinc-500/10 text-[var(--color-text-secondary)] rounded-full text-xs font-semibold">
           <Clock size={12} />
           En attente
         </span>
       );
     default:
       return (
-        <span className="px-2.5 py-1 bg-zinc-500/10 text-zinc-500 rounded-full text-xs font-semibold">
+        <span className="px-2.5 py-1 bg-zinc-500/10 text-[var(--color-text-tertiary)] rounded-full text-xs font-semibold">
           {status}
         </span>
       );
@@ -80,7 +80,7 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function ChampionScoreBadge({ score, green, yellow }: { score: number | null; green: number; yellow: number }) {
-  if (score == null) return <span className="text-zinc-600">—</span>;
+  if (score == null) return <span className="text-[var(--color-text-tertiary)]">—</span>;
   return (
     <span
       className={cn(
@@ -107,17 +107,17 @@ export function HistoryContent({ jobs }: HistoryContentProps) {
       <div className="animate-fade">
         <div className="mb-8">
           <h1 className="dash-page-title mb-2">Historique</h1>
-          <p className="text-zinc-400">Toutes vos prévisions passées</p>
+          <p className="text-[var(--color-text-secondary)]">Toutes vos prévisions passées</p>
         </div>
 
         <div className="dash-card p-16 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-zinc-800 flex items-center justify-center mx-auto mb-4">
-            <Inbox size={28} className="text-zinc-600" />
+          <div className="w-16 h-16 rounded-2xl bg-[var(--color-bg-surface)] flex items-center justify-center mx-auto mb-4">
+            <Inbox size={28} className="text-[var(--color-text-tertiary)]" />
           </div>
-          <h2 className="text-lg font-semibold text-white mb-2">
+          <h2 className="text-lg font-semibold text-[var(--color-text)] mb-2">
             Aucune prévision
           </h2>
-          <p className="text-zinc-400 mb-6">
+          <p className="text-[var(--color-text-secondary)] mb-6">
             Lancez votre première prévision pour la voir apparaître ici.
           </p>
           <Link href="/dashboard/forecast">
@@ -132,7 +132,7 @@ export function HistoryContent({ jobs }: HistoryContentProps) {
     <div className="animate-fade">
       <div className="mb-8">
         <h1 className="dash-page-title mb-2">Historique</h1>
-        <p className="text-zinc-400">
+        <p className="text-[var(--color-text-secondary)]">
           Toutes vos prévisions passées ({jobs.length} analyse{jobs.length > 1 ? "s" : ""})
         </p>
       </div>
@@ -141,26 +141,26 @@ export function HistoryContent({ jobs }: HistoryContentProps) {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-white/[0.08]">
-                <th className="px-5 py-4 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+              <tr className="border-b border-[var(--color-border)]">
+                <th className="px-5 py-4 text-left text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider">
                   Fichier
                 </th>
-                <th className="px-5 py-4 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+                <th className="px-5 py-4 text-left text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider">
                   Date
                 </th>
-                <th className="px-5 py-4 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+                <th className="px-5 py-4 text-left text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider">
                   Séries
                 </th>
-                <th className="px-5 py-4 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+                <th className="px-5 py-4 text-left text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider">
                   Statut
                 </th>
-                <th className="px-5 py-4 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+                <th className="px-5 py-4 text-left text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider">
                   Score
                 </th>
-                <th className="px-5 py-4 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+                <th className="px-5 py-4 text-left text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider">
                   Durée
                 </th>
-                <th className="px-5 py-4 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+                <th className="px-5 py-4 text-left text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -169,20 +169,20 @@ export function HistoryContent({ jobs }: HistoryContentProps) {
               {jobs.map((job) => (
                 <tr
                   key={job.id}
-                  className="border-b border-white/[0.08] hover:bg-white/5 transition-colors"
+                  className="border-b border-[var(--color-border)] hover:bg-[var(--color-bg-surface)] transition-colors"
                 >
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
-                      <FileText size={18} className="text-zinc-500 shrink-0" />
-                      <span className="font-medium text-white truncate max-w-[250px]">
+                      <FileText size={18} className="text-[var(--color-text-tertiary)] shrink-0" />
+                      <span className="font-medium text-[var(--color-text)] truncate max-w-[250px]">
                         {job.filename ?? "Sans nom"}
                       </span>
                     </div>
                   </td>
-                  <td className="px-5 py-4 text-zinc-400 text-sm whitespace-nowrap">
+                  <td className="px-5 py-4 text-[var(--color-text-secondary)] text-sm whitespace-nowrap">
                     {formatDate(job.createdAt)}
                   </td>
-                  <td className="px-5 py-4 text-zinc-300 text-sm">
+                  <td className="px-5 py-4 text-[var(--color-text)] text-sm">
                     {job.seriesCount}
                   </td>
                   <td className="px-5 py-4">
@@ -191,7 +191,7 @@ export function HistoryContent({ jobs }: HistoryContentProps) {
                   <td className="px-5 py-4">
                     <ChampionScoreBadge score={job.championScore} green={reliabilityGreen} yellow={reliabilityYellow} />
                   </td>
-                  <td className="px-5 py-4 text-zinc-400 text-sm whitespace-nowrap">
+                  <td className="px-5 py-4 text-[var(--color-text-secondary)] text-sm whitespace-nowrap">
                     {formatDuration(job.duration)}
                   </td>
                   <td className="px-5 py-4">
@@ -212,7 +212,7 @@ export function HistoryContent({ jobs }: HistoryContentProps) {
       </div>
 
       <div className="mt-6 flex justify-center">
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-[var(--color-text-tertiary)]">
           Affichage de {jobs.length} résultat{jobs.length > 1 ? "s" : ""}
         </p>
       </div>

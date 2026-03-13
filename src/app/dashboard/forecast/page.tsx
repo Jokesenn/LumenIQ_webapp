@@ -256,7 +256,7 @@ export default function ForecastPage() {
     <div className="animate-fade">
       <div className="mb-8">
         <h1 className="dash-page-title">Nouvelle prévision</h1>
-        <p className="text-zinc-400">
+        <p className="text-[var(--color-text-secondary)]">
           Mode Express — Import, configuration automatique, résultats en 5 min
         </p>
       </div>
@@ -269,10 +269,10 @@ export default function ForecastPage() {
               <div
                 className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold transition-colors ${
                   step > i + 1
-                    ? "bg-indigo-500/20 text-indigo-400"
+                    ? "bg-amber-700/20 text-amber-700"
                     : step === i + 1
-                    ? "bg-indigo-500 text-white ring-4 ring-indigo-500/20"
-                    : "bg-zinc-800 text-zinc-500"
+                    ? "bg-[var(--color-copper)] text-white ring-4 ring-amber-700/20"
+                    : "bg-[var(--color-bg-surface)] text-[var(--color-text-tertiary)]"
                 }`}
               >
                 {step > i + 1 ? <Check size={14} /> : i + 1}
@@ -280,10 +280,10 @@ export default function ForecastPage() {
               <span
                 className={`text-sm font-display transition-colors ${
                   step === i + 1
-                    ? "font-semibold text-white"
+                    ? "font-semibold text-[var(--color-text)]"
                     : step > i + 1
-                    ? "text-zinc-300"
-                    : "text-zinc-500"
+                    ? "text-[var(--color-text)]"
+                    : "text-[var(--color-text-tertiary)]"
                 }`}
               >
                 {s}
@@ -292,7 +292,7 @@ export default function ForecastPage() {
             {i < 3 && (
               <div
                 className={`flex-1 h-0.5 transition-colors ${
-                  step > i + 1 ? "bg-indigo-500" : "bg-white/10"
+                  step > i + 1 ? "bg-[var(--color-copper)]" : "bg-[var(--color-bg-surface)]"
                 }`}
               />
             )}
@@ -312,8 +312,8 @@ export default function ForecastPage() {
           onClick={() => document.getElementById("file-input")?.click()}
           className={`dash-empty-hex rounded-2xl border-2 border-dashed p-20 text-center cursor-pointer transition-all ${
             isDragging
-              ? "bg-indigo-500/5 border-indigo-500"
-              : "bg-white/5 border-white/10 hover:border-indigo-500/50 hover:bg-white/[0.07]"
+              ? "bg-amber-700/5 border-[var(--color-copper)]"
+              : "bg-[var(--color-bg-surface)] border-[var(--color-border)] hover:border-amber-700/50 hover:bg-[var(--color-bg-surface)]"
           }`}
         >
           <input
@@ -324,17 +324,17 @@ export default function ForecastPage() {
             onChange={handleDrop}
           />
           <div className={`w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 transition-colors ${
-            isDragging ? "bg-indigo-500/15" : "bg-indigo-500/10"
+            isDragging ? "bg-amber-700/15" : "bg-amber-700/10"
           }`}>
-            <Upload size={36} className={`transition-colors ${isDragging ? "text-indigo-400" : "text-zinc-500"}`} />
+            <Upload size={36} className={`transition-colors ${isDragging ? "text-amber-700" : "text-[var(--color-text-tertiary)]"}`} />
           </div>
-          <h2 className="text-xl font-semibold text-white mb-2">
+          <h2 className="text-xl font-semibold text-[var(--color-text)] mb-2">
             Glissez votre fichier ici
           </h2>
-          <p className="text-zinc-400 mb-4">
+          <p className="text-[var(--color-text-secondary)] mb-4">
             ou cliquez pour parcourir
           </p>
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-[var(--color-text-tertiary)]">
             Formats acceptés : CSV, XLSX - Max 50 MB
           </p>
         </div>
@@ -343,11 +343,11 @@ export default function ForecastPage() {
       {/* Step 1.5: Analyzing */}
       {step === 1 && analyzing && (
         <div className="dash-card p-16 text-center">
-          <div className="w-20 h-20 rounded-2xl bg-indigo-500/10 flex items-center justify-center mx-auto mb-6">
-            <Loader2 size={36} className="text-indigo-400 animate-spin" />
+          <div className="w-20 h-20 rounded-2xl bg-amber-700/10 flex items-center justify-center mx-auto mb-6">
+            <Loader2 size={36} className="text-amber-700 animate-spin" />
           </div>
-          <h2 className="text-xl font-semibold text-white mb-2">Analyse en cours...</h2>
-          <p className="text-zinc-400">
+          <h2 className="text-xl font-semibold text-[var(--color-text)] mb-2">Analyse en cours...</h2>
+          <p className="text-[var(--color-text-secondary)]">
             Détection des séries, fréquence et configuration optimale
           </p>
         </div>
@@ -363,11 +363,11 @@ export default function ForecastPage() {
             />
             <div>
               <p className="font-medium text-red-400">Erreur d&apos;analyse</p>
-              <p className="text-sm text-zinc-400 mt-1">
+              <p className="text-sm text-[var(--color-text-secondary)] mt-1">
                 {analyzeError}
               </p>
               {analysis?.errors && analysis.errors.length > 0 && (
-                <ul className="text-sm text-zinc-500 mt-2 list-disc list-inside">
+                <ul className="text-sm text-[var(--color-text-tertiary)] mt-2 list-disc list-inside">
                   {analysis.errors.map((err, i) => (
                     <li key={i}>{err}</li>
                   ))}
@@ -386,14 +386,14 @@ export default function ForecastPage() {
               <Check size={24} className="text-emerald-500" />
             </div>
             <div>
-              <p className="font-semibold text-white">{file?.name || "fichier.csv"}</p>
-              <p className="text-sm text-zinc-500">
+              <p className="font-semibold text-[var(--color-text)]">{file?.name || "fichier.csv"}</p>
+              <p className="text-sm text-[var(--color-text-tertiary)]">
                 Fichier validé - Configuration automatique détectée
               </p>
             </div>
           </div>
 
-          <h3 className="text-base font-semibold text-white mb-4">
+          <h3 className="text-base font-semibold text-[var(--color-text)] mb-4">
             Configuration détectée
           </h3>
 
@@ -445,9 +445,9 @@ export default function ForecastPage() {
             </div>
           )}
 
-          <div className="p-4 bg-white/5 rounded-lg mb-6 border-l-[3px] border-indigo-500">
-            <p className="text-sm text-zinc-400">
-              <strong className="text-white">
+          <div className="p-4 bg-[var(--color-bg-surface)] rounded-lg mb-6 border-l-[3px] border-[var(--color-copper)]">
+            <p className="text-sm text-[var(--color-text-secondary)]">
+              <strong className="text-[var(--color-text)]">
                 Mode Express activé :
               </strong>{" "}
               Configuration optimale détectée automatiquement. Jusqu&apos;à 21
@@ -457,13 +457,13 @@ export default function ForecastPage() {
           </div>
 
           <div className="flex gap-3">
-            <Button variant="ghost" onClick={handleReset} className="text-zinc-400 hover:text-white">
+            <Button variant="ghost" onClick={handleReset} className="text-[var(--color-text-secondary)] hover:text-[var(--color-text)]">
               Retour
             </Button>
             <Button
               onClick={startForecast}
               disabled={userLoading || !user}
-              className="bg-indigo-500 hover:bg-indigo-600 text-white"
+              className="bg-[var(--color-copper)] hover:bg-[var(--color-copper)] text-white"
             >
               {userLoading ? (
                 <>
@@ -486,15 +486,15 @@ export default function ForecastPage() {
         <div className="dash-card p-8">
           {/* Header */}
           <div className="flex items-center gap-4 mb-8">
-            <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center">
+            <div className="w-14 h-14 rounded-2xl bg-amber-700/10 flex items-center justify-center">
               {uploadStep === "error" || isFailed ? (
                 <AlertCircle size={28} className="text-red-400" />
               ) : (
-                <Loader2 size={28} className="text-indigo-400 animate-spin" />
+                <Loader2 size={28} className="text-amber-700 animate-spin" />
               )}
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-white">
+              <h2 className="text-xl font-semibold text-[var(--color-text)]">
                 {uploadStep === "error"
                   ? "Erreur d'upload"
                   : isFailed
@@ -503,7 +503,7 @@ export default function ForecastPage() {
                   ? "Lancement de la prévision..."
                   : "Traitement en cours..."}
               </h2>
-              <p className="text-sm text-zinc-500">
+              <p className="text-sm text-[var(--color-text-tertiary)]">
                 {file?.name || "fichier.csv"}
                 {job?.current_step && ` - ${job.current_step}`}
               </p>
@@ -513,16 +513,16 @@ export default function ForecastPage() {
           {/* Progress bar globale */}
           <div className="mb-8">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm text-zinc-400">
+              <span className="text-sm text-[var(--color-text-secondary)]">
                 Progression globale
               </span>
-              <span className="text-sm font-medium text-white">
+              <span className="text-sm font-medium text-[var(--color-text)]">
                 {Math.round(getTotalProgress())}%
               </span>
             </div>
-            <div className="bg-white/10 rounded-full h-3 overflow-hidden">
+            <div className="bg-[var(--color-bg-surface)] rounded-full h-3 overflow-hidden">
               <div
-                className="h-full bg-indigo-500 rounded-full transition-all duration-500"
+                className="h-full bg-[var(--color-copper)] rounded-full transition-all duration-500"
                 style={{ width: `${getTotalProgress()}%` }}
               />
             </div>
@@ -531,8 +531,8 @@ export default function ForecastPage() {
           {/* Sub-steps */}
           <div className="space-y-4 mb-8">
             {/* Phase 1: Upload */}
-            <div className="p-4 bg-white/5 rounded-lg">
-              <p className="text-xs text-zinc-500 mb-3 uppercase tracking-wide">
+            <div className="p-4 bg-[var(--color-bg-surface)] rounded-lg">
+              <p className="text-xs text-[var(--color-text-tertiary)] mb-3 uppercase tracking-wide">
                 Phase 1 : Envoi
               </p>
               <div className="space-y-3">
@@ -542,7 +542,7 @@ export default function ForecastPage() {
                     status={getUploadSubStepStatus("uploading")}
                   />
                   {uploadStep === "uploading" && (
-                    <span className="text-sm text-zinc-500">
+                    <span className="text-sm text-[var(--color-text-tertiary)]">
                       {Math.round(uploadProgress)}%
                     </span>
                   )}
@@ -560,8 +560,8 @@ export default function ForecastPage() {
 
             {/* Phase 2: Traitement (visible après upload) */}
             {uploadStep === "complete" && (
-              <div className="p-4 bg-white/5 rounded-lg">
-                <p className="text-xs text-zinc-500 mb-3 uppercase tracking-wide">
+              <div className="p-4 bg-[var(--color-bg-surface)] rounded-lg">
+                <p className="text-xs text-[var(--color-text-tertiary)] mb-3 uppercase tracking-wide">
                   Phase 2 : Traitement
                 </p>
                 <div className="space-y-3">
@@ -617,7 +617,7 @@ export default function ForecastPage() {
                     {job?.series_processed != null &&
                       job?.series_count != null &&
                       job.series_count > 0 && (
-                        <span className="text-sm text-zinc-500">
+                        <span className="text-sm text-[var(--color-text-tertiary)]">
                           {job.series_processed}/{job.series_count} séries
                         </span>
                       )}
@@ -639,7 +639,7 @@ export default function ForecastPage() {
                   <p className="font-medium text-red-400">
                     {uploadStep === "error" ? "Erreur d'upload" : "Erreur de traitement"}
                   </p>
-                  <p className="text-sm text-zinc-400 mt-1">
+                  <p className="text-sm text-[var(--color-text-secondary)] mt-1">
                     {uploadError || job?.error_message || "Une erreur est survenue"}
                   </p>
                 </div>
@@ -651,10 +651,10 @@ export default function ForecastPage() {
           <div className="flex gap-3">
             {(uploadStep === "error" || isFailed) && (
               <>
-                <Button variant="ghost" onClick={handleReset} className="text-zinc-400 hover:text-white">
+                <Button variant="ghost" onClick={handleReset} className="text-[var(--color-text-secondary)] hover:text-[var(--color-text)]">
                   Retour
                 </Button>
-                <Button onClick={startForecast} className="bg-indigo-500 hover:bg-indigo-600 text-white">
+                <Button onClick={startForecast} className="bg-[var(--color-copper)] hover:bg-[var(--color-copper)] text-white">
                   Réessayer
                 </Button>
               </>
@@ -667,7 +667,7 @@ export default function ForecastPage() {
                 onClick={() =>
                   router.push(`/dashboard/results?job=${activeJobId}`)
                 }
-                className="text-zinc-300 hover:text-white"
+                className="text-[var(--color-text)] hover:text-[var(--color-text)]"
               >
                 Suivre sur la page résultats
                 <ArrowRight size={18} />
@@ -678,9 +678,9 @@ export default function ForecastPage() {
           {/* Info message */}
           {uploadStep === "complete" && !isFailed && (
             <>
-              <div className="mt-6 p-4 bg-white/5 rounded-lg border-l-[3px] border-indigo-500">
-                <p className="text-sm text-zinc-400">
-                  <strong className="text-white">
+              <div className="mt-6 p-4 bg-[var(--color-bg-surface)] rounded-lg border-l-[3px] border-[var(--color-copper)]">
+                <p className="text-sm text-[var(--color-text-secondary)]">
+                  <strong className="text-[var(--color-text)]">
                     Statut : {getJobStatusLabel(job?.status)}
                   </strong>
                   {" - "}
@@ -700,8 +700,8 @@ export default function ForecastPage() {
             <Check size={36} className="text-emerald-500" />
           </div>
 
-          <h2 className="text-2xl font-bold text-white mb-2">Prévision terminée !</h2>
-          <p className="text-zinc-400 mb-2">
+          <h2 className="text-2xl font-bold text-[var(--color-text)] mb-2">Prévision terminée !</h2>
+          <p className="text-[var(--color-text-secondary)] mb-2">
             {job?.series_count ?? analysis?.seriesCount ?? 0} séries analysées
             {(() => {
               const avgErr = job?.avg_wape ?? job?.avg_smape;
@@ -721,7 +721,7 @@ export default function ForecastPage() {
             })()}
           </p>
           {job?.compute_time_seconds && (
-            <p className="text-sm text-zinc-500 mb-8">
+            <p className="text-sm text-[var(--color-text-tertiary)] mb-8">
               Durée de calcul : {job.compute_time_seconds >= 60
                 ? `${Math.floor(job.compute_time_seconds / 60)} min ${Math.round(job.compute_time_seconds % 60)}s`
                 : `${Math.round(job.compute_time_seconds)}s`}
@@ -730,7 +730,7 @@ export default function ForecastPage() {
           {!(job?.compute_time_seconds) && <div className="mb-8" />}
 
           <div className="flex gap-3 justify-center">
-            <Button variant="ghost" onClick={handleReset} className="text-zinc-400 hover:text-white">
+            <Button variant="ghost" onClick={handleReset} className="text-[var(--color-text-secondary)] hover:text-[var(--color-text)]">
               Nouvelle prévision
             </Button>
             <Button
@@ -740,7 +740,7 @@ export default function ForecastPage() {
                   `/dashboard/results${activeJobId ? `?job=${activeJobId}` : ""}`
                 )
               }
-              className="bg-indigo-500 hover:bg-indigo-600 text-white shimmer"
+              className="bg-[var(--color-copper)] hover:bg-[var(--color-copper)] text-white shimmer"
             >
               Voir les résultats
               <ArrowRight size={20} />
@@ -754,9 +754,9 @@ export default function ForecastPage() {
 
 function ConfigItem({ label, value }: { label: string; value: string }) {
   return (
-    <div className="p-4 bg-white/5 rounded-lg">
-      <p className="text-[11px] text-zinc-500 mb-1">{label}</p>
-      <p className="font-semibold text-sm text-white">{value}</p>
+    <div className="p-4 bg-[var(--color-bg-surface)] rounded-lg">
+      <p className="text-[11px] text-[var(--color-text-tertiary)] mb-1">{label}</p>
+      <p className="font-semibold text-sm text-[var(--color-text)]">{value}</p>
     </div>
   );
 }
@@ -775,10 +775,10 @@ function SubStepIndicator({
           status === "completed"
             ? "bg-emerald-500"
             : status === "in_progress"
-            ? "bg-indigo-500"
+            ? "bg-[var(--color-copper)]"
             : status === "error"
             ? "bg-red-500"
-            : "bg-white/10 border border-white/[0.08]"
+            : "bg-[var(--color-bg-surface)] border border-[var(--color-border)]"
         }`}
       >
         {status === "completed" && <Check size={14} className="text-white" />}
@@ -794,10 +794,10 @@ function SubStepIndicator({
           status === "completed"
             ? "text-emerald-500"
             : status === "in_progress"
-            ? "text-white font-medium"
+            ? "text-[var(--color-text)] font-medium"
             : status === "error"
             ? "text-red-400"
-            : "text-zinc-500"
+            : "text-[var(--color-text-tertiary)]"
         }`}
       >
         {label}

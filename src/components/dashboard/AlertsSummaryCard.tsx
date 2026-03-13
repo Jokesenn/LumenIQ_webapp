@@ -36,7 +36,7 @@ export function AlertsSummaryCard({
   return (
     <div className="dash-card p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-medium text-zinc-400">Alertes</h3>
+        <h3 className="text-sm font-medium text-[var(--color-text-secondary)]">Alertes</h3>
         {counts.gated > 0 && (
           <span className="text-xs text-emerald-400">
             {counts.gated} séries stables
@@ -52,7 +52,7 @@ export function AlertsSummaryCard({
               return (
                 <div key={type} className="flex justify-between items-center">
                   <AlertBadge type={type} />
-                  <span className="text-lg font-bold text-white">
+                  <span className="text-lg font-bold text-[var(--color-text)]">
                     {counts[type]}
                   </span>
                 </div>
@@ -64,7 +64,7 @@ export function AlertsSummaryCard({
             <Button
               variant="ghost"
               size="sm"
-              className="w-full mt-4 justify-between text-zinc-400"
+              className="w-full mt-4 justify-between text-[var(--color-text-secondary)]"
               onClick={onFilterAlerts}
             >
               Voir les séries concernées
@@ -74,7 +74,7 @@ export function AlertsSummaryCard({
         </>
       ) : (
         <div className="text-center py-4">
-          <p className="text-sm text-zinc-400">Aucune alerte</p>
+          <p className="text-sm text-[var(--color-text-secondary)]">Aucune alerte</p>
           <p className="text-xs text-emerald-400 mt-1">
             Toutes les séries sont en bonne santé
           </p>

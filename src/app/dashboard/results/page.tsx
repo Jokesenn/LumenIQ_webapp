@@ -37,19 +37,19 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
     if (!latestJob) {
       return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] animate-fade">
-          <div className="bg-zinc-900/50 rounded-2xl border border-white/[0.08] p-12 text-center max-w-md">
-            <div className="w-16 h-16 rounded-full bg-indigo-500/10 flex items-center justify-center mx-auto mb-6">
-              <Upload size={28} className="text-indigo-400" />
+          <div className="bg-white rounded-2xl border border-[var(--color-border)] p-12 text-center max-w-md">
+            <div className="w-16 h-16 rounded-full bg-amber-700/10 flex items-center justify-center mx-auto mb-6">
+              <Upload size={28} className="text-amber-700" />
             </div>
-            <h2 className="text-xl font-semibold text-white mb-3">
+            <h2 className="text-xl font-semibold text-[var(--color-text)] mb-3">
               Aucun résultat disponible
             </h2>
-            <p className="text-zinc-400 mb-8">
+            <p className="text-[var(--color-text-secondary)] mb-8">
               Lancez votre première prévision pour voir les résultats ici.
             </p>
             <Link
               href="/dashboard/forecast"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition-colors font-medium"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[var(--color-copper)] hover:bg-[var(--color-copper)] text-white rounded-lg transition-colors font-medium"
             >
               <Upload size={18} />
               Nouvelle prévision

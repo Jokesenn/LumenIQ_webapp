@@ -330,7 +330,7 @@ export function SeriesContent({
                   }}
                 />
               </div>
-              <p className="text-sm text-zinc-400 mt-1">Analyse: {job.filename}</p>
+              <p className="text-sm text-[var(--color-text-secondary)] mt-1">Analyse: {job.filename}</p>
             </div>
           </div>
 
@@ -424,28 +424,28 @@ export function SeriesContent({
             </div>
             <div className="flex items-center gap-4 text-sm">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-indigo-500" />
-                <span className="text-zinc-400">Réel</span>
+                <div className="w-3 h-3 rounded-full bg-[var(--color-copper)]" />
+                <span className="text-[var(--color-text-secondary)]">Réel</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-violet-500" />
-                <span className="text-zinc-400">Prévision</span>
+                <div className="w-3 h-3 rounded-full bg-amber-700" />
+                <span className="text-[var(--color-text-secondary)]">Prévision</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-sm bg-violet-500/20 border border-violet-500/30" />
-                <span className="text-zinc-400">Intervalle de confiance</span>
+                <div className="w-3 h-3 rounded-sm bg-amber-700/20 border border-amber-700/30" />
+                <span className="text-[var(--color-text-secondary)]">Intervalle de confiance</span>
               </div>
             </div>
           </div>
           {isAggregated && (
             <div className="flex items-center gap-2 mb-4">
-              <div className="inline-flex rounded-lg bg-zinc-800/50 p-0.5">
+              <div className="inline-flex rounded-lg bg-[var(--color-bg-surface)] p-0.5">
                 <button
                   className={cn(
                     "px-3 py-1 text-xs font-medium rounded-md transition-colors",
                     granularity === "monthly"
-                      ? "bg-indigo-500/20 text-indigo-400"
-                      : "text-zinc-400 hover:text-zinc-300"
+                      ? "bg-amber-700/20 text-amber-700"
+                      : "text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
                   )}
                   onClick={() => setGranularity("monthly")}
                 >
@@ -455,21 +455,21 @@ export function SeriesContent({
                   className={cn(
                     "px-3 py-1 text-xs font-medium rounded-md transition-colors",
                     granularity === "source"
-                      ? "bg-indigo-500/20 text-indigo-400"
-                      : "text-zinc-400 hover:text-zinc-300"
+                      ? "bg-amber-700/20 text-amber-700"
+                      : "text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
                   )}
                   onClick={() => setGranularity("source")}
                 >
                   {formatFrequencyLabel(job?.frequency)}
                 </button>
               </div>
-              <span className="text-xs text-zinc-500">
+              <span className="text-xs text-[var(--color-text-tertiary)]">
                 Données {formatFrequencyLabel(job?.frequency).toLowerCase()} agrégées en mensuel
               </span>
             </div>
           )}
           {(granularity === "source" && loadingSource) ? (
-            <div className="h-[400px] flex items-center justify-center text-zinc-500">
+            <div className="h-[400px] flex items-center justify-center text-[var(--color-text-tertiary)]">
               Chargement des données...
             </div>
           ) : (granularity === "source" && sourceChartData && sourceChartData.length > 0) ? (
@@ -477,7 +477,7 @@ export function SeriesContent({
           ) : chartData.length > 0 ? (
             <AnimatedAreaChart data={chartData} height={400} showConfidence />
           ) : (
-            <div className="h-[400px] flex items-center justify-center text-zinc-500">
+            <div className="h-[400px] flex items-center justify-center text-[var(--color-text-tertiary)]">
               Aucune donnée disponible
             </div>
           )}
@@ -494,7 +494,7 @@ export function SeriesContent({
                 Comparaison des modèles
               </h2>
               {(modelComparison?.modelsTested ?? 0) > 0 && (
-                <span className="text-xs text-zinc-500 bg-white/5 px-2.5 py-1 rounded-full">
+                <span className="text-xs text-[var(--color-text-tertiary)] bg-[var(--color-bg-surface)] px-2.5 py-1 rounded-full">
                   {modelComparison!.modelsTested} testés
                 </span>
               )}
@@ -508,9 +508,9 @@ export function SeriesContent({
                     const maxScore = modelComparison.ranking[0]?.score ?? 100;
                     const barWidth = maxScore > 0 ? (model.score / maxScore) * 100 : 0;
                     const podiumStyles = [
-                      { bg: "bg-indigo-500/10", border: "border-indigo-500/30", badge: "bg-indigo-500 text-white", text: "text-indigo-400", icon: Crown },
-                      { bg: "bg-zinc-800/60", border: "border-zinc-700/50", badge: "bg-zinc-600 text-zinc-200", text: "text-zinc-300", icon: Medal },
-                      { bg: "bg-zinc-800/40", border: "border-zinc-700/30", badge: "bg-zinc-700 text-zinc-300", text: "text-zinc-400", icon: Medal },
+                      { bg: "bg-amber-700/10", border: "border-amber-700/30", badge: "bg-[var(--color-copper)] text-white", text: "text-amber-700", icon: Crown },
+                      { bg: "bg-[var(--color-bg-surface)]", border: "border-[var(--color-border)]", badge: "bg-[var(--color-bg-surface)] text-[var(--color-text)]", text: "text-[var(--color-text)]", icon: Medal },
+                      { bg: "bg-[var(--color-bg-surface)]", border: "border-[var(--color-border)]", badge: "bg-[var(--color-bg-surface)] text-[var(--color-text)]", text: "text-[var(--color-text-secondary)]", icon: Medal },
                     ];
                     const style = podiumStyles[index];
                     const Icon = style.icon;
@@ -530,7 +530,7 @@ export function SeriesContent({
                         <div
                           className={cn(
                             "absolute inset-y-0 left-0 opacity-[0.07]",
-                            index === 0 ? "bg-indigo-400" : "bg-zinc-400",
+                            index === 0 ? "bg-amber-700" : "bg-[var(--color-text-secondary)]",
                           )}
                           style={{ width: `${barWidth}%` }}
                         />
@@ -544,16 +544,16 @@ export function SeriesContent({
                                 {meta.label}
                               </p>
                               <div className="flex items-center gap-2 mt-0.5">
-                                {index === 0 && <span className="text-xs text-indigo-300 font-medium">Champion</span>}
+                                {index === 0 && <span className="text-xs text-amber-700 font-medium">Champion</span>}
                                 <span className={cn("text-xs", meta.familyColor)}>{meta.family}</span>
                               </div>
                             </div>
                           </div>
                           <div className="text-right shrink-0">
-                            <p className="font-semibold text-white tabular-nums">
+                            <p className="font-semibold text-[var(--color-text)] tabular-nums">
                               {model.score != null ? model.score.toFixed(1) : "N/A"}
                             </p>
-                            <p className="text-xs text-zinc-500">/100</p>
+                            <p className="text-xs text-[var(--color-text-tertiary)]">/100</p>
                           </div>
                         </div>
                       </motion.div>
@@ -564,8 +564,8 @@ export function SeriesContent({
                 {/* Autres modèles */}
                 {modelComparison.ranking.length > 3 && (
                   <div>
-                    <p className="text-xs text-zinc-500 mb-2 px-1">Autres modèles</p>
-                    <div className="max-h-[240px] overflow-y-auto space-y-1 pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-700">
+                    <p className="text-xs text-[var(--color-text-tertiary)] mb-2 px-1">Autres modèles</p>
+                    <div className="max-h-[240px] overflow-y-auto space-y-1 pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-[var(--color-border)]">
                       {modelComparison.ranking.slice(3).map((model: ModelRankingEntry, index: number) => {
                         const meta = getModelMeta(model.model);
                         const familyKey = Object.entries(MODEL_FAMILIES).find(
@@ -580,23 +580,23 @@ export function SeriesContent({
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.3 + index * 0.03 }}
-                            className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white/5 transition-colors group"
+                            className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-[var(--color-bg-surface)] transition-colors group"
                           >
-                            <span className="text-xs text-zinc-600 w-5 text-right tabular-nums shrink-0">{model.rank}</span>
+                            <span className="text-xs text-[var(--color-text-tertiary)] w-5 text-right tabular-nums shrink-0">{model.rank}</span>
                             <div
                               className="w-1.5 h-1.5 rounded-full shrink-0"
                               style={{ backgroundColor: familyHex }}
                             />
-                            <p className="text-sm text-zinc-400 group-hover:text-zinc-300 truncate min-w-0 flex-1" title={model.model}>
+                            <p className="text-sm text-[var(--color-text-secondary)] group-hover:text-[var(--color-text)] truncate min-w-0 flex-1" title={model.model}>
                               {meta.label}
                             </p>
-                            <div className="w-16 h-1.5 rounded-full bg-zinc-800 shrink-0 overflow-hidden">
+                            <div className="w-16 h-1.5 rounded-full bg-[var(--color-bg-surface)] shrink-0 overflow-hidden">
                               <div
-                                className="h-full rounded-full bg-zinc-600"
+                                className="h-full rounded-full bg-[var(--color-text-tertiary)]"
                                 style={{ width: `${barWidth}%` }}
                               />
                             </div>
-                            <span className="text-xs text-zinc-500 tabular-nums w-10 text-right shrink-0">
+                            <span className="text-xs text-[var(--color-text-tertiary)] tabular-nums w-10 text-right shrink-0">
                               {model.score != null ? model.score.toFixed(1) : "—"}
                             </span>
                           </motion.div>
@@ -607,7 +607,7 @@ export function SeriesContent({
                 )}
               </div>
             ) : (
-              <div className="text-center py-8 text-zinc-500">
+              <div className="text-center py-8 text-[var(--color-text-tertiary)]">
                 Aucune donnée de comparaison
               </div>
             )}
@@ -622,13 +622,13 @@ export function SeriesContent({
             </h2>
             <div className="space-y-4">
               {/* Status */}
-              <div className="flex items-start gap-3 p-4 rounded-xl bg-white/5">
+              <div className="flex items-start gap-3 p-4 rounded-xl bg-[var(--color-bg-surface)]">
                 <ScoreIcon className={cn("w-5 h-5 mt-0.5", scoreStatus.color)} />
                 <div>
                   <p className={cn("font-medium", scoreStatus.color)}>
                     Qualité: {scoreStatus.label}
                   </p>
-                  <p className="text-sm text-zinc-400 mt-1">
+                  <p className="text-sm text-[var(--color-text-secondary)] mt-1">
                     Score de fiabilité de {championScoreValue.toFixed(1)}/100
                     {championScoreValue >= reliabilityGreen
                       ? " - Excellente précision des prévisions"
@@ -660,7 +660,7 @@ export function SeriesContent({
               {/* Actions riches depuis forecast_actions */}
               {liveActions.length > 0 && (
                 <div className="space-y-2">
-                  <p className="text-xs text-zinc-500 uppercase tracking-wider">
+                  <p className="text-xs text-[var(--color-text-tertiary)] uppercase tracking-wider">
                     Recommandations
                   </p>
                   <AnimatePresence mode="popLayout">
@@ -680,7 +680,7 @@ export function SeriesContent({
               {computedAlerts.length === 0 && liveActions.length === 0 && (
                 <div className="flex items-start gap-3 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
                   <CheckCircle2 className="w-5 h-5 text-emerald-400 mt-0.5" />
-                  <p className="text-sm text-zinc-300">
+                  <p className="text-sm text-[var(--color-text)]">
                     Aucune alerte détectée pour cette série
                   </p>
                 </div>
@@ -688,13 +688,13 @@ export function SeriesContent({
 
               {/* Tags */}
               {behaviorTags.length > 0 && (
-                <div className="pt-4 border-t border-white/5">
-                  <p className="text-xs text-zinc-500 mb-2">Tags de comportement</p>
+                <div className="pt-4 border-t border-[var(--color-border)]">
+                  <p className="text-xs text-[var(--color-text-tertiary)] mb-2">Tags de comportement</p>
                   <div className="flex flex-wrap gap-2">
                     {behaviorTags.map((tag: string, i: number) => (
                       <span
                         key={i}
-                        className="px-2 py-1 text-xs rounded-full bg-white/5 text-zinc-300"
+                        className="px-2 py-1 text-xs rounded-full bg-[var(--color-bg-surface)] text-[var(--color-text)]"
                       >
                         #{tag}
                       </span>

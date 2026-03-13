@@ -39,12 +39,12 @@ export function ForecastOptions({
     <Accordion type="single" collapsible>
       <AccordionItem
         value="options"
-        className="border-b-0 bg-white/5 rounded-lg border border-white/[0.08]"
+        className="border-b-0 bg-[var(--color-bg-surface)] rounded-lg border border-[var(--color-border)]"
       >
         <AccordionTrigger className="px-4 py-3 hover:no-underline">
           <div className="flex items-center gap-2">
-            <Settings2 size={16} className="text-zinc-500" />
-            <span className="text-sm font-medium text-zinc-300">
+            <Settings2 size={16} className="text-[var(--color-text-tertiary)]" />
+            <span className="text-sm font-medium text-[var(--color-text)]">
               Options de calcul
             </span>
           </div>
@@ -52,12 +52,12 @@ export function ForecastOptions({
         <AccordionContent className="px-4 pb-4 pt-0">
           <div className="space-y-0">
             {/* Horizon */}
-            <div className="flex items-center justify-between py-3 border-b border-white/[0.06]">
+            <div className="flex items-center justify-between py-3 border-b border-[var(--color-border)]">
               <div className="flex items-center gap-3">
-                <Target size={16} className="text-indigo-400" />
+                <Target size={16} className="text-amber-700" />
                 <div>
-                  <p className="text-sm text-zinc-300">Horizon de prévision</p>
-                  <p className="text-xs text-zinc-500">
+                  <p className="text-sm text-[var(--color-text)]">Horizon de prévision</p>
+                  <p className="text-xs text-[var(--color-text-tertiary)]">
                     Nombre de périodes à prédire
                   </p>
                 </div>
@@ -66,7 +66,7 @@ export function ForecastOptions({
                 value={String(horizonMonths)}
                 onValueChange={(v) => onHorizonChange(Number(v) as HorizonMonths)}
               >
-                <SelectTrigger className="w-[110px] bg-white/5 border-white/[0.08] text-white text-sm h-8">
+                <SelectTrigger className="w-[110px] bg-[var(--color-bg-surface)] border-[var(--color-border)] text-[var(--color-text)] text-sm h-8">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -80,12 +80,12 @@ export function ForecastOptions({
             </div>
 
             {/* Gating */}
-            <div className="flex items-center justify-between py-3 border-b border-white/[0.06]">
+            <div className="flex items-center justify-between py-3 border-b border-[var(--color-border)]">
               <div className="flex items-center gap-3">
                 <Zap size={16} className="text-amber-400" />
                 <div>
-                  <p className="text-sm text-zinc-300">Mode accéléré</p>
-                  <p className="text-xs text-zinc-500">
+                  <p className="text-sm text-[var(--color-text)]">Mode accéléré</p>
+                  <p className="text-xs text-[var(--color-text-tertiary)]">
                     Pré-sélectionne les modèles les plus adaptés pour un calcul plus rapide
                   </p>
                 </div>
@@ -93,7 +93,7 @@ export function ForecastOptions({
               <Switch
                 checked={gatingEnabled}
                 onCheckedChange={onGatingChange}
-                className="data-[state=checked]:bg-indigo-500"
+                className="data-[state=checked]:bg-[var(--color-copper)]"
               />
             </div>
 
@@ -102,10 +102,10 @@ export function ForecastOptions({
               <div className="flex items-center gap-3">
                 <Shield size={16} className="text-emerald-400" />
                 <div>
-                  <p className="text-sm text-zinc-300">
+                  <p className="text-sm text-[var(--color-text)]">
                     Intervalle de confiance
                   </p>
-                  <p className="text-xs text-zinc-500">
+                  <p className="text-xs text-[var(--color-text-tertiary)]">
                     Largeur des bornes de prévision
                   </p>
                 </div>
@@ -116,7 +116,7 @@ export function ForecastOptions({
                   onConfidenceChange(Number(v) as ConfidenceInterval)
                 }
               >
-                <SelectTrigger className="w-[90px] bg-white/5 border-white/[0.08] text-white text-sm h-8">
+                <SelectTrigger className="w-[90px] bg-[var(--color-bg-surface)] border-[var(--color-border)] text-[var(--color-text)] text-sm h-8">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>

@@ -19,7 +19,7 @@ export function ThemeToggle({ className = "" }: ThemeToggleProps) {
   if (!mounted) {
     return (
       <button
-        className={`p-2 rounded-lg text-zinc-400 hover:text-white transition-colors ${className}`}
+        className={`p-2 rounded-lg text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors ${className}`}
         aria-label="Toggle theme"
       >
         <Sun size={20} />
@@ -30,7 +30,7 @@ export function ThemeToggle({ className = "" }: ThemeToggleProps) {
   return (
     <button
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className={`p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-white/5 transition-colors ${className}`}
+      className={`p-2 rounded-lg text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-surface)] transition-colors ${className}`}
       aria-label="Toggle theme"
     >
       {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}

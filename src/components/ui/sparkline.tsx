@@ -90,7 +90,7 @@ export function Sparkline({
     return (
       <span
         className={cn(
-          "text-xs text-zinc-600 inline-flex items-center justify-center",
+          "text-xs text-[var(--color-text-tertiary)] inline-flex items-center justify-center",
           className
         )}
         style={{ width, height }}
@@ -112,7 +112,7 @@ export function Sparkline({
       {paths.forecastAreaPath && (
         <path
           d={paths.forecastAreaPath}
-          fill="rgba(139, 92, 246, 0.15)"
+          fill="rgba(180, 83, 9, 0.15)"
           stroke="none"
         />
       )}
@@ -120,7 +120,7 @@ export function Sparkline({
         <path
           d={paths.historyPath}
           fill="none"
-          stroke="rgba(255, 255, 255, 0.6)"
+          stroke="rgba(87, 83, 78, 0.6)"
           strokeWidth={1.5}
           strokeLinejoin="round"
           strokeLinecap="round"
@@ -130,7 +130,7 @@ export function Sparkline({
         <path
           d={paths.forecastPath}
           fill="none"
-          stroke="rgba(139, 92, 246, 0.6)"
+          stroke="rgba(180, 83, 9, 0.6)"
           strokeWidth={1.5}
           strokeDasharray="3 2"
           strokeLinejoin="round"

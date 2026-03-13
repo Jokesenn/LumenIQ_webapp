@@ -31,7 +31,7 @@ export function BadgeWithTooltip({
       <TooltipContent
         side={side}
         sideOffset={8}
-        className="max-w-xs bg-[#1e1e2e] border border-white/10 text-white p-3"
+        className="max-w-xs bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text)] p-3"
       >
         {tooltip}
       </TooltipContent>

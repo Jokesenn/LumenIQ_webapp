@@ -225,7 +225,7 @@ function ReliabilityBar({
 
   return (
     <div className="space-y-1.5">
-      <div className="flex h-2 rounded-full overflow-hidden bg-zinc-800">
+      <div className="flex h-2 rounded-full overflow-hidden bg-[var(--color-bg-surface)]">
         {segments.map(
           (seg) =>
             seg.count > 0 && (
@@ -237,7 +237,7 @@ function ReliabilityBar({
             )
         )}
       </div>
-      <div className="flex gap-3 text-[10px] text-zinc-500">
+      <div className="flex gap-3 text-[10px] text-[var(--color-text-tertiary)]">
         {segments.map(
           (seg) =>
             seg.count > 0 && (
@@ -259,15 +259,15 @@ function AbcBar({ counts }: { counts: { A: number; B: number; C: number } }) {
   if (total === 0) return null;
 
   const segments = [
-    { key: "A", count: counts.A, color: "bg-violet-500", label: "A" },
-    { key: "B", count: counts.B, color: "bg-indigo-400", label: "B" },
+    { key: "A", count: counts.A, color: "bg-amber-700", label: "A" },
+    { key: "B", count: counts.B, color: "bg-amber-700/60", label: "B" },
     { key: "C", count: counts.C, color: "bg-zinc-500", label: "C" },
   ];
 
   return (
     <div className="flex items-center gap-2 text-[11px]">
-      <span className="text-zinc-500 shrink-0">ABC</span>
-      <div className="flex h-1.5 rounded-full overflow-hidden bg-zinc-800 flex-1">
+      <span className="text-[var(--color-text-tertiary)] shrink-0">ABC</span>
+      <div className="flex h-1.5 rounded-full overflow-hidden bg-[var(--color-bg-surface)] flex-1">
         {segments.map(
           (seg) =>
             seg.count > 0 && (
@@ -279,7 +279,7 @@ function AbcBar({ counts }: { counts: { A: number; B: number; C: number } }) {
             )
         )}
       </div>
-      <div className="flex gap-2 text-zinc-500 shrink-0">
+      <div className="flex gap-2 text-[var(--color-text-tertiary)] shrink-0">
         {segments.map((seg) => (
           <span key={seg.key}>
             {seg.count}
@@ -521,30 +521,30 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
       : "—";
 
     return (
-      <div className="rounded-xl border border-zinc-700 bg-zinc-900/95 backdrop-blur-sm px-3 sm:px-4 py-2.5 sm:py-3 shadow-xl text-xs sm:text-sm space-y-1 sm:space-y-1.5 max-w-[260px] sm:max-w-xs">
-        <p className="font-semibold text-white truncate">{d.series_id}</p>
+      <div className="rounded-xl border border-[var(--color-border)] bg-white backdrop-blur-sm px-3 sm:px-4 py-2.5 sm:py-3 shadow-xl text-xs sm:text-sm space-y-1 sm:space-y-1.5 max-w-[260px] sm:max-w-xs">
+        <p className="font-semibold text-[var(--color-text)] truncate">{d.series_id}</p>
         <div className="flex items-center gap-2">
           <span
             className="w-2.5 h-2.5 rounded-full inline-block"
             style={{ backgroundColor: clusterDef?.color }}
           />
-          <span className="text-zinc-300">{clusterDef?.label}</span>
+          <span className="text-[var(--color-text)]">{clusterDef?.label}</span>
         </div>
-        <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-zinc-400">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[var(--color-text-secondary)]">
           <span>Fiabilité</span>
-          <span className="text-right text-white font-medium">
+          <span className="text-right text-[var(--color-text)] font-medium">
             {d.reliability.toFixed(0)}/100
           </span>
           <span>Volume prévu</span>
-          <span className="text-right text-white font-medium">
+          <span className="text-right text-[var(--color-text)] font-medium">
             {d.volume.toLocaleString("fr-FR", { maximumFractionDigits: 0 })}
           </span>
           <span>Méthode</span>
-          <span className="text-right text-white font-medium truncate">
+          <span className="text-right text-[var(--color-text)] font-medium truncate">
             {modelLabel}
           </span>
           <span>Classe</span>
-          <span className="text-right text-white font-medium">
+          <span className="text-right text-[var(--color-text)] font-medium">
             {d.abc_class ?? "—"}
             {d.xyz_class ?? ""}
           </span>
@@ -562,22 +562,22 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-[var(--color-text)] flex items-center gap-2">
             Vue Portfolio
             <HelpTooltip termKey="portfolio" />
           </h2>
-          <p className="text-sm text-zinc-400 mt-1">
+          <p className="text-sm text-[var(--color-text-secondary)] mt-1">
             {enrichedSeries.length} produits analysés
             {activeCluster && (
               <>
                 {" "}
                 &middot; Filtre :{" "}
-                <span className="text-white">
+                <span className="text-[var(--color-text)]">
                   {CLUSTER_MAP.get(activeCluster)?.label}
                 </span>
                 <button
                   onClick={() => handleSetActiveCluster(null)}
-                  className="ml-2 text-indigo-400 hover:text-indigo-300 underline"
+                  className="ml-2 text-amber-700 hover:text-amber-600 underline"
                 >
                   Tout afficher
                 </button>
@@ -587,14 +587,14 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
         </div>
 
         {/* Toggle axe X — masqué sur mobile */}
-        <div className="hidden sm:flex items-center gap-2 bg-zinc-800/50 rounded-lg p-1">
+        <div className="hidden sm:flex items-center gap-2 bg-[var(--color-bg-surface)] rounded-lg p-1">
           <button
             onClick={() => handleSetXAxis("forecast_sum")}
             className={cn(
               "px-3 py-1.5 rounded-md text-sm transition-colors",
               xAxis === "forecast_sum"
-                ? "bg-zinc-700 text-white"
-                : "text-zinc-400 hover:text-zinc-200"
+                ? "bg-white text-[var(--color-text)] shadow-sm"
+                : "text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
             )}
           >
             Volume total
@@ -604,8 +604,8 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
             className={cn(
               "px-3 py-1.5 rounded-md text-sm transition-colors",
               xAxis === "forecast_avg"
-                ? "bg-zinc-700 text-white"
-                : "text-zinc-400 hover:text-zinc-200"
+                ? "bg-white text-[var(--color-text)] shadow-sm"
+                : "text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
             )}
           >
             Volume moyen
@@ -615,15 +615,15 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
 
       {/* Scatterplot */}
       <FadeIn delay={0.1}>
-      <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-4 lg:p-6">
+      <div className="rounded-2xl border border-[var(--color-border)] bg-white p-4 lg:p-6">
         {/* Bouton reset zoom */}
         {zoomDomain && (
           <div className="flex justify-end mb-3">
             <button
               onClick={() => setZoomDomain(null)}
               className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs
-                         bg-zinc-800 border border-zinc-700 text-zinc-300
-                         hover:bg-zinc-700 hover:text-white transition-colors
+                         bg-[var(--color-bg-surface)] border border-[var(--color-border)] text-[var(--color-text)]
+                         hover:bg-[var(--color-bg-surface)] hover:text-[var(--color-text)] transition-colors
                          w-full sm:w-auto"
             >
               <ZoomOut className="w-3.5 h-3.5" />
@@ -689,13 +689,13 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
             {/* Seuil fiabilite personnalise */}
             <ReferenceLine
               y={reliabilityThreshold}
-              stroke="#6366f1"
+              stroke="#b45309"
               strokeDasharray="6 3"
               strokeOpacity={0.5}
               label={{
                 value: `Seuil fiabilité ${reliabilityThreshold}%`,
                 position: "insideTopRight",
-                fill: "#6366f1",
+                fill: "#b45309",
                 fontSize: 11,
               }}
             />
@@ -703,7 +703,7 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
             {/* Mediane volume */}
             <ReferenceLine
               x={medianVolume}
-              stroke="#6366f1"
+              stroke="#b45309"
               strokeDasharray="6 3"
               strokeOpacity={0.3}
             />
@@ -731,7 +731,7 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
         </div>
 
         {/* Legende quadrants — masquée sur mobile */}
-        <div className="hidden sm:grid grid-cols-2 gap-x-8 mt-2 text-xs text-zinc-500 px-4">
+        <div className="hidden sm:grid grid-cols-2 gap-x-8 mt-2 text-xs text-[var(--color-text-tertiary)] px-4">
           <span className="text-left">&larr; Petits volumes</span>
           <span className="text-right">Gros volumes &rarr;</span>
         </div>
@@ -755,7 +755,7 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
                 "flex items-center gap-2 px-3 py-2 rounded-xl border text-sm transition-all shrink-0",
                 isActive
                   ? cluster.colorClass + " border-current"
-                  : "border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-zinc-200"
+                  : "border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-border)] hover:text-[var(--color-text)]"
               )}
             >
               <span
@@ -766,7 +766,7 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
               <span
                 className={cn(
                   "text-xs px-1.5 py-0.5 rounded-full",
-                  isActive ? "bg-white/10" : "bg-zinc-800"
+                  isActive ? "bg-[var(--color-bg-surface)]" : "bg-[var(--color-bg-surface)]"
                 )}
               >
                 {stats.count}
@@ -875,10 +875,10 @@ function ClusterCard({
         }
       }}
       className={cn(
-        "rounded-2xl border p-4 text-left transition-all hover:border-zinc-600 cursor-pointer",
+        "rounded-2xl border p-4 text-left transition-all hover:border-[var(--color-border)] cursor-pointer",
         isHighlighted
-          ? "border-indigo-500/50 bg-indigo-500/5"
-          : "border-zinc-800 bg-zinc-900/50"
+          ? "border-amber-700/50 bg-amber-700/5"
+          : "border-[var(--color-border)] bg-white"
       )}
     >
       {/* Header */}
@@ -888,11 +888,11 @@ function ClusterCard({
             className="w-3 h-3 rounded-full"
             style={{ backgroundColor: cluster.color }}
           />
-          <span className="font-semibold text-white text-sm">
+          <span className="font-semibold text-[var(--color-text)] text-sm">
             {cluster.icon} {cluster.label}
           </span>
         </div>
-        <span className="text-xs text-zinc-500">
+        <span className="text-xs text-[var(--color-text-tertiary)]">
           {stats.count} produit{stats.count > 1 ? "s" : ""}
         </span>
       </div>
@@ -905,27 +905,27 @@ function ClusterCard({
         )}
       >
         <div>
-          <p className="text-lg font-bold text-white">
+          <p className="text-lg font-bold text-[var(--color-text)]">
             {avgReliability.toFixed(0)}
           </p>
-          <p className="text-[11px] text-zinc-500">Fiabilité</p>
+          <p className="text-[11px] text-[var(--color-text-tertiary)]">Fiabilité</p>
         </div>
         <div>
-          <p className="text-lg font-bold text-white">{volumePct}%</p>
-          <p className="text-[11px] text-zinc-500">du volume</p>
+          <p className="text-lg font-bold text-[var(--color-text)]">{volumePct}%</p>
+          <p className="text-[11px] text-[var(--color-text-tertiary)]">du volume</p>
         </div>
         <div>
-          <p className="text-sm font-medium text-white truncate">
+          <p className="text-sm font-medium text-[var(--color-text)] truncate">
             {topModelLabel}
           </p>
-          <p className="text-[11px] text-zinc-500">Méthode</p>
+          <p className="text-[11px] text-[var(--color-text-tertiary)]">Méthode</p>
         </div>
         {hasAlerts && (
           <div>
             <p className="text-lg font-bold text-amber-400">
               {stats.alertCount}
             </p>
-            <p className="text-[11px] text-zinc-500">Alertes</p>
+            <p className="text-[11px] text-[var(--color-text-tertiary)]">Alertes</p>
           </div>
         )}
       </div>
@@ -943,7 +943,7 @@ function ClusterCard({
       {/* Series a surveiller */}
       {hasAtRisk && (
         <div className="space-y-1 mb-3">
-          <p className="text-[11px] text-zinc-500 font-medium">
+          <p className="text-[11px] text-[var(--color-text-tertiary)] font-medium">
             ⚠️ À surveiller
           </p>
           <div className="flex flex-wrap gap-1.5">
@@ -970,7 +970,7 @@ function ClusterCard({
       )}
 
       {/* Conseil business */}
-      <p className="text-xs text-zinc-400 leading-relaxed">
+      <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
         {cluster.advice}
       </p>
 
@@ -980,8 +980,8 @@ function ClusterCard({
           e.stopPropagation();
           onNavigateToSeries(cluster.id);
         }}
-        className="w-full mt-3 pt-3 border-t border-zinc-800 flex items-center justify-center gap-2
-                   text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
+        className="w-full mt-3 pt-3 border-t border-[var(--color-border)] flex items-center justify-center gap-2
+                   text-xs text-amber-700 hover:text-amber-600 transition-colors"
       >
         Voir les {stats.count} produit{stats.count > 1 ? "s" : ""}
         <ArrowRight className="w-3 h-3" />

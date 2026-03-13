@@ -52,8 +52,8 @@ export function ActiveFiltersBar({
   }
 
   return (
-    <div className="flex items-center gap-2 mb-4 px-3 py-2 bg-white/5 rounded-lg flex-wrap">
-      <span className="text-sm text-zinc-500">Filtres :</span>
+    <div className="flex items-center gap-2 mb-4 px-3 py-2 bg-[var(--color-bg-surface)] rounded-lg flex-wrap">
+      <span className="text-sm text-[var(--color-text-tertiary)]">Filtres :</span>
 
       {selectedCell && (
         <FilterChip
@@ -120,7 +120,7 @@ export function ActiveFiltersBar({
       )}
 
       <button
-        className="ml-auto text-xs text-zinc-500 hover:text-white transition-colors"
+        className="ml-auto text-xs text-[var(--color-text-tertiary)] hover:text-[var(--color-text)] transition-colors"
         onClick={clearAll}
       >
         Tout effacer
@@ -137,11 +137,11 @@ function FilterChip({
   onRemove: () => void
 }) {
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-white/10 text-zinc-300 rounded-md">
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-[var(--color-bg-surface)] text-[var(--color-text)] rounded-md">
       {label}
       <button
         onClick={onRemove}
-        className="hover:text-white transition-colors"
+        className="hover:text-[var(--color-text)] transition-colors"
         aria-label={`Retirer le filtre ${label}`}
       >
         <X className="size-3" />

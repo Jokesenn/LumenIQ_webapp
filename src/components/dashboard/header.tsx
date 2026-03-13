@@ -13,9 +13,9 @@ interface HeaderProps {
 }
 
 const planBadgeStyles: Record<string, string> = {
-  standard: "bg-zinc-800 text-zinc-300",
-  ml: "bg-indigo-500/20 text-indigo-400",
-  premium: "bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-400",
+  standard: "bg-[var(--color-bg-surface)] text-[var(--color-text-secondary)]",
+  ml: "bg-amber-700/10 text-amber-700",
+  premium: "bg-gradient-to-r from-amber-500/15 to-orange-500/15 text-amber-700",
 };
 
 export function Header({ onToggleSidebar, onOpenCommand }: HeaderProps) {
@@ -46,11 +46,11 @@ export function Header({ onToggleSidebar, onOpenCommand }: HeaderProps) {
   const usagePercent = Math.min((seriesUsed / seriesQuota) * 100, 100);
 
   return (
-    <header className="px-8 py-4 border-b border-white/[0.08] flex justify-between items-center bg-zinc-950/60 backdrop-blur-2xl sticky top-0 z-10">
+    <header className="px-8 py-4 border-b border-[var(--color-border)] flex justify-between items-center bg-white/80 backdrop-blur-xl shadow-[var(--shadow-nav)] sticky top-0 z-10">
       <div className="flex items-center gap-3">
         <button
           onClick={onToggleSidebar}
-          className="p-2 text-zinc-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors duration-200"
+          className="p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-surface)] rounded-lg transition-colors duration-200"
         >
           <Menu size={20} />
         </button>
@@ -64,7 +64,7 @@ export function Header({ onToggleSidebar, onOpenCommand }: HeaderProps) {
         {/* Plan badge */}
         <div
           className={`px-3 py-1.5 rounded-md text-xs font-medium font-display ${
-            loading ? "bg-zinc-800 text-zinc-500" : planBadgeStyles[plan] ?? planBadgeStyles.standard
+            loading ? "bg-[var(--color-bg-surface)] text-[var(--color-text-tertiary)]" : planBadgeStyles[plan] ?? planBadgeStyles.standard
           }`}
         >
           {loading ? (
@@ -77,13 +77,13 @@ export function Header({ onToggleSidebar, onOpenCommand }: HeaderProps) {
         {/* Usage indicator */}
         {!loading && (
           <div className="flex items-center gap-3">
-            <div className="w-24 h-1.5 bg-white/10 rounded-full overflow-hidden">
+            <div className="w-24 h-1.5 bg-[var(--color-border)] rounded-full overflow-hidden">
               <div
-                className="h-full bg-indigo-500 rounded-full transition-all duration-500"
+                className="h-full bg-[var(--color-copper)] rounded-full transition-all duration-500"
                 style={{ width: `${usagePercent}%` }}
               />
             </div>
-            <span className="text-sm text-zinc-400">
+            <span className="text-sm text-[var(--color-text-secondary)]">
               {seriesUsed}/{seriesQuota}
             </span>
           </div>
@@ -93,33 +93,33 @@ export function Header({ onToggleSidebar, onOpenCommand }: HeaderProps) {
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="w-9 h-9 rounded-full bg-indigo-500/20 flex items-center justify-center text-sm font-semibold text-indigo-400 hover:bg-indigo-500/30 transition-colors ring-2 ring-indigo-500/20 hover:ring-indigo-500/40"
+            className="w-9 h-9 rounded-full bg-amber-700/10 flex items-center justify-center text-sm font-semibold text-amber-700 hover:bg-amber-700/20 transition-colors ring-2 ring-amber-700/20 hover:ring-amber-700/40"
             title={profile?.full_name ?? user?.email ?? ""}
           >
             {initials}
           </button>
 
           {dropdownOpen && (
-            <div className="absolute right-0 top-12 w-56 bg-zinc-900/90 backdrop-blur-xl border border-white/[0.1] rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.5)] py-2 z-50">
-              <div className="px-4 py-2.5 border-b border-white/[0.08]">
-                <p className="text-sm font-medium text-white truncate">
+            <div className="absolute right-0 top-12 w-56 bg-white border border-[var(--color-border)] rounded-xl shadow-[var(--shadow-card)] py-2 z-50">
+              <div className="px-4 py-2.5 border-b border-[var(--color-border)]">
+                <p className="text-sm font-medium text-[var(--color-text)] truncate">
                   {profile?.full_name ?? "Utilisateur"}
                 </p>
-                <p className="text-xs text-zinc-500 truncate">
+                <p className="text-xs text-[var(--color-text-tertiary)] truncate">
                   {user?.email}
                 </p>
               </div>
               <Link
                 href="/dashboard/settings"
                 onClick={() => setDropdownOpen(false)}
-                className="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white transition-colors"
+                className="flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-surface)] hover:text-[var(--color-text)] transition-colors"
               >
                 <Settings size={16} />
                 Paramètres
               </Link>
               <button
                 onClick={() => { setDropdownOpen(false); logout(); }}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-400 hover:bg-red-500/10 hover:text-red-400 transition-colors"
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--color-text-secondary)] hover:bg-red-500/10 hover:text-red-400 transition-colors"
               >
                 <LogOut size={16} />
                 Déconnexion

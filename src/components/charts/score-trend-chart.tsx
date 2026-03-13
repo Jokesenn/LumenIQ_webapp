@@ -28,12 +28,12 @@ function CustomTooltip({ active, payload }: { active?: boolean; payload?: Array<
   const dateStr = d.date ? format(parseISO(d.date), "dd MMM yyyy", { locale: fr }) : "—";
 
   return (
-    <div className="bg-zinc-900/95 backdrop-blur-xl border border-white/10 rounded-xl px-3 py-2 shadow-xl">
-      <p className="text-xs text-zinc-400">{dateStr}</p>
-      <p className="text-sm font-semibold text-white mt-0.5">
-        Score {d.score.toFixed(1)}<span className="text-zinc-500">/100</span>
+    <div className="bg-white backdrop-blur-xl border border-[var(--color-border)] rounded-xl px-3 py-2 shadow-xl">
+      <p className="text-xs text-[var(--color-text-secondary)]">{dateStr}</p>
+      <p className="text-sm font-semibold text-[var(--color-text)] mt-0.5">
+        Score {d.score.toFixed(1)}<span className="text-[var(--color-text-tertiary)]">/100</span>
       </p>
-      <p className="text-xs text-zinc-500 mt-0.5">{d.seriesCount} series</p>
+      <p className="text-xs text-[var(--color-text-tertiary)] mt-0.5">{d.seriesCount} series</p>
     </div>
   );
 }
@@ -47,10 +47,10 @@ export function ScoreTrendChart({ data, height = 250, className }: ScoreTrendCha
         transition={{ duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }}
         className={cn("flex flex-col items-center justify-center gap-3 py-12", className)}
       >
-        <div className="rounded-full bg-indigo-500/10 p-3">
-          <TrendingUp className="text-indigo-400" size={24} />
+        <div className="rounded-full bg-amber-700/10 p-3">
+          <TrendingUp className="text-amber-700" size={24} />
         </div>
-        <p className="text-sm text-zinc-400 text-center max-w-[240px]">
+        <p className="text-sm text-[var(--color-text-secondary)] text-center max-w-[240px]">
           Lancez au moins 2 previsions pour voir la tendance
         </p>
       </motion.div>
@@ -80,8 +80,8 @@ export function ScoreTrendChart({ data, height = 250, className }: ScoreTrendCha
         <AreaChart data={chartData} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
           <defs>
             <linearGradient id="scoreFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#818cf8" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#818cf8" stopOpacity={0} />
+              <stop offset="0%" stopColor="#B45309" stopOpacity={0.3} />
+              <stop offset="95%" stopColor="#B45309" stopOpacity={0} />
             </linearGradient>
           </defs>
 
@@ -106,13 +106,13 @@ export function ScoreTrendChart({ data, height = 250, className }: ScoreTrendCha
 
           <Tooltip
             content={<CustomTooltip />}
-            cursor={{ stroke: "rgba(255,255,255,0.1)", strokeWidth: 1 }}
+            cursor={{ stroke: "rgba(0,0,0,0.1)", strokeWidth: 1 }}
           />
 
           <Area
             type="monotone"
             dataKey="score"
-            stroke="#818cf8"
+            stroke="#B45309"
             strokeWidth={2.5}
             fill="url(#scoreFill)"
             dot={({ cx, cy, index }: { cx?: number; cy?: number; index?: number }) => {
@@ -125,16 +125,16 @@ export function ScoreTrendChart({ data, height = 250, className }: ScoreTrendCha
                   cx={cx}
                   cy={cy}
                   r={5}
-                  fill="#818cf8"
-                  stroke="#1a1a2e"
+                  fill="#B45309"
+                  stroke="#ffffff"
                   strokeWidth={2}
                 />
               );
             }}
             activeDot={{
               r: 5,
-              fill: "#818cf8",
-              stroke: "#1a1a2e",
+              fill: "#B45309",
+              stroke: "#ffffff",
               strokeWidth: 2,
             }}
             animationDuration={1200}

@@ -50,14 +50,14 @@ function formatDuration(seconds: number | null): string {
 }
 
 function getScoreColor(score: number | null, green: number, yellow: number): string {
-  if (score == null) return "text-zinc-500";
+  if (score == null) return "text-[var(--color-text-tertiary)]";
   if (score >= green) return "text-emerald-400";
   if (score >= yellow) return "text-amber-400";
   return "text-red-400";
 }
 
 function getScoreBg(score: number | null, green: number, yellow: number): string {
-  if (score == null) return "bg-zinc-500/10";
+  if (score == null) return "bg-[var(--color-bg-surface)]";
   if (score >= green) return "bg-emerald-500/10";
   if (score >= yellow) return "bg-amber-500/10";
   return "bg-red-500/10";
@@ -121,12 +121,12 @@ export function DashboardContent({
             <h1 className="dash-page-title">
               Bonjour {stats.userName}
             </h1>
-            <p className="text-zinc-400 mt-1">
+            <p className="text-[var(--color-text-secondary)] mt-1">
               {lastForecastText ?? "Lancez votre première prévision"}
             </p>
           </div>
           <Link href="/dashboard/forecast">
-            <Button className="bg-indigo-500 hover:bg-indigo-600 glow-accent">
+            <Button className="bg-[var(--color-copper)] hover:bg-[var(--color-copper)] glow-accent">
               <Plus className="w-4 h-4 mr-2" />
               Nouvelle prévision
             </Button>
@@ -169,8 +169,8 @@ export function DashboardContent({
         <StaggerItem>
           <div className="p-4 sm:p-6 rounded-2xl dash-card h-full flex flex-col justify-between">
             <div className="flex items-start justify-between mb-3">
-              <div className="p-3 rounded-xl bg-indigo-500/10">
-                <Gauge className="w-5 h-5 text-indigo-400" />
+              <div className="p-3 rounded-xl bg-amber-700/10">
+                <Gauge className="w-5 h-5 text-amber-700" />
               </div>
               {quotaPercentage >= 85 && (
                 <span className="text-xs font-medium text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full">
@@ -180,10 +180,10 @@ export function DashboardContent({
             </div>
             <div className="space-y-2">
               <div className="flex items-center gap-1">
-                <p className="text-sm text-zinc-400">Quota</p>
+                <p className="text-sm text-[var(--color-text-secondary)]">Quota</p>
               </div>
-              <p className="text-2xl sm:text-3xl font-bold text-white tabular-nums">
-                {stats.quota.used}<span className="text-zinc-500 text-lg font-normal">/{stats.quota.limit}</span>
+              <p className="text-2xl sm:text-3xl font-bold text-[var(--color-text)] tabular-nums">
+                {stats.quota.used}<span className="text-[var(--color-text-tertiary)] text-lg font-normal">/{stats.quota.limit}</span>
               </p>
               <QuotaProgress
                 used={stats.quota.used}
@@ -191,7 +191,7 @@ export function DashboardContent({
                 label={`Plan ${stats.quota.plan}`}
                 size="sm"
               />
-              <p className="text-xs text-zinc-500">
+              <p className="text-xs text-[var(--color-text-tertiary)]">
                 Reset dans {stats.daysUntilReset}j
               </p>
             </div>
@@ -208,7 +208,7 @@ export function DashboardContent({
               <h2 className="dash-section-title">Évolution de la fiabilité</h2>
               <HelpTooltip termKey="championScore" />
             </div>
-            <p className="text-sm text-zinc-500 mb-4">10 dernières analyses</p>
+            <p className="text-sm text-[var(--color-text-tertiary)] mb-4">10 dernières analyses</p>
             <ScoreTrendChart data={trendData} height={250} />
           </div>
         </FadeIn>
@@ -219,7 +219,7 @@ export function DashboardContent({
             <div className="flex items-center justify-between mb-4">
               <h2 className="dash-section-title">Actions prioritaires</h2>
               {urgentActions.total > 0 && (
-                <span className="text-xs font-medium text-white bg-indigo-500/20 text-indigo-300 px-2.5 py-1 rounded-full tabular-nums">
+                <span className="text-xs font-medium bg-amber-700/20 text-amber-700 px-2.5 py-1 rounded-full tabular-nums">
                   {urgentActions.total}
                 </span>
               )}
@@ -247,8 +247,8 @@ export function DashboardContent({
                     <CheckCircle2 className="text-emerald-400" size={24} />
                   </div>
                   <div className="text-center">
-                    <p className="text-sm font-medium text-zinc-300">Aucune action requise</p>
-                    <p className="text-xs text-zinc-500 mt-1">Toutes vos prévisions sont dans les clous</p>
+                    <p className="text-sm font-medium text-[var(--color-text)]">Aucune action requise</p>
+                    <p className="text-xs text-[var(--color-text-tertiary)] mt-1">Toutes vos prévisions sont dans les clous</p>
                   </div>
                 </div>
               )}
@@ -257,7 +257,7 @@ export function DashboardContent({
             {urgentActions.total > 0 && (
               <Link
                 href="/dashboard/actions"
-                className="mt-4 pt-4 border-t border-white/5 flex items-center justify-center gap-1.5 text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
+                className="mt-4 pt-4 border-t border-[var(--color-border)] flex items-center justify-center gap-1.5 text-sm text-amber-700 hover:text-amber-700 transition-colors"
               >
                 Voir toutes les actions
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -274,7 +274,7 @@ export function DashboardContent({
             <h2 className="dash-section-title">Dernières prévisions</h2>
             <Link
               href="/dashboard/history"
-              className="text-sm text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+              className="text-sm text-amber-700 hover:text-amber-700 flex items-center gap-1"
             >
               Voir tout
               <ArrowRight className="w-4 h-4" />
@@ -282,7 +282,7 @@ export function DashboardContent({
           </div>
 
           {/* Table header */}
-          <div className="hidden sm:grid grid-cols-12 gap-3 px-4 pb-3 text-xs font-medium text-zinc-500 uppercase tracking-wider">
+          <div className="hidden sm:grid grid-cols-12 gap-3 px-4 pb-3 text-xs font-medium text-[var(--color-text-tertiary)] uppercase tracking-wider">
             <div className="col-span-4">Fichier</div>
             <div className="col-span-1 text-center">Séries</div>
             <div className="col-span-2 text-center">Score</div>
@@ -301,21 +301,21 @@ export function DashboardContent({
                 transition={{ delay: index * 0.06, duration: 0.3 }}
               >
                 <Link href={`/dashboard/results?job=${job.id}`}>
-                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.06] transition-colors group">
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center p-4 rounded-xl bg-[var(--color-bg-surface)] hover:bg-[var(--color-bg-surface)] transition-colors group">
                     {/* Fichier */}
                     <div className="sm:col-span-4 flex items-center gap-3">
                       <div className={cn(
                         "w-2 h-2 rounded-full shrink-0",
                         job.status === "completed" ? "bg-emerald-400" : job.status === "failed" ? "bg-red-400" : "bg-amber-400"
                       )} />
-                      <span className="text-sm font-medium text-white group-hover:text-indigo-400 transition-colors truncate">
+                      <span className="text-sm font-medium text-[var(--color-text)] group-hover:text-amber-700 transition-colors truncate">
                         {job.filename ?? "Sans nom"}
                       </span>
                     </div>
 
                     {/* Series */}
                     <div className="sm:col-span-1 text-center">
-                      <span className="text-sm text-zinc-400 tabular-nums">{job.seriesCount}</span>
+                      <span className="text-sm text-[var(--color-text-secondary)] tabular-nums">{job.seriesCount}</span>
                     </div>
 
                     {/* Score */}
@@ -329,13 +329,13 @@ export function DashboardContent({
                           {job.score.toFixed(1)}
                         </span>
                       ) : (
-                        <span className="text-sm text-zinc-600">—</span>
+                        <span className="text-sm text-[var(--color-text-tertiary)]">—</span>
                       )}
                     </div>
 
                     {/* Duree */}
                     <div className="sm:col-span-1 text-center">
-                      <span className="text-xs text-zinc-500 tabular-nums">{formatDuration(job.duration)}</span>
+                      <span className="text-xs text-[var(--color-text-tertiary)] tabular-nums">{formatDuration(job.duration)}</span>
                     </div>
 
                     {/* Actions */}
@@ -362,13 +362,13 @@ export function DashboardContent({
 
                     {/* Date */}
                     <div className="sm:col-span-2 text-right flex items-center justify-end gap-2">
-                      <span className="text-xs text-zinc-500">
+                      <span className="text-xs text-[var(--color-text-tertiary)]">
                         {job.createdAt
                           ? formatDistanceToNow(parseISO(job.createdAt), { addSuffix: true, locale: fr })
                           : "—"
                         }
                       </span>
-                      <ArrowRight className="w-3.5 h-3.5 text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <ArrowRight className="w-3.5 h-3.5 text-[var(--color-text-tertiary)] opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                   </div>
                 </Link>

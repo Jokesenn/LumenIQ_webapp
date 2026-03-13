@@ -54,13 +54,13 @@ export function SynthesisCard({
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-indigo-500/20 shadow-[0_0_12px_rgba(99,102,241,0.2)]">
-            <Sparkles className="w-5 h-5 text-indigo-400" />
+          <div className="p-2 rounded-xl bg-amber-700/10 shadow-[0_0_12px_rgba(180,83,9,0.2)]">
+            <Sparkles className="w-5 h-5 text-amber-700" />
           </div>
           <div>
-            <h3 className="font-semibold font-display text-white">Synthèse IA</h3>
+            <h3 className="font-semibold font-display text-[var(--color-text)]">Synthèse IA</h3>
             {synthesis && (
-              <p className="text-xs text-zinc-500">
+              <p className="text-xs text-[var(--color-text-tertiary)]">
                 Générée le {new Date(synthesis.created_at).toLocaleDateString("fr-FR")}
               </p>
             )}
@@ -73,7 +73,7 @@ export function SynthesisCard({
               variant="ghost"
               size="sm"
               onClick={handleCopy}
-              className="text-zinc-400 hover:text-white"
+              className="text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
             >
               {copied ? (
                 <Check className="w-4 h-4 text-emerald-400" />
@@ -88,7 +88,7 @@ export function SynthesisCard({
               size="sm"
               onClick={onRegenerate}
               disabled={isLoading}
-              className="text-zinc-400 hover:text-white"
+              className="text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
             >
               <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin")} />
             </Button>
@@ -105,17 +105,17 @@ export function SynthesisCard({
         />
       ) : isLoading ? (
         <div className="space-y-3">
-          <div className="h-4 bg-white/5 rounded animate-pulse" />
-          <div className="h-4 bg-white/5 rounded animate-pulse w-3/4" />
-          <div className="h-4 bg-white/5 rounded animate-pulse w-5/6" />
+          <div className="h-4 bg-[var(--color-bg-surface)] rounded animate-pulse" />
+          <div className="h-4 bg-[var(--color-bg-surface)] rounded animate-pulse w-3/4" />
+          <div className="h-4 bg-[var(--color-bg-surface)] rounded animate-pulse w-5/6" />
         </div>
       ) : (
         <div className="text-center py-8">
-          <p className="text-zinc-500 mb-4">Aucune synthèse disponible</p>
+          <p className="text-[var(--color-text-tertiary)] mb-4">Aucune synthèse disponible</p>
           {onRegenerate && (
             <Button
               onClick={onRegenerate}
-              className="bg-indigo-500 hover:bg-indigo-600"
+              className="bg-[var(--color-copper)] hover:bg-[var(--color-copper)]"
             >
               <Sparkles className="w-4 h-4 mr-2" />
               Générer une synthèse

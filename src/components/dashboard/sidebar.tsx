@@ -61,17 +61,17 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
     <aside
       className={`${
         collapsed ? "w-[72px]" : "w-[260px]"
-      } bg-zinc-950 border-r border-white/[0.08] p-5 flex flex-col transition-all duration-300 ease-in-out shrink-0`}
+      } bg-white border-r border-[var(--color-border)] p-5 flex flex-col transition-all duration-300 ease-in-out shrink-0`}
     >
       {/* Logo + Collapse toggle */}
       <div className="flex items-center justify-between mb-8">
-        <div className="px-3 hover:drop-shadow-[0_0_12px_rgba(99,102,241,0.3)] transition-all duration-300">
+        <div className="px-3 transition-all duration-300">
           {collapsed ? <Logo size={32} /> : <LogoWithText size={32} />}
         </div>
         {onToggle && !collapsed && (
           <button
             onClick={onToggle}
-            className="p-1.5 rounded-lg text-zinc-500 hover:bg-white/5 hover:text-zinc-300 transition-colors"
+            className="p-1.5 rounded-lg text-[var(--color-text-tertiary)] hover:bg-[var(--color-bg-surface)] hover:text-[var(--color-text-secondary)] transition-colors"
           >
             <ChevronLeft size={18} />
           </button>
@@ -79,7 +79,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         {onToggle && collapsed && (
           <button
             onClick={onToggle}
-            className="absolute left-[72px] top-6 -translate-x-1/2 p-1 rounded-lg bg-zinc-900 border border-white/[0.08] text-zinc-500 hover:bg-white/5 hover:text-zinc-300 transition-colors z-10"
+            className="absolute left-[72px] top-6 -translate-x-1/2 p-1 rounded-lg bg-white border border-[var(--color-border)] text-[var(--color-text-tertiary)] hover:bg-[var(--color-bg-surface)] hover:text-[var(--color-text-secondary)] transition-colors z-10 shadow-sm"
           >
             <ChevronRight size={14} />
           </button>
@@ -89,7 +89,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       {/* Navigation */}
       <nav className="flex-1 space-y-1">
         {!collapsed && (
-          <p className="text-[10px] uppercase tracking-[0.15em] text-zinc-600 font-semibold px-4 mb-1 mt-4">PRINCIPAL</p>
+          <p className="text-[10px] uppercase tracking-[0.15em] text-[var(--color-text-tertiary)] font-semibold px-4 mb-1 mt-4">PRINCIPAL</p>
         )}
         {navItems.slice(0, 1).map((item) => {
           const isActive = pathname === item.href;
@@ -102,8 +102,8 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 collapsed ? "justify-center" : ""
               } ${
                 isActive
-                  ? "dash-nav-active"
-                  : "text-zinc-400 hover:bg-white/5 hover:text-white"
+                  ? "nav-active"
+                  : "text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-surface)] hover:text-[var(--color-text)]"
               }`}
             >
               <span className="relative shrink-0">
@@ -131,7 +131,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         })}
 
         {!collapsed && (
-          <p className="text-[10px] uppercase tracking-[0.15em] text-zinc-600 font-semibold px-4 mb-1 mt-4">ANALYSES</p>
+          <p className="text-[10px] uppercase tracking-[0.15em] text-[var(--color-text-tertiary)] font-semibold px-4 mb-1 mt-4">ANALYSES</p>
         )}
         {navItems.slice(1, 5).map((item) => {
           const isActive = pathname === item.href;
@@ -144,8 +144,8 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 collapsed ? "justify-center" : ""
               } ${
                 isActive
-                  ? "dash-nav-active"
-                  : "text-zinc-400 hover:bg-white/5 hover:text-white"
+                  ? "nav-active"
+                  : "text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-surface)] hover:text-[var(--color-text)]"
               }`}
             >
               <span className="relative shrink-0">
@@ -173,7 +173,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         })}
 
         {!collapsed && (
-          <p className="text-[10px] uppercase tracking-[0.15em] text-zinc-600 font-semibold px-4 mb-1 mt-4">CONFIGURATION</p>
+          <p className="text-[10px] uppercase tracking-[0.15em] text-[var(--color-text-tertiary)] font-semibold px-4 mb-1 mt-4">CONFIGURATION</p>
         )}
         {navItems.slice(5).map((item) => {
           const isActive = pathname === item.href;
@@ -186,8 +186,8 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 collapsed ? "justify-center" : ""
               } ${
                 isActive
-                  ? "dash-nav-active"
-                  : "text-zinc-400 hover:bg-white/5 hover:text-white"
+                  ? "nav-active"
+                  : "text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-surface)] hover:text-[var(--color-text)]"
               }`}
             >
               <span className="relative shrink-0">
@@ -216,10 +216,10 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       </nav>
 
       {/* Bottom Actions */}
-      <div className="border-t border-white/[0.08] pt-4 space-y-1">
+      <div className="border-t border-[var(--color-border)] pt-4 space-y-1">
         <button
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-zinc-400 hover:bg-white/5 hover:text-white transition-colors duration-200 ${
+          className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-surface)] hover:text-[var(--color-text)] transition-colors duration-200 ${
             collapsed ? "justify-center" : ""
           }`}
         >
@@ -238,7 +238,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         <button
           onClick={handleLogout}
           disabled={loggingOut}
-          className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-zinc-400 hover:bg-red-500/10 hover:text-red-400 transition-colors duration-200 disabled:opacity-50 ${
+          className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-[var(--color-text-secondary)] hover:bg-red-500/10 hover:text-red-500 transition-colors duration-200 disabled:opacity-50 ${
             collapsed ? "justify-center" : ""
           }`}
         >

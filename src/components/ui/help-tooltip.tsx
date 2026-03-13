@@ -29,7 +29,7 @@ export function HelpTooltip({ termKey, content, side = "top", className }: HelpT
         <button
           type="button"
           className={cn(
-            "inline-flex items-center justify-center text-white/40 hover:text-white/70 transition-colors",
+            "inline-flex items-center justify-center text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] transition-colors",
             className
           )}
           aria-label="Aide"
@@ -40,7 +40,7 @@ export function HelpTooltip({ termKey, content, side = "top", className }: HelpT
       <TooltipContent
         side={side}
         sideOffset={8}
-        className="max-w-xs bg-[#1e1e2e] border border-white/10 text-white p-3"
+        className="max-w-xs bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text)] p-3"
       >
         {tooltipContent}
       </TooltipContent>

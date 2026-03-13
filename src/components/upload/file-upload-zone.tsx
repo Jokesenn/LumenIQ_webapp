@@ -24,8 +24,8 @@ function StepIndicator({ label, status }: StepIndicatorProps) {
       <div className={cn(
         'w-6 h-6 rounded-full flex items-center justify-center',
         status === 'completed' && 'bg-emerald-500',
-        status === 'in_progress' && 'bg-indigo-500',
-        status === 'pending' && 'bg-white/10 border border-white/[0.08]',
+        status === 'in_progress' && 'bg-[var(--color-copper)]',
+        status === 'pending' && 'bg-[var(--color-bg-surface)] border border-[var(--color-border)]',
         status === 'error' && 'bg-red-500'
       )}>
         {status === 'completed' && <Check size={14} className="text-white" />}
@@ -35,8 +35,8 @@ function StepIndicator({ label, status }: StepIndicatorProps) {
       <span className={cn(
         'text-sm',
         status === 'completed' && 'text-emerald-500',
-        status === 'in_progress' && 'text-white font-medium',
-        status === 'pending' && 'text-zinc-500',
+        status === 'in_progress' && 'text-[var(--color-text)] font-medium',
+        status === 'pending' && 'text-[var(--color-text-tertiary)]',
         status === 'error' && 'text-red-400'
       )}>
         {label}
@@ -160,10 +160,10 @@ export function FileUploadZone({ userId, onUploadComplete, className }: FileUplo
             <Check size={28} className="text-emerald-500" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-white">
+            <h3 className="text-lg font-semibold text-[var(--color-text)]">
               Prévision lancée !
             </h3>
-            <p className="text-sm text-zinc-400">
+            <p className="text-sm text-[var(--color-text-secondary)]">
               Job ID: <span className="font-mono">{jobId.slice(0, 8)}...</span>
             </p>
           </div>
@@ -175,9 +175,9 @@ export function FileUploadZone({ userId, onUploadComplete, className }: FileUplo
           <StepIndicator label="Prévision déclenchée" status="completed" />
         </div>
 
-        <div className="p-3 bg-white/5 rounded-lg mb-6">
-          <p className="text-xs text-zinc-500 mb-1">Chemin du fichier</p>
-          <p className="font-mono text-xs text-zinc-400 break-all">
+        <div className="p-3 bg-[var(--color-bg-surface)] rounded-lg mb-6">
+          <p className="text-xs text-[var(--color-text-tertiary)] mb-1">Chemin du fichier</p>
+          <p className="font-mono text-xs text-[var(--color-text-secondary)] break-all">
             {uploadedPath}
           </p>
         </div>
@@ -185,7 +185,7 @@ export function FileUploadZone({ userId, onUploadComplete, className }: FileUplo
         <Button
           variant="ghost"
           onClick={handleReset}
-          className="w-full text-zinc-300 hover:text-white hover:bg-white/5"
+          className="w-full text-[var(--color-text)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-surface)]"
         >
           Importer un autre fichier
         </Button>
@@ -203,13 +203,13 @@ export function FileUploadZone({ userId, onUploadComplete, className }: FileUplo
         <div className="w-16 h-16 rounded-2xl bg-red-500/15 flex items-center justify-center mx-auto mb-4">
           <AlertCircle size={32} className="text-red-400" />
         </div>
-        <h3 className="text-lg font-semibold mb-2 text-white">
+        <h3 className="text-lg font-semibold mb-2 text-[var(--color-text)]">
           Erreur
         </h3>
         <p className="text-sm text-red-400 mb-4">
           {error}
         </p>
-        <Button variant="ghost" onClick={handleReset} className="text-zinc-300 hover:text-white hover:bg-white/5">
+        <Button variant="ghost" onClick={handleReset} className="text-[var(--color-text)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-surface)]">
           Réessayer
         </Button>
       </div>
@@ -220,19 +220,19 @@ export function FileUploadZone({ userId, onUploadComplete, className }: FileUplo
   if (uploading && step !== 'idle') {
     return (
       <div className={cn(
-        'rounded-2xl border border-white/[0.08] bg-zinc-900/50 p-8',
+        'rounded-2xl border border-[var(--color-border)] bg-white p-8',
         className
       )}>
         <div className="flex items-center gap-4 mb-6">
-          <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center">
-            <Loader2 size={28} className="text-indigo-400 animate-spin" />
+          <div className="w-14 h-14 rounded-2xl bg-amber-700/10 flex items-center justify-center">
+            <Loader2 size={28} className="text-amber-700 animate-spin" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-white">
+            <h3 className="text-lg font-semibold text-[var(--color-text)]">
               Traitement en cours...
             </h3>
             {selectedFile && (
-              <p className="text-sm text-zinc-400">
+              <p className="text-sm text-[var(--color-text-secondary)]">
                 {selectedFile.name}
               </p>
             )}
@@ -246,16 +246,16 @@ export function FileUploadZone({ userId, onUploadComplete, className }: FileUplo
               status={getStepStatus(step, 'uploading')}
             />
             {step === 'uploading' && (
-              <span className="text-sm text-zinc-500">
+              <span className="text-sm text-[var(--color-text-tertiary)]">
                 {Math.round(uploadProgress)}%
               </span>
             )}
           </div>
 
           {step === 'uploading' && (
-            <div className="ml-9 bg-white/10 rounded-full h-2 overflow-hidden">
+            <div className="ml-9 bg-[var(--color-bg-surface)] rounded-full h-2 overflow-hidden">
               <div
-                className="h-full bg-indigo-500 rounded-full transition-all duration-300"
+                className="h-full bg-[var(--color-copper)] rounded-full transition-all duration-300"
                 style={{ width: `${uploadProgress}%` }}
               />
             </div>
@@ -279,18 +279,18 @@ export function FileUploadZone({ userId, onUploadComplete, className }: FileUplo
   if (selectedFile) {
     return (
       <div className={cn(
-        'rounded-2xl border border-white/[0.08] bg-zinc-900/50 p-8',
+        'rounded-2xl border border-[var(--color-border)] bg-white p-8',
         className
       )}>
         <div className="flex items-center gap-4 mb-6">
-          <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center">
-            <FileText size={24} className="text-indigo-400" />
+          <div className="w-12 h-12 rounded-xl bg-amber-700/10 flex items-center justify-center">
+            <FileText size={24} className="text-amber-700" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="font-medium text-white truncate">
+            <p className="font-medium text-[var(--color-text)] truncate">
               {selectedFile.name}
             </p>
-            <p className="text-sm text-zinc-400">
+            <p className="text-sm text-[var(--color-text-secondary)]">
               {formatFileSize(selectedFile.size)}
             </p>
           </div>
@@ -305,13 +305,13 @@ export function FileUploadZone({ userId, onUploadComplete, className }: FileUplo
           <Button
             variant="ghost"
             onClick={handleReset}
-            className="flex-1 text-zinc-400 hover:text-white"
+            className="flex-1 text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
           >
             Annuler
           </Button>
           <Button
             onClick={handleUpload}
-            className="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white"
+            className="flex-1 bg-[var(--color-copper)] hover:bg-amber-800 text-white"
           >
             Lancer la prévision
           </Button>
@@ -330,8 +330,8 @@ export function FileUploadZone({ userId, onUploadComplete, className }: FileUplo
       className={cn(
         'rounded-2xl border-2 border-dashed p-16 text-center cursor-pointer transition-all',
         isDragging
-          ? 'bg-indigo-500/5 border-indigo-500'
-          : 'bg-white/5 border-white/10 hover:border-indigo-500/50 hover:bg-white/[0.07]',
+          ? 'bg-amber-700/5 border-amber-700'
+          : 'bg-[var(--color-bg-surface)] border-[var(--color-border)] hover:border-amber-700/50 hover:bg-[var(--color-bg-surface)]',
         className
       )}
     >
@@ -344,20 +344,20 @@ export function FileUploadZone({ userId, onUploadComplete, className }: FileUplo
       />
       <div className={cn(
         'w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 transition-colors',
-        isDragging ? 'bg-indigo-500/15' : 'bg-indigo-500/10'
+        isDragging ? 'bg-amber-700/15' : 'bg-amber-700/10'
       )}>
         <Upload size={32} className={cn(
           'transition-colors',
-          isDragging ? 'text-indigo-400' : 'text-zinc-500'
+          isDragging ? 'text-amber-700' : 'text-[var(--color-text-tertiary)]'
         )} />
       </div>
-      <h3 className="text-lg font-semibold mb-2 text-white">
+      <h3 className="text-lg font-semibold mb-2 text-[var(--color-text)]">
         Glissez votre fichier CSV ici
       </h3>
-      <p className="text-zinc-400 mb-3">
+      <p className="text-[var(--color-text-secondary)] mb-3">
         ou cliquez pour parcourir
       </p>
-      <p className="text-sm text-zinc-500">
+      <p className="text-sm text-[var(--color-text-tertiary)]">
         Format accepté : CSV - Max 50 MB
       </p>
     </div>

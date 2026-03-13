@@ -81,14 +81,14 @@ export function ActionsDrawer({ open, onOpenChange }: ActionsDrawerProps) {
       <SheetContent
         side="right"
         showCloseButton
-        className="w-[420px] sm:max-w-[420px] p-0 flex flex-col h-full gap-0 bg-zinc-950 border-white/10"
+        className="w-[420px] sm:max-w-[420px] p-0 flex flex-col h-full gap-0 bg-[var(--color-bg)] border-[var(--color-border)]"
       >
-        <SheetHeader className="px-6 py-4 border-b border-white/10 shrink-0">
-          <SheetTitle className="text-white text-lg flex items-center gap-2">
+        <SheetHeader className="px-6 py-4 border-b border-[var(--color-border)] shrink-0">
+          <SheetTitle className="text-[var(--color-text)] text-lg flex items-center gap-2">
             <Zap className="w-5 h-5 text-amber-400" />
             Actions
           </SheetTitle>
-          <SheetDescription className="text-zinc-400 text-xs">
+          <SheetDescription className="text-[var(--color-text-secondary)] text-xs">
             {jobFilename
               ? `Recommandations pour ${jobFilename}`
               : "Recommandations issues de vos prévisions"}

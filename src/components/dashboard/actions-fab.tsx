@@ -36,7 +36,7 @@ export function ActionsFab({ onClick, isOpen }: ActionsFabProps) {
 
           {/* Badge counter */}
           {urgentCount > 0 && (
-            <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[20px] h-5 px-1 text-[10px] font-bold rounded-full bg-red-500 text-white ring-2 ring-zinc-950">
+            <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[20px] h-5 px-1 text-[10px] font-bold rounded-full bg-red-500 text-white ring-2 ring-[var(--color-bg)]">
               {urgentCount}
             </span>
           )}

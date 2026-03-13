@@ -23,7 +23,7 @@ export function QuotaProgress({
   const percentage = Math.min((used / total) * 100, 100);
 
   const getColor = () => {
-    if (percentage < 60) return "from-indigo-500 to-violet-500";
+    if (percentage < 60) return "from-amber-700 to-amber-800";
     if (percentage < 85) return "from-amber-500 to-orange-500";
     return "from-red-500 to-rose-500";
   };
@@ -32,18 +32,18 @@ export function QuotaProgress({
     <div className={cn("w-full", className)}>
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
-        <span className="text-sm text-zinc-400">{label}</span>
+        <span className="text-sm text-[var(--color-text-secondary)]">{label}</span>
         {showValues && (
           <span className="text-sm font-medium">
-            <span className="text-white">{used.toLocaleString()}</span>
-            <span className="text-zinc-500"> / {total.toLocaleString()}</span>
+            <span className="text-[var(--color-text)]">{used.toLocaleString()}</span>
+            <span className="text-[var(--color-text-tertiary)]"> / {total.toLocaleString()}</span>
           </span>
         )}
       </div>
 
       {/* Progress bar */}
       <div className={cn(
-        "relative w-full bg-white/5 rounded-full overflow-hidden",
+        "relative w-full bg-[var(--color-bg-surface)] rounded-full overflow-hidden",
         size === "sm" ? "h-2" : "h-3"
       )}>
         <motion.div
@@ -69,7 +69,7 @@ export function QuotaProgress({
       <div className="flex justify-end mt-1">
         <span className={cn(
           "text-xs font-medium",
-          percentage >= 85 ? "text-red-400" : percentage >= 60 ? "text-amber-400" : "text-zinc-500"
+          percentage >= 85 ? "text-red-400" : percentage >= 60 ? "text-amber-400" : "text-[var(--color-text-tertiary)]"
         )}>
           {percentage.toFixed(0)}%
         </span>

@@ -45,9 +45,9 @@ export function ActionsBoard({ mode, jobId }: ActionsBoardProps) {
   if (actions.length === 0 && grouped.length === 0) {
     return (
       <div className="dash-empty-hex flex flex-col items-center justify-center py-16 text-center">
-        <Inbox className="w-12 h-12 text-zinc-600 mb-3" />
-        <p className="text-sm text-zinc-400">Aucune action en attente</p>
-        <p className="text-xs text-zinc-500 mt-1">
+        <Inbox className="w-12 h-12 text-[var(--color-text-tertiary)] mb-3" />
+        <p className="text-sm text-[var(--color-text-secondary)]">Aucune action en attente</p>
+        <p className="text-xs text-[var(--color-text-tertiary)] mt-1">
           Les actions apparaîtront après votre prochaine prévision
         </p>
       </div>
@@ -92,10 +92,10 @@ export function ActionsBoard({ mode, jobId }: ActionsBoardProps) {
             <h3 className="dash-section-title">
               {group.filename || "Prévision"}
             </h3>
-            <span className="text-xs text-zinc-500">
+            <span className="text-xs text-[var(--color-text-tertiary)]">
               {formatRunDate(group.run_date)}
             </span>
-            <span className="text-xs text-zinc-600">
+            <span className="text-xs text-[var(--color-text-tertiary)]">
               {group.actions.length} action{group.actions.length > 1 ? "s" : ""}
             </span>
           </div>
@@ -130,7 +130,7 @@ function DismissAllButton({
   if (confirming) {
     return (
       <div className="flex items-center gap-2 justify-end">
-        <span className="text-xs text-zinc-400">
+        <span className="text-xs text-[var(--color-text-secondary)]">
           Fermer {count} action{count > 1 ? "s" : ""} ?
         </span>
         <button
@@ -144,7 +144,7 @@ function DismissAllButton({
         </button>
         <button
           onClick={() => setConfirming(false)}
-          className="px-3 py-1.5 text-xs font-medium rounded-lg bg-white/5 text-zinc-400 hover:bg-white/10 transition-colors"
+          className="px-3 py-1.5 text-xs font-medium rounded-lg bg-[var(--color-bg-surface)] text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-surface)] transition-colors"
         >
           Annuler
         </button>
@@ -156,7 +156,7 @@ function DismissAllButton({
     <div className="flex justify-end">
       <button
         onClick={() => setConfirming(true)}
-        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-white/5 transition-colors"
+        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-surface)] transition-colors"
       >
         <XCircle size={14} />
         Tout fermer

@@ -52,14 +52,14 @@ export function SynthesisAccordion({
           <AccordionItem
             key={index}
             value={`section-${index}`}
-            className="border-b border-white/10 last:border-b-0"
+            className="border-b border-[var(--color-border)] last:border-b-0"
           >
             <AccordionTrigger
-              className="text-base font-semibold font-display text-white hover:no-underline hover:bg-white/5 px-4 py-3 rounded-lg data-[state=open]:bg-white/5"
+              className="text-base font-semibold font-display text-[var(--color-text)] hover:no-underline hover:bg-[var(--color-bg-surface)] px-4 py-3 rounded-lg data-[state=open]:bg-[var(--color-bg-surface)]"
             >
               {section.title}
             </AccordionTrigger>
-            <AccordionContent className="px-4 pt-2 pb-4 bg-white/[0.02]">
+            <AccordionContent className="px-4 pt-2 pb-4 bg-[var(--color-bg-surface)]">
               <MarkdownRenderer
                 content={processContent(section.content)}
               />

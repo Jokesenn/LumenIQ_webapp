@@ -9,30 +9,28 @@ export default function Icon() {
       <svg
         width="32"
         height="32"
-        viewBox="0 0 100 100"
+        viewBox="0 0 32 32"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Outer hexagon — stroke only */}
-        <polygon
-          points="50,5 93.3,27.5 93.3,72.5 50,95 6.7,72.5 6.7,27.5"
-          fill="none"
-          stroke="#6366f1"
-          strokeWidth="5"
+        <rect x="13.5" y="3" width="3" height="26" rx="1.5" fill="#B45309" />
+        <path
+          d="M4 27C6 23 9 17 12 13L15 9"
+          stroke="#141414"
+          strokeWidth="2.8"
+          strokeLinecap="round"
           strokeLinejoin="round"
-          opacity="0.8"
         />
-        {/* Mid hexagon — translucent fill */}
-        <polygon
-          points="50,20 78.7,35 78.7,65 50,80 21.3,65 21.3,35"
-          fill="#6366f1"
-          opacity="0.25"
+        <line
+          x1="15"
+          y1="9"
+          x2="27"
+          y2="4"
+          stroke="#B45309"
+          strokeWidth="2.8"
+          strokeLinecap="round"
         />
-        {/* Inner hexagon — solid accent */}
-        <polygon
-          points="50,35 64.4,42.5 64.4,57.5 50,65 35.6,57.5 35.6,42.5"
-          fill="#6366f1"
-        />
+        <circle cx="4" cy="27" r="2" fill="#141414" />
       </svg>
     ),
     { ...size }

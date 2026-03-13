@@ -15,7 +15,7 @@ export function ActionsPageContent() {
           </div>
           <div>
             <h1 className="dash-page-title">Actions</h1>
-            <p className="text-sm text-zinc-400">
+            <p className="text-sm text-[var(--color-text-secondary)]">
               Recommandations issues de vos prévisions
             </p>
           </div>

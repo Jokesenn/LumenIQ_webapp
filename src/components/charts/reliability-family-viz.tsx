@@ -30,12 +30,12 @@ function FamilyTooltip({ active, payload }: { active?: boolean; payload?: Family
   if (!d) return null;
 
   return (
-    <div className="bg-zinc-900/95 backdrop-blur-xl border border-white/10 rounded-xl p-3 shadow-xl">
+    <div className="bg-white backdrop-blur-xl border border-[var(--color-border)] rounded-xl p-3 shadow-xl">
       <div className="flex items-center gap-2 mb-1">
         <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: d.hex }} />
-        <p className="text-sm font-medium text-white">{d.family}</p>
+        <p className="text-sm font-medium text-[var(--color-text)]">{d.family}</p>
       </div>
-      <div className="mt-1 space-y-0.5 text-xs text-zinc-300 ml-[18px]">
+      <div className="mt-1 space-y-0.5 text-xs text-[var(--color-text)] ml-[18px]">
         <div>{d.seriesCount} séries ({d.percentage.toFixed(0)}%)</div>
         <div>Score moyen : {d.avgScore.toFixed(0)}/100</div>
       </div>
@@ -81,7 +81,7 @@ function CustomTreemapContent(props: CustomTreemapContentProps) {
             x={x + width / 2}
             y={y + height / 2 - 7}
             textAnchor="middle"
-            fill="white"
+            fill="var(--color-text)"
             fontSize={12}
             fontWeight={600}
           >
@@ -91,7 +91,7 @@ function CustomTreemapContent(props: CustomTreemapContentProps) {
             x={x + width / 2}
             y={y + height / 2 + 10}
             textAnchor="middle"
-            fill="rgba(255,255,255,0.5)"
+            fill="var(--color-text-secondary)"
             fontSize={10}
           >
             {seriesCount} séries
@@ -103,7 +103,7 @@ function CustomTreemapContent(props: CustomTreemapContentProps) {
           x={x + width / 2}
           y={y + height / 2 + 2}
           textAnchor="middle"
-          fill="rgba(255,255,255,0.5)"
+          fill="var(--color-text-secondary)"
           fontSize={10}
         >
           {seriesCount}
@@ -122,7 +122,7 @@ export function ReliabilityFamilyViz({
 
   if (families.length === 0) {
     return (
-      <div className="h-[400px] flex items-center justify-center text-zinc-500">
+      <div className="h-[400px] flex items-center justify-center text-[var(--color-text-tertiary)]">
         Aucune donnée disponible
       </div>
     );
@@ -145,19 +145,19 @@ export function ReliabilityFamilyViz({
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-          <h3 className="text-sm font-medium text-zinc-300">
+          <div className="w-1.5 h-1.5 rounded-full bg-[var(--color-copper)]" />
+          <h3 className="text-sm font-medium text-[var(--color-text)]">
             Répartition par famille
           </h3>
         </div>
-        <div className="flex gap-1 p-0.5 bg-white/5 rounded-lg">
+        <div className="flex gap-1 p-0.5 bg-[var(--color-bg-surface)] rounded-lg">
           <button
             onClick={() => setMode("donut")}
             className={cn(
               "p-1.5 rounded-md transition-all duration-200",
               mode === "donut"
-                ? "bg-indigo-500/20 text-indigo-400"
-                : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
+                ? "bg-amber-700/20 text-amber-700"
+                : "text-[var(--color-text-tertiary)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-surface)]"
             )}
             title="Vue donut"
           >
@@ -168,8 +168,8 @@ export function ReliabilityFamilyViz({
             className={cn(
               "p-1.5 rounded-md transition-all duration-200",
               mode === "treemap"
-                ? "bg-indigo-500/20 text-indigo-400"
-                : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
+                ? "bg-amber-700/20 text-amber-700"
+                : "text-[var(--color-text-tertiary)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-surface)]"
             )}
             title="Vue treemap"
           >
@@ -190,7 +190,7 @@ export function ReliabilityFamilyViz({
             </span>
             {/* Glow effect behind the donut */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-28 h-28 rounded-full bg-indigo-500/10 blur-2xl" />
+              <div className="w-28 h-28 rounded-full bg-amber-700/10 blur-2xl" />
             </div>
             <ResponsiveContainer width="100%" height={280}>
               <PieChart>
@@ -203,7 +203,7 @@ export function ReliabilityFamilyViz({
                   innerRadius="55%"
                   outerRadius="80%"
                   paddingAngle={2}
-                  stroke="rgba(255,255,255,0.1)"
+                  stroke="rgba(0,0,0,0.08)"
                   strokeWidth={1}
                 >
                   {families.map((f) => (
@@ -215,10 +215,10 @@ export function ReliabilityFamilyViz({
             </ResponsiveContainer>
             {/* HTML center label — more reliable than SVG <text> */}
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-3xl font-bold text-white tabular-nums">
+              <span className="text-3xl font-bold text-[var(--color-text)] tabular-nums">
                 {globalAvgScore.toFixed(0)}
               </span>
-              <span className="text-xs text-zinc-500">/100</span>
+              <span className="text-xs text-[var(--color-text-tertiary)]">/100</span>
             </div>
           </div>
         ) : (
@@ -250,8 +250,8 @@ export function ReliabilityFamilyViz({
               className="w-2.5 h-2.5 rounded-full ring-2 ring-offset-1 ring-offset-transparent"
               style={{ backgroundColor: f.hex, boxShadow: `0 0 6px ${f.hex}40` }}
             />
-            <span className="text-zinc-300">{f.family}</span>
-            <span className="text-zinc-500">
+            <span className="text-[var(--color-text)]">{f.family}</span>
+            <span className="text-[var(--color-text-tertiary)]">
               {f.seriesCount} ({f.percentage.toFixed(0)}%)
             </span>
           </div>

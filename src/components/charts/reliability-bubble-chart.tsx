@@ -34,22 +34,22 @@ function BubbleTooltip({ active, payload }: { active?: boolean; payload?: Toolti
   if (!d) return null;
 
   return (
-    <div className="bg-zinc-900/95 backdrop-blur-xl border border-white/10 rounded-xl p-3 shadow-xl">
+    <div className="bg-white backdrop-blur-xl border border-[var(--color-border)] rounded-xl p-3 shadow-xl">
       <div className="flex items-center gap-2 mb-1">
         <div
           className="w-2.5 h-2.5 rounded-full"
           style={{ backgroundColor: d.familyHex }}
         />
-        <p className="text-sm font-medium text-white">{d.label}</p>
+        <p className="text-sm font-medium text-[var(--color-text)]">{d.label}</p>
       </div>
-      <p className="text-xs text-zinc-500 ml-[18px]">{d.technicalName}</p>
-      <div className="mt-2 pt-2 border-t border-white/5 space-y-1 text-xs text-zinc-300">
+      <p className="text-xs text-[var(--color-text-tertiary)] ml-[18px]">{d.technicalName}</p>
+      <div className="mt-2 pt-2 border-t border-[var(--color-border)] space-y-1 text-xs text-[var(--color-text)]">
         <div className="flex items-center justify-between gap-4">
           <span>{d.seriesCount} séries</span>
-          <span className="text-white font-medium">Score: {d.avgScore.toFixed(0)}/100</span>
+          <span className="text-[var(--color-text)] font-medium">Score: {d.avgScore.toFixed(0)}/100</span>
         </div>
         <div>{d.percentage.toFixed(0)}% de vos produits</div>
-        <div className="text-zinc-500">Famille : {d.family}</div>
+        <div className="text-[var(--color-text-tertiary)]">Famille : {d.family}</div>
       </div>
     </div>
   );
@@ -80,7 +80,7 @@ export function ReliabilityBubbleChart({ data, className }: ReliabilityBubbleCha
 
   if (data.length === 0) {
     return (
-      <div className="h-[400px] flex items-center justify-center text-zinc-500">
+      <div className="h-[400px] flex items-center justify-center text-[var(--color-text-tertiary)]">
         Aucune donnée disponible
       </div>
     );
@@ -94,8 +94,8 @@ export function ReliabilityBubbleChart({ data, className }: ReliabilityBubbleCha
       className={cn("w-full", className)}
     >
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-        <h3 className="text-sm font-medium text-zinc-300">
+        <div className="w-1.5 h-1.5 rounded-full bg-[var(--color-copper)]" />
+        <h3 className="text-sm font-medium text-[var(--color-text)]">
           Couverture et fiabilité par méthode
         </h3>
       </div>
@@ -119,7 +119,7 @@ export function ReliabilityBubbleChart({ data, className }: ReliabilityBubbleCha
           </defs>
           <CartesianGrid
             strokeDasharray="3 3"
-            stroke="rgba(255,255,255,0.05)"
+            stroke="rgba(0,0,0,0.06)"
             vertical={false}
           />
           <XAxis
@@ -149,7 +149,7 @@ export function ReliabilityBubbleChart({ data, className }: ReliabilityBubbleCha
           />
           <ReferenceLine
             y={reliabilityThreshold}
-            stroke="rgba(255,255,255,0.15)"
+            stroke="rgba(0,0,0,0.1)"
             strokeDasharray="6 4"
             label={{
               value: `Seuil de fiabilité ${reliabilityThreshold}%`,
@@ -162,7 +162,7 @@ export function ReliabilityBubbleChart({ data, className }: ReliabilityBubbleCha
           <Legend
             wrapperStyle={{ paddingTop: 20 }}
             formatter={(value: string) => (
-              <span className="text-zinc-400 text-xs">{value}</span>
+              <span className="text-[var(--color-text-secondary)] text-xs">{value}</span>
             )}
           />
           {familyGroups.map((group) => (

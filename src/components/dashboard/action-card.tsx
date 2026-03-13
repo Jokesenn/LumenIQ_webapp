@@ -46,16 +46,16 @@ const PRIORITY_CONFIG: Record<
     icon: Info,
   },
   clear: {
-    bg: "bg-white/5",
-    border: "border-white/10",
-    text: "text-white/50",
+    bg: "bg-[var(--color-bg-surface)]",
+    border: "border-[var(--color-border)]",
+    text: "text-[var(--color-text-tertiary)]",
     icon: CheckCircle2,
   },
 };
 
 const TREND_CONFIG: Record<ActionTrend, { icon: typeof TrendingUp; label: string; color: string }> = {
   worsening: { icon: TrendingUp, label: "Dégradation", color: "text-red-400" },
-  stable: { icon: Minus, label: "Stable", color: "text-zinc-400" },
+  stable: { icon: Minus, label: "Stable", color: "text-[var(--color-text-secondary)]" },
   improving: { icon: TrendingDown, label: "Amélioration", color: "text-emerald-400" },
 };
 
@@ -90,11 +90,11 @@ export function ActionCard({ action, compact, onDismiss, onNavigate }: ActionCar
         <div className="flex-1 min-w-0">
           {/* Title + badges */}
           <div className="flex items-center gap-2 flex-wrap">
-            <h4 className="text-sm font-medium font-display text-white truncate">
+            <h4 className="text-sm font-medium font-display text-[var(--color-text)] truncate">
               {action.title}
             </h4>
             {(action.recurrence_count ?? 0) > 1 && (
-              <span className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded bg-white/10 text-zinc-400">
+              <span className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded bg-[var(--color-bg-surface)] text-[var(--color-text-secondary)]">
                 <RotateCcw size={10} />
                 {action.recurrence_count}x
               </span>
@@ -109,14 +109,14 @@ export function ActionCard({ action, compact, onDismiss, onNavigate }: ActionCar
 
           {/* Message (hidden in compact mode) */}
           {!compact && (
-            <p className="text-xs text-zinc-400 mt-1 line-clamp-2">
+            <p className="text-xs text-[var(--color-text-secondary)] mt-1 line-clamp-2">
               {action.message}
             </p>
           )}
 
           {/* Suggestion */}
           {action.suggestion && !compact && (
-            <p className="text-xs text-zinc-300 mt-1.5 italic">
+            <p className="text-xs text-[var(--color-text)] mt-1.5 italic">
               {action.suggestion}
             </p>
           )}
@@ -138,7 +138,7 @@ export function ActionCard({ action, compact, onDismiss, onNavigate }: ActionCar
               {action.series_id && onNavigate && (
                 <button
                   onClick={() => onNavigate(action.series_id!, action.job_id)}
-                  className="flex items-center gap-1 px-2 py-1 text-[11px] rounded-md text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+                  className="flex items-center gap-1 px-2 py-1 text-[11px] rounded-md text-[var(--color-text-secondary)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-surface)] transition-colors"
                 >
                   Voir
                   <ArrowRight size={12} />
@@ -147,7 +147,7 @@ export function ActionCard({ action, compact, onDismiss, onNavigate }: ActionCar
               {onDismiss && (
                 <button
                   onClick={() => onDismiss(action.id)}
-                  className="p-1 rounded-md text-zinc-500 hover:text-zinc-300 hover:bg-white/10 transition-colors"
+                  className="p-1 rounded-md text-[var(--color-text-tertiary)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-surface)] transition-colors"
                   aria-label="Ignorer cette action"
                 >
                   <X size={14} />

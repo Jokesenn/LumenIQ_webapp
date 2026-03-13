@@ -25,8 +25,8 @@ function getModelScoreColor(score: number, green: number, yellow: number): strin
 }
 
 const modelColors: Record<string, string> = {
-  XGBoost: "from-indigo-500 to-indigo-600",
-  LightGBM: "from-violet-500 to-violet-600",
+  XGBoost: "from-amber-700 to-amber-800",
+  LightGBM: "from-amber-700 to-amber-800",
   Prophet: "from-cyan-500 to-cyan-600",
   ARIMA: "from-emerald-500 to-emerald-600",
   Theta: "from-amber-500 to-amber-600",
@@ -43,7 +43,7 @@ export function ModelPerformanceChart({ data, onModelClick, className }: ModelPe
 
   if (data.length === 0) {
     return (
-      <div className="h-[200px] flex items-center justify-center text-zinc-500 border border-white/5 rounded-xl bg-white/5">
+      <div className="h-[200px] flex items-center justify-center text-[var(--color-text-tertiary)] border border-[var(--color-border)] rounded-xl bg-[var(--color-bg-surface)]">
         Aucune donnée de performance disponible
       </div>
     );
@@ -63,14 +63,14 @@ export function ModelPerformanceChart({ data, onModelClick, className }: ModelPe
             transition={{ duration: 0.4, delay: index * 0.1 }}
             className={cn(
               "group rounded-xl px-3 py-2 -mx-3 transition-colors",
-              onModelClick && "cursor-pointer hover:bg-white/5"
+              onModelClick && "cursor-pointer hover:bg-[var(--color-bg-surface)]"
             )}
             onClick={() => onModelClick?.(item.model)}
           >
             <div className="flex items-center justify-between mb-1.5">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-white">{getModelMeta(item.model).label}</span>
-                <span className="text-xs text-zinc-500">({item.count})</span>
+                <span className="text-sm font-medium text-[var(--color-text)]">{getModelMeta(item.model).label}</span>
+                <span className="text-xs text-[var(--color-text-tertiary)]">({item.count})</span>
               </div>
               <div className="flex items-center gap-3">
                 {item.avgChampionScore !== undefined && (
@@ -78,13 +78,13 @@ export function ModelPerformanceChart({ data, onModelClick, className }: ModelPe
                     Fiabilité : {item.avgChampionScore.toFixed(1)}/100
                   </span>
                 )}
-                <span className="text-sm font-semibold text-white tabular-nums">
+                <span className="text-sm font-semibold text-[var(--color-text)] tabular-nums">
                   {item.percentage.toFixed(0)}%
                 </span>
               </div>
             </div>
 
-            <div className="relative h-3 bg-white/5 rounded-full overflow-hidden">
+            <div className="relative h-3 bg-[var(--color-bg-surface)] rounded-full overflow-hidden">
               <motion.div
                 className={cn(
                   "absolute inset-y-0 left-0 rounded-full bg-gradient-to-r",

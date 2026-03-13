@@ -45,7 +45,7 @@ export function ReliabilityDetailTable({ data, onModelClick }: ReliabilityDetail
               "w-2 h-2 rounded-full transition-all",
               i < filled
                 ? cn(getScoreDotBg(score), getScoreDotShadow(score))
-                : "bg-white/10"
+                : "bg-[var(--color-bg-surface)]"
             )}
           />
         ))}
@@ -54,7 +54,7 @@ export function ReliabilityDetailTable({ data, onModelClick }: ReliabilityDetail
   }
   if (data.length === 0) {
     return (
-      <div className="py-8 text-center text-zinc-500">
+      <div className="py-8 text-center text-[var(--color-text-tertiary)]">
         Aucune donnée disponible
       </div>
     );
@@ -63,12 +63,12 @@ export function ReliabilityDetailTable({ data, onModelClick }: ReliabilityDetail
   return (
     <div>
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-        <h3 className="text-sm font-medium text-zinc-300 font-display">
+        <div className="w-1.5 h-1.5 rounded-full bg-[var(--color-copper)]" />
+        <h3 className="text-sm font-medium text-[var(--color-text)] font-display">
           Détail par méthode
         </h3>
       </div>
-      <div className="divide-y divide-white/5">
+      <div className="divide-y divide-[var(--color-border)]">
         {data.map((item, index) => (
           <motion.button
             key={item.technicalName}
@@ -78,7 +78,7 @@ export function ReliabilityDetailTable({ data, onModelClick }: ReliabilityDetail
             onClick={() => onModelClick(item.technicalName)}
             className={cn(
               "w-full flex items-center gap-4 px-3 py-3 rounded-xl transition-all duration-200",
-              "hover:bg-white/5 cursor-pointer text-left",
+              "hover:bg-[var(--color-bg-surface)] cursor-pointer text-left",
               "border-l-2 border-l-transparent hover:border-l-current"
             )}
             style={{ color: item.familyHex } as React.CSSProperties}
@@ -94,12 +94,12 @@ export function ReliabilityDetailTable({ data, onModelClick }: ReliabilityDetail
 
             {/* Labels */}
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium text-white truncate">{item.label}</p>
-              <p className="text-xs text-zinc-500 truncate">{item.technicalName}</p>
+              <p className="text-sm font-medium text-[var(--color-text)] truncate">{item.label}</p>
+              <p className="text-xs text-[var(--color-text-tertiary)] truncate">{item.technicalName}</p>
             </div>
 
             {/* Series count */}
-            <div className="text-xs text-zinc-400 shrink-0 w-16 text-right">
+            <div className="text-xs text-[var(--color-text-secondary)] shrink-0 w-16 text-right">
               {item.seriesCount} {item.seriesCount > 1 ? "séries" : "série"}
             </div>
 
@@ -114,7 +114,7 @@ export function ReliabilityDetailTable({ data, onModelClick }: ReliabilityDetail
             </div>
 
             {/* Percentage */}
-            <div className="text-xs text-zinc-500 tabular-nums shrink-0 w-10 text-right">
+            <div className="text-xs text-[var(--color-text-tertiary)] tabular-nums shrink-0 w-10 text-right">
               {item.percentage.toFixed(0)}%
             </div>
           </motion.button>

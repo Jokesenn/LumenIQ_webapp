@@ -70,7 +70,7 @@ export function AbcXyzMatrix({ data, onCellClick, selectedCell, className }: Abc
             <span className={cn("text-sm font-semibold font-display", xyzLabels[xyz].color)}>
               {xyz}
             </span>
-            <p className="text-xs text-zinc-500">{xyzLabels[xyz].label}</p>
+            <p className="text-xs text-[var(--color-text-tertiary)]">{xyzLabels[xyz].label}</p>
           </div>
         ))}
       </div>
@@ -84,7 +84,7 @@ export function AbcXyzMatrix({ data, onCellClick, selectedCell, className }: Abc
               <span className={cn("text-sm font-semibold font-display", abcLabels[abc].color)}>
                 {abc}
               </span>
-              <p className="text-xs text-zinc-500">{abcLabels[abc].label}</p>
+              <p className="text-xs text-[var(--color-text-tertiary)]">{abcLabels[abc].label}</p>
             </div>
           </div>
 
@@ -114,14 +114,14 @@ export function AbcXyzMatrix({ data, onCellClick, selectedCell, className }: Abc
               >
                 <div className="text-center">
                   <motion.span
-                    className="text-2xl font-bold text-white block"
+                    className="text-2xl font-bold text-[var(--color-text)] block"
                     key={cell?.count}
                     initial={{ scale: 1.2 }}
                     animate={{ scale: 1 }}
                   >
                     {cell?.count || 0}
                   </motion.span>
-                  <span className="text-xs text-zinc-300">
+                  <span className="text-xs text-[var(--color-text)]">
                     {(cell?.percentage ?? 0).toFixed(0)}%
                   </span>
                 </div>
@@ -139,7 +139,7 @@ export function AbcXyzMatrix({ data, onCellClick, selectedCell, className }: Abc
       ))}
 
       {/* Legend */}
-      <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-center gap-6 text-xs text-zinc-500">
+      <div className="mt-4 pt-4 border-t border-[var(--color-border)] flex items-center justify-center gap-6 text-xs text-[var(--color-text-tertiary)]">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded bg-emerald-500/30" />
           <span>Priorité haute</span>
