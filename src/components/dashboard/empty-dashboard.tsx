@@ -7,13 +7,13 @@ export function EmptyDashboard() {
     <div className="dash-card dash-empty-hex p-12">
       <div className="text-center max-w-md mx-auto">
         {/* Icon */}
-        <div className="w-16 h-16 rounded-2xl bg-amber-700/10 flex items-center justify-center mx-auto mb-6">
-          <Sparkles size={32} className="text-amber-700" />
+        <div className="w-16 h-16 rounded-2xl bg-[var(--color-copper-bg)] flex items-center justify-center mx-auto mb-6">
+          <Sparkles size={32} className="text-[var(--color-copper)]" />
         </div>
 
         {/* Title & Description */}
         <h2 className="dash-section-title mb-2">
-          Bienvenue sur LumenIQ
+          Bienvenue sur PREVYA
         </h2>
         <p className="text-[var(--color-text-secondary)] mb-6">
           Lancez votre première prévision en quelques clics et découvrez la
@@ -54,7 +54,7 @@ export function EmptyDashboard() {
 function StepItem({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
     <div className="flex items-start gap-3">
-      <div className="w-8 h-8 rounded-lg bg-amber-700/10 flex items-center justify-center flex-shrink-0 text-amber-700">
+      <div className="w-8 h-8 rounded-lg bg-[var(--color-copper-bg)] flex items-center justify-center flex-shrink-0 text-[var(--color-copper)]">
         {icon}
       </div>
       <div>

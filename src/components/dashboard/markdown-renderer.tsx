@@ -53,7 +53,7 @@ const components: Components = {
   ),
   li: ({ children }) => <li className="leading-relaxed">{children}</li>,
   blockquote: ({ children }) => (
-    <blockquote className="border-l-2 border-amber-700/40 pl-4 my-3 text-[var(--color-text-tertiary)] italic">
+    <blockquote className="border-l-2 border-[var(--color-copper)]/40 pl-4 my-3 text-[var(--color-text-tertiary)] italic">
       {children}
     </blockquote>
   ),
@@ -61,7 +61,7 @@ const components: Components = {
     const isInline = !className;
     if (isInline) {
       return (
-        <code className="bg-[var(--color-bg-surface)] text-amber-700 px-1.5 py-0.5 rounded text-sm font-mono">
+        <code className="bg-[var(--color-bg-surface)] text-[var(--color-copper)] px-1.5 py-0.5 rounded text-sm font-mono">
           {children}
         </code>
       );
@@ -85,7 +85,7 @@ const components: Components = {
       return (
         <Link
           href={href}
-          className="text-amber-700 hover:text-amber-600 underline underline-offset-2 transition-colors"
+          className="text-[var(--color-copper)] hover:text-[var(--color-copper-hover)] underline underline-offset-2 transition-colors"
         >
           {children}
         </Link>
@@ -96,7 +96,7 @@ const components: Components = {
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-amber-700 hover:text-amber-600 underline underline-offset-2"
+        className="text-[var(--color-copper)] hover:text-[var(--color-copper-hover)] underline underline-offset-2"
       >
         {children}
       </a>

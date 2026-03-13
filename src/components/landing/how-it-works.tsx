@@ -53,8 +53,7 @@ export function HowItWorks() {
       aria-label="Comment ça marche"
       className="relative py-28 overflow-hidden"
     >
-      <div className="absolute inset-0 bg-zinc-925" />
-      <div className="absolute inset-0 bg-iso-lines opacity-40" />
+      <div className="absolute inset-0 bg-[var(--color-bg-surface)]" />
 
       <div className="relative z-10 max-w-[1400px] mx-auto px-6 sm:px-8">
         {/* Section header */}
@@ -62,7 +61,7 @@ export function HowItWorks() {
           <div className="absolute -top-8 left-0 section-number">03</div>
           <div className="relative z-10 max-w-2xl">
             <FadeIn>
-              <p className="text-sm font-display font-600 uppercase tracking-[0.2em] text-indigo-400 mb-4">
+              <p className="text-sm font-display font-600 uppercase tracking-[0.2em] text-[var(--color-copper)] mb-4">
                 Processus
               </p>
             </FadeIn>
@@ -70,7 +69,7 @@ export function HowItWorks() {
               <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-800 tracking-[-0.03em] leading-[1.05]">
                 <span className="text-gradient">De l&apos;upload au forecast :</span>
                 <br />
-                <span className="text-white">5 minutes chrono</span>
+                <span className="text-[var(--color-text)]">5 minutes chrono</span>
               </h2>
             </FadeIn>
           </div>
@@ -79,9 +78,9 @@ export function HowItWorks() {
         {/* Vertical alternating timeline */}
         <div className="relative max-w-4xl mx-auto">
           {/* Central vertical line */}
-          <div className="absolute left-1/2 -translate-x-px top-0 bottom-0 w-0.5 bg-zinc-800 hidden md:block">
+          <div className="absolute left-1/2 -translate-x-px top-0 bottom-0 w-0.5 bg-[var(--color-border)] hidden md:block">
             <motion.div
-              className="w-full bg-gradient-to-b from-indigo-500 to-violet-500 origin-top"
+              className="w-full bg-[var(--color-copper)] origin-top"
               initial={{ scaleY: 0 }}
               whileInView={{ scaleY: 1 }}
               viewport={{ once: true, amount: 0.3 }}
@@ -106,12 +105,12 @@ export function HowItWorks() {
                   {/* Node on the center line */}
                   <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 top-4 z-10">
                     <motion.div
-                      className="w-12 h-12 rounded-full bg-zinc-900 border-2 border-zinc-700 flex items-center justify-center"
-                      whileInView={{ borderColor: "#6366f1", backgroundColor: "rgba(99,102,241,0.08)" }}
+                      className="w-12 h-12 rounded-full bg-white border-2 border-[var(--color-border)] flex items-center justify-center"
+                      whileInView={{ borderColor: "var(--color-copper)", backgroundColor: "var(--color-copper-bg)" }}
                       viewport={{ once: true }}
                       transition={{ delay: i * 0.15 + 0.3 }}
                     >
-                      <span className="text-lg font-display font-800 text-indigo-400">{step.number}</span>
+                      <span className="text-lg font-display font-800 text-[var(--color-copper)]">{step.number}</span>
                     </motion.div>
                   </div>
 
@@ -122,24 +121,24 @@ export function HowItWorks() {
                   )}>
                     {/* Mobile step number */}
                     <div className="md:hidden flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
-                        <span className="text-sm font-display font-800 text-indigo-400">{step.number}</span>
+                      <div className="w-10 h-10 rounded-full bg-[var(--color-copper-bg)] border border-[var(--color-border)] flex items-center justify-center">
+                        <span className="text-sm font-display font-800 text-[var(--color-copper)]">{step.number}</span>
                       </div>
-                      <div className="h-px flex-1 bg-gradient-to-r from-indigo-500/20 to-transparent" />
+                      <div className="h-px flex-1 bg-gradient-to-r from-[var(--color-copper)]/20 to-transparent" />
                     </div>
 
                     <div className={`${isLeft ? "md:ml-auto" : ""} max-w-sm`}>
                       {/* Duration badge */}
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium text-indigo-400 bg-indigo-500/10 border border-indigo-500/15 mb-4">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium text-[var(--color-copper)] bg-[var(--color-copper-bg)] border border-[var(--color-border)] mb-4">
                         {step.duration}
                       </span>
 
-                      <div className={`w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center mb-4 ${isLeft ? "md:ml-auto" : ""}`}>
-                        <step.icon className="w-5 h-5 text-indigo-400" />
+                      <div className={`w-10 h-10 rounded-xl bg-[var(--color-copper-bg)] flex items-center justify-center mb-4 ${isLeft ? "md:ml-auto" : ""}`}>
+                        <step.icon className="w-5 h-5 text-[var(--color-copper)]" />
                       </div>
 
-                      <h3 className="text-xl font-display font-700 text-white mb-2">{step.title}</h3>
-                      <p className="text-sm text-zinc-400 leading-relaxed">{step.description}</p>
+                      <h3 className="text-xl font-display font-700 text-[var(--color-text)] mb-2">{step.title}</h3>
+                      <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">{step.description}</p>
                     </div>
                   </div>
                 </motion.div>
@@ -152,7 +151,7 @@ export function HowItWorks() {
         <FadeIn delay={0.5}>
           <div className="mt-20 text-center">
             <Link href="/login?mode=signup">
-              <MagneticButton className="group px-8 py-4 bg-indigo-500 hover:bg-indigo-600 rounded-xl font-semibold text-white transition-all duration-300 glow-pulse shimmer">
+              <MagneticButton className="group px-8 py-4 btn-copper rounded-xl font-semibold text-white transition-all duration-300">
                 <span className="flex items-center gap-2">
                   Lancer mon premier forecast
                   <motion.span
@@ -164,7 +163,7 @@ export function HowItWorks() {
                 </span>
               </MagneticButton>
             </Link>
-            <p className="mt-4 text-sm text-zinc-500">
+            <p className="mt-4 text-sm text-[var(--color-text-tertiary)]">
               Aucune carte bancaire requise
             </p>
           </div>
@@ -173,4 +172,3 @@ export function HowItWorks() {
     </section>
   );
 }
-

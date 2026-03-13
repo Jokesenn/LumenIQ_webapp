@@ -107,7 +107,7 @@ const CLUSTERS: ClusterDef[] = [
     id: "trendy",
     label: "En croissance ou déclin",
     color: "#f59e0b",
-    colorClass: "bg-amber-500/15 text-amber-400 border-amber-500/30",
+    colorClass: "bg-[var(--color-copper-bg)] text-[var(--color-copper)] border-[var(--color-copper)]/30",
     icon: "🟡",
     description: "Tendance forte détectée",
     advice:
@@ -219,7 +219,7 @@ function ReliabilityBar({
   const segments = [
     { key: "excellent", count: buckets.excellent, color: "bg-emerald-500" },
     { key: "good", count: buckets.good, color: "bg-blue-500" },
-    { key: "moderate", count: buckets.moderate, color: "bg-amber-500" },
+    { key: "moderate", count: buckets.moderate, color: "bg-[var(--color-copper)]" },
     { key: "poor", count: buckets.poor, color: "bg-red-500" },
   ];
 
@@ -259,8 +259,8 @@ function AbcBar({ counts }: { counts: { A: number; B: number; C: number } }) {
   if (total === 0) return null;
 
   const segments = [
-    { key: "A", count: counts.A, color: "bg-amber-700", label: "A" },
-    { key: "B", count: counts.B, color: "bg-amber-700/60", label: "B" },
+    { key: "A", count: counts.A, color: "bg-[var(--color-copper)]", label: "A" },
+    { key: "B", count: counts.B, color: "bg-[var(--color-copper)]/60", label: "B" },
     { key: "C", count: counts.C, color: "bg-zinc-500", label: "C" },
   ];
 
@@ -521,7 +521,7 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
       : "—";
 
     return (
-      <div className="rounded-xl border border-[var(--color-border)] bg-white backdrop-blur-sm px-3 sm:px-4 py-2.5 sm:py-3 shadow-xl text-xs sm:text-sm space-y-1 sm:space-y-1.5 max-w-[260px] sm:max-w-xs">
+      <div className="rounded-xl border border-[var(--color-border)] bg-white px-3 sm:px-4 py-2.5 sm:py-3 shadow-xl text-xs sm:text-sm space-y-1 sm:space-y-1.5 max-w-[260px] sm:max-w-xs">
         <p className="font-semibold text-[var(--color-text)] truncate">{d.series_id}</p>
         <div className="flex items-center gap-2">
           <span
@@ -577,7 +577,7 @@ export function PortfolioView({ allSeries, jobId, onClusterNavigate }: Portfolio
                 </span>
                 <button
                   onClick={() => handleSetActiveCluster(null)}
-                  className="ml-2 text-amber-700 hover:text-amber-600 underline"
+                  className="ml-2 text-[var(--color-copper)] hover:text-[var(--color-copper-hover)] underline"
                 >
                   Tout afficher
                 </button>
@@ -877,7 +877,7 @@ function ClusterCard({
       className={cn(
         "rounded-2xl border p-4 text-left transition-all hover:border-[var(--color-border)] cursor-pointer",
         isHighlighted
-          ? "border-amber-700/50 bg-amber-700/5"
+          ? "border-[var(--color-copper)]/50 bg-[var(--color-copper-bg-soft)]"
           : "border-[var(--color-border)] bg-white"
       )}
     >
@@ -922,7 +922,7 @@ function ClusterCard({
         </div>
         {hasAlerts && (
           <div>
-            <p className="text-lg font-bold text-amber-400">
+            <p className="text-lg font-bold text-[var(--color-copper)]">
               {stats.alertCount}
             </p>
             <p className="text-[11px] text-[var(--color-text-tertiary)]">Alertes</p>
@@ -981,7 +981,7 @@ function ClusterCard({
           onNavigateToSeries(cluster.id);
         }}
         className="w-full mt-3 pt-3 border-t border-[var(--color-border)] flex items-center justify-center gap-2
-                   text-xs text-amber-700 hover:text-amber-600 transition-colors"
+                   text-xs text-[var(--color-copper)] hover:text-[var(--color-copper-hover)] transition-colors"
       >
         Voir les {stats.count} produit{stats.count > 1 ? "s" : ""}
         <ArrowRight className="w-3 h-3" />

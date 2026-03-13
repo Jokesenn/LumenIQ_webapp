@@ -61,19 +61,19 @@ const comparisonRows = [
 function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <div className="border-b border-white/[0.05] last:border-0">
+    <div className="border-b border-[var(--color-border)] last:border-0">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between py-5 text-left group"
       >
-        <span className="text-sm font-medium text-white group-hover:text-indigo-300 transition-colors pr-4">
+        <span className="text-sm font-medium text-[var(--color-text)] group-hover:text-[var(--color-copper)] transition-colors pr-4">
           {question}
         </span>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.3 }}
         >
-          <ChevronDown className="w-4 h-4 text-zinc-500 shrink-0" />
+          <ChevronDown className="w-4 h-4 text-[var(--color-text-tertiary)] shrink-0" />
         </motion.div>
       </button>
       <AnimatePresence initial={false}>
@@ -85,7 +85,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
             transition={{ duration: 0.3, ease: [0.21, 0.47, 0.32, 0.98] }}
             className="overflow-hidden"
           >
-            <p className="text-sm text-zinc-400 font-light leading-relaxed pb-5">
+            <p className="text-sm text-[var(--color-text-secondary)] font-light leading-relaxed pb-5">
               {answer}
             </p>
           </motion.div>
@@ -110,36 +110,26 @@ function PricingCard({ plan, index }: { plan: PricingPlan; index: number }) {
         className={cn(
           "relative rounded-2xl p-8 flex flex-col h-full transition-all duration-500",
           isML
-            ? "border-2 border-indigo-500/40 bg-gradient-to-b from-indigo-500/[0.08] via-indigo-500/[0.03] to-transparent shadow-[0_0_80px_rgba(99,102,241,0.1)] scale-[1.02] lg:scale-105 z-10"
+            ? "border-2 border-[var(--color-copper)]/40 bg-white shadow-lg scale-[1.02] lg:scale-105 z-10"
             : isPremium
-            ? "border-2 border-amber-500/30 bg-gradient-to-b from-amber-500/[0.05] to-transparent"
-            : "border border-white/[0.06] bg-zinc-900/40 hover:border-white/[0.1]"
+            ? "border-2 border-[var(--color-copper)]/30 bg-white"
+            : "border border-[var(--color-border)] bg-white hover:border-[var(--color-border-hover)]"
         )}
         whileHover={{ y: isML ? -4 : -8 }}
       >
-        {/* Background glow for ML card */}
-        {isML && (
-          <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-indigo-500/[0.04] to-transparent pointer-events-none" />
-        )}
 
         {/* Badge */}
         {(plan.popular || plan.badge) && (
           <motion.div
             className={cn(
               "absolute top-[-14px] left-1/2 -translate-x-1/2 px-5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap text-white tracking-wide",
-              isPremium
-                ? "bg-gradient-to-r from-amber-500 to-orange-500"
-                : "bg-gradient-to-r from-indigo-500 to-violet-500"
+              "btn-copper"
             )}
             initial={{ y: -5, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3 + index * 0.1, duration: 0.5 }}
           >
-            {/* Shimmer effect on popular badge */}
-            {isML && (
-              <span className="absolute inset-0 rounded-full shimmer pointer-events-none" />
-            )}
-            <span className="relative z-10">{plan.badge || "PLUS POPULAIRE"}</span>
+            {plan.badge || "PLUS POPULAIRE"}
           </motion.div>
         )}
 
@@ -149,25 +139,25 @@ function PricingCard({ plan, index }: { plan: PricingPlan; index: number }) {
             <div className={cn(
               "w-11 h-11 rounded-xl flex items-center justify-center",
               isPremium
-                ? "bg-amber-500/10 text-amber-400"
+                ? "bg-[var(--color-copper)]/10 text-[var(--color-copper)]"
                 : isML
-                ? "bg-indigo-500/15 text-indigo-400"
-                : "bg-zinc-800 text-zinc-400"
+                ? "bg-[var(--color-copper)]/15 text-[var(--color-copper)]"
+                : "bg-[var(--color-bg-surface)] text-[var(--color-text-secondary)]"
             )}>
               <Icon size={20} />
             </div>
-            <h3 className="text-2xl font-display font-800 text-white">{plan.name}</h3>
+            <h3 className="text-2xl font-display font-800 text-[var(--color-text)]">{plan.name}</h3>
           </div>
 
-          <p className="text-sm text-zinc-500 mb-6 min-h-[42px]">{plan.description}</p>
+          <p className="text-sm text-[var(--color-text-tertiary)] mb-6 min-h-[42px]">{plan.description}</p>
 
           {/* Price */}
           <div className="mb-8">
             <div className="flex items-baseline gap-1">
-              <span className="text-5xl font-display font-800 text-white tracking-[-0.04em]">{plan.price}</span>
-              <span className="text-base text-zinc-500">EUR</span>
+              <span className="text-5xl font-display font-800 text-[var(--color-text)] tracking-[-0.04em]">{plan.price}</span>
+              <span className="text-base text-[var(--color-text-tertiary)]">EUR</span>
             </div>
-            <span className="text-sm text-zinc-600">/ mois</span>
+            <span className="text-sm text-[var(--color-text-tertiary)]">/ mois</span>
           </div>
 
           {/* CTA */}
@@ -175,11 +165,9 @@ function PricingCard({ plan, index }: { plan: PricingPlan; index: number }) {
             <MagneticButton
               className={cn(
                 "w-full py-3.5 rounded-xl font-semibold transition-all text-sm",
-                isML
-                  ? "bg-indigo-500 hover:bg-indigo-600 text-white glow-pulse"
-                  : isPremium
-                  ? "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white"
-                  : "bg-white/[0.05] hover:bg-white/[0.08] text-white border border-white/[0.08]"
+                isML || isPremium
+                  ? "btn-copper"
+                  : "bg-[var(--color-bg-surface)] hover:bg-[var(--color-bg)] text-[var(--color-text)] border border-[var(--color-border)]"
               )}
             >
               Essai gratuit {TRIAL_DURATION_MONTHS} mois
@@ -199,9 +187,9 @@ function PricingCard({ plan, index }: { plan: PricingPlan; index: number }) {
               >
                 <Check size={14} className={cn(
                   "shrink-0",
-                  isPremium ? "text-amber-400" : isML ? "text-indigo-400" : "text-emerald-500"
+                  isPremium ? "text-[var(--color-copper)]" : isML ? "text-[var(--color-copper)]" : "text-emerald-500"
                 )} />
-                <span className="text-sm text-zinc-400">{f}</span>
+                <span className="text-sm text-[var(--color-text-secondary)]">{f}</span>
               </motion.div>
             ))}
           </div>
@@ -217,11 +205,7 @@ function PricingCard({ plan, index }: { plan: PricingPlan; index: number }) {
 
 export default function PricingPage() {
   return (
-    <div className="relative min-h-screen bg-zinc-950 overflow-hidden">
-      {/* Background layers */}
-      <div className="absolute inset-0 bg-hex-pattern opacity-30 pointer-events-none" />
-      <div className="absolute top-[-10%] left-[-5%] w-[500px] h-[500px] rounded-full bg-indigo-500/8 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-5%] w-[400px] h-[400px] rounded-full bg-violet-500/6 blur-[140px] pointer-events-none" />
+    <div className="relative min-h-screen bg-[var(--color-bg)] overflow-hidden">
 
       <Navbar />
 
@@ -230,25 +214,22 @@ export default function PricingPage() {
         {/*  HERO                                         */}
         {/* ============================================ */}
         <section className="relative py-24 md:py-32 px-6 overflow-hidden">
-          <div className="absolute inset-0 gradient-mesh pointer-events-none" />
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] light-beam opacity-25 pointer-events-none" />
-
           <div className="relative max-w-[1200px] mx-auto text-center">
             <FadeIn>
               <motion.div
-                className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-indigo-500/8 border border-indigo-500/15 mb-8"
+                className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-[var(--color-copper)]/8 border border-[var(--color-copper)]/15 mb-8"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.1, duration: 0.5 }}
               >
-                <Shield className="w-4 h-4 text-indigo-400" />
-                <span className="text-sm text-zinc-300 font-medium">Tarification transparente</span>
+                <Shield className="w-4 h-4 text-[var(--color-copper)]" />
+                <span className="text-sm text-[var(--color-text-secondary)] font-medium">Tarification transparente</span>
               </motion.div>
             </FadeIn>
 
             <h1 className="font-display tracking-[-0.03em] leading-[0.92] mb-6">
               <motion.span
-                className="block text-5xl md:text-6xl lg:text-[5rem] font-300 text-zinc-300"
+                className="block text-5xl md:text-6xl lg:text-[5rem] font-300 text-[var(--color-text-secondary)]"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.7, ease: [0.21, 0.47, 0.32, 0.98] }}
@@ -266,7 +247,7 @@ export default function PricingPage() {
             </h1>
 
             <FadeIn delay={0.5}>
-              <p className="text-lg text-zinc-400 font-light max-w-[500px] mx-auto">
+              <p className="text-lg text-[var(--color-text-secondary)] font-light max-w-[500px] mx-auto">
                 Essai gratuit {TRIAL_DURATION_MONTHS} mois. Aucun engagement. Annulez à tout moment.
               </p>
             </FadeIn>
@@ -291,42 +272,42 @@ export default function PricingPage() {
         {/* ============================================ */}
         {/*  COMPARISON TABLE — Premium style             */}
         {/* ============================================ */}
-        <section className="relative py-20 px-6 section-glow-top">
-          <div className="absolute inset-0 bg-zinc-925 pointer-events-none" />
+        <section className="relative py-20 px-6">
+          <div className="absolute inset-0 bg-[var(--color-bg-surface)] pointer-events-none" />
           <div className="relative max-w-[1000px] mx-auto">
             <FadeIn>
               <div className="text-center mb-12">
-                <p className="text-sm font-display font-600 uppercase tracking-[0.2em] text-indigo-400 mb-4">
+                <p className="text-sm font-display font-600 uppercase tracking-[0.2em] text-[var(--color-copper)] mb-4">
                   Comparaison
                 </p>
-                <h2 className="font-display text-3xl md:text-4xl font-800 text-white tracking-[-0.03em]">
+                <h2 className="font-display text-3xl md:text-4xl font-800 text-[var(--color-text)] tracking-[-0.03em]">
                   Comparaison détaillée
                 </h2>
               </div>
             </FadeIn>
 
             <FadeIn delay={0.15}>
-              <div className="rounded-2xl border border-white/[0.06] overflow-hidden">
+              <div className="rounded-2xl border border-[var(--color-border)] overflow-hidden bg-white">
                 {/* Header */}
-                <div className="grid grid-cols-4 bg-zinc-900/60">
-                  <div className="p-5 text-sm text-zinc-500 font-medium">Fonctionnalité</div>
+                <div className="grid grid-cols-4 bg-[var(--color-bg-surface)]">
+                  <div className="p-5 text-sm text-[var(--color-text-tertiary)] font-medium">Fonctionnalité</div>
                   <div className="p-5 text-center">
                     <div className="flex items-center justify-center gap-2">
-                      <Zap size={14} className="text-zinc-400" />
-                      <span className="text-sm font-display font-600 text-white">Standard</span>
+                      <Zap size={14} className="text-[var(--color-text-secondary)]" />
+                      <span className="text-sm font-display font-600 text-[var(--color-text)]">Standard</span>
                     </div>
                   </div>
                   <div className="p-5 text-center relative">
-                    <div className="absolute inset-0 bg-indigo-500/[0.06]" />
+                    <div className="absolute inset-0 bg-[var(--color-copper)]/[0.06]" />
                     <div className="relative flex items-center justify-center gap-2">
-                      <Sparkles size={14} className="text-indigo-400" />
-                      <span className="text-sm font-display font-600 text-indigo-300">ML</span>
+                      <Sparkles size={14} className="text-[var(--color-copper)]" />
+                      <span className="text-sm font-display font-600 text-[var(--color-copper)]">ML</span>
                     </div>
                   </div>
                   <div className="p-5 text-center">
                     <div className="flex items-center justify-center gap-2">
-                      <Crown size={14} className="text-amber-400" />
-                      <span className="text-sm font-display font-600 text-amber-300">Premium</span>
+                      <Crown size={14} className="text-[var(--color-copper)]" />
+                      <span className="text-sm font-display font-600 text-[var(--color-copper)]">Premium</span>
                     </div>
                   </div>
                 </div>
@@ -335,29 +316,29 @@ export default function PricingPage() {
                 {comparisonRows.map((row, i) => (
                   <motion.div
                     key={i}
-                    className="grid grid-cols-4 border-t border-white/[0.04] hover:bg-white/[0.01] transition-colors"
+                    className="grid grid-cols-4 border-t border-[var(--color-border)] hover:bg-[var(--color-bg-surface)]/50 transition-colors"
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
                     transition={{ delay: 0.03 * i, duration: 0.3 }}
                   >
-                    <div className="p-4 text-sm text-zinc-400">{row.feature}</div>
+                    <div className="p-4 text-sm text-[var(--color-text-secondary)]">{row.feature}</div>
                     {row.values.map((val, j) => (
                       <div
                         key={j}
                         className={cn(
                           "p-4 text-center text-sm",
-                          j === 1 && "bg-indigo-500/[0.04]"
+                          j === 1 && "bg-[var(--color-copper)]/[0.04]"
                         )}
                       >
                         {row.type === "bool" ? (
                           val ? (
                             <Check size={16} className="mx-auto text-emerald-500" />
                           ) : (
-                            <X size={16} className="mx-auto text-zinc-600" />
+                            <X size={16} className="mx-auto text-[var(--color-text-tertiary)]" />
                           )
                         ) : (
-                          <span className="text-zinc-300">{val as string}</span>
+                          <span className="text-[var(--color-text-secondary)]">{val as string}</span>
                         )}
                       </div>
                     ))}
@@ -375,17 +356,17 @@ export default function PricingPage() {
           <div className="max-w-[700px] mx-auto">
             <FadeIn>
               <div className="text-center mb-12">
-                <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center mx-auto mb-4">
-                  <HelpCircle className="w-5 h-5 text-indigo-400" />
+                <div className="w-10 h-10 rounded-xl bg-[var(--color-copper)]/10 flex items-center justify-center mx-auto mb-4">
+                  <HelpCircle className="w-5 h-5 text-[var(--color-copper)]" />
                 </div>
-                <h2 className="font-display text-2xl md:text-3xl font-800 text-white tracking-[-0.02em]">
+                <h2 className="font-display text-2xl md:text-3xl font-800 text-[var(--color-text)] tracking-[-0.02em]">
                   Questions fréquentes
                 </h2>
               </div>
             </FadeIn>
 
             <FadeIn delay={0.15}>
-              <div className="rounded-2xl bg-zinc-900/30 border border-white/[0.05] p-6 md:p-8">
+              <div className="card-signal p-6 md:p-8">
                 {faqItems.map((item, i) => (
                   <FAQItem key={i} question={item.question} answer={item.answer} />
                 ))}
@@ -398,35 +379,25 @@ export default function PricingPage() {
         {/*  ENTERPRISE CTA                               */}
         {/* ============================================ */}
         <section className="relative py-24 px-6 overflow-hidden">
-          <div className="absolute inset-0 gradient-mesh pointer-events-none" />
-          <div className="absolute inset-0 bg-hex-pattern opacity-15 pointer-events-none" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-indigo-500/8 blur-[140px] pointer-events-none" />
-
           <div className="relative max-w-[800px] mx-auto">
             <FadeIn>
-              <div className="relative rounded-2xl border border-white/[0.08] p-10 md:p-14 text-center overflow-hidden">
-                {/* Gradient border animation */}
-                <div className="absolute inset-0 rounded-2xl gradient-border pointer-events-none" />
-                <div className="absolute inset-0 bg-zinc-900/80 backdrop-blur-xl rounded-2xl" />
-
+              <div className="card-signal p-10 md:p-14 text-center overflow-hidden">
                 <div className="relative">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 p-[1px] mx-auto mb-6">
-                    <div className="w-full h-full rounded-xl bg-zinc-900 flex items-center justify-center">
-                      <Sparkles className="w-5 h-5 text-indigo-400" />
-                    </div>
+                  <div className="w-12 h-12 rounded-xl bg-[var(--color-copper)]/10 flex items-center justify-center mx-auto mb-6">
+                    <Sparkles className="w-5 h-5 text-[var(--color-copper)]" />
                   </div>
 
-                  <h3 className="text-2xl md:text-3xl font-display font-800 text-white mb-4 tracking-tight">
+                  <h3 className="text-2xl md:text-3xl font-display font-800 text-[var(--color-text)] mb-4 tracking-tight">
                     Besoin d&apos;un volume supérieur ?
                   </h3>
-                  <p className="text-zinc-400 mb-8 font-light text-sm max-w-[500px] mx-auto leading-relaxed">
+                  <p className="text-[var(--color-text-secondary)] mb-8 font-light text-sm max-w-[500px] mx-auto leading-relaxed">
                     Pour les entreprises avec plus de 500 séries/mois ou des besoins spécifiques
                     (on-premise, intégrations custom, SLA), contactez-nous pour un devis personnalisé.
                   </p>
 
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Link href="/contact">
-                      <MagneticButton className="group px-8 py-4 bg-indigo-500 hover:bg-indigo-600 rounded-xl font-semibold text-white glow-pulse transition-all">
+                      <MagneticButton className="btn-copper group px-8 py-4 rounded-xl font-semibold transition-all">
                         <span className="flex items-center gap-2">
                           <Mail size={16} />
                           Contacter l&apos;équipe

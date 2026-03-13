@@ -50,7 +50,7 @@ function StatusBadge({ status }: { status: string }) {
       );
     case "processing":
       return (
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-500/10 text-amber-500 rounded-full text-xs font-semibold">
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[var(--color-copper-bg)] text-[var(--color-copper)] rounded-full text-xs font-semibold">
           <Loader2 size={12} className="animate-spin" />
           En cours
         </span>
@@ -88,7 +88,7 @@ function ChampionScoreBadge({ score, green, yellow }: { score: number | null; gr
         score >= green
           ? "bg-emerald-500/10 text-emerald-500"
           : score >= yellow
-            ? "bg-amber-500/10 text-amber-400"
+            ? "bg-[var(--color-copper-bg)] text-[var(--color-copper)]"
             : "bg-red-500/10 text-red-400"
       )}
     >

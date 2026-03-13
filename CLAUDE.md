@@ -1,8 +1,8 @@
-# CLAUDE.md - LumenIQ WebApp
+# CLAUDE.md - PREVYA WebApp
 
 ## Project Overview
 
-LumenIQ is a SaaS forecasting platform for SME retail/e-commerce businesses. It transforms sales histories into forecasts using 32 registered statistical/ML models (24 unique) with ABC/XYZ routing. The frontend is a French-language application.
+PREVYA is a SaaS forecasting platform for SME retail/e-commerce businesses. It transforms sales histories into forecasts using 32 registered statistical/ML models (24 unique) with ABC/XYZ routing. The frontend is a French-language application.
 
 ## Tech Stack
 

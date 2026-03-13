@@ -69,7 +69,7 @@ export function ReliabilityTab({ allSeries, onModelClick }: ReliabilityTabProps)
             ont été testées. Les{" "}
             <span className="text-[var(--color-text)] font-semibold">{summary.coveringModels}</span> meilleures
             couvrent{" "}
-            <span className="text-amber-700 font-semibold">{summary.coveragePercent}%</span> de
+            <span className="text-[var(--color-copper)] font-semibold">{summary.coveragePercent}%</span> de
             vos produits avec un score moyen de{" "}
             <span className="text-emerald-400 font-semibold">{summary.weightedAvgScore}/100</span>.
           </p>

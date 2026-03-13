@@ -1,4 +1,4 @@
-// Mock data extracted from LumenIQ_Website_SaaS_v3.jsx
+// Mock data extracted from PREVYA_Website_SaaS_v3.jsx
 
 export interface ForecastDataPoint {
   date: string;
@@ -141,12 +141,12 @@ export const faqItems = [
   {
     id: "migration-excel",
     question: "Puis-je migrer depuis mes fichiers Excel actuels ?",
-    answer: "Oui. LumenIQ accepte vos CSV/Excel existants. Glissez-déposez votre fichier, le système détecte automatiquement la structure. Pas de reformatage manuel."
+    answer: "Oui. PREVYA accepte vos CSV/Excel existants. Glissez-déposez votre fichier, le système détecte automatiquement la structure. Pas de reformatage manuel."
   },
   {
     id: "format-donnees",
     question: "Quel format de données est accepté ?",
-    answer: "LumenIQ accepte les fichiers CSV et Excel. Votre fichier doit contenir au minimum une colonne date et une ou plusieurs colonnes de valeurs numériques (ventes, quantités...). Le système détecte automatiquement vos colonnes et effectue des contrôles qualité (données manquantes, doublons, valeurs aberrantes)."
+    answer: "PREVYA accepte les fichiers CSV et Excel. Votre fichier doit contenir au minimum une colonne date et une ou plusieurs colonnes de valeurs numériques (ventes, quantités...). Le système détecte automatiquement vos colonnes et effectue des contrôles qualité (données manquantes, doublons, valeurs aberrantes)."
   },
   {
     id: "routing-abc-xyz",
@@ -165,7 +165,7 @@ export const faqItems = [
   },
   {
     id: "integration",
-    question: "Puis-je intégrer LumenIQ à mon système existant ?",
+    question: "Puis-je intégrer PREVYA à mon système existant ?",
     answer: "Oui, le plan Premium (299 €/mois) inclut un accès API REST complet. Vous pouvez automatiser vos prévisions et intégrer les résultats (fichiers de prévision, métriques, rapports) directement dans votre ERP ou outil de BI. Un connecteur Shopify est également prévu prochainement."
   },
 ];

@@ -1,4 +1,4 @@
-# Instructions Claude Code - Refonte Frontend LumenIQ
+# Instructions Claude Code - Refonte Frontend PREVYA
 
 > **OBSOLETE** — Ce fichier est le brief de design initial utilisé lors de la refonte UI.
 > La refonte est terminée. Référez-vous à `CLAUDE.md` pour la documentation à jour du projet.
@@ -6,7 +6,7 @@
 
 ## Contexte Projet (historique)
 
-Ce brief a été utilisé pour refondre **LumenIQ** d'un design basique vers un style "dark SaaS moderne". Le projet utilise maintenant :
+Ce brief a été utilisé pour refondre **PREVYA** d'un design basique vers un style "dark SaaS moderne". Le projet utilise maintenant :
 - Next.js 16 (App Router) — mis à jour depuis Next.js 14
 - Tailwind CSS v4 + shadcn/ui (new-york style) + Framer Motion
 - Supabase Auth SSR + lumeniq schema
@@ -350,14 +350,14 @@ import "./globals.css";
 // import { SupabaseProvider } from "@/components/providers/supabase-provider";
 
 export const metadata: Metadata = {
-  title: "LumenIQ - Prévisions intelligentes pour PME",
+  title: "PREVYA - Prévisions intelligentes pour PME",
   description: "Transformez vos données de vente en forecasts professionnels en 5 minutes. Sans data scientist.",
   keywords: ["forecasting", "prévisions", "PME", "retail", "e-commerce", "IA"],
   openGraph: {
-    title: "LumenIQ - Prévisions intelligentes",
+    title: "PREVYA - Prévisions intelligentes",
     description: "Forecasts professionnels en 5 minutes",
     url: "https://lumeniq.io",
-    siteName: "LumenIQ",
+    siteName: "PREVYA",
     type: "website",
   },
 };
@@ -415,7 +415,7 @@ export function Logo({ size = "md", showText = true, href = "/" }: LogoProps) {
       </div>
       {showText && (
         <span className={`font-bold ${text} text-gradient`}>
-          LumenIQ
+          PREVYA
         </span>
       )}
     </div>
@@ -870,7 +870,7 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <Badge variant="outline" className="mb-4">
-              Pourquoi LumenIQ
+              Pourquoi PREVYA
             </Badge>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Forecasting de niveau <span className="text-indigo-400">enterprise</span>,
@@ -942,7 +942,7 @@ export default function HomePage() {
               Prêt à améliorer vos prévisions ?
             </h2>
             <p className="text-zinc-400 mb-8 max-w-xl mx-auto">
-              Rejoignez les PME qui font confiance à LumenIQ pour leurs décisions
+              Rejoignez les PME qui font confiance à PREVYA pour leurs décisions
               d'approvisionnement et de planification.
             </p>
             <Link href="/signup">

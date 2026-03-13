@@ -99,10 +99,10 @@ export function SeriesContent({
   }, [hasPrevious, hasNext, goToPrevious, goToNext]);
   const classColors: Record<string, string> = {
     A: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
-    B: "bg-amber-500/20 text-amber-400 border-amber-500/30",
+    B: "bg-[var(--color-copper-bg)] text-[var(--color-copper)] border-[var(--color-copper)]/30",
     C: "bg-red-500/20 text-red-400 border-red-500/30",
     X: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
-    Y: "bg-amber-500/20 text-amber-400 border-amber-500/30",
+    Y: "bg-[var(--color-copper-bg)] text-[var(--color-copper)] border-[var(--color-copper)]/30",
     Z: "bg-red-500/20 text-red-400 border-red-500/30",
   };
 
@@ -220,7 +220,7 @@ export function SeriesContent({
 
   const getScoreStatus = (score: number) => {
     if (score >= reliabilityGreen) return { label: "Excellent", color: "text-emerald-400", Icon: CheckCircle2 };
-    if (score >= reliabilityYellow) return { label: "Acceptable", color: "text-amber-400", Icon: Info };
+    if (score >= reliabilityYellow) return { label: "Acceptable", color: "text-[var(--color-copper)]", Icon: Info };
     return { label: "À améliorer", color: "text-red-400", Icon: AlertTriangle };
   };
 
@@ -428,11 +428,11 @@ export function SeriesContent({
                 <span className="text-[var(--color-text-secondary)]">Réel</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-amber-700" />
+                <div className="w-3 h-3 rounded-full bg-[var(--color-copper)]" />
                 <span className="text-[var(--color-text-secondary)]">Prévision</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-sm bg-amber-700/20 border border-amber-700/30" />
+                <div className="w-3 h-3 rounded-sm bg-[var(--color-copper-bg)] border border-[var(--color-copper)]/30" />
                 <span className="text-[var(--color-text-secondary)]">Intervalle de confiance</span>
               </div>
             </div>
@@ -444,7 +444,7 @@ export function SeriesContent({
                   className={cn(
                     "px-3 py-1 text-xs font-medium rounded-md transition-colors",
                     granularity === "monthly"
-                      ? "bg-amber-700/20 text-amber-700"
+                      ? "bg-[var(--color-copper-bg)] text-[var(--color-copper)]"
                       : "text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
                   )}
                   onClick={() => setGranularity("monthly")}
@@ -455,7 +455,7 @@ export function SeriesContent({
                   className={cn(
                     "px-3 py-1 text-xs font-medium rounded-md transition-colors",
                     granularity === "source"
-                      ? "bg-amber-700/20 text-amber-700"
+                      ? "bg-[var(--color-copper-bg)] text-[var(--color-copper)]"
                       : "text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
                   )}
                   onClick={() => setGranularity("source")}
@@ -508,7 +508,7 @@ export function SeriesContent({
                     const maxScore = modelComparison.ranking[0]?.score ?? 100;
                     const barWidth = maxScore > 0 ? (model.score / maxScore) * 100 : 0;
                     const podiumStyles = [
-                      { bg: "bg-amber-700/10", border: "border-amber-700/30", badge: "bg-[var(--color-copper)] text-white", text: "text-amber-700", icon: Crown },
+                      { bg: "bg-[var(--color-copper-bg)]", border: "border-[var(--color-copper)]/30", badge: "bg-[var(--color-copper)] text-white", text: "text-[var(--color-copper)]", icon: Crown },
                       { bg: "bg-[var(--color-bg-surface)]", border: "border-[var(--color-border)]", badge: "bg-[var(--color-bg-surface)] text-[var(--color-text)]", text: "text-[var(--color-text)]", icon: Medal },
                       { bg: "bg-[var(--color-bg-surface)]", border: "border-[var(--color-border)]", badge: "bg-[var(--color-bg-surface)] text-[var(--color-text)]", text: "text-[var(--color-text-secondary)]", icon: Medal },
                     ];
@@ -530,7 +530,7 @@ export function SeriesContent({
                         <div
                           className={cn(
                             "absolute inset-y-0 left-0 opacity-[0.07]",
-                            index === 0 ? "bg-amber-700" : "bg-[var(--color-text-secondary)]",
+                            index === 0 ? "bg-[var(--color-copper)]" : "bg-[var(--color-text-secondary)]",
                           )}
                           style={{ width: `${barWidth}%` }}
                         />
@@ -544,13 +544,13 @@ export function SeriesContent({
                                 {meta.label}
                               </p>
                               <div className="flex items-center gap-2 mt-0.5">
-                                {index === 0 && <span className="text-xs text-amber-700 font-medium">Champion</span>}
+                                {index === 0 && <span className="text-xs text-[var(--color-copper)] font-medium">Champion</span>}
                                 <span className={cn("text-xs", meta.familyColor)}>{meta.family}</span>
                               </div>
                             </div>
                           </div>
                           <div className="text-right shrink-0">
-                            <p className="font-semibold text-[var(--color-text)] tabular-nums">
+                            <p className="font-semibold text-[var(--color-text)] tabular-nums copper-num">
                               {model.score != null ? model.score.toFixed(1) : "N/A"}
                             </p>
                             <p className="text-xs text-[var(--color-text-tertiary)]">/100</p>

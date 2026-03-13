@@ -7,3 +7,4 @@ export { MetricGaugeCard } from "./metric-gauge-card";
 export { ReliabilityBubbleChart } from "./reliability-bubble-chart";
 export { ReliabilityFamilyViz } from "./reliability-family-viz";
 export { ScoreTrendChart } from "./score-trend-chart";
+export { PulseDot } from "./pulse-dot";

@@ -15,8 +15,7 @@ export function FAQSection() {
 
   return (
     <section id="faq" aria-label="Questions frequentes" className="relative py-28 overflow-hidden">
-      <div className="absolute inset-0 bg-zinc-925" />
-      <div className="absolute inset-0 bg-hex-pattern opacity-30" />
+      <div className="absolute inset-0 bg-[var(--color-bg-surface)]" />
 
       <div className="relative z-10 max-w-5xl mx-auto px-6 sm:px-8">
         {/* Header */}
@@ -24,7 +23,7 @@ export function FAQSection() {
           <div className="absolute -top-8 right-0 section-number hidden lg:block">06</div>
           <div className="relative z-10 text-center">
             <FadeIn>
-              <p className="text-sm font-display font-600 uppercase tracking-[0.2em] text-indigo-400 mb-4">
+              <p className="text-sm font-display font-600 uppercase tracking-[0.2em] text-[var(--color-copper)] mb-4">
                 FAQ
               </p>
             </FadeIn>
@@ -56,14 +55,15 @@ export function FAQSection() {
 
         {/* Contact link */}
         <FadeIn delay={0.3}>
-          <p className="text-center text-sm text-zinc-500 mt-12">
+          <p className="text-center text-sm text-[var(--color-text-tertiary)] mt-12">
             Vous ne trouvez pas votre reponse ?{" "}
-            <Link href="/contact" className="text-indigo-400 hover:text-indigo-300 animated-underline">
+            <Link href="/contact" className="text-[var(--color-copper)] hover:text-[var(--color-copper-hover)] underline underline-offset-4 decoration-[var(--color-copper)]/30 hover:decoration-[var(--color-copper)]">
               Contactez-nous
             </Link>
           </p>
         </FadeIn>
 
+        {/* FAQ structured data for SEO — static content from mock-data, safe to inline */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -101,8 +101,8 @@ function FAQItem({ id, question, answer }: FAQItemProps) {
       className={cn(
         "rounded-xl border overflow-hidden transition-all duration-300",
         open
-          ? "border-indigo-500/20 bg-indigo-500/[0.03]"
-          : "border-white/[0.04] bg-zinc-900/30 hover:border-white/[0.06] hover:bg-zinc-900/40"
+          ? "border-[var(--color-copper)]/20 bg-[var(--color-copper-bg-soft)]"
+          : "bg-white border-[var(--color-border)] hover:border-[var(--color-border-med)]"
       )}
       layout
     >
@@ -113,16 +113,16 @@ function FAQItem({ id, question, answer }: FAQItemProps) {
           aria-controls={`${id}-answer`}
           className="w-full p-5 flex justify-between items-center text-left gap-4"
         >
-          <span className="text-sm font-semibold text-white">{question}</span>
+          <span className="text-sm font-semibold text-[var(--color-text)]">{question}</span>
           <motion.div
             className={cn(
               "w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-colors",
-              open ? "bg-indigo-500/15" : "bg-white/[0.04]"
+              open ? "bg-[var(--color-copper-bg)]" : "bg-[var(--color-bg-surface)]"
             )}
             animate={{ rotate: open ? 45 : 0 }}
             transition={{ duration: 0.2 }}
           >
-            <Plus className={cn("w-3.5 h-3.5 transition-colors", open ? "text-indigo-400" : "text-zinc-500")} />
+            <Plus className={cn("w-3.5 h-3.5 transition-colors", open ? "text-[var(--color-copper)]" : "text-[var(--color-text-tertiary)]")} />
           </motion.div>
         </button>
       </h3>
@@ -135,7 +135,7 @@ function FAQItem({ id, question, answer }: FAQItemProps) {
             transition={{ duration: 0.4, ease: [0.04, 0.62, 0.23, 0.98] }}
           >
             <div id={`${id}-answer`} role="region" aria-labelledby={id} className="px-5 pb-5">
-              <p className="text-sm text-zinc-400 leading-relaxed">
+              <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
                 {answer}
               </p>
             </div>

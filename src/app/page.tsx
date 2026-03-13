@@ -31,8 +31,8 @@ function SectionDivider({ variant = "default" }: { variant?: "default" | "subtle
       <div
         className={
           variant === "default"
-            ? "h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent"
-            : "h-px bg-white/[0.03]"
+            ? "h-px bg-gradient-to-r from-transparent via-[var(--color-border)] to-transparent"
+            : "h-px bg-[var(--color-border)]/40"
         }
       />
     </div>
@@ -41,14 +41,14 @@ function SectionDivider({ variant = "default" }: { variant?: "default" | "subtle
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-zinc-950">
+    <div className="min-h-screen bg-[var(--color-bg)]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "SoftwareApplication",
-            "name": "LumenIQ",
+            "name": "PREVYA",
             "applicationCategory": "BusinessApplication",
             "operatingSystem": "Web",
             "offers": {
@@ -65,7 +65,7 @@ export default function Home() {
       {/* Skip to content */}
       <a
         href="#hero"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[60] focus:px-4 focus:py-2 focus:bg-indigo-500 focus:text-white focus:rounded-lg"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[60] focus:px-4 focus:py-2 focus:bg-[var(--color-copper)] focus:text-white focus:rounded-lg"
       >
         Aller au contenu principal
       </a>

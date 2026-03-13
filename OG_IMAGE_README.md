@@ -1,8 +1,8 @@
-# OG Image System - LumenIQ
+# OG Image System - PREVYA
 
 ## Overview
 
-LumenIQ utilise le système de génération d'images Open Graph dynamique de Next.js via `next/og` (`ImageResponse`).
+PREVYA utilise le système de génération d'images Open Graph dynamique de Next.js via `next/og` (`ImageResponse`).
 
 ## Files
 
@@ -17,7 +17,7 @@ Next.js détecte automatiquement ces fichiers par convention (file-based metadat
 <meta property="og:image" content="https://lumeniq.fr/opengraph-image" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<meta property="og:image:alt" content="LumenIQ - Prévisions professionnelles pour PME" />
+<meta property="og:image:alt" content="PREVYA - Prévisions professionnelles pour PME" />
 <meta name="twitter:image" content="https://lumeniq.fr/twitter-image" />
 <meta name="twitter:card" content="summary_large_image" />
 ```
@@ -26,7 +26,7 @@ Next.js détecte automatiquement ces fichiers par convention (file-based metadat
 
 ## Design
 
-L'image OG suit les couleurs de la brand LumenIQ:
+L'image OG suit les couleurs de la brand PREVYA:
 - Fond: gradient zinc-950 → indigo-900 → zinc-950 (cohérent avec le dark theme de l'app)
 - Accent: indigo-500 → violet-500 (gradient logo)
 - Texte: blanc (logo + titre principal), zinc-300 (sous-titre), zinc-400 (URL)
@@ -34,7 +34,7 @@ L'image OG suit les couleurs de la brand LumenIQ:
 
 Contenu:
 - Logo "L" carré avec gradient indigo-violet
-- Titre "LumenIQ" en bold 48px
+- Titre "PREVYA" en bold 48px
 - Sous-titre "Prévisions professionnelles pour PME" en 36px
 - Features: "Jusqu'à 24 modèles · Backtesting automatique · 5 minutes"
 - Badge: "Essai gratuit 3 mois"

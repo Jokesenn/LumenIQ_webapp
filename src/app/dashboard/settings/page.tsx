@@ -180,7 +180,7 @@ export default function SettingsPage() {
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="Votre nom"
                 disabled={loading}
-                className="w-full px-4 py-3 bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] text-sm focus:outline-none focus:ring-2 focus:ring-amber-700/50 focus:border-transparent disabled:opacity-50"
+                className="w-full px-4 py-3 bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-copper)]/50 focus:border-transparent disabled:opacity-50"
               />
             </div>
             <div>
@@ -210,7 +210,7 @@ export default function SettingsPage() {
         {/* Subscription */}
         <div className="dash-card p-6">
           <h3 className="dash-section-title mb-5">Abonnement</h3>
-          <div className="p-5 bg-amber-700/10 rounded-xl mb-5">
+          <div className="p-5 bg-[var(--color-copper-bg)] rounded-xl mb-5">
             <div className="flex justify-between items-center mb-3">
               <span className="font-semibold text-[var(--color-text)]">
                 {loading ? (
@@ -310,7 +310,7 @@ export default function SettingsPage() {
           <div className="flex items-center gap-2 mb-5">
             <h3 className="dash-section-title">API</h3>
             {profile?.plan !== "premium" && (
-              <span className="px-2 py-0.5 bg-amber-500/20 rounded text-[10px] font-semibold text-amber-400">
+              <span className="px-2 py-0.5 bg-[var(--color-copper-bg)] rounded text-[10px] font-semibold text-[var(--color-copper)]">
                 PREMIUM
               </span>
             )}

@@ -21,15 +21,15 @@ const cellColors: Record<string, Record<string, string>> = {
   A: {
     X: "bg-emerald-500/30 hover:bg-emerald-500/40 border-emerald-500/50",
     Y: "bg-emerald-500/20 hover:bg-emerald-500/30 border-emerald-500/30",
-    Z: "bg-amber-500/20 hover:bg-amber-500/30 border-amber-500/30",
+    Z: "bg-[var(--color-warning)]/20 hover:bg-[var(--color-warning)]/30 border-[var(--color-warning)]/30",
   },
   B: {
     X: "bg-emerald-500/20 hover:bg-emerald-500/30 border-emerald-500/30",
-    Y: "bg-amber-500/20 hover:bg-amber-500/30 border-amber-500/30",
-    Z: "bg-amber-500/30 hover:bg-amber-500/40 border-amber-500/50",
+    Y: "bg-[var(--color-warning)]/20 hover:bg-[var(--color-warning)]/30 border-[var(--color-warning)]/30",
+    Z: "bg-[var(--color-warning)]/30 hover:bg-[var(--color-warning)]/40 border-[var(--color-warning)]/50",
   },
   C: {
-    X: "bg-amber-500/15 hover:bg-amber-500/25 border-amber-500/20",
+    X: "bg-[var(--color-warning)]/15 hover:bg-[var(--color-warning)]/25 border-[var(--color-warning)]/20",
     Y: "bg-red-500/15 hover:bg-red-500/25 border-red-500/20",
     Z: "bg-red-500/25 hover:bg-red-500/35 border-red-500/40",
   },
@@ -37,13 +37,13 @@ const cellColors: Record<string, Record<string, string>> = {
 
 const xyzLabels = {
   X: { label: "Stable", color: "text-emerald-400" },
-  Y: { label: "Variable", color: "text-amber-400" },
+  Y: { label: "Variable", color: "text-[var(--color-copper)]" },
   Z: { label: "Erratique", color: "text-red-400" },
 };
 
 const abcLabels = {
   A: { label: "Haute valeur", color: "text-emerald-400" },
-  B: { label: "Moyenne", color: "text-amber-400" },
+  B: { label: "Moyenne", color: "text-[var(--color-copper)]" },
   C: { label: "Basse valeur", color: "text-red-400" },
 };
 
@@ -145,7 +145,7 @@ export function AbcXyzMatrix({ data, onCellClick, selectedCell, className }: Abc
           <span>Priorité haute</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded bg-amber-500/30" />
+          <div className="w-3 h-3 rounded bg-[var(--color-warning)]/30" />
           <span>Attention</span>
         </div>
         <div className="flex items-center gap-2">

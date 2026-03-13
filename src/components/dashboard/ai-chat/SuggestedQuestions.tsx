@@ -108,7 +108,7 @@ export function SuggestedQuestions({
                 variant="outline"
                 size="sm"
                 onClick={() => onSelect(s.question)}
-                className="shimmer text-xs text-[var(--color-text-secondary)] border-[var(--color-border)] hover:bg-amber-700/10 hover:border-amber-700/40 hover:text-amber-700 hover:shadow-sm hover:shadow-amber-700/10 h-auto py-1.5 px-3 transition-all duration-200"
+                className="shimmer text-xs text-[var(--color-text-secondary)] border-[var(--color-border)] hover:bg-[var(--color-copper-bg)] hover:border-[var(--color-copper)]/40 hover:text-[var(--color-copper)] hover:shadow-sm hover:shadow-[var(--color-copper)]/10 h-auto py-1.5 px-3 transition-all duration-200"
               >
                 {s.label}
               </Button>

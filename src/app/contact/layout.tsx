@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Contactez LumenIQ | Support, devis et partenariats",
+  title: "Contactez PREVYA | Support, devis et partenariats",
   description:
-    "Une question sur LumenIQ ? Contactez notre équipe pour un devis personnalisé, du support technique ou une proposition de partenariat. Réponse sous 24h.",
+    "Une question sur PREVYA ? Contactez notre équipe pour un devis personnalisé, du support technique ou une proposition de partenariat. Réponse sous 24h.",
   alternates: { canonical: "/contact" },
   openGraph: {
-    title: "Contactez LumenIQ | Réponse sous 24h",
+    title: "Contactez PREVYA | Réponse sous 24h",
     description:
-      "Support technique, devis personnalisé, partenariats. Contactez l'équipe LumenIQ.",
+      "Support technique, devis personnalisé, partenariats. Contactez l'équipe PREVYA.",
   },
 };
 

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Connexion | LumenIQ",
+  title: "Connexion | PREVYA",
   description:
-    "Connectez-vous à votre espace LumenIQ pour accéder à vos prévisions, résultats et recommandations.",
+    "Connectez-vous à votre espace PREVYA pour accéder à vos prévisions, résultats et recommandations.",
   robots: { index: false, follow: false },
 };
 

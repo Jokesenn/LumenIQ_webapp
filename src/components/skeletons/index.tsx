@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 // METRIC CARD
 export function MetricCardSkeleton() {
   return (
-    <div className="p-5 rounded-2xl bg-zinc-900/50 border border-white/5">
+    <div className="p-5 rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border)]">
       <Skeleton className="h-10 w-10 rounded-lg mb-4" />
       <Skeleton className="h-3 w-16 mb-3" />
       <Skeleton className="h-8 w-20 mb-2" />
@@ -25,7 +25,7 @@ export function MetricCardsGridSkeleton({ count = 4 }: { count?: number }) {
 // CHART
 export function ChartSkeleton({ height = 300 }: { height?: number }) {
   return (
-    <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+    <div className="p-6 rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border)]">
       <div className="flex justify-between items-center mb-6">
         <Skeleton className="h-5 w-48" />
         <div className="flex gap-4">
@@ -61,7 +61,7 @@ export function ChartSkeleton({ height = 300 }: { height?: number }) {
 // SERIES LIST
 export function SeriesRowSkeleton() {
   return (
-    <div className="flex items-center justify-between p-3 rounded-xl bg-white/5">
+    <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--color-bg-surface)]">
       <div className="flex items-center gap-3">
         <Skeleton className="h-8 w-8 rounded-lg" />
         <div>
@@ -122,11 +122,11 @@ export function SeriesDetailSkeleton() {
 
       {/* Bottom grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+        <div className="p-6 rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border)]">
           <Skeleton className="h-5 w-40 mb-6" />
           <div className="space-y-3">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-white/5">
+              <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-[var(--color-bg-surface)]">
                 <div className="flex items-center gap-3">
                   <Skeleton className="h-8 w-8 rounded-lg" />
                   <Skeleton className="h-4 w-24" />
@@ -136,14 +136,14 @@ export function SeriesDetailSkeleton() {
             ))}
           </div>
         </div>
-        <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+        <div className="p-6 rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border)]">
           <Skeleton className="h-5 w-40 mb-6" />
           <div className="space-y-4">
-            <div className="p-4 rounded-xl bg-white/5">
+            <div className="p-4 rounded-xl bg-[var(--color-bg-surface)]">
               <Skeleton className="h-4 w-32 mb-2" />
               <Skeleton className="h-3 w-full" />
             </div>
-            <div className="p-4 rounded-xl bg-white/5">
+            <div className="p-4 rounded-xl bg-[var(--color-bg-surface)]">
               <Skeleton className="h-4 w-24 mb-2" />
               <Skeleton className="h-3 w-3/4" />
             </div>
@@ -171,7 +171,7 @@ export function ResultsPageSkeleton() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 p-1 bg-white/5 rounded-xl w-fit">
+      <div className="flex gap-1 p-1 bg-[var(--color-bg-surface)] rounded-xl w-fit">
         {Array.from({ length: 4 }).map((_, i) => (
           <Skeleton key={i} className="h-9 w-24 rounded-lg" />
         ))}
@@ -189,13 +189,13 @@ export function ResultsPageSkeleton() {
 
       {/* Bottom grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+        <div className="p-6 rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border)]">
           <div className="grid grid-cols-2 gap-6">
             <SeriesListSkeleton count={5} />
             <SeriesListSkeleton count={5} />
           </div>
         </div>
-        <div className="p-6 rounded-2xl bg-zinc-900/50 border border-white/5">
+        <div className="p-6 rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border)]">
           <Skeleton className="h-5 w-40 mb-6" />
           <Skeleton className="h-64 w-full rounded-xl" />
         </div>

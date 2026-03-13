@@ -37,7 +37,7 @@ function getStatusBadge(status: string, smape: number | null | undefined) {
       );
     case "processing":
       return (
-        <span className="px-2.5 py-1 bg-amber-500/10 text-amber-500 rounded-full text-xs font-semibold flex items-center gap-1.5">
+        <span className="px-2.5 py-1 bg-[var(--color-copper-bg)] text-[var(--color-copper)] rounded-full text-xs font-semibold flex items-center gap-1.5">
           <Loader2 size={12} className="animate-spin" />
           En cours
         </span>
@@ -66,11 +66,11 @@ function getStatusIcon(status: string) {
     case "completed":
       return <CheckCircle2 size={18} className="text-emerald-500" />;
     case "processing":
-      return <Loader2 size={18} className="text-amber-500 animate-spin" />;
+      return <Loader2 size={18} className="text-[var(--color-copper)] animate-spin" />;
     case "failed":
       return <AlertCircle size={18} className="text-red-500" />;
     default:
-      return <FileText size={18} className="text-amber-700" />;
+      return <FileText size={18} className="text-[var(--color-copper)]" />;
   }
 }
 
@@ -81,7 +81,7 @@ export function RecentForecasts({ forecasts }: RecentForecastsProps) {
         <h2 className="dash-section-title">Dernières prévisions</h2>
         <Link
           href="/dashboard/history"
-          className="text-amber-700 text-sm flex items-center gap-1 hover:text-amber-700 transition-colors"
+          className="text-[var(--color-copper)] text-sm flex items-center gap-1 hover:text-[var(--color-copper)] transition-colors"
         >
           Voir tout <ChevronRight size={16} />
         </Link>
@@ -99,7 +99,7 @@ export function RecentForecasts({ forecasts }: RecentForecastsProps) {
               className="flex items-center justify-between p-4 bg-[var(--color-bg-surface)] rounded-lg hover:bg-[var(--color-bg-surface)] transition-colors duration-200 cursor-pointer"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-amber-700/10 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-lg bg-[var(--color-copper-bg)] flex items-center justify-center">
                   {getStatusIcon(item.status ?? "pending")}
                 </div>
                 <div>

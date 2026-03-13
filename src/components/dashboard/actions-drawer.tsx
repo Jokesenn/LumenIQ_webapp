@@ -85,7 +85,7 @@ export function ActionsDrawer({ open, onOpenChange }: ActionsDrawerProps) {
       >
         <SheetHeader className="px-6 py-4 border-b border-[var(--color-border)] shrink-0">
           <SheetTitle className="text-[var(--color-text)] text-lg flex items-center gap-2">
-            <Zap className="w-5 h-5 text-amber-400" />
+            <Zap className="w-5 h-5 text-[var(--color-copper)]" />
             Actions
           </SheetTitle>
           <SheetDescription className="text-[var(--color-text-secondary)] text-xs">

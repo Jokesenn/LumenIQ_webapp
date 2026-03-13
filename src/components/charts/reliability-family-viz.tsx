@@ -30,7 +30,7 @@ function FamilyTooltip({ active, payload }: { active?: boolean; payload?: Family
   if (!d) return null;
 
   return (
-    <div className="bg-white backdrop-blur-xl border border-[var(--color-border)] rounded-xl p-3 shadow-xl">
+    <div className="bg-white border border-[var(--color-border)] rounded-xl p-3 shadow-[var(--shadow-card)]">
       <div className="flex items-center gap-2 mb-1">
         <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: d.hex }} />
         <p className="text-sm font-medium text-[var(--color-text)]">{d.family}</p>
@@ -156,7 +156,7 @@ export function ReliabilityFamilyViz({
             className={cn(
               "p-1.5 rounded-md transition-all duration-200",
               mode === "donut"
-                ? "bg-amber-700/20 text-amber-700"
+                ? "bg-[var(--color-copper)]/20 text-[var(--color-copper)]"
                 : "text-[var(--color-text-tertiary)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-surface)]"
             )}
             title="Vue donut"
@@ -168,7 +168,7 @@ export function ReliabilityFamilyViz({
             className={cn(
               "p-1.5 rounded-md transition-all duration-200",
               mode === "treemap"
-                ? "bg-amber-700/20 text-amber-700"
+                ? "bg-[var(--color-copper)]/20 text-[var(--color-copper)]"
                 : "text-[var(--color-text-tertiary)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-surface)]"
             )}
             title="Vue treemap"
@@ -190,7 +190,7 @@ export function ReliabilityFamilyViz({
             </span>
             {/* Glow effect behind the donut */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-28 h-28 rounded-full bg-amber-700/10 blur-2xl" />
+              <div className="w-28 h-28 rounded-full bg-[var(--color-copper)]/10 blur-2xl" />
             </div>
             <ResponsiveContainer width="100%" height={280}>
               <PieChart>

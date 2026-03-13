@@ -32,7 +32,7 @@ export function CookieBanner() {
           cookie publicitaire n&apos;est d&eacute;pos&eacute;.{" "}
           <Link
             href="/politique-de-confidentialite"
-            className="text-amber-700 hover:text-amber-600 underline underline-offset-2 transition-colors"
+            className="text-[var(--color-copper)] hover:text-[var(--color-copper-hover)] underline underline-offset-2 transition-colors"
           >
             En savoir plus
           </Link>

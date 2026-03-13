@@ -14,8 +14,8 @@ interface HeaderProps {
 
 const planBadgeStyles: Record<string, string> = {
   standard: "bg-[var(--color-bg-surface)] text-[var(--color-text-secondary)]",
-  ml: "bg-amber-700/10 text-amber-700",
-  premium: "bg-gradient-to-r from-amber-500/15 to-orange-500/15 text-amber-700",
+  ml: "bg-[var(--color-copper-bg)] text-[var(--color-copper)]",
+  premium: "bg-gradient-to-r from-[var(--color-copper-bg)] to-orange-500/15 text-[var(--color-copper)]",
 };
 
 export function Header({ onToggleSidebar, onOpenCommand }: HeaderProps) {
@@ -46,7 +46,7 @@ export function Header({ onToggleSidebar, onOpenCommand }: HeaderProps) {
   const usagePercent = Math.min((seriesUsed / seriesQuota) * 100, 100);
 
   return (
-    <header className="px-8 py-4 border-b border-[var(--color-border)] flex justify-between items-center bg-white/80 backdrop-blur-xl shadow-[var(--shadow-nav)] sticky top-0 z-10">
+    <header className="px-8 py-4 flex justify-between items-center bg-white shadow-[var(--shadow-nav)] sticky top-0 z-10">
       <div className="flex items-center gap-3">
         <button
           onClick={onToggleSidebar}
@@ -93,7 +93,7 @@ export function Header({ onToggleSidebar, onOpenCommand }: HeaderProps) {
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="w-9 h-9 rounded-full bg-amber-700/10 flex items-center justify-center text-sm font-semibold text-amber-700 hover:bg-amber-700/20 transition-colors ring-2 ring-amber-700/20 hover:ring-amber-700/40"
+            className="w-9 h-9 rounded-full bg-[var(--color-copper-bg)] flex items-center justify-center text-sm font-semibold text-[var(--color-copper)] hover:bg-[var(--color-copper-bg)] transition-colors ring-2 ring-[var(--color-copper)]/20 hover:ring-[var(--color-copper)]/40"
             title={profile?.full_name ?? user?.email ?? ""}
           >
             {initials}

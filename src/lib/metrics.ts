@@ -39,7 +39,7 @@ export function getChampionScoreColor(
   if (score == null) return "text-zinc-400";
   const { green, yellow } = thresholds ?? { green: 90, yellow: 70 };
   if (score >= green) return "text-emerald-400";
-  if (score >= yellow) return "text-amber-400";
+  if (score >= yellow) return "text-[var(--color-copper)]";
   return "text-red-400";
 }
 
@@ -56,6 +56,6 @@ export function getChampionScoreStatus(
 } {
   const { green, yellow } = thresholds ?? { green: 90, yellow: 70 };
   if (score >= green) return { label: "Excellent", color: "text-emerald-400", Icon: CheckCircle2 };
-  if (score >= yellow) return { label: "Acceptable", color: "text-amber-400", Icon: Info };
+  if (score >= yellow) return { label: "Acceptable", color: "text-[var(--color-copper)]", Icon: Info };
   return { label: "À améliorer", color: "text-red-400", Icon: AlertTriangle };
 }

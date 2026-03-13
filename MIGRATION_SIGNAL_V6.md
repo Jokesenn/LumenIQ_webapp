@@ -1,8 +1,8 @@
-# LumenIQ — Migration Identité Visuelle Signal V6
+# PREVYA — Migration Identité Visuelle Signal V6
 
 ## MISSION
 
-Migrer le frontend LumenIQ (Next.js 16 + Tailwind v4 + shadcn/ui) de l'ancien thème **indigo/violet/dark** vers la nouvelle identité **Signal V6** (cuivre/light/Satoshi). La migration doit être incrémentale, fichier par fichier, avec validation visuelle à chaque étape.
+Migrer le frontend PREVYA (Next.js 16 + Tailwind v4 + shadcn/ui) de l'ancien thème **indigo/violet/dark** vers la nouvelle identité **Signal V6** (cuivre/light/Satoshi). La migration doit être incrémentale, fichier par fichier, avec validation visuelle à chaque étape.
 
 ---
 

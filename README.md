@@ -1,4 +1,4 @@
-# LumenIQ 🔮
+# PREVYA 🔮
 
 **Plateforme SaaS de forecasting professionnel pour PME e-commerce**
 
@@ -262,4 +262,4 @@ Voir [`SECURITY_AUDIT.md`](SECURITY_AUDIT.md) pour le rapport complet.
 
 ## 📄 Licence
 
-Propriétaire — Tous droits réservés © 2026 LumenIQ
+Propriétaire — Tous droits réservés © 2026 PREVYA

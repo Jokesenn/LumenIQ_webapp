@@ -24,12 +24,9 @@ const socialLinks = [
 
 export function Footer() {
   return (
-    <footer className="relative bg-[var(--color-bg)] overflow-hidden">
-      {/* Top gradient separator */}
-      <div className="h-px bg-gradient-to-r from-transparent via-amber-700/20 to-transparent" />
-
-      {/* Subtle hex pattern */}
-      <div className="absolute inset-0 bg-hex-pattern opacity-30 pointer-events-none" />
+    <footer className="relative bg-[var(--color-bg-surface)] overflow-hidden">
+      {/* Top border */}
+      <div className="h-px bg-[var(--color-border)]" />
 
       <div className="relative z-10 max-w-[1400px] mx-auto px-6 sm:px-8 pt-20 pb-12">
         {/* Top section — Brand + Newsletter feel */}
@@ -49,7 +46,7 @@ export function Footer() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-[var(--color-bg-surface)] border border-[var(--color-border)] flex items-center justify-center text-[var(--color-text-tertiary)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-surface)] hover:border-[var(--color-border)] transition-all duration-300"
+                  className="w-10 h-10 rounded-full bg-[var(--color-bg-card)] border border-[var(--color-border)] flex items-center justify-center text-[var(--color-text-tertiary)] hover:text-[var(--color-copper)] hover:border-[var(--color-border-med)] transition-all duration-300"
                   aria-label={social.label}
                 >
                   <social.icon size={16} />
@@ -69,7 +66,7 @@ export function Footer() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="group text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors duration-200 inline-flex items-center gap-1"
+                      className="group text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-copper)] transition-colors duration-200 inline-flex items-center gap-1"
                     >
                       {link.label}
                       <ArrowUpRight className="w-3 h-3 opacity-0 -translate-y-0.5 translate-x-0.5 group-hover:opacity-50 group-hover:translate-y-0 group-hover:translate-x-0 transition-all duration-200" />
@@ -88,7 +85,7 @@ export function Footer() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="group text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors duration-200 inline-flex items-center gap-1"
+                      className="group text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-copper)] transition-colors duration-200 inline-flex items-center gap-1"
                     >
                       {link.label}
                       <ArrowUpRight className="w-3 h-3 opacity-0 -translate-y-0.5 translate-x-0.5 group-hover:opacity-50 group-hover:translate-y-0 group-hover:translate-x-0 transition-all duration-200" />
@@ -107,7 +104,7 @@ export function Footer() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="group text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors duration-200 inline-flex items-center gap-1"
+                      className="group text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-copper)] transition-colors duration-200 inline-flex items-center gap-1"
                     >
                       {link.label}
                       <ArrowUpRight className="w-3 h-3 opacity-0 -translate-y-0.5 translate-x-0.5 group-hover:opacity-50 group-hover:translate-y-0 group-hover:translate-x-0 transition-all duration-200" />
@@ -122,7 +119,7 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="pt-8 border-t border-[var(--color-border)] flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-sm text-[var(--color-text-tertiary)]">
-            &copy; 2026 LumenIQ. Tous droits réservés.
+            &copy; 2026 PREVYA. Tous droits réservés.
           </p>
           <p className="text-xs text-[var(--color-text-tertiary)]">
             Conçu pour les PME e-commerce françaises.

@@ -5,7 +5,7 @@ export interface ModelMeta {
 }
 
 export const MODEL_FAMILIES = {
-  decomposition: { label: "Décomposition avancée", color: "violet", hex: "#8b5cf6", bgClass: "bg-violet-500" },
+  decomposition: { label: "Décomposition avancée", color: "amber", hex: "#B45309", bgClass: "bg-[var(--color-copper)]" },
   classical:     { label: "Statistique classique", color: "blue",   hex: "#60a5fa", bgClass: "bg-blue-400" },
   ml:            { label: "Machine Learning",      color: "emerald", hex: "#34d399", bgClass: "bg-emerald-400" },
   advanced:      { label: "Statistique avancée",   color: "amber",  hex: "#fbbf24", bgClass: "bg-amber-400" },
@@ -48,7 +48,7 @@ export const MODEL_LABELS: Record<string, { label: string; family: ModelFamily }
 export function getModelMeta(technicalName: string): ModelMeta {
   const entry = MODEL_LABELS[technicalName];
   if (!entry) {
-    return { label: technicalName, family: "Autre", familyColor: "text-white/50" };
+    return { label: technicalName, family: "Autre", familyColor: "text-[var(--color-text-muted)]" };
   }
   const fam = MODEL_FAMILIES[entry.family];
   return { label: entry.label, family: fam.label, familyColor: `text-${fam.color}-400` };

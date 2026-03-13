@@ -247,7 +247,7 @@ export function AiChatDrawer({ open, onOpenChange }: AiChatDrawerProps) {
           className="ai-drawer-glow flex flex-col h-full"
           data-state={glowState}
         >
-          <SheetHeader className="px-6 py-4 border-b border-[var(--color-border)] shrink-0 bg-[var(--color-bg)]/80 backdrop-blur-xl">
+          <SheetHeader className="px-6 py-4 border-b border-[var(--color-border)] shrink-0 bg-[var(--color-bg)]">
             <SheetTitle className="text-[var(--color-text)] text-lg font-display flex items-center gap-2.5">
               Assistant IA
               <span className="ai-status-dot" />

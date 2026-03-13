@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og'
 
 export const runtime = 'edge'
-export const alt = 'LumenIQ - Prévisions professionnelles pour PME'
+export const alt = 'PREVYA - Prévisions professionnelles pour PME'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -16,7 +16,7 @@ export default async function Image() {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'linear-gradient(135deg, #09090b 0%, #1e1b4b 50%, #09090b 100%)',
+          background: '#FAFAF9',
           fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
         }}
       >
@@ -27,8 +27,8 @@ export default async function Image() {
           left: 60,
           width: 80,
           height: 80,
-          background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-          opacity: 0.3,
+          background: '#B45309',
+          opacity: 0.15,
           borderRadius: 16,
           transform: 'rotate(45deg)',
           display: 'flex',
@@ -44,7 +44,7 @@ export default async function Image() {
           <div style={{
             width: 56,
             height: 56,
-            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+            background: '#B45309',
             borderRadius: 12,
             display: 'flex',
             alignItems: 'center',
@@ -58,10 +58,10 @@ export default async function Image() {
           <span style={{
             fontSize: 48,
             fontWeight: 800,
-            color: 'white',
+            color: '#141414',
             letterSpacing: '-0.02em',
           }}>
-            LumenIQ
+            PREVYA
           </span>
         </div>
 
@@ -69,7 +69,7 @@ export default async function Image() {
         <div style={{
           fontSize: 36,
           fontWeight: 600,
-          color: '#e4e4e7',
+          color: '#141414',
           textAlign: 'center',
           maxWidth: 800,
           lineHeight: 1.3,
@@ -81,7 +81,7 @@ export default async function Image() {
         {/* Sous-titre */}
         <div style={{
           fontSize: 22,
-          color: '#a1a1aa',
+          color: '#5C5C58',
           marginTop: 16,
           textAlign: 'center',
           display: 'flex',
@@ -93,12 +93,12 @@ export default async function Image() {
         <div style={{
           marginTop: 40,
           padding: '12px 32px',
-          background: 'rgba(99, 102, 241, 0.2)',
-          border: '1px solid rgba(99, 102, 241, 0.4)',
+          background: 'rgba(180, 83, 9, 0.1)',
+          border: '1px solid rgba(180, 83, 9, 0.3)',
           borderRadius: 12,
           fontSize: 18,
           fontWeight: 600,
-          color: '#818cf8',
+          color: '#B45309',
           display: 'flex',
         }}>
           Essai gratuit 3 mois
@@ -109,7 +109,7 @@ export default async function Image() {
           position: 'absolute',
           bottom: 40,
           fontSize: 16,
-          color: '#71717a',
+          color: '#8A8A82',
           display: 'flex',
         }}>
           lumeniq.fr

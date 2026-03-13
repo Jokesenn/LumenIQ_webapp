@@ -60,7 +60,7 @@ Lancer `npm run dev`, ouvrir `/dashboard/results?job=<id>` et vérifier que la b
 **Step 3 : Commit**
 
 ```bash
-cd LumenIQ_webapp
+cd PREVYA_webapp
 git add src/app/dashboard/results/results-content.tsx
 git commit -m "ux: réordonner les onglets résultats (parcours business-first)"
 ```

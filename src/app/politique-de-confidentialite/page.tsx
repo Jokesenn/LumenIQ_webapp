@@ -2,58 +2,58 @@ import type { Metadata } from "next";
 import { Navbar, Footer } from "@/components/shared";
 
 export const metadata: Metadata = {
-  title: "Politique de confidentialité | LumenIQ",
+  title: "Politique de confidentialité | PREVYA",
   description:
-    "Politique de confidentialité de LumenIQ : données collectées, finalités, droits RGPD, sous-traitants et sécurité.",
+    "Politique de confidentialité de PREVYA : données collectées, finalités, droits RGPD, sous-traitants et sécurité.",
   alternates: { canonical: "/politique-de-confidentialite" },
 };
 
 export default function PolitiqueDeConfidentialite() {
   return (
-    <div className="min-h-screen bg-zinc-950">
+    <div className="min-h-screen bg-[var(--color-bg)]">
       <Navbar />
 
       <main className="pt-20">
         <section className="py-20 px-6">
           <div className="max-w-3xl mx-auto">
-            <h1 className="text-3xl md:text-4xl font-extrabold mb-4 text-white">
+            <h1 className="text-3xl md:text-4xl font-extrabold mb-4 text-[var(--color-text)]">
               Politique de confidentialit&eacute;
             </h1>
-            <p className="text-sm text-zinc-500 mb-10">
+            <p className="text-sm text-[var(--color-text-tertiary)] mb-10">
               Derni&egrave;re mise &agrave; jour : 16 f&eacute;vrier 2026
             </p>
 
-            <div className="space-y-8 text-zinc-400 text-sm leading-relaxed">
+            <div className="space-y-8 text-[var(--color-text-secondary)] text-sm leading-relaxed">
               <div>
-                <h2 className="text-lg font-semibold text-white mb-3">
+                <h2 className="text-lg font-semibold text-[var(--color-text)] mb-3">
                   1. Responsable du traitement
                 </h2>
                 <p>
-                  LumenIQ SAS<br />
+                  PREVYA SAS<br />
                   Si&egrave;ge social : [Adresse &agrave; compl&eacute;ter]<br />
-                  Email : <span className="text-white">contact@lumeniq.fr</span><br />
+                  Email : <span className="text-[var(--color-text)]">contact@lumeniq.fr</span><br />
                   Le responsable du traitement d&eacute;termine les finalit&eacute;s et les moyens
                   du traitement de vos donn&eacute;es personnelles.
                 </p>
               </div>
 
               <div>
-                <h2 className="text-lg font-semibold text-white mb-3">
+                <h2 className="text-lg font-semibold text-[var(--color-text)] mb-3">
                   2. Donn&eacute;es collect&eacute;es
                 </h2>
-                <p>Dans le cadre de l&apos;utilisation de LumenIQ, nous collectons :</p>
+                <p>Dans le cadre de l&apos;utilisation de PREVYA, nous collectons :</p>
                 <ul className="list-disc list-inside mt-2 space-y-1">
                   <li>
-                    <strong className="text-zinc-300">Donn&eacute;es d&apos;identification</strong> :
+                    <strong className="text-[var(--color-text)]">Donn&eacute;es d&apos;identification</strong> :
                     nom complet, adresse email
                   </li>
                   <li>
-                    <strong className="text-zinc-300">Donn&eacute;es d&apos;utilisation</strong> :
+                    <strong className="text-[var(--color-text)]">Donn&eacute;es d&apos;utilisation</strong> :
                     fichiers CSV import&eacute;s (historiques de ventes), r&eacute;sultats de pr&eacute;vision
                     g&eacute;n&eacute;r&eacute;s, param&egrave;tres de configuration
                   </li>
                   <li>
-                    <strong className="text-zinc-300">Donn&eacute;es techniques</strong> :
+                    <strong className="text-[var(--color-text)]">Donn&eacute;es techniques</strong> :
                     cookies de session (authentification uniquement)
                   </li>
                 </ul>
@@ -64,7 +64,7 @@ export default function PolitiqueDeConfidentialite() {
               </div>
 
               <div>
-                <h2 className="text-lg font-semibold text-white mb-3">
+                <h2 className="text-lg font-semibold text-[var(--color-text)] mb-3">
                   3. Finalit&eacute;s du traitement
                 </h2>
                 <p>Vos donn&eacute;es sont trait&eacute;es pour :</p>
@@ -77,25 +77,25 @@ export default function PolitiqueDeConfidentialite() {
               </div>
 
               <div>
-                <h2 className="text-lg font-semibold text-white mb-3">
+                <h2 className="text-lg font-semibold text-[var(--color-text)] mb-3">
                   4. Base l&eacute;gale
                 </h2>
                 <p>Le traitement de vos donn&eacute;es repose sur :</p>
                 <ul className="list-disc list-inside mt-2 space-y-1">
                   <li>
-                    <strong className="text-zinc-300">L&apos;ex&eacute;cution du contrat</strong> (Article 6.1.b du RGPD) :
+                    <strong className="text-[var(--color-text)]">L&apos;ex&eacute;cution du contrat</strong> (Article 6.1.b du RGPD) :
                     le traitement est n&eacute;cessaire &agrave; la fourniture du service de pr&eacute;vision
                     auquel vous avez souscrit
                   </li>
                   <li>
-                    <strong className="text-zinc-300">Votre consentement</strong> (Article 6.1.a du RGPD) :
+                    <strong className="text-[var(--color-text)]">Votre consentement</strong> (Article 6.1.a du RGPD) :
                     recueilli lors de la cr&eacute;ation de votre compte
                   </li>
                 </ul>
               </div>
 
               <div>
-                <h2 className="text-lg font-semibold text-white mb-3">
+                <h2 className="text-lg font-semibold text-[var(--color-text)] mb-3">
                   5. Dur&eacute;e de conservation
                 </h2>
                 <p>
@@ -111,20 +111,20 @@ export default function PolitiqueDeConfidentialite() {
               </div>
 
               <div>
-                <h2 className="text-lg font-semibold text-white mb-3">
+                <h2 className="text-lg font-semibold text-[var(--color-text)] mb-3">
                   6. Sous-traitants et transferts de donn&eacute;es
                 </h2>
                 <p>Nous faisons appel aux sous-traitants suivants :</p>
                 <div className="mt-3 overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-white/10 text-left">
-                        <th className="py-2 pr-4 text-zinc-300 font-medium">Prestataire</th>
-                        <th className="py-2 pr-4 text-zinc-300 font-medium">Finalit&eacute;</th>
-                        <th className="py-2 text-zinc-300 font-medium">Localisation</th>
+                      <tr className="border-b border-[var(--color-border)] text-left">
+                        <th className="py-2 pr-4 text-[var(--color-text)] font-medium">Prestataire</th>
+                        <th className="py-2 pr-4 text-[var(--color-text)] font-medium">Finalit&eacute;</th>
+                        <th className="py-2 text-[var(--color-text)] font-medium">Localisation</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/5">
+                    <tbody className="divide-y divide-[var(--color-border)]">
                       <tr>
                         <td className="py-2 pr-4">Supabase (AWS)</td>
                         <td className="py-2 pr-4">Base de donn&eacute;es, authentification, stockage</td>
@@ -150,7 +150,7 @@ export default function PolitiqueDeConfidentialite() {
               </div>
 
               <div>
-                <h2 className="text-lg font-semibold text-white mb-3">
+                <h2 className="text-lg font-semibold text-[var(--color-text)] mb-3">
                   7. Vos droits
                 </h2>
                 <p>
@@ -158,31 +158,31 @@ export default function PolitiqueDeConfidentialite() {
                   vous disposez des droits suivants :
                 </p>
                 <ul className="list-disc list-inside mt-2 space-y-1">
-                  <li><strong className="text-zinc-300">Droit d&apos;acc&egrave;s</strong> : obtenir une copie de vos donn&eacute;es personnelles</li>
-                  <li><strong className="text-zinc-300">Droit de rectification</strong> : corriger vos donn&eacute;es inexactes ou incompl&egrave;tes</li>
-                  <li><strong className="text-zinc-300">Droit &agrave; l&apos;effacement</strong> : supprimer votre compte et toutes vos donn&eacute;es</li>
-                  <li><strong className="text-zinc-300">Droit &agrave; la portabilit&eacute;</strong> : exporter vos donn&eacute;es dans un format structur&eacute;</li>
-                  <li><strong className="text-zinc-300">Droit d&apos;opposition</strong> : vous opposer au traitement de vos donn&eacute;es</li>
-                  <li><strong className="text-zinc-300">Droit &agrave; la limitation</strong> : restreindre le traitement de vos donn&eacute;es</li>
+                  <li><strong className="text-[var(--color-text)]">Droit d&apos;acc&egrave;s</strong> : obtenir une copie de vos donn&eacute;es personnelles</li>
+                  <li><strong className="text-[var(--color-text)]">Droit de rectification</strong> : corriger vos donn&eacute;es inexactes ou incompl&egrave;tes</li>
+                  <li><strong className="text-[var(--color-text)]">Droit &agrave; l&apos;effacement</strong> : supprimer votre compte et toutes vos donn&eacute;es</li>
+                  <li><strong className="text-[var(--color-text)]">Droit &agrave; la portabilit&eacute;</strong> : exporter vos donn&eacute;es dans un format structur&eacute;</li>
+                  <li><strong className="text-[var(--color-text)]">Droit d&apos;opposition</strong> : vous opposer au traitement de vos donn&eacute;es</li>
+                  <li><strong className="text-[var(--color-text)]">Droit &agrave; la limitation</strong> : restreindre le traitement de vos donn&eacute;es</li>
                 </ul>
                 <p className="mt-3">
                   Vous pouvez exercer vos droits d&apos;acc&egrave;s, de portabilit&eacute; et
                   d&apos;effacement directement depuis la page{" "}
-                  <span className="text-white">Param&egrave;tres</span> de votre compte.
+                  <span className="text-[var(--color-text)]">Param&egrave;tres</span> de votre compte.
                 </p>
                 <p className="mt-2">
                   Pour toute autre demande, contactez-nous &agrave; :{" "}
-                  <span className="text-white">contact@lumeniq.fr</span>
+                  <span className="text-[var(--color-text)]">contact@lumeniq.fr</span>
                 </p>
                 <p className="mt-2">
                   Vous disposez &eacute;galement du droit d&apos;introduire une r&eacute;clamation
                   aupr&egrave;s de la CNIL :{" "}
-                  <span className="text-white">www.cnil.fr</span>
+                  <span className="text-[var(--color-text)]">www.cnil.fr</span>
                 </p>
               </div>
 
               <div>
-                <h2 className="text-lg font-semibold text-white mb-3">
+                <h2 className="text-lg font-semibold text-[var(--color-text)] mb-3">
                   8. S&eacute;curit&eacute;
                 </h2>
                 <p>
@@ -199,20 +199,20 @@ export default function PolitiqueDeConfidentialite() {
               </div>
 
               <div>
-                <h2 className="text-lg font-semibold text-white mb-3">
+                <h2 className="text-lg font-semibold text-[var(--color-text)] mb-3">
                   9. Cookies
                 </h2>
                 <p>
-                  LumenIQ utilise uniquement des cookies strictement n&eacute;cessaires au
+                  PREVYA utilise uniquement des cookies strictement n&eacute;cessaires au
                   fonctionnement du service :
                 </p>
                 <ul className="list-disc list-inside mt-2 space-y-1">
                   <li>
-                    <strong className="text-zinc-300">Cookie de session Supabase</strong> :
+                    <strong className="text-[var(--color-text)]">Cookie de session Supabase</strong> :
                     maintien de votre session d&apos;authentification
                   </li>
                   <li>
-                    <strong className="text-zinc-300">Pr&eacute;f&eacute;rences locales</strong> :
+                    <strong className="text-[var(--color-text)]">Pr&eacute;f&eacute;rences locales</strong> :
                     stockage local (localStorage) pour l&apos;onboarding et les pr&eacute;f&eacute;rences d&apos;affichage
                   </li>
                 </ul>
@@ -222,7 +222,7 @@ export default function PolitiqueDeConfidentialite() {
               </div>
 
               <div>
-                <h2 className="text-lg font-semibold text-white mb-3">
+                <h2 className="text-lg font-semibold text-[var(--color-text)] mb-3">
                   10. Modifications
                 </h2>
                 <p>
@@ -233,12 +233,12 @@ export default function PolitiqueDeConfidentialite() {
               </div>
 
               <div>
-                <h2 className="text-lg font-semibold text-white mb-3">Contact</h2>
+                <h2 className="text-lg font-semibold text-[var(--color-text)] mb-3">Contact</h2>
                 <p>
                   Pour toute question relative &agrave; cette politique ou &agrave; vos donn&eacute;es
                   personnelles :<br />
-                  Email : <span className="text-white">contact@lumeniq.fr</span><br />
-                  Support : <span className="text-white">support@lumeniq.fr</span>
+                  Email : <span className="text-[var(--color-text)]">contact@lumeniq.fr</span><br />
+                  Support : <span className="text-[var(--color-text)]">support@lumeniq.fr</span>
                 </p>
               </div>
             </div>

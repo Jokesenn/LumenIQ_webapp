@@ -26,12 +26,12 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       return (
         this.props.fallback ?? (
           <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-            <p className="text-zinc-400 text-sm">
+            <p className="text-[var(--color-text-muted)] text-sm">
               Une erreur inattendue est survenue.
             </p>
             <button
               onClick={() => this.setState({ hasError: false })}
-              className="px-4 py-2 text-sm bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition-colors"
+              className="px-4 py-2 text-sm bg-[var(--color-copper)] hover:bg-[var(--color-copper-hover)] text-white rounded-lg transition-colors"
             >
               Réessayer
             </button>

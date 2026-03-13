@@ -224,8 +224,8 @@ export function FileUploadZone({ userId, onUploadComplete, className }: FileUplo
         className
       )}>
         <div className="flex items-center gap-4 mb-6">
-          <div className="w-14 h-14 rounded-2xl bg-amber-700/10 flex items-center justify-center">
-            <Loader2 size={28} className="text-amber-700 animate-spin" />
+          <div className="w-14 h-14 rounded-2xl bg-[var(--color-copper)]/10 flex items-center justify-center">
+            <Loader2 size={28} className="text-[var(--color-copper)] animate-spin" />
           </div>
           <div>
             <h3 className="text-lg font-semibold text-[var(--color-text)]">
@@ -283,8 +283,8 @@ export function FileUploadZone({ userId, onUploadComplete, className }: FileUplo
         className
       )}>
         <div className="flex items-center gap-4 mb-6">
-          <div className="w-12 h-12 rounded-xl bg-amber-700/10 flex items-center justify-center">
-            <FileText size={24} className="text-amber-700" />
+          <div className="w-12 h-12 rounded-xl bg-[var(--color-copper)]/10 flex items-center justify-center">
+            <FileText size={24} className="text-[var(--color-copper)]" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-medium text-[var(--color-text)] truncate">
@@ -311,7 +311,7 @@ export function FileUploadZone({ userId, onUploadComplete, className }: FileUplo
           </Button>
           <Button
             onClick={handleUpload}
-            className="flex-1 bg-[var(--color-copper)] hover:bg-amber-800 text-white"
+            className="flex-1 bg-[var(--color-copper)] hover:bg-[var(--color-copper-hover)] text-white"
           >
             Lancer la prévision
           </Button>
@@ -330,8 +330,8 @@ export function FileUploadZone({ userId, onUploadComplete, className }: FileUplo
       className={cn(
         'rounded-2xl border-2 border-dashed p-16 text-center cursor-pointer transition-all',
         isDragging
-          ? 'bg-amber-700/5 border-amber-700'
-          : 'bg-[var(--color-bg-surface)] border-[var(--color-border)] hover:border-amber-700/50 hover:bg-[var(--color-bg-surface)]',
+          ? 'bg-[var(--color-copper)]/5 border-[var(--color-copper)]'
+          : 'bg-[var(--color-bg-surface)] border-[var(--color-border)] hover:border-[var(--color-copper)]/50 hover:bg-[var(--color-bg-surface)]',
         className
       )}
     >
@@ -344,11 +344,11 @@ export function FileUploadZone({ userId, onUploadComplete, className }: FileUplo
       />
       <div className={cn(
         'w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 transition-colors',
-        isDragging ? 'bg-amber-700/15' : 'bg-amber-700/10'
+        isDragging ? 'bg-[var(--color-copper)]/15' : 'bg-[var(--color-copper)]/10'
       )}>
         <Upload size={32} className={cn(
           'transition-colors',
-          isDragging ? 'text-amber-700' : 'text-[var(--color-text-tertiary)]'
+          isDragging ? 'text-[var(--color-copper)]' : 'text-[var(--color-text-tertiary)]'
         )} />
       </div>
       <h3 className="text-lg font-semibold mb-2 text-[var(--color-text)]">

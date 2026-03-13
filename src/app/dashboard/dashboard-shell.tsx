@@ -60,8 +60,16 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           />
 
           <ErrorBoundary>
-            <main className="flex-1 overflow-auto p-4 lg:p-8">
-              {children}
+            <main className="flex-1 overflow-auto p-4 lg:p-8 relative">
+              <div
+                className="pointer-events-none absolute inset-0 opacity-[0.35]"
+                style={{
+                  backgroundImage: 'radial-gradient(var(--color-text-tertiary) 0.6px, transparent 0.6px)',
+                  backgroundSize: '16px 16px',
+                }}
+                aria-hidden="true"
+              />
+              <div className="relative">{children}</div>
             </main>
           </ErrorBoundary>
         </div>

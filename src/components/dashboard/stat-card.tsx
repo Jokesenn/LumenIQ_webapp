@@ -52,18 +52,18 @@ function useAnimatedCounter(target: number, duration: number = 2000) {
 const variantStyles = {
   default: {
     border: "border-[var(--color-border)] hover:border-[var(--color-border)]",
-    iconBg: "bg-amber-700/10 group-hover:bg-amber-700/20",
-    iconColor: "text-amber-700",
+    iconBg: "bg-[var(--color-copper-bg)] group-hover:bg-[var(--color-copper-bg)]",
+    iconColor: "text-[var(--color-copper)]",
   },
   highlight: {
-    border: "border-amber-700/30 hover:border-amber-700/50",
-    iconBg: "bg-amber-700/20 group-hover:bg-amber-700/30",
-    iconColor: "text-amber-700",
+    border: "border-[var(--color-copper)]/30 hover:border-[var(--color-copper)]/50",
+    iconBg: "bg-[var(--color-copper-bg)] group-hover:bg-[var(--color-copper-bg)]",
+    iconColor: "text-[var(--color-copper)]",
   },
   warning: {
-    border: "border-amber-500/30 hover:border-amber-500/50",
-    iconBg: "bg-amber-500/10 group-hover:bg-amber-500/20",
-    iconColor: "text-amber-400",
+    border: "border-[var(--color-copper)]/30 hover:border-[var(--color-copper)]/50",
+    iconBg: "bg-[var(--color-copper-bg)] group-hover:bg-[var(--color-copper-bg)]",
+    iconColor: "text-[var(--color-copper)]",
   },
   success: {
     border: "border-emerald-500/30 hover:border-emerald-500/50",
@@ -187,7 +187,7 @@ export function StatCard({
             {helpKey && <HelpTooltip termKey={helpKey} />}
           </div>
           <p
-            className="text-2xl sm:text-3xl font-bold font-display text-[var(--color-text)] tabular-nums truncate"
+            className="text-2xl sm:text-3xl font-bold font-display text-[var(--color-text)] tabular-nums truncate copper-num"
             title={typeof value === "string" ? value : undefined}
           >
             {typeof value === "number" ||

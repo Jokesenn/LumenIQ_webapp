@@ -4,21 +4,21 @@ export const GLOSSARY: Record<string, ReactNode> = {
   championScore: (
     <div>
       <p className="font-medium mb-2">Pouvez-vous faire confiance à ces prévisions ?</p>
-      <p className="text-white/70 text-sm mb-3">
+      <p className="text-[var(--color-text-secondary)] text-sm mb-3">
         Score de fiabilité basé sur l&apos;erreur pondérée (100 = parfait). Ce score vous dit si vous pouvez utiliser ces chiffres pour passer vos commandes fournisseurs.
       </p>
       <ul className="text-sm space-y-1.5">
         <li className="flex items-start gap-2">
           <span className="text-emerald-400 font-medium">{"≥"} 90</span>
-          <span className="text-white/60">→ Commandez en confiance</span>
+          <span className="text-[var(--color-text-muted)]">→ Commandez en confiance</span>
         </li>
         <li className="flex items-start gap-2">
-          <span className="text-amber-400 font-medium">70-89</span>
-          <span className="text-white/60">→ Fiable, gardez une marge de sécurité</span>
+          <span className="text-[var(--color-copper)] font-medium">70-89</span>
+          <span className="text-[var(--color-text-muted)]">→ Fiable, gardez une marge de sécurité</span>
         </li>
         <li className="flex items-start gap-2">
           <span className="text-red-400 font-medium">{"<"} 70</span>
-          <span className="text-white/60">→ Vérifiez les données sources</span>
+          <span className="text-[var(--color-text-muted)]">→ Vérifiez les données sources</span>
         </li>
       </ul>
     </div>
@@ -27,21 +27,21 @@ export const GLOSSARY: Record<string, ReactNode> = {
   smape: (
     <div>
       <p className="font-medium mb-2">Précision symétrique des prévisions</p>
-      <p className="text-white/70 text-sm mb-3">
+      <p className="text-[var(--color-text-secondary)] text-sm mb-3">
         Mesure l&apos;écart entre prévisions et réalité, en pénalisant de la même façon les sur et sous-estimations.
       </p>
       <ul className="text-sm space-y-1.5">
         <li className="flex items-start gap-2">
           <span className="text-emerald-400 font-medium">{"<"} 10%</span>
-          <span className="text-white/60">→ Excellent</span>
+          <span className="text-[var(--color-text-muted)]">→ Excellent</span>
         </li>
         <li className="flex items-start gap-2">
-          <span className="text-amber-400 font-medium">10-20%</span>
-          <span className="text-white/60">→ Bon, marge de sécurité conseillée</span>
+          <span className="text-[var(--color-copper)] font-medium">10-20%</span>
+          <span className="text-[var(--color-text-muted)]">→ Bon, marge de sécurité conseillée</span>
         </li>
         <li className="flex items-start gap-2">
           <span className="text-red-400 font-medium">{">"}20%</span>
-          <span className="text-white/60">→ À surveiller</span>
+          <span className="text-[var(--color-text-muted)]">→ À surveiller</span>
         </li>
       </ul>
     </div>
@@ -50,7 +50,7 @@ export const GLOSSARY: Record<string, ReactNode> = {
   mape: (
     <div>
       <p className="font-medium mb-2">Erreur moyenne de prévision</p>
-      <p className="text-white/70 text-sm">
+      <p className="text-[var(--color-text-secondary)] text-sm">
         Mesure l&apos;écart moyen entre vos prévisions et les ventes réelles. Utile pour comparer la performance globale de vos prévisions.
       </p>
     </div>
@@ -59,10 +59,10 @@ export const GLOSSARY: Record<string, ReactNode> = {
   mase: (
     <div>
       <p className="font-medium mb-2">Indice prédictif</p>
-      <p className="text-white/70 text-sm mb-3">
+      <p className="text-[var(--color-text-secondary)] text-sm mb-3">
         Compare la qualité de vos prévisions à une méthode de référence simple.
       </p>
-      <p className="text-white/70 text-sm">
+      <p className="text-[var(--color-text-secondary)] text-sm">
         Un score inférieur à 100 signifie que le modèle fait mieux que la référence. Plus le score est bas, meilleures sont les prévisions.
       </p>
     </div>
@@ -71,21 +71,21 @@ export const GLOSSARY: Record<string, ReactNode> = {
   bias: (
     <div>
       <p className="font-medium mb-2">Risquez-vous la rupture ou le surstock ?</p>
-      <p className="text-white/70 text-sm mb-3">
+      <p className="text-[var(--color-text-secondary)] text-sm mb-3">
         Ce chiffre vous alerte sur votre risque principal.
       </p>
       <ul className="text-sm space-y-1.5">
         <li className="flex items-start gap-2">
-          <span className="text-amber-400 font-medium">Positif</span>
-          <span className="text-white/60">→ Risque de surstock (vous prévoyez trop)</span>
+          <span className="text-[var(--color-copper)] font-medium">Positif</span>
+          <span className="text-[var(--color-text-muted)]">→ Risque de surstock (vous prévoyez trop)</span>
         </li>
         <li className="flex items-start gap-2">
           <span className="text-blue-400 font-medium">Négatif</span>
-          <span className="text-white/60">→ Risque de rupture (vous prévoyez pas assez)</span>
+          <span className="text-[var(--color-text-muted)]">→ Risque de rupture (vous prévoyez pas assez)</span>
         </li>
         <li className="flex items-start gap-2">
           <span className="text-emerald-400 font-medium">~0%</span>
-          <span className="text-white/60">→ Équilibré, risque maîtrisé</span>
+          <span className="text-[var(--color-text-muted)]">→ Équilibré, risque maîtrisé</span>
         </li>
       </ul>
     </div>
@@ -94,21 +94,21 @@ export const GLOSSARY: Record<string, ReactNode> = {
   abc: (
     <div>
       <p className="font-medium mb-2">Où concentrer vos efforts ?</p>
-      <p className="text-white/70 text-sm mb-3">
+      <p className="text-[var(--color-text-secondary)] text-sm mb-3">
         Vos produits classés par impact sur votre chiffre d&apos;affaires.
       </p>
       <ul className="text-sm space-y-1.5">
         <li className="flex items-start gap-2">
           <span className="text-emerald-400 font-medium">A</span>
-          <span className="text-white/60">→ Vos best-sellers. Une rupture ici coûte cher.</span>
+          <span className="text-[var(--color-text-muted)]">→ Vos best-sellers. Une rupture ici coûte cher.</span>
         </li>
         <li className="flex items-start gap-2">
-          <span className="text-amber-400 font-medium">B</span>
-          <span className="text-white/60">→ Importants mais moins critiques.</span>
+          <span className="text-[var(--color-copper)] font-medium">B</span>
+          <span className="text-[var(--color-text-muted)]">→ Importants mais moins critiques.</span>
         </li>
         <li className="flex items-start gap-2">
           <span className="text-red-400 font-medium">C</span>
-          <span className="text-white/60">→ Petits volumes. Gérez-les en lot.</span>
+          <span className="text-[var(--color-text-muted)]">→ Petits volumes. Gérez-les en lot.</span>
         </li>
       </ul>
     </div>
@@ -117,21 +117,21 @@ export const GLOSSARY: Record<string, ReactNode> = {
   xyz: (
     <div>
       <p className="font-medium mb-2">Ces prévisions sont-elles fiables ?</p>
-      <p className="text-white/70 text-sm mb-3">
+      <p className="text-[var(--color-text-secondary)] text-sm mb-3">
         Indique si les ventes de ce produit sont prévisibles ou chaotiques.
       </p>
       <ul className="text-sm space-y-1.5">
         <li className="flex items-start gap-2">
           <span className="text-emerald-400 font-medium">X</span>
-          <span className="text-white/60">→ Ventes régulières. Prévisions fiables.</span>
+          <span className="text-[var(--color-text-muted)]">→ Ventes régulières. Prévisions fiables.</span>
         </li>
         <li className="flex items-start gap-2">
-          <span className="text-amber-400 font-medium">Y</span>
-          <span className="text-white/60">→ Ventes variables. Gardez du stock tampon.</span>
+          <span className="text-[var(--color-copper)] font-medium">Y</span>
+          <span className="text-[var(--color-text-muted)]">→ Ventes variables. Gardez du stock tampon.</span>
         </li>
         <li className="flex items-start gap-2">
           <span className="text-red-400 font-medium">Z</span>
-          <span className="text-white/60">→ Ventes erratiques. Commandez à la demande.</span>
+          <span className="text-[var(--color-text-muted)]">→ Ventes erratiques. Commandez à la demande.</span>
         </li>
       </ul>
     </div>
@@ -140,34 +140,34 @@ export const GLOSSARY: Record<string, ReactNode> = {
   abcxyz_matrix: (
     <div>
       <p className="font-medium mb-2">Quelle stratégie pour chaque produit ?</p>
-      <p className="text-white/70 text-sm mb-3">
+      <p className="text-[var(--color-text-secondary)] text-sm mb-3">
         Croisez importance (ABC) et prévisibilité (XYZ) pour décider.
       </p>
       <ul className="text-sm space-y-1.5">
         <li className="flex items-start gap-2">
           <span className="text-emerald-400 font-medium">AX</span>
-          <span className="text-white/60">→ Automatisez les commandes</span>
+          <span className="text-[var(--color-text-muted)]">→ Automatisez les commandes</span>
         </li>
         <li className="flex items-start gap-2">
-          <span className="text-amber-400 font-medium">AZ</span>
-          <span className="text-white/60">→ Surveillez de près, stock de sécurité élevé</span>
+          <span className="text-[var(--color-copper)] font-medium">AZ</span>
+          <span className="text-[var(--color-text-muted)]">→ Surveillez de près, stock de sécurité élevé</span>
         </li>
         <li className="flex items-start gap-2">
           <span className="text-red-400 font-medium">CZ</span>
-          <span className="text-white/60">→ Commandez uniquement sur demande client</span>
+          <span className="text-[var(--color-text-muted)]">→ Commandez uniquement sur demande client</span>
         </li>
       </ul>
-      <p className="text-white/50 text-xs mt-3">Cliquez sur une cellule pour voir les produits.</p>
+      <p className="text-[var(--color-text-muted)] opacity-80 text-xs mt-3">Cliquez sur une cellule pour voir les produits.</p>
     </div>
   ),
 
   champion: (
     <div>
       <p className="font-medium mb-2">Pourquoi ce modèle ?</p>
-      <p className="text-white/70 text-sm">
-        LumenIQ a testé 21 approches différentes sur ce produit et a gardé celle qui prédit le mieux VOS ventes passées. C&apos;est du sur-mesure.
+      <p className="text-[var(--color-text-secondary)] text-sm">
+        PREVYA a testé 21 approches différentes sur ce produit et a gardé celle qui prédit le mieux VOS ventes passées. C&apos;est du sur-mesure.
       </p>
-      <p className="text-white/50 text-xs mt-3">
+      <p className="text-[var(--color-text-muted)] opacity-80 text-xs mt-3">
         Vous n&apos;avez rien à configurer, c&apos;est automatique.
       </p>
     </div>
@@ -176,7 +176,7 @@ export const GLOSSARY: Record<string, ReactNode> = {
   horizon: (
     <div>
       <p className="font-medium mb-2">Sur quelle période planifier ?</p>
-      <p className="text-white/70 text-sm">
+      <p className="text-[var(--color-text-secondary)] text-sm">
         Les prévisions sont calculées sur les prochains mois. Idéal pour vos négociations fournisseurs et votre budget annuel.
       </p>
     </div>
@@ -185,21 +185,21 @@ export const GLOSSARY: Record<string, ReactNode> = {
   cv: (
     <div>
       <p className="font-medium mb-2">Ce produit est-il prévisible ?</p>
-      <p className="text-white/70 text-sm mb-3">
+      <p className="text-[var(--color-text-secondary)] text-sm mb-3">
         Mesure la régularité des ventes passées.
       </p>
       <ul className="text-sm space-y-1.5">
         <li className="flex items-start gap-2">
           <span className="text-emerald-400 font-medium">Stable</span>
-          <span className="text-white/60">→ Ventes régulières, facile à prévoir</span>
+          <span className="text-[var(--color-text-muted)]">→ Ventes régulières, facile à prévoir</span>
         </li>
         <li className="flex items-start gap-2">
-          <span className="text-amber-400 font-medium">Variable</span>
-          <span className="text-white/60">→ Fluctuations saisonnières ou tendances</span>
+          <span className="text-[var(--color-copper)] font-medium">Variable</span>
+          <span className="text-[var(--color-text-muted)]">→ Fluctuations saisonnières ou tendances</span>
         </li>
         <li className="flex items-start gap-2">
           <span className="text-red-400 font-medium">Erratique</span>
-          <span className="text-white/60">→ Ventes imprévisibles, soyez prudent</span>
+          <span className="text-[var(--color-text-muted)]">→ Ventes imprévisibles, soyez prudent</span>
         </li>
       </ul>
     </div>
@@ -208,10 +208,10 @@ export const GLOSSARY: Record<string, ReactNode> = {
   model_changed: (
     <div>
       <p className="font-medium mb-2">Méthode adaptée</p>
-      <p className="text-white/70 text-sm">
-        Le comportement de ce produit a évolué depuis la dernière analyse. LumenIQ a trouvé une meilleure approche pour le prévoir.
+      <p className="text-[var(--color-text-secondary)] text-sm">
+        Le comportement de ce produit a évolué depuis la dernière analyse. PREVYA a trouvé une meilleure approche pour le prévoir.
       </p>
-      <p className="text-white/50 text-xs mt-3">
+      <p className="text-[var(--color-text-muted)] opacity-80 text-xs mt-3">
         C&apos;est normal et souvent positif — le système s&apos;adapte automatiquement.
       </p>
     </div>
@@ -220,15 +220,15 @@ export const GLOSSARY: Record<string, ReactNode> = {
   attention: (
     <div>
       <p className="font-medium mb-2">Fiabilité faible</p>
-      <p className="text-white/70 text-sm">
+      <p className="text-[var(--color-text-secondary)] text-sm">
         Les prévisions de ce produit sont moins fiables que la moyenne. Causes possibles :
       </p>
-      <ul className="text-sm space-y-1 mt-2 text-white/60">
+      <ul className="text-sm space-y-1 mt-2 text-[var(--color-text-muted)]">
         <li>• Ventes très irrégulières</li>
         <li>• Pas assez d&apos;historique</li>
         <li>• Événement exceptionnel dans les données</li>
       </ul>
-      <p className="text-white/50 text-xs mt-3">
+      <p className="text-[var(--color-text-muted)] opacity-80 text-xs mt-3">
         Vérifiez les données sources de ce produit et ajoutez une marge de sécurité à vos commandes.
       </p>
     </div>
@@ -237,10 +237,10 @@ export const GLOSSARY: Record<string, ReactNode> = {
   watch: (
     <div>
       <p className="font-medium mb-2">Fiabilité modérée</p>
-      <p className="text-white/70 text-sm">
+      <p className="text-[var(--color-text-secondary)] text-sm">
         La précision des prévisions pour ce produit est acceptable mais pas optimale. L&apos;écart entre les prévisions et la réalité est modéré.
       </p>
-      <p className="text-white/50 text-xs mt-3">
+      <p className="text-[var(--color-text-muted)] opacity-80 text-xs mt-3">
         Prévoyez une marge de sécurité sur vos commandes et surveillez l&apos;évolution lors des prochaines analyses.
       </p>
     </div>
@@ -249,16 +249,16 @@ export const GLOSSARY: Record<string, ReactNode> = {
   drift: (
     <div>
       <p className="font-medium mb-2">Changement de tendance</p>
-      <p className="text-white/70 text-sm">
+      <p className="text-[var(--color-text-secondary)] text-sm">
         Le profil de ventes de ce produit a significativement évolué par rapport aux analyses précédentes. Cela peut être lié à :
       </p>
-      <ul className="text-sm space-y-1 mt-2 text-white/60">
+      <ul className="text-sm space-y-1 mt-2 text-[var(--color-text-muted)]">
         <li>• Un changement saisonnier</li>
         <li>• Une promotion ou un événement commercial</li>
         <li>• Une évolution du marché</li>
       </ul>
-      <p className="text-white/50 text-xs mt-3">
-        LumenIQ a relancé une analyse complète pour s&apos;adapter à ce changement.
+      <p className="text-[var(--color-text-muted)] opacity-80 text-xs mt-3">
+        PREVYA a relancé une analyse complète pour s&apos;adapter à ce changement.
       </p>
     </div>
   ),
@@ -266,7 +266,7 @@ export const GLOSSARY: Record<string, ReactNode> = {
   dormant: (
     <div>
       <p className="font-medium mb-2">Série inactive</p>
-      <p className="text-white/70 text-sm">
+      <p className="text-[var(--color-text-secondary)] text-sm">
         Série inactive depuis plus de 6 mois. Une prévision à zéro est appliquée automatiquement sans modélisation.
       </p>
     </div>
@@ -275,10 +275,10 @@ export const GLOSSARY: Record<string, ReactNode> = {
   gated: (
     <div>
       <p className="font-medium mb-2">Prévisions stables</p>
-      <p className="text-white/70 text-sm">
-        Ce produit a un historique de ventes régulier et les prévisions précédentes étaient fiables. LumenIQ a conservé la même méthode de calcul.
+      <p className="text-[var(--color-text-secondary)] text-sm">
+        Ce produit a un historique de ventes régulier et les prévisions précédentes étaient fiables. PREVYA a conservé la même méthode de calcul.
       </p>
-      <p className="text-white/50 text-xs mt-3">
+      <p className="text-[var(--color-text-muted)] opacity-80 text-xs mt-3">
         C&apos;est un bon signe — ce produit est prévisible et les prévisions sont fiables pour vos commandes.
       </p>
     </div>
@@ -287,7 +287,7 @@ export const GLOSSARY: Record<string, ReactNode> = {
   top_performers: (
     <div>
       <p className="font-medium mb-2">Vos prévisions les plus fiables</p>
-      <p className="text-white/70 text-sm">
+      <p className="text-[var(--color-text-secondary)] text-sm">
         Ces produits ont les meilleurs scores de précision. Vous pouvez utiliser ces prévisions en confiance pour vos commandes.
       </p>
     </div>
@@ -296,7 +296,7 @@ export const GLOSSARY: Record<string, ReactNode> = {
   to_watch: (
     <div>
       <p className="font-medium mb-2">À surveiller de près</p>
-      <p className="text-white/70 text-sm">
+      <p className="text-[var(--color-text-secondary)] text-sm">
         Ces produits ont des prévisions moins fiables. Gardez un œil sur eux et ajustez manuellement si nécessaire.
       </p>
     </div>
@@ -305,7 +305,7 @@ export const GLOSSARY: Record<string, ReactNode> = {
   series_count: (
     <div>
       <p className="font-medium mb-2">Combien de produits analysés ?</p>
-      <p className="text-white/70 text-sm">
+      <p className="text-[var(--color-text-secondary)] text-sm">
         Nombre de produits (SKUs) traités dans cette analyse. Chacun a son propre modèle de prévision optimisé.
       </p>
     </div>
@@ -314,10 +314,10 @@ export const GLOSSARY: Record<string, ReactNode> = {
   wape: (
     <div>
       <p className="font-medium mb-2">Erreur pondérée par le volume</p>
-      <p className="text-white/70 text-sm mb-2">
+      <p className="text-[var(--color-text-secondary)] text-sm mb-2">
         Mesure l&apos;écart entre prévisions et réel, pondéré par le volume de chaque produit.
       </p>
-      <p className="text-white/70 text-sm">
+      <p className="text-[var(--color-text-secondary)] text-sm">
         Concrètement : sur l&apos;ensemble de votre chiffre d&apos;affaires, l&apos;erreur moyenne est de 5%. Les gros volumes pèsent plus que les petits.
       </p>
     </div>
@@ -326,10 +326,10 @@ export const GLOSSARY: Record<string, ReactNode> = {
   reliable_series: (
     <div>
       <p className="font-medium mb-2">Taux de séries fiables</p>
-      <p className="text-white/70 text-sm mb-2">
+      <p className="text-[var(--color-text-secondary)] text-sm mb-2">
         Pourcentage de produits dont le score de fiabilité dépasse 70/100.
       </p>
-      <p className="text-white/70 text-sm">
+      <p className="text-[var(--color-text-secondary)] text-sm">
         Plus ce taux est élevé, plus votre portefeuille est globalement bien prévu. Les séries sous 70 méritent une attention particulière.
       </p>
     </div>
@@ -338,12 +338,12 @@ export const GLOSSARY: Record<string, ReactNode> = {
   forecast_graph: (
     <div>
       <p className="font-medium mb-2">Comment lire ce graphique ?</p>
-      <p className="text-white/70 text-sm mb-2">
+      <p className="text-[var(--color-text-secondary)] text-sm mb-2">
         La ligne continue montre vos ventes passées. La zone colorée montre les prévisions futures.
       </p>
-      <ul className="text-sm space-y-1 text-white/60">
-        <li>• <span className="text-white/80">Ligne bleue</span> → Historique réel</li>
-        <li>• <span className="text-violet-400">Zone violette</span> → Prévisions + marge d&apos;incertitude</li>
+      <ul className="text-sm space-y-1 text-[var(--color-text-muted)]">
+        <li>• <span className="text-[var(--color-text-primary)]">Ligne bleue</span> → Historique réel</li>
+        <li>• <span className="text-[var(--color-copper)]">Zone cuivre</span> → Prévisions + marge d&apos;incertitude</li>
       </ul>
     </div>
   ),
@@ -351,20 +351,20 @@ export const GLOSSARY: Record<string, ReactNode> = {
   portfolio: (
     <div>
       <p className="font-medium mb-2">Vue d&apos;ensemble de votre portefeuille</p>
-      <p className="text-white/70 text-sm mb-3">
+      <p className="text-[var(--color-text-secondary)] text-sm mb-3">
         Chaque bulle représente un produit, positionné selon son volume prévu (horizontal) et la fiabilité de sa prévision (vertical).
       </p>
       <ul className="text-sm space-y-1.5">
         <li className="flex items-start gap-2">
-          <span className="text-white/80 font-medium">Couleur</span>
-          <span className="text-white/60">→ Type de comportement détecté</span>
+          <span className="text-[var(--color-text-primary)] font-medium">Couleur</span>
+          <span className="text-[var(--color-text-muted)]">→ Type de comportement détecté</span>
         </li>
         <li className="flex items-start gap-2">
-          <span className="text-white/80 font-medium">Taille</span>
-          <span className="text-white/60">→ Importance business (classe A/B/C)</span>
+          <span className="text-[var(--color-text-primary)] font-medium">Taille</span>
+          <span className="text-[var(--color-text-muted)]">→ Importance business (classe A/B/C)</span>
         </li>
       </ul>
-      <p className="text-white/50 text-xs mt-3">Cliquez sur une bulle pour voir le détail du produit.</p>
+      <p className="text-[var(--color-text-muted)] opacity-80 text-xs mt-3">Cliquez sur une bulle pour voir le détail du produit.</p>
     </div>
   ),
 };

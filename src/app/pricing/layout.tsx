@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Tarifs LumenIQ | Plans à partir de 99€/mois sans engagement",
+  title: "Tarifs PREVYA | Plans à partir de 99€/mois sans engagement",
   description:
     "3 plans de prévisions pour PME : Standard (17 modèles, 50 séries), ML (22 modèles, 150 séries), Premium (24 modèles, 300 séries). Essai gratuit 3 mois.",
   alternates: { canonical: "/pricing" },
   openGraph: {
-    title: "Tarifs LumenIQ | Plans flexibles pour PME",
+    title: "Tarifs PREVYA | Plans flexibles pour PME",
     description:
       "Standard 99€, ML 199€, Premium 299€/mois. Essai gratuit 3 mois, annulez à tout moment.",
   },

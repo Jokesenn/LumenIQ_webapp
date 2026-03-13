@@ -21,7 +21,7 @@ import type { SeriesListItem } from "@/types/forecast";
 
 const classColors: Record<string, string> = {
   A: "bg-emerald-500/20 text-emerald-400",
-  B: "bg-amber-500/20 text-amber-400",
+  B: "bg-[var(--color-copper-bg)] text-[var(--color-copper)]",
   C: "bg-red-500/20 text-red-400",
 };
 
@@ -50,7 +50,7 @@ export function SeriesQuickSelect({
           <span className="hidden sm:inline">Aller à...</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[320px] p-0 bg-white border-[var(--color-border)] backdrop-blur-xl" align="end">
+      <PopoverContent className="w-[320px] p-0 bg-white border-[var(--color-border)]" align="end">
         <Command>
           <CommandInput placeholder="Rechercher une série..." />
           <CommandEmpty>Aucune série trouvée</CommandEmpty>
@@ -73,19 +73,19 @@ export function SeriesQuickSelect({
                     }}
                     className={cn(
                       "flex items-center justify-between",
-                      isCurrent && "bg-amber-700/10"
+                      isCurrent && "bg-[var(--color-copper-bg)]"
                     )}
                   >
                     <div className="flex items-center gap-2 min-w-0">
                       {isCurrent ? (
-                        <Check className="size-4 text-amber-700 shrink-0" />
+                        <Check className="size-4 text-[var(--color-copper)] shrink-0" />
                       ) : (
                         <div className="size-4 shrink-0" />
                       )}
                       <span
                         className={cn(
                           "font-medium truncate",
-                          isCurrent ? "text-amber-700" : "text-[var(--color-text)]"
+                          isCurrent ? "text-[var(--color-copper)]" : "text-[var(--color-text)]"
                         )}
                       >
                         {s.series_id}

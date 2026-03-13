@@ -32,11 +32,11 @@ const columns: {
       { text: "Pas de saisonnalité détectée", bad: true },
     ],
     badge: "Gratuit mais risque",
-    badgeColor: "text-amber-400 bg-amber-500/10 border-amber-500/15",
+    badgeColor: "text-[var(--color-warning)] bg-[var(--color-warning-bg)] border-[var(--color-border)]",
   },
   {
     id: "lumeniq",
-    title: "LumenIQ",
+    title: "PREVYA",
     subtitle: "Le juste équilibre",
     items: [
       { text: "Jusqu'à 24 modèles stats/ML", good: true },
@@ -45,7 +45,7 @@ const columns: {
       { text: "60% plus rapide que les solutions enterprise", good: true },
     ],
     badge: "Dès 99 EUR/mois",
-    badgeColor: "text-indigo-400 bg-indigo-500/10 border-indigo-500/15",
+    badgeColor: "text-[var(--color-copper)] bg-[var(--color-copper-bg)] border-[var(--color-border)]",
     highlight: true,
   },
   {
@@ -59,7 +59,7 @@ const columns: {
       { text: "Overkill pour PME", bad: true },
     ],
     badge: "Surdimensionné",
-    badgeColor: "text-zinc-400 bg-zinc-500/10 border-zinc-500/15",
+    badgeColor: "text-[var(--color-text-tertiary)] bg-[var(--color-bg-surface)] border-[var(--color-border)]",
   },
 ];
 
@@ -73,8 +73,7 @@ export function ComparisonSection() {
       className="relative py-28 overflow-hidden"
     >
       {/* Background */}
-      <div className="absolute inset-0 bg-zinc-925" />
-      <div className="absolute inset-0 bg-iso-lines opacity-50" />
+      <div className="absolute inset-0 bg-[var(--color-bg-surface)]" />
 
       <div className="relative z-10 max-w-[1400px] mx-auto px-6 sm:px-8">
         {/* Section header — asymmetric with number watermark */}
@@ -82,21 +81,21 @@ export function ComparisonSection() {
           <div className="absolute -top-8 left-0 section-number">01</div>
           <div className="relative z-10 max-w-2xl">
             <FadeIn>
-              <p className="text-sm font-display font-600 uppercase tracking-[0.2em] text-indigo-400 mb-4">
+              <p className="text-sm font-display font-600 uppercase tracking-[0.2em] text-[var(--color-copper)] mb-4">
                 Comparatif
               </p>
             </FadeIn>
             <FadeIn delay={0.1}>
               <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-800 tracking-[-0.03em] leading-[1.05]">
-                <span className="text-white">Le forecasting pro,</span>
+                <span className="text-[var(--color-text)]">Le forecasting pro,</span>
                 <br />
                 <span className="text-gradient">enfin accessible aux PME</span>
               </h2>
             </FadeIn>
             <FadeIn delay={0.2}>
-              <p className="text-lg text-zinc-400 mt-6 max-w-lg font-light leading-relaxed">
+              <p className="text-lg text-[var(--color-text-secondary)] mt-6 max-w-lg font-light leading-relaxed">
                 Ni Excel approximatif, ni solutions enterprise à 20k EUR/an.
-                LumenIQ comble le gap avec une précision pro à prix PME.
+                PREVYA comble le gap avec une précision pro à prix PME.
               </p>
             </FadeIn>
           </div>
@@ -112,11 +111,11 @@ export function ComparisonSection() {
                 <TiltCard className="h-full">
                   <motion.div
                     className={cn(
-                      "relative h-full p-8 rounded-2xl transition-all duration-500 spotlight",
+                      "relative h-full p-8 rounded-2xl transition-all duration-500",
                       col.highlight
-                        ? "bg-zinc-900/60 backdrop-blur-xl border-2 border-indigo-500/40 shadow-[0_0_60px_rgba(99,102,241,0.1)] bg-gradient-to-b from-indigo-500/[0.06] to-transparent"
-                        : "bg-zinc-900/40 backdrop-blur-xl border border-white/[0.05] hover:border-white/[0.08]",
-                      col.id === "excel" && "border-t-2 border-t-amber-500/20"
+                        ? "card-signal-accent bg-[var(--color-copper-bg-soft)]"
+                        : "card-signal",
+                      col.id === "excel" && "border-t-2 border-t-[var(--color-warning)]/20"
                     )}
                     style={{
                       opacity: shouldRecede ? 0.6 : undefined,
@@ -125,17 +124,10 @@ export function ComparisonSection() {
                     whileHover={{ y: -8 }}
                     onMouseEnter={() => setHoveredCard(col.id)}
                     onMouseLeave={() => setHoveredCard(null)}
-                    onMouseMove={(e) => {
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      const x = ((e.clientX - rect.left) / rect.width) * 100;
-                      const y = ((e.clientY - rect.top) / rect.height) * 100;
-                      e.currentTarget.style.setProperty("--spotlight-x", `${x}%`);
-                      e.currentTarget.style.setProperty("--spotlight-y", `${y}%`);
-                    }}
                   >
                     {/* Enterprise watermark */}
                     {col.id === "enterprise" && (
-                      <span className="absolute top-6 right-6 text-5xl font-800 text-white/[0.03] font-display select-none">
+                      <span className="absolute top-6 right-6 text-5xl font-800 text-[var(--color-text)]/[0.03] font-display select-none">
                         2000+
                       </span>
                     )}
@@ -143,7 +135,7 @@ export function ComparisonSection() {
                     {/* Recommended badge */}
                     {col.highlight && (
                       <motion.div
-                        className="inline-flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full text-xs font-semibold text-white mb-5"
+                        className="inline-flex items-center gap-1.5 px-3 py-1 btn-copper rounded-full text-xs font-semibold text-white mb-5"
                         animate={{ y: [0, -2, 0] }}
                         transition={{ duration: 2, repeat: Infinity }}
                       >
@@ -155,27 +147,27 @@ export function ComparisonSection() {
                       {col.badge}
                     </span>
 
-                    <h3 className="text-xl font-display font-700 text-white mb-1">{col.title}</h3>
-                    <p className="text-sm text-zinc-500 mb-8">{col.subtitle}</p>
+                    <h3 className="text-xl font-display font-700 text-[var(--color-text)] mb-1">{col.title}</h3>
+                    <p className="text-sm text-[var(--color-text-tertiary)] mb-8">{col.subtitle}</p>
 
                     <div className="space-y-4">
                       {col.items.map((item, j) => (
                         <div key={j} className="flex items-center gap-3">
                           {item.good ? (
-                            <div className="w-5 h-5 rounded-full bg-emerald-500/15 flex items-center justify-center flex-shrink-0">
-                              <Check className="w-3 h-3 text-emerald-400" />
+                            <div className="w-5 h-5 rounded-full bg-[var(--color-success-bg)] flex items-center justify-center flex-shrink-0">
+                              <Check className="w-3 h-3 text-[var(--color-success)]" />
                             </div>
                           ) : item.bad ? (
-                            <div className="w-5 h-5 rounded-full bg-red-500/10 flex items-center justify-center flex-shrink-0">
-                              <X className="w-3 h-3 text-red-400/80" />
+                            <div className="w-5 h-5 rounded-full bg-[var(--color-error-bg)] flex items-center justify-center flex-shrink-0">
+                              <X className="w-3 h-3 text-[var(--color-error)]" />
                             </div>
                           ) : null}
                           <span
                             className={cn(
                               "text-sm",
                               col.id === "excel" && item.bad
-                                ? "line-through text-zinc-600"
-                                : "text-zinc-300"
+                                ? "line-through text-[var(--color-text-tertiary)]"
+                                : "text-[var(--color-text-secondary)]"
                             )}
                           >
                             {item.text}

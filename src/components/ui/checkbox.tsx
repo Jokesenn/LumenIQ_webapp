@@ -15,8 +15,8 @@ function Checkbox({
       data-slot="checkbox"
       className={cn(
         "peer size-4 shrink-0 rounded-[4px] border border-[var(--color-border)] bg-[var(--color-bg-surface)] shadow-sm transition-colors",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-700/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-bg)]",
-        "data-[state=checked]:bg-amber-700 data-[state=checked]:border-amber-700 data-[state=checked]:text-white",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-copper)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-bg)]",
+        "data-[state=checked]:bg-[var(--color-copper)] data-[state=checked]:border-[var(--color-copper)] data-[state=checked]:text-white",
         "disabled:cursor-not-allowed disabled:opacity-50",
         className
       )}

@@ -81,7 +81,7 @@ const featureSections = [
       "Premium : prévision IA avancée + combinaison automatique des meilleures approches",
       "Sélection automatique de la meilleure méthode par validation sur votre historique",
     ],
-    gradient: "from-indigo-500 to-violet-500",
+    gradient: "from-[var(--color-copper)] to-[var(--color-copper)]",
     metric: 24,
     metricSuffix: "",
     metricLabel: "méthodes",
@@ -113,7 +113,7 @@ const featureSections = [
       "model_registry.json : champion + audit trail complet",
       "insights.json + run_manifest.json + synthèse LLM (2-3 paragraphes)",
     ],
-    gradient: "from-amber-500 to-orange-500",
+    gradient: "from-[var(--color-copper)] to-[var(--color-copper-dark)]",
     metric: 6,
     metricSuffix: "",
     metricLabel: "fichiers",
@@ -157,7 +157,7 @@ function FeatureVisual({ type, gradient }: { type: string; gradient: string }) {
           <div />
           {["X", "Y", "Z"].map((col) => (
             <div key={col} className="text-center">
-              <span className="text-[9px] font-display font-600 text-zinc-500 uppercase tracking-wider">{col}</span>
+              <span className="text-[9px] font-display font-600 text-[var(--color-text-tertiary)] uppercase tracking-wider">{col}</span>
             </div>
           ))}
         </div>
@@ -167,7 +167,7 @@ function FeatureVisual({ type, gradient }: { type: string; gradient: string }) {
           <div key={row} className="grid grid-cols-[28px_1fr_1fr_1fr] gap-1 w-full max-w-[220px]">
             {/* Row label */}
             <div className="flex items-center justify-center">
-              <span className="text-[10px] font-display font-700 text-zinc-400">{row}</span>
+              <span className="text-[10px] font-display font-700 text-[var(--color-text-secondary)]">{row}</span>
             </div>
             {/* Cells */}
             {matrixCells
@@ -204,12 +204,12 @@ function FeatureVisual({ type, gradient }: { type: string; gradient: string }) {
 
         {/* Axis labels */}
         <div className="flex items-center justify-between w-full max-w-[220px] mt-1 px-7">
-          <span className="text-[7px] text-zinc-600 font-display">Stable</span>
-          <span className="text-[7px] text-zinc-600 font-display italic">Volatilité →</span>
-          <span className="text-[7px] text-zinc-600 font-display">Erratique</span>
+          <span className="text-[7px] text-[var(--color-text-tertiary)] font-display">Stable</span>
+          <span className="text-[7px] text-[var(--color-text-tertiary)] font-display italic">Volatilité →</span>
+          <span className="text-[7px] text-[var(--color-text-tertiary)] font-display">Erratique</span>
         </div>
         <div className="absolute -left-1 top-1/2 -translate-y-1/2 -rotate-90 origin-center">
-          <span className="text-[7px] text-zinc-600 font-display italic">← Valeur CA</span>
+          <span className="text-[7px] text-[var(--color-text-tertiary)] font-display italic">← Valeur CA</span>
         </div>
       </div>
     );
@@ -226,8 +226,8 @@ function FeatureVisual({ type, gradient }: { type: string; gradient: string }) {
                 i < 17
                   ? "bg-zinc-500/40 border border-zinc-500/30"
                   : i < 22
-                  ? "bg-indigo-500/40 border border-indigo-500/30"
-                  : "bg-amber-500/40 border border-amber-500/30"
+                  ? "bg-[var(--color-copper)]/40 border border-[var(--color-copper)]/30"
+                  : "bg-[var(--color-copper)]/40 border border-[var(--color-copper)]/30"
               }`}
               initial={{ scale: 0, opacity: 0 }}
               whileInView={{ scale: 1, opacity: 1 }}
@@ -238,8 +238,8 @@ function FeatureVisual({ type, gradient }: { type: string; gradient: string }) {
         </div>
         <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-4 text-[10px]">
           <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-sm bg-zinc-500/60" /> Stats</span>
-          <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-sm bg-indigo-500/60" /> ML</span>
-          <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-sm bg-amber-500/60" /> Premium</span>
+          <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-sm bg-[var(--color-copper)]/60" /> ML</span>
+          <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-sm bg-[var(--color-copper)]/60" /> Premium</span>
         </div>
       </div>
     );
@@ -259,8 +259,8 @@ function FeatureVisual({ type, gradient }: { type: string; gradient: string }) {
       <div className="relative w-full h-full flex flex-col items-center justify-center gap-0">
         {/* Timeline arrow */}
         <div className="w-full max-w-[230px] flex items-center mb-2 px-1">
-          <div className="flex-1 h-px bg-zinc-700" />
-          <span className="text-[8px] text-zinc-500 font-display ml-1">temps →</span>
+          <div className="flex-1 h-px bg-[var(--color-border)]" />
+          <span className="text-[8px] text-[var(--color-text-tertiary)] font-display ml-1">temps →</span>
         </div>
 
         {/* Folds */}
@@ -273,7 +273,7 @@ function FeatureVisual({ type, gradient }: { type: string; gradient: string }) {
               </span>
 
               {/* Train + Test bar */}
-              <div className="flex-1 flex items-center h-[18px] rounded-md overflow-hidden bg-zinc-800/50">
+              <div className="flex-1 flex items-center h-[18px] rounded-md overflow-hidden bg-[var(--color-bg-surface)]">
                 {/* Training portion — expanding */}
                 <motion.div
                   className="h-full bg-gradient-to-r from-emerald-600/60 to-emerald-500/40 flex items-center justify-center"
@@ -322,11 +322,11 @@ function FeatureVisual({ type, gradient }: { type: string; gradient: string }) {
 
         {/* Legend */}
         <div className="flex items-center gap-4 mt-2.5">
-          <span className="flex items-center gap-1.5 text-[8px] text-zinc-500 font-display">
+          <span className="flex items-center gap-1.5 text-[8px] text-[var(--color-text-tertiary)] font-display">
             <span className="w-3 h-2 rounded-sm bg-emerald-500/50" />
             Historique (train)
           </span>
-          <span className="flex items-center gap-1.5 text-[8px] text-zinc-500 font-display">
+          <span className="flex items-center gap-1.5 text-[8px] text-[var(--color-text-tertiary)] font-display">
             <span className="w-3 h-2 rounded-sm bg-cyan-500/40" />
             Validation (test)
           </span>
@@ -342,13 +342,13 @@ function FeatureVisual({ type, gradient }: { type: string; gradient: string }) {
         {["CSV", "JSON", "REG", "INS", "MAN", "LLM"].map((label, i) => (
           <motion.div
             key={label}
-            className="w-14 h-14 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center"
+            className="w-14 h-14 rounded-xl bg-[var(--color-copper)]/10 border border-[var(--color-copper)]/20 flex items-center justify-center"
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.3 + i * 0.1, duration: 0.5 }}
           >
-            <span className="text-[10px] font-display font-600 text-amber-400/80">{label}</span>
+            <span className="text-[10px] font-display font-600 text-[var(--color-copper)]">{label}</span>
           </motion.div>
         ))}
       </div>
@@ -362,11 +362,7 @@ function FeatureVisual({ type, gradient }: { type: string; gradient: string }) {
 
 export default function FeaturesPage() {
   return (
-    <div className="relative min-h-screen bg-zinc-950 overflow-hidden">
-      {/* Background layers */}
-      <div className="absolute inset-0 bg-hex-pattern opacity-30 pointer-events-none" />
-      <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full bg-indigo-500/8 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[20%] left-[-8%] w-[400px] h-[400px] rounded-full bg-violet-500/6 blur-[140px] pointer-events-none" />
+    <div className="relative min-h-screen bg-[var(--color-bg)] overflow-hidden">
 
       <Navbar />
 
@@ -375,27 +371,22 @@ export default function FeaturesPage() {
         {/*  HERO — Immersive with TextReveal             */}
         {/* ============================================ */}
         <section className="relative py-28 md:py-36 px-6 overflow-hidden">
-          {/* Gradient mesh */}
-          <div className="absolute inset-0 gradient-mesh pointer-events-none" />
-          {/* Light beam */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] light-beam opacity-30 pointer-events-none" />
-
           <div className="relative max-w-[1200px] mx-auto text-center">
             <FadeIn>
               <motion.div
-                className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-indigo-500/8 border border-indigo-500/15 mb-8"
+                className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-[var(--color-copper)]/8 border border-[var(--color-copper)]/15 mb-8"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.1, duration: 0.5 }}
               >
-                <Sparkles className="w-4 h-4 text-indigo-400" />
-                <span className="text-sm text-zinc-300 font-medium">Fonctionnalités</span>
+                <Sparkles className="w-4 h-4 text-[var(--color-copper)]" />
+                <span className="text-sm text-[var(--color-text-secondary)] font-medium">Fonctionnalités</span>
               </motion.div>
             </FadeIn>
 
             <h1 className="font-display tracking-[-0.03em] leading-[0.92] mb-8">
               <motion.span
-                className="block text-5xl md:text-6xl lg:text-[5rem] font-300 text-zinc-300"
+                className="block text-5xl md:text-6xl lg:text-[5rem] font-300 text-[var(--color-text-secondary)]"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.7, ease: [0.21, 0.47, 0.32, 0.98] }}
@@ -413,7 +404,7 @@ export default function FeaturesPage() {
             </h1>
 
             <FadeIn delay={0.5}>
-              <p className="text-lg md:text-xl text-zinc-400 max-w-[680px] mx-auto font-light leading-relaxed">
+              <p className="text-lg md:text-xl text-[var(--color-text-secondary)] max-w-[680px] mx-auto font-light leading-relaxed">
                 Une suite complète d&apos;outils de prévision professionnels,
                 conçue pour les PME e-commerce qui veulent des résultats fiables.
               </p>
@@ -426,9 +417,9 @@ export default function FeaturesPage() {
                 animate={{ y: [0, 8, 0] }}
                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
               >
-                <div className="w-6 h-10 rounded-full border-2 border-white/15 flex justify-center pt-2">
+                <div className="w-6 h-10 rounded-full border-2 border-[var(--color-border)] flex justify-center pt-2">
                   <motion.div
-                    className="w-1.5 h-1.5 bg-indigo-400 rounded-full"
+                    className="w-1.5 h-1.5 bg-[var(--color-copper)] rounded-full"
                     animate={{ y: [0, 12, 0] }}
                     transition={{ duration: 1.5, repeat: Infinity }}
                   />
@@ -441,24 +432,22 @@ export default function FeaturesPage() {
         {/* ============================================ */}
         {/*  KEY STATS — Animated counters                */}
         {/* ============================================ */}
-        <section className="relative py-20 px-6 section-glow-top">
+        <section className="relative py-20 px-6">
           <div className="max-w-[1200px] mx-auto">
             <StaggerChildren className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
               {keyStats.map((stat) => {
                 const Icon = stat.icon;
                 return (
                   <StaggerItem key={stat.label}>
-                    <div className="relative group p-6 rounded-2xl bg-zinc-900/40 border border-white/[0.05] hover:border-white/[0.1] transition-all duration-500">
-                      {/* Subtle glow on hover */}
-                      <div className="absolute inset-0 rounded-2xl bg-indigo-500/[0.03] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <div className="card-signal relative group p-6 transition-all duration-500">
                       <div className="relative">
-                        <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center mb-4">
-                          <Icon className="w-5 h-5 text-indigo-400" />
+                        <div className="w-10 h-10 rounded-xl bg-[var(--color-copper)]/10 flex items-center justify-center mb-4">
+                          <Icon className="w-5 h-5 text-[var(--color-copper)]" />
                         </div>
-                        <div className="text-4xl md:text-5xl font-display font-800 text-white tracking-[-0.04em] mb-2">
+                        <div className="text-4xl md:text-5xl font-display font-800 text-[var(--color-text)] tracking-[-0.04em] mb-2">
                           <AnimatedCounter target={stat.value} suffix={stat.suffix} />
                         </div>
-                        <p className="text-sm text-zinc-500 font-medium">{stat.label}</p>
+                        <p className="text-sm text-[var(--color-text-tertiary)] font-medium">{stat.label}</p>
                       </div>
                     </div>
                   </StaggerItem>
@@ -475,10 +464,10 @@ export default function FeaturesPage() {
           <div className="max-w-[1200px] mx-auto">
             <FadeIn>
               <div className="text-center mb-16">
-                <p className="text-sm font-display font-600 uppercase tracking-[0.2em] text-indigo-400 mb-4">
+                <p className="text-sm font-display font-600 uppercase tracking-[0.2em] text-[var(--color-copper)] mb-4">
                   En détail
                 </p>
-                <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-800 text-white tracking-[-0.03em]">
+                <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-800 text-[var(--color-text)] tracking-[-0.03em]">
                   Quatre piliers, une précision
                 </h2>
               </div>
@@ -499,26 +488,26 @@ export default function FeaturesPage() {
                   >
                     {/* Content card */}
                     <div className={`lg:col-span-7 ${!isEven ? "lg:order-2" : ""}`}>
-                      <div className="relative h-full p-8 md:p-10 rounded-2xl bg-zinc-900/30 border border-white/[0.05] hover:border-white/[0.08] transition-all duration-500 group">
+                      <div className="card-signal relative h-full p-8 md:p-10 transition-all duration-500 group">
                         {/* Gradient accent line top */}
                         <div className={`absolute top-0 left-8 right-8 h-px bg-gradient-to-r ${feature.gradient} opacity-20`} />
 
                         {/* Section number watermark */}
-                        <div className="absolute top-4 right-6 font-display text-7xl font-800 text-white/[0.02] select-none pointer-events-none leading-none">
+                        <div className="absolute top-4 right-6 font-display text-7xl font-800 text-[var(--color-text)]/[0.04] select-none pointer-events-none leading-none">
                           0{index + 1}
                         </div>
 
                         <div className="relative">
                           <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.gradient} p-[1px] mb-6`}>
-                            <div className="w-full h-full rounded-xl bg-zinc-900 flex items-center justify-center">
+                            <div className="w-full h-full rounded-xl bg-white flex items-center justify-center">
                               <Icon className="w-5 h-5 text-white" />
                             </div>
                           </div>
 
-                          <h3 className="text-2xl md:text-3xl font-display font-800 text-white mb-4 tracking-tight">
+                          <h3 className="text-2xl md:text-3xl font-display font-800 text-[var(--color-text)] mb-4 tracking-tight">
                             {feature.title}
                           </h3>
-                          <p className="text-zinc-400 leading-relaxed mb-8 font-light">
+                          <p className="text-[var(--color-text-secondary)] leading-relaxed mb-8 font-light">
                             {feature.description}
                           </p>
 
@@ -533,7 +522,7 @@ export default function FeaturesPage() {
                                 transition={{ delay: 0.1 + i * 0.08, duration: 0.4 }}
                               >
                                 <Check size={16} className="text-emerald-500 mt-1 shrink-0" />
-                                <span className="text-sm text-zinc-400">{b}</span>
+                                <span className="text-sm text-[var(--color-text-secondary)]">{b}</span>
                               </motion.div>
                             ))}
                           </div>
@@ -544,7 +533,7 @@ export default function FeaturesPage() {
                     {/* Visual card */}
                     <div className={`lg:col-span-5 ${!isEven ? "lg:order-1" : ""}`}>
                       <TiltCard className="h-full">
-                        <div className="relative h-full min-h-[300px] rounded-2xl bg-zinc-900/30 border border-white/[0.05] overflow-hidden flex items-center justify-center p-8">
+                        <div className="card-signal relative h-full min-h-[300px] overflow-hidden flex items-center justify-center p-8">
                           {/* Background gradient */}
                           <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-[0.04]`} />
 
@@ -556,16 +545,16 @@ export default function FeaturesPage() {
                           {/* Metric badge */}
                           <div className="absolute bottom-6 right-6">
                             <motion.div
-                              className={`px-4 py-2 rounded-xl bg-gradient-to-br ${feature.gradient} bg-opacity-10 border border-white/[0.08]`}
+                              className={`px-4 py-2 rounded-xl bg-gradient-to-br ${feature.gradient} bg-opacity-10 border border-[var(--color-border)]`}
                               initial={{ scale: 0.8, opacity: 0 }}
                               whileInView={{ scale: 1, opacity: 1 }}
                               viewport={{ once: true }}
                               transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
                             >
-                              <span className="text-2xl font-display font-800 text-white">
+                              <span className="text-2xl font-display font-800 text-[var(--color-text)]">
                                 <AnimatedCounter target={feature.metric} suffix={feature.metricSuffix} />
                               </span>
-                              <span className="text-xs text-zinc-400 ml-2 font-display font-600 uppercase tracking-wider">
+                              <span className="text-xs text-[var(--color-text-secondary)] ml-2 font-display font-600 uppercase tracking-wider">
                                 {feature.metricLabel}
                               </span>
                             </motion.div>
@@ -583,15 +572,15 @@ export default function FeaturesPage() {
         {/* ============================================ */}
         {/*  WORKFLOW SECTION                             */}
         {/* ============================================ */}
-        <section className="relative py-24 px-6 section-glow-top overflow-hidden">
-          <div className="absolute inset-0 bg-zinc-925 pointer-events-none" />
+        <section className="relative py-24 px-6 overflow-hidden">
+          <div className="absolute inset-0 bg-[var(--color-bg-surface)] pointer-events-none" />
           <div className="relative max-w-[1200px] mx-auto">
             <FadeIn>
               <div className="text-center mb-16">
-                <p className="text-sm font-display font-600 uppercase tracking-[0.2em] text-indigo-400 mb-4">
+                <p className="text-sm font-display font-600 uppercase tracking-[0.2em] text-[var(--color-copper)] mb-4">
                   Comment ça marche
                 </p>
-                <h2 className="font-display text-3xl md:text-4xl font-800 text-white tracking-[-0.03em]">
+                <h2 className="font-display text-3xl md:text-4xl font-800 text-[var(--color-text)] tracking-[-0.03em]">
                   De l&apos;import à la prévision en 3 étapes
                 </h2>
               </div>
@@ -604,14 +593,14 @@ export default function FeaturesPage() {
                   title: "Importez vos ventes",
                   desc: "Un simple CSV avec dates et quantités. Notre moteur détecte automatiquement le format, la fréquence et les séries.",
                   icon: TrendingUp,
-                  gradient: "from-indigo-500 to-blue-500",
+                  gradient: "from-[var(--color-copper)] to-blue-500",
                 },
                 {
                   step: "02",
                   title: "Laissez tourner",
                   desc: "Le moteur teste jusqu'à 24 méthodes par produit, sélectionne la meilleure par validation sur historique et génère la synthèse IA.",
                   icon: Cpu,
-                  gradient: "from-violet-500 to-purple-500",
+                  gradient: "from-orange-500 to-orange-600",
                 },
                 {
                   step: "03",
@@ -624,17 +613,17 @@ export default function FeaturesPage() {
                 const StepIcon = step.icon;
                 return (
                   <StaggerItem key={step.step}>
-                    <div className="relative group h-full p-8 rounded-2xl bg-zinc-900/30 border border-white/[0.05] hover:border-white/[0.1] transition-all duration-500">
-                      <div className="absolute top-4 right-6 font-display text-6xl font-800 text-white/[0.03] select-none pointer-events-none leading-none">
+                    <div className="card-signal relative group h-full p-8 transition-all duration-500">
+                      <div className="absolute top-4 right-6 font-display text-6xl font-800 text-[var(--color-text)]/[0.04] select-none pointer-events-none leading-none">
                         {step.step}
                       </div>
                       <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${step.gradient} p-[1px] mb-6`}>
-                        <div className="w-full h-full rounded-xl bg-zinc-900 flex items-center justify-center">
+                        <div className="w-full h-full rounded-xl bg-white flex items-center justify-center">
                           <StepIcon className="w-5 h-5 text-white" />
                         </div>
                       </div>
-                      <h3 className="text-xl font-display font-700 text-white mb-3">{step.title}</h3>
-                      <p className="text-sm text-zinc-400 leading-relaxed font-light">{step.desc}</p>
+                      <h3 className="text-xl font-display font-700 text-[var(--color-text)] mb-3">{step.title}</h3>
+                      <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed font-light">{step.desc}</p>
                     </div>
                   </StaggerItem>
                 );
@@ -647,21 +636,16 @@ export default function FeaturesPage() {
         {/*  CTA FINAL — Gradient mesh                    */}
         {/* ============================================ */}
         <section className="relative py-28 px-6 overflow-hidden">
-          {/* Gradient mesh background */}
-          <div className="absolute inset-0 gradient-mesh pointer-events-none" />
-          <div className="absolute inset-0 bg-hex-pattern opacity-20 pointer-events-none" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-indigo-500/10 blur-[150px] pointer-events-none" />
-
           <div className="relative max-w-[800px] mx-auto text-center">
             <FadeIn>
-              <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-800 text-white tracking-[-0.03em] leading-[0.95] mb-6">
+              <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-800 text-[var(--color-text)] tracking-[-0.03em] leading-[0.95] mb-6">
                 Prêt à améliorer
                 <br />
                 <span className="text-gradient-brand">vos prévisions ?</span>
               </h2>
             </FadeIn>
             <FadeIn delay={0.15}>
-              <p className="text-lg text-zinc-400 font-light mb-10 max-w-[500px] mx-auto">
+              <p className="text-lg text-[var(--color-text-secondary)] font-light mb-10 max-w-[500px] mx-auto">
                 Essai gratuit 3 mois, sans engagement.
                 Vos données restent les vôtres.
               </p>
@@ -669,7 +653,7 @@ export default function FeaturesPage() {
             <FadeIn delay={0.3}>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/login?mode=signup">
-                  <MagneticButton className="group px-8 py-4 bg-indigo-500 hover:bg-indigo-600 rounded-xl font-semibold text-white glow-pulse shimmer transition-all">
+                  <MagneticButton className="btn-copper group px-8 py-4 rounded-xl font-semibold transition-all">
                     <span className="flex items-center gap-2">
                       Essai gratuit 3 mois
                       <motion.span
@@ -682,7 +666,7 @@ export default function FeaturesPage() {
                   </MagneticButton>
                 </Link>
                 <Link href="/pricing">
-                  <MagneticButton className="px-8 py-4 bg-white/[0.04] hover:bg-white/[0.07] rounded-xl font-semibold text-white border border-white/[0.08] transition-all">
+                  <MagneticButton className="px-8 py-4 bg-[var(--color-bg-surface)] hover:bg-[var(--color-bg)] rounded-xl font-semibold text-[var(--color-text)] border border-[var(--color-border)] transition-all">
                     Voir les tarifs
                   </MagneticButton>
                 </Link>

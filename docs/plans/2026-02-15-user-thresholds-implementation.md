@@ -112,7 +112,7 @@ describe("getColorFromThreshold", () => {
 
 **Step 2: Run test to verify it fails**
 
-Run: `cd LumenIQ_webapp && npm test -- src/lib/__tests__/thresholds.test.ts`
+Run: `cd PREVYA_webapp && npm test -- src/lib/__tests__/thresholds.test.ts`
 Expected: FAIL (module not found)
 
 **Step 3: Write the implementation**
@@ -212,7 +212,7 @@ export function buildThresholdsMap(
 
 **Step 4: Run test to verify it passes**
 
-Run: `cd LumenIQ_webapp && npm test -- src/lib/__tests__/thresholds.test.ts`
+Run: `cd PREVYA_webapp && npm test -- src/lib/__tests__/thresholds.test.ts`
 Expected: PASS (all tests green)
 
 **Step 5: Commit**
@@ -517,7 +517,7 @@ to:
 
 **Step 3: Verify build**
 
-Run: `cd LumenIQ_webapp && npx tsc`
+Run: `cd PREVYA_webapp && npx tsc`
 Expected: No type errors
 
 **Step 4: Commit**
@@ -573,12 +573,12 @@ export function getChampionScoreStatus(
 
 **Step 2: Verify existing tests still pass**
 
-Run: `cd LumenIQ_webapp && npm test`
+Run: `cd PREVYA_webapp && npm test`
 Expected: All tests pass (no tests directly test metrics.ts, but series-alerts tests should still pass)
 
 **Step 3: Verify TypeScript compiles**
 
-Run: `cd LumenIQ_webapp && npx tsc`
+Run: `cd PREVYA_webapp && npx tsc`
 Expected: No errors (optional parameter means callers without thresholds still work)
 
 **Step 4: Commit**
@@ -636,7 +636,7 @@ describe("custom thresholds", () => {
 
 **Step 2: Run test to verify it fails**
 
-Run: `cd LumenIQ_webapp && npm test -- src/lib/__tests__/series-alerts.test.ts`
+Run: `cd PREVYA_webapp && npm test -- src/lib/__tests__/series-alerts.test.ts`
 Expected: FAIL (getSeriesAlerts doesn't accept second parameter)
 
 **Step 3: Update getSeriesAlerts to accept optional thresholds**
@@ -708,7 +708,7 @@ export function countAlertsByType(
 
 **Step 4: Run tests to verify all pass**
 
-Run: `cd LumenIQ_webapp && npm test -- src/lib/__tests__/series-alerts.test.ts`
+Run: `cd PREVYA_webapp && npm test -- src/lib/__tests__/series-alerts.test.ts`
 Expected: All tests pass (existing + new)
 
 **Step 5: Commit**
@@ -767,7 +767,7 @@ export function ReliabilityDetailTable({ data, onModelClick }: ReliabilityDetail
 
 **Step 2: Verify TypeScript compiles**
 
-Run: `cd LumenIQ_webapp && npx tsc`
+Run: `cd PREVYA_webapp && npx tsc`
 Expected: No errors
 
 **Step 3: Commit**
@@ -839,7 +839,7 @@ statusChecks.push((s.wape ?? 0) > thresholds.wape.yellow_max);
 
 **Step 2: Verify TypeScript compiles**
 
-Run: `cd LumenIQ_webapp && npx tsc`
+Run: `cd PREVYA_webapp && npx tsc`
 Expected: No errors
 
 **Step 3: Commit**
@@ -881,7 +881,7 @@ const getScoreColor = (score: number | null) =>
 
 **Step 2: Verify TypeScript compiles**
 
-Run: `cd LumenIQ_webapp && npx tsc`
+Run: `cd PREVYA_webapp && npx tsc`
 Expected: No errors
 
 **Step 3: Commit**
@@ -928,7 +928,7 @@ const alerts = getSeriesAlerts({...}, { wapeThresholds: { attention: thresholds.
 
 **Step 4: Run all tests**
 
-Run: `cd LumenIQ_webapp && npm test`
+Run: `cd PREVYA_webapp && npm test`
 Expected: All pass
 
 **Step 5: Commit**
@@ -1167,7 +1167,7 @@ Insert `<ThresholdSettings />` after the Preferences card (after line 226, befor
 
 **Step 3: Verify TypeScript compiles**
 
-Run: `cd LumenIQ_webapp && npx tsc`
+Run: `cd PREVYA_webapp && npx tsc`
 Expected: No errors
 
 **Step 4: Commit**
@@ -1183,22 +1183,22 @@ git commit -m "feat: add threshold settings UI section to settings page"
 
 **Step 1: Run all tests**
 
-Run: `cd LumenIQ_webapp && npm test`
+Run: `cd PREVYA_webapp && npm test`
 Expected: All tests pass
 
 **Step 2: Type check**
 
-Run: `cd LumenIQ_webapp && npx tsc`
+Run: `cd PREVYA_webapp && npx tsc`
 Expected: No errors
 
 **Step 3: Build**
 
-Run: `cd LumenIQ_webapp && npm run build`
+Run: `cd PREVYA_webapp && npm run build`
 Expected: Successful build
 
 **Step 4: Lint**
 
-Run: `cd LumenIQ_webapp && npm run lint`
+Run: `cd PREVYA_webapp && npm run lint`
 Expected: No errors
 
 **Step 5: Final commit if any remaining changes**

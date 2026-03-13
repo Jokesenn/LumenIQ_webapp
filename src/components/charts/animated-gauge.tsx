@@ -61,12 +61,12 @@ export function AnimatedGauge({
     if (inverted) {
       // Plus bas = mieux (SMAPE, MAPE, BIAS)
       if (clampedPercentage <= thresholds.good) return { stroke: "stroke-emerald-500", text: "text-emerald-400", bg: "bg-emerald-500" };
-      if (clampedPercentage <= thresholds.warning) return { stroke: "stroke-amber-500", text: "text-amber-400", bg: "bg-amber-500" };
+      if (clampedPercentage <= thresholds.warning) return { stroke: "stroke-[var(--color-warning)]", text: "text-[var(--color-copper)]", bg: "bg-[var(--color-warning)]" };
       return { stroke: "stroke-red-500", text: "text-red-400", bg: "bg-red-500" };
     } else {
       // Plus haut = mieux (Champion Score)
       if (clampedPercentage >= thresholds.warning) return { stroke: "stroke-emerald-500", text: "text-emerald-400", bg: "bg-emerald-500" };
-      if (clampedPercentage >= thresholds.good) return { stroke: "stroke-amber-500", text: "text-amber-400", bg: "bg-amber-500" };
+      if (clampedPercentage >= thresholds.good) return { stroke: "stroke-[var(--color-warning)]", text: "text-[var(--color-copper)]", bg: "bg-[var(--color-warning)]" };
       return { stroke: "stroke-red-500", text: "text-red-400", bg: "bg-red-500" };
     }
   };
@@ -109,7 +109,7 @@ export function AnimatedGauge({
         {/* Center content */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <motion.span
-            className={cn("font-bold tabular-nums", text, colors.text)}
+            className={cn("font-bold tabular-nums copper-num", text, colors.text)}
           >
             {displayedValue.toFixed(1)}{unit}
           </motion.span>

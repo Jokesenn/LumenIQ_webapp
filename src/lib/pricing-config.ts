@@ -1,4 +1,4 @@
-// Source unique de vérité pour les plans tarifaires LumenIQ
+// Source unique de vérité pour les plans tarifaires PREVYA
 // Chiffres modèles issus de MODEL_ROUTING_VISUAL.md
 // Chiffres séries/mois issus de la configuration produit
 
@@ -46,7 +46,7 @@ export const PLANS: Record<string, PricingPlan> = {
     badge: "PLUS POPULAIRE",
     popular: true,
     icon: "Sparkles",
-    gradient: "from-indigo-500 to-violet-500",
+    gradient: "from-[var(--color-copper)] to-[var(--color-copper)]",
     features: [
       "150 séries / mois",
       "Tout Standard inclus",
@@ -65,7 +65,7 @@ export const PLANS: Record<string, PricingPlan> = {
     description: "Modèles avancés + Support prioritaire",
     badge: "PREMIUM",
     icon: "Crown",
-    gradient: "from-amber-500 to-orange-500",
+    gradient: "from-[var(--color-copper)] to-[var(--color-copper-dark)]",
     features: [
       "300 séries / mois",
       "Tout ML inclus",

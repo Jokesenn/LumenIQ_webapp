@@ -164,10 +164,10 @@ Insert the following block in `globals.css` inside the `@layer utilities` block,
 
 **Step 2: Verify the CSS parses correctly**
 
-Run: `cd /Users/johannsenn/Documents/Git_repo/LumenIQ_webapp && npx tsc --noEmit 2>&1 | head -5`
+Run: `cd /Users/johannsenn/Documents/Git_repo/PREVYA_webapp && npx tsc --noEmit 2>&1 | head -5`
 Expected: No CSS-related errors (TypeScript won't catch CSS issues, but it confirms no import breakage)
 
-Run: `cd /Users/johannsenn/Documents/Git_repo/LumenIQ_webapp && npm run build 2>&1 | tail -20`
+Run: `cd /Users/johannsenn/Documents/Git_repo/PREVYA_webapp && npm run build 2>&1 | tail -20`
 Expected: Build succeeds. If `@property` causes issues with Tailwind v4, we'll need to move it outside `@layer utilities`.
 
 **Step 3: Commit**
@@ -252,7 +252,7 @@ Key changes vs original:
 
 **Step 3: Verify it renders**
 
-Run: `cd /Users/johannsenn/Documents/Git_repo/LumenIQ_webapp && npm run build 2>&1 | tail -10`
+Run: `cd /Users/johannsenn/Documents/Git_repo/PREVYA_webapp && npm run build 2>&1 | tail -10`
 Expected: Build succeeds
 
 **Step 4: Commit**
@@ -291,7 +291,7 @@ Changes:
 
 **Step 2: Verify build**
 
-Run: `cd /Users/johannsenn/Documents/Git_repo/LumenIQ_webapp && npm run build 2>&1 | tail -10`
+Run: `cd /Users/johannsenn/Documents/Git_repo/PREVYA_webapp && npm run build 2>&1 | tail -10`
 Expected: Build succeeds
 
 **Step 3: Commit**
@@ -354,7 +354,7 @@ import { cn } from "@/lib/utils";
 
 **Step 3: Verify build**
 
-Run: `cd /Users/johannsenn/Documents/Git_repo/LumenIQ_webapp && npm run build 2>&1 | tail -10`
+Run: `cd /Users/johannsenn/Documents/Git_repo/PREVYA_webapp && npm run build 2>&1 | tail -10`
 Expected: Build succeeds
 
 **Step 4: Commit**
@@ -395,7 +395,7 @@ Changes:
 
 **Step 2: Verify build**
 
-Run: `cd /Users/johannsenn/Documents/Git_repo/LumenIQ_webapp && npm run build 2>&1 | tail -10`
+Run: `cd /Users/johannsenn/Documents/Git_repo/PREVYA_webapp && npm run build 2>&1 | tail -10`
 Expected: Build succeeds
 
 **Step 3: Commit**
@@ -466,7 +466,7 @@ Changes:
 
 **Step 2: Verify build**
 
-Run: `cd /Users/johannsenn/Documents/Git_repo/LumenIQ_webapp && npm run build 2>&1 | tail -10`
+Run: `cd /Users/johannsenn/Documents/Git_repo/PREVYA_webapp && npm run build 2>&1 | tail -10`
 Expected: Build succeeds
 
 **Step 3: Commit**
@@ -482,22 +482,22 @@ git commit -m "style: add pulse ring animation and hover rotation to AI chat FAB
 
 **Step 1: Run full build**
 
-Run: `cd /Users/johannsenn/Documents/Git_repo/LumenIQ_webapp && npm run build`
+Run: `cd /Users/johannsenn/Documents/Git_repo/PREVYA_webapp && npm run build`
 Expected: Build succeeds with no errors
 
 **Step 2: Run linter**
 
-Run: `cd /Users/johannsenn/Documents/Git_repo/LumenIQ_webapp && npm run lint`
+Run: `cd /Users/johannsenn/Documents/Git_repo/PREVYA_webapp && npm run lint`
 Expected: No new warnings or errors
 
 **Step 3: Run type check**
 
-Run: `cd /Users/johannsenn/Documents/Git_repo/LumenIQ_webapp && npx tsc --noEmit`
+Run: `cd /Users/johannsenn/Documents/Git_repo/PREVYA_webapp && npx tsc --noEmit`
 Expected: No type errors
 
 **Step 4: Run existing tests**
 
-Run: `cd /Users/johannsenn/Documents/Git_repo/LumenIQ_webapp && npm test`
+Run: `cd /Users/johannsenn/Documents/Git_repo/PREVYA_webapp && npm test`
 Expected: All existing tests pass (no AI chat tests exist, but ensure nothing breaks)
 
 **Step 5: Manual visual QA**

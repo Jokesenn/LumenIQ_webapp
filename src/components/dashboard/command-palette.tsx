@@ -143,7 +143,7 @@ export function CommandPalette({ open: controlledOpen, onOpenChange }: CommandPa
       onOpenChange={setOpen}
       title="Palette de commandes"
       description="Rechercher une série, naviguer ou exécuter une action"
-      className="bg-[var(--color-bg)]/95 backdrop-blur-2xl"
+      className="bg-[var(--color-bg)]"
     >
       <CommandInput placeholder="Rechercher ou exécuter..." />
       <CommandList>
@@ -205,7 +205,7 @@ export function CommandPalette({ open: controlledOpen, onOpenChange }: CommandPa
                       <span className="px-1.5 py-0.5 text-xs rounded bg-emerald-500/20 text-emerald-400">
                         {s.abc_class}
                       </span>
-                      <span className="px-1.5 py-0.5 text-xs rounded bg-amber-700/20 text-amber-700">
+                      <span className="px-1.5 py-0.5 text-xs rounded bg-[var(--color-copper-bg)] text-[var(--color-copper)]">
                         {s.xyz_class}
                       </span>
                     </div>

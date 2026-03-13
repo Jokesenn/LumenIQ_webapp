@@ -14,39 +14,31 @@ import {
 import type { SeriesPdfData, ForecastPoint } from "@/types/export";
 import { getModelMeta, getFamilyMeta } from "@/lib/model-labels";
 
-/* ─── Font registration (Manrope + Syne — local WOFF files served by Next.js) ─── */
+/* ─── Font registration (Satoshi — local WOFF files, Signal V6 brand font)
+   @react-pdf/renderer requires static font files, not variable fonts ─── */
 
 Font.register({
-  family: "Manrope",
+  family: "Satoshi",
   fonts: [
-    { src: "/fonts/Manrope-400.woff", fontWeight: 400 },
-    { src: "/fonts/Manrope-500.woff", fontWeight: 500 },
-    { src: "/fonts/Manrope-600.woff", fontWeight: 600 },
-    { src: "/fonts/Manrope-700.woff", fontWeight: 700 },
-    { src: "/fonts/Manrope-800.woff", fontWeight: 800 },
-  ],
-});
-
-Font.register({
-  family: "Syne",
-  fonts: [
-    { src: "/fonts/Syne-700.woff", fontWeight: 700 },
-    { src: "/fonts/Syne-800.woff", fontWeight: 800 },
+    { src: "/fonts/Satoshi-Regular.woff", fontWeight: 400 },
+    { src: "/fonts/Satoshi-Medium.woff", fontWeight: 500 },
+    { src: "/fonts/Satoshi-Bold.woff", fontWeight: 700 },
+    { src: "/fonts/Satoshi-Black.woff", fontWeight: 900 },
   ],
 });
 
 /* ─── Brand palette (mode light — charte graphique) ─── */
 const B = {
   white: "#FFFFFF",
-  bgCard: "#F8F9FC",
-  bgSurface: "#EEF0F5",
-  accent: "#4F5BD5",
-  accentHover: "#3D49B8",
-  textPrimary: "#0B1020",
-  textSecondary: "#4A5068",
-  textMuted: "#7A8098",
-  border: "#D0D4E0",
-  borderLight: "#E8EAF0",
+  bgCard: "#FAFAF9",
+  bgSurface: "#F5F5F0",
+  accent: "#B45309",
+  accentHover: "#92400E",
+  textPrimary: "#141414",
+  textSecondary: "#5C5C58",
+  textMuted: "#8A8A82",
+  border: "#E8E8E0",
+  borderLight: "#F0F0E8",
   success: "#10B981",
   successBg: "#ecfdf5",
   successBorder: "#a7f3d0",
@@ -59,7 +51,7 @@ const B = {
   info: "#3B82F6",
   infoBg: "#eff6ff",
   infoBorder: "#bfdbfe",
-  logoIndigo: "#6366f1",
+  logoCopper: "#B45309",
 };
 
 /* ─── Styles ─── */
@@ -67,7 +59,7 @@ const s = StyleSheet.create({
   page: {
     padding: 40,
     paddingTop: 0,
-    fontFamily: "Manrope",
+    fontFamily: "Satoshi",
     backgroundColor: B.white,
     color: B.textPrimary,
     fontSize: 10,
@@ -95,7 +87,7 @@ const s = StyleSheet.create({
     gap: 10,
   },
   logoText: {
-    fontFamily: "Syne",
+    fontFamily: "Satoshi",
     fontSize: 18,
     fontWeight: 800,
     color: B.textPrimary,
@@ -126,7 +118,7 @@ const s = StyleSheet.create({
     marginBottom: 6,
   },
   title: {
-    fontFamily: "Syne",
+    fontFamily: "Satoshi",
     fontSize: 26,
     fontWeight: 800,
     color: B.textPrimary,
@@ -159,7 +151,7 @@ const s = StyleSheet.create({
 
   /* Section title */
   sectionTitle: {
-    fontFamily: "Syne",
+    fontFamily: "Satoshi",
     fontSize: 13,
     fontWeight: 700,
     color: B.textPrimary,
@@ -209,9 +201,9 @@ const s = StyleSheet.create({
   chartContainer: {
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#2a2a30",
+    borderColor: "#D0D4E0",
     overflow: "hidden",
-    backgroundColor: "#0B1020",
+    backgroundColor: "#FAFAF9",
   },
   chartImage: {
     width: "100%",
@@ -222,9 +214,9 @@ const s = StyleSheet.create({
     justifyContent: "center",
     gap: 24,
     paddingVertical: 8,
-    backgroundColor: "#0D1428",
+    backgroundColor: "#F5F5F0",
     borderTopWidth: 1,
-    borderTopColor: "#1a1f35",
+    borderTopColor: "#E8E8E0",
   },
   legendItem: {
     flexDirection: "row",
@@ -238,7 +230,7 @@ const s = StyleSheet.create({
   },
   legendText: {
     fontSize: 7.5,
-    color: "#A0A8C0",
+    color: "#5C5C58",
     fontWeight: 500,
   },
   chartPlaceholder: {
@@ -282,7 +274,7 @@ const s = StyleSheet.create({
     flex: 1,
   },
   modelName: {
-    fontFamily: "Syne",
+    fontFamily: "Satoshi",
     fontSize: 12,
     fontWeight: 700,
     color: B.textPrimary,
@@ -373,7 +365,7 @@ const s = StyleSheet.create({
     fontWeight: 500,
   },
   footerBrand: {
-    fontFamily: "Syne",
+    fontFamily: "Satoshi",
     fontSize: 8,
     fontWeight: 700,
     color: B.accent,
@@ -393,7 +385,7 @@ function PdfLogo({ size = 28 }: { size?: number }) {
       {/* Outer hexagon — stroke only */}
       <Polygon
         points="50,5 93.3,27.5 93.3,72.5 50,95 6.7,72.5 6.7,27.5"
-        stroke={B.logoIndigo}
+        stroke={B.logoCopper}
         strokeWidth={5}
         strokeLinejoin="round"
         opacity={0.8}
@@ -401,13 +393,13 @@ function PdfLogo({ size = 28 }: { size?: number }) {
       {/* Mid hexagon — translucent fill */}
       <Polygon
         points="50,20 78.7,35 78.7,65 50,80 21.3,65 21.3,35"
-        fill={B.logoIndigo}
+        fill={B.logoCopper}
         opacity={0.15}
       />
       {/* Inner hexagon — solid */}
       <Polygon
         points="50,35 64.4,42.5 64.4,57.5 50,65 35.6,57.5 35.6,42.5"
-        fill={B.logoIndigo}
+        fill={B.logoCopper}
       />
     </Svg>
   );
@@ -500,7 +492,7 @@ export function SeriesPdfReport({
         <View style={s.header}>
           <View style={s.headerLeft}>
             <PdfLogo size={26} />
-            <Text style={s.logoText}>LumenIQ</Text>
+            <Text style={s.logoText}>PREVYA</Text>
           </View>
           <View style={s.headerRight}>
             <Text style={s.headerDate}>{fmtDate(generatedAt)}</Text>
@@ -563,15 +555,15 @@ export function SeriesPdfReport({
               <Image style={s.chartImage} src={chartImage} />
               <View style={s.chartLegend}>
                 <View style={s.legendItem}>
-                  <View style={[s.legendDot, { backgroundColor: "#6366f1" }]} />
+                  <View style={[s.legendDot, { backgroundColor: "#141414" }]} />
                   <Text style={s.legendText}>Reel</Text>
                 </View>
                 <View style={s.legendItem}>
-                  <View style={[s.legendDot, { backgroundColor: "#8b5cf6" }]} />
+                  <View style={[s.legendDot, { backgroundColor: "#B45309" }]} />
                   <Text style={s.legendText}>Prevision</Text>
                 </View>
                 <View style={s.legendItem}>
-                  <View style={[s.legendDot, { backgroundColor: "#8b5cf6", opacity: 0.3 }]} />
+                  <View style={[s.legendDot, { backgroundColor: "#B45309", opacity: 0.3 }]} />
                   <Text style={s.legendText}>Intervalle de confiance</Text>
                 </View>
               </View>
@@ -613,7 +605,7 @@ export function SeriesPdfReport({
           <View style={[s.header, { paddingTop: 16, paddingBottom: 10, marginBottom: 16 }]}>
             <View style={s.headerLeft}>
               <PdfLogo size={20} />
-              <Text style={[s.logoText, { fontSize: 13 }]}>LumenIQ</Text>
+              <Text style={[s.logoText, { fontSize: 13 }]}>PREVYA</Text>
               <Text style={{ fontSize: 10, color: B.textMuted, fontWeight: 500 }}>·</Text>
               <Text style={{ fontSize: 10, color: B.textSecondary, fontWeight: 600 }}>
                 {series.series_id}

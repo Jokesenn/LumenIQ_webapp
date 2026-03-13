@@ -34,7 +34,7 @@ function BubbleTooltip({ active, payload }: { active?: boolean; payload?: Toolti
   if (!d) return null;
 
   return (
-    <div className="bg-white backdrop-blur-xl border border-[var(--color-border)] rounded-xl p-3 shadow-xl">
+    <div className="bg-white border border-[var(--color-border)] rounded-xl p-3 shadow-[var(--shadow-card)]">
       <div className="flex items-center gap-2 mb-1">
         <div
           className="w-2.5 h-2.5 rounded-full"
@@ -118,8 +118,8 @@ export function ReliabilityBubbleChart({ data, className }: ReliabilityBubbleCha
             ))}
           </defs>
           <CartesianGrid
-            strokeDasharray="3 3"
-            stroke="rgba(0,0,0,0.06)"
+            stroke="var(--color-chart-grid)"
+            strokeWidth={0.5}
             vertical={false}
           />
           <XAxis
@@ -128,7 +128,7 @@ export function ReliabilityBubbleChart({ data, className }: ReliabilityBubbleCha
             name="Séries"
             axisLine={false}
             tickLine={false}
-            tick={{ fill: "#71717a", fontSize: 12 }}
+            tick={{ fill: "var(--color-text-tertiary)", fontSize: 9, fontFamily: "var(--font-mono)" }}
             dy={10}
           />
           <YAxis
@@ -138,7 +138,7 @@ export function ReliabilityBubbleChart({ data, className }: ReliabilityBubbleCha
             domain={[0, 100]}
             axisLine={false}
             tickLine={false}
-            tick={{ fill: "#71717a", fontSize: 12 }}
+            tick={{ fill: "var(--color-text-tertiary)", fontSize: 9, fontFamily: "var(--font-mono)" }}
             dx={-5}
           />
           <ZAxis
@@ -149,13 +149,15 @@ export function ReliabilityBubbleChart({ data, className }: ReliabilityBubbleCha
           />
           <ReferenceLine
             y={reliabilityThreshold}
-            stroke="rgba(0,0,0,0.1)"
-            strokeDasharray="6 4"
+            stroke="var(--color-copper)"
+            strokeWidth={2}
             label={{
               value: `Seuil de fiabilité ${reliabilityThreshold}%`,
               position: "insideTopLeft",
-              fill: "#52525b",
-              fontSize: 10,
+              fill: "var(--color-copper)",
+              fontSize: 9,
+              fontFamily: "var(--font-mono)",
+              fontWeight: 600,
             }}
           />
           <Tooltip content={<BubbleTooltip />} cursor={false} />

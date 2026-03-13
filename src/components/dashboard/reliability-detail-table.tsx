@@ -16,14 +16,14 @@ export function ReliabilityDetailTable({ data, onModelClick }: ReliabilityDetail
   const getScoreColor = (score: number): string => {
     const c = getColor("model_score", score);
     if (c === "green") return "text-emerald-400";
-    if (c === "yellow") return "text-amber-400";
+    if (c === "yellow") return "text-[var(--color-copper)]";
     return "text-red-400";
   };
 
   const getScoreDotBg = (score: number): string => {
     const c = getColor("model_score", score);
     if (c === "green") return "bg-emerald-400";
-    if (c === "yellow") return "bg-amber-400";
+    if (c === "yellow") return "bg-[var(--color-copper)]";
     return "bg-red-400";
   };
 

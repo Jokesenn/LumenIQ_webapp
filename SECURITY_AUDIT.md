@@ -1,7 +1,7 @@
-# Audit de Securite & Conformite RGPD — LumenIQ
+# Audit de Securite & Conformite RGPD — PREVYA
 
 **Date** : 16 fevrier 2026 (derniere mise a jour : 20 fevrier 2026)
-**Perimetre** : Backend (`Lumen_IQ/`) + Frontend (`LumenIQ_webapp/`) + Supabase + N8N
+**Perimetre** : Backend (`Lumen_IQ/`) + Frontend (`PREVYA_webapp/`) + Supabase + N8N
 **Projet Supabase** : `kshtmftvjhsdlxpsvgyr` (region `eu-central-1`)
 
 ---
@@ -271,7 +271,7 @@ Prerequis serveur : `NODE_FUNCTION_ALLOW_BUILTIN=crypto` dans l'environnement Do
 **URL** : `/politique-de-confidentialite`
 
 Page statique avec 10 sections :
-1. Responsable du traitement (LumenIQ SAS)
+1. Responsable du traitement (PREVYA SAS)
 2. Donnees collectees (identification, utilisation, techniques)
 3. Finalites (service, auth, support, amelioration)
 4. Base legale (execution du contrat + consentement)

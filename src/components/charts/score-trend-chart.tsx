@@ -14,6 +14,7 @@ import { fr } from "date-fns/locale";
 import { motion } from "framer-motion";
 import { TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PulseDot } from "./pulse-dot";
 import type { TrendDataPoint } from "@/lib/queries/dashboard";
 
 interface ScoreTrendChartProps {
@@ -28,7 +29,7 @@ function CustomTooltip({ active, payload }: { active?: boolean; payload?: Array<
   const dateStr = d.date ? format(parseISO(d.date), "dd MMM yyyy", { locale: fr }) : "—";
 
   return (
-    <div className="bg-white backdrop-blur-xl border border-[var(--color-border)] rounded-xl px-3 py-2 shadow-xl">
+    <div className="bg-white border border-[var(--color-border)] rounded-xl px-3 py-2 shadow-[var(--shadow-card)]">
       <p className="text-xs text-[var(--color-text-secondary)]">{dateStr}</p>
       <p className="text-sm font-semibold text-[var(--color-text)] mt-0.5">
         Score {d.score.toFixed(1)}<span className="text-[var(--color-text-tertiary)]">/100</span>
@@ -47,8 +48,8 @@ export function ScoreTrendChart({ data, height = 250, className }: ScoreTrendCha
         transition={{ duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }}
         className={cn("flex flex-col items-center justify-center gap-3 py-12", className)}
       >
-        <div className="rounded-full bg-amber-700/10 p-3">
-          <TrendingUp className="text-amber-700" size={24} />
+        <div className="rounded-full bg-[var(--color-copper)]/10 p-3">
+          <TrendingUp className="text-[var(--color-copper)]" size={24} />
         </div>
         <p className="text-sm text-[var(--color-text-secondary)] text-center max-w-[240px]">
           Lancez au moins 2 previsions pour voir la tendance
@@ -89,7 +90,7 @@ export function ScoreTrendChart({ data, height = 250, className }: ScoreTrendCha
             dataKey="dateLabel"
             axisLine={false}
             tickLine={false}
-            tick={{ fill: "#71717a", fontSize: 11 }}
+            tick={{ fill: "var(--color-text-tertiary)", fontSize: 9, fontFamily: "var(--font-mono)" }}
             dy={8}
           />
           <YAxis
@@ -113,27 +114,12 @@ export function ScoreTrendChart({ data, height = 250, className }: ScoreTrendCha
             type="monotone"
             dataKey="score"
             stroke="#B45309"
-            strokeWidth={2.5}
+            strokeWidth={2}
             fill="url(#scoreFill)"
-            dot={({ cx, cy, index }: { cx?: number; cy?: number; index?: number }) => {
-              const i = index ?? 0;
-              const isLast = i === chartData.length - 1;
-              if (!isLast || cx == null || cy == null) return <circle key={i} cx={0} cy={0} r={0} fill="none" />;
-              return (
-                <circle
-                  key={i}
-                  cx={cx}
-                  cy={cy}
-                  r={5}
-                  fill="#B45309"
-                  stroke="#ffffff"
-                  strokeWidth={2}
-                />
-              );
-            }}
+            dot={<PulseDot lastIndex={chartData.length - 1} />}
             activeDot={{
               r: 5,
-              fill: "#B45309",
+              fill: "var(--color-copper)",
               stroke: "#ffffff",
               strokeWidth: 2,
             }}

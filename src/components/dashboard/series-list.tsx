@@ -26,10 +26,10 @@ interface SeriesListProps {
 
 const classColors: Record<string, string> = {
   A: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
-  B: "bg-amber-500/20 text-amber-400 border-amber-500/30",
+  B: "bg-[var(--color-copper-bg)] text-[var(--color-copper)] border-[var(--color-copper)]/30",
   C: "bg-red-500/20 text-red-400 border-red-500/30",
   X: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
-  Y: "bg-amber-500/20 text-amber-400 border-amber-500/30",
+  Y: "bg-[var(--color-copper-bg)] text-[var(--color-copper)] border-[var(--color-copper)]/30",
   Z: "bg-red-500/20 text-red-400 border-red-500/30",
 };
 
@@ -89,7 +89,7 @@ export function SeriesList({
                     {/* Series info */}
                     <div className="min-w-0">
                       <div className="flex items-center gap-1 lg:gap-2">
-                        <p className="font-medium text-sm lg:text-base text-[var(--color-text)] truncate group-hover:text-amber-700 transition-colors">
+                        <p className="font-medium text-sm lg:text-base text-[var(--color-text)] truncate group-hover:text-[var(--color-copper)] transition-colors">
                           {s.series_id}
                         </p>
                         <div className="hidden xl:flex shrink-0">
@@ -146,7 +146,7 @@ export function SeriesList({
                       />
                     </div>
                     <div className="text-right">
-                      <p className={cn("text-sm lg:text-base font-semibold font-display", getScoreColor(s.champion_score))}>
+                      <p className={cn("text-sm lg:text-base font-semibold font-display copper-num", getScoreColor(s.champion_score))}>
                         {s.champion_score != null ? s.champion_score.toFixed(1) : "N/A"}
                       </p>
                       <p className="text-xs text-[var(--color-text-tertiary)]">Fiabilité</p>

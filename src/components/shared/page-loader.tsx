@@ -30,7 +30,7 @@ export function PageLoader() {
           {[0, 1, 2].map((i) => (
             <motion.div
               key={i}
-              className="w-2 h-2 bg-amber-700 rounded-full"
+              className="w-2 h-2 bg-[var(--color-copper)] rounded-full"
               animate={{
                 y: [0, -10, 0],
                 opacity: [0.3, 1, 0.3],

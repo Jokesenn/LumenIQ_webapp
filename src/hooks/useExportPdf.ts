@@ -203,7 +203,7 @@ export function useExportPdf() {
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.download = `LumenIQ_${series.series_id}_${new Date().toISOString().split("T")[0]}.pdf`;
+        link.download = `PREVYA_${series.series_id}_${new Date().toISOString().split("T")[0]}.pdf`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

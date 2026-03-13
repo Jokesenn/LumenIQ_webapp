@@ -23,8 +23,8 @@ export function QuotaProgress({
   const percentage = Math.min((used / total) * 100, 100);
 
   const getColor = () => {
-    if (percentage < 60) return "from-amber-700 to-amber-800";
-    if (percentage < 85) return "from-amber-500 to-orange-500";
+    if (percentage < 60) return "from-[var(--color-copper)] to-[var(--color-copper-dark)]";
+    if (percentage < 85) return "from-[var(--color-copper)] to-[var(--color-warning)]";
     return "from-red-500 to-rose-500";
   };
 
@@ -69,7 +69,7 @@ export function QuotaProgress({
       <div className="flex justify-end mt-1">
         <span className={cn(
           "text-xs font-medium",
-          percentage >= 85 ? "text-red-400" : percentage >= 60 ? "text-amber-400" : "text-[var(--color-text-tertiary)]"
+          percentage >= 85 ? "text-red-400" : percentage >= 60 ? "text-[var(--color-copper)]" : "text-[var(--color-text-tertiary)]"
         )}>
           {percentage.toFixed(0)}%
         </span>

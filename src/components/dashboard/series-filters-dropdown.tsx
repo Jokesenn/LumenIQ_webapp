@@ -80,7 +80,7 @@ export function SeriesFiltersDropdown({
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-64 p-0 bg-white border-[var(--color-border)] backdrop-blur-xl"
+        className="w-64 p-0 bg-white border-[var(--color-border)]"
         align="end"
       >
         <div className="p-3 space-y-3">

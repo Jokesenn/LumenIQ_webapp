@@ -20,16 +20,16 @@ interface ModelPerformanceChartProps {
 
 function getModelScoreColor(score: number, green: number, yellow: number): string {
   if (score >= green) return "text-emerald-400";
-  if (score >= yellow) return "text-amber-400";
+  if (score >= yellow) return "text-[var(--color-copper)]";
   return "text-red-400";
 }
 
 const modelColors: Record<string, string> = {
-  XGBoost: "from-amber-700 to-amber-800",
-  LightGBM: "from-amber-700 to-amber-800",
+  XGBoost: "from-[var(--color-copper)] to-[var(--color-copper)]",
+  LightGBM: "from-[var(--color-copper)] to-[var(--color-copper)]",
   Prophet: "from-cyan-500 to-cyan-600",
   ARIMA: "from-emerald-500 to-emerald-600",
-  Theta: "from-amber-500 to-amber-600",
+  Theta: "from-[var(--color-copper)] to-[var(--color-copper)]",
   CES: "from-rose-500 to-rose-600",
   ETS: "from-blue-500 to-blue-600",
   default: "from-zinc-500 to-zinc-600",

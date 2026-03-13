@@ -65,7 +65,7 @@ function ColorBar({
           className="bg-red-500/70"
           style={{ width: `${100 - gPct - yPct}%` }}
         />
-        <div className="bg-amber-400/70" style={{ width: `${yPct}%` }} />
+        <div className="bg-[var(--color-copper)]/70" style={{ width: `${yPct}%` }} />
         <div className="bg-emerald-500/70" style={{ width: `${gPct}%` }} />
       </div>
     );
@@ -76,7 +76,7 @@ function ColorBar({
   return (
     <div className="flex h-2 rounded-full overflow-hidden mt-2">
       <div className="bg-emerald-500/70" style={{ width: `${gPct}%` }} />
-      <div className="bg-amber-400/70" style={{ width: `${yPct}%` }} />
+      <div className="bg-[var(--color-copper)]/70" style={{ width: `${yPct}%` }} />
       <div className="bg-red-500/70" style={{ width: `${rPct}%` }} />
     </div>
   );
@@ -161,7 +161,7 @@ function MetricRow({
           </span>
           <span className="text-xs text-[var(--color-text-tertiary)]">{config.unit}</span>
           {custom ? (
-            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-700/10 text-amber-700">
+            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[var(--color-copper-bg)] text-[var(--color-copper)]">
               Personnalisé
             </span>
           ) : (
@@ -203,7 +203,7 @@ function MetricRow({
             type="number"
             value={yellowVal}
             onChange={(e) => handleYellowChange(e.target.value)}
-            className="w-full px-3 py-2 bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-transparent"
+            className="w-full px-3 py-2 bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-copper)]/50 focus:border-transparent"
           />
         </div>
       </div>

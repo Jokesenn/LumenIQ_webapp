@@ -8,22 +8,22 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://lumeniq.fr"),
-  title: "LumenIQ | Prévisions professionnelles validées par backtesting",
+  title: "PREVYA | Prévisions professionnelles validées par backtesting",
   description: "Transformez vos historiques de ventes en prévisions fiables. Jusqu'à 24 modèles statistiques et ML, routing ABC/XYZ intelligent, rapports détaillés. Essai gratuit 3 mois.",
-  authors: [{ name: "LumenIQ" }],
+  authors: [{ name: "PREVYA" }],
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "LumenIQ | Prévisions professionnelles pour PME",
+    title: "PREVYA | Prévisions professionnelles pour PME",
     description: "Moteur de prévision professionnel pour PME e-commerce. Jusqu'à 24 modèles, backtesting automatique. Essai gratuit 3 mois.",
     type: "website",
-    siteName: "LumenIQ",
+    siteName: "PREVYA",
     locale: "fr_FR",
   },
   twitter: {
     card: "summary_large_image",
-    title: "LumenIQ | Prévisions professionnelles pour PME",
+    title: "PREVYA | Prévisions professionnelles pour PME",
     description: "Moteur de prévision professionnel pour PME e-commerce. Jusqu'à 24 modèles, backtesting automatique. Essai gratuit 3 mois.",
   },
 };
@@ -43,7 +43,7 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              "name": "LumenIQ",
+              "name": "PREVYA",
               "url": "https://lumeniq.fr",
               "logo": "https://lumeniq.fr/icon",
               "sameAs": [

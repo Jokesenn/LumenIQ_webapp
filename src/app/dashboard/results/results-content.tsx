@@ -352,7 +352,7 @@ export function ResultsContent({
                   {metrics?.n_series_total ?? 0} séries
                 </span>
                 {isAggregated && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-700/10 px-2 py-0.5 text-xs text-amber-700">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-[var(--color-copper-bg)] px-2 py-0.5 text-xs text-[var(--color-copper)]">
                     Données {formatFrequencyLabel(job?.frequency).toLowerCase()} → agrégées en mensuel
                   </span>
                 )}
@@ -442,7 +442,7 @@ export function ResultsContent({
               </div>
               <div className="dash-card p-4 sm:p-6">
                 <div className="text-center">
-                  <p className="text-3xl sm:text-4xl font-bold text-[var(--color-text)]">
+                  <p className="text-3xl sm:text-4xl font-bold text-[var(--color-text)] copper-num">
                     {metrics?.n_series_success ?? 0}
                     <span className="text-lg text-[var(--color-text-tertiary)]">/{metrics?.n_series_total ?? 0}</span>
                   </p>
@@ -500,7 +500,7 @@ export function ResultsContent({
                         className={cn(
                           "px-3 py-1 text-xs font-medium rounded-md transition-colors",
                           viewState.granularity === "monthly"
-                            ? "bg-amber-700/20 text-amber-700"
+                            ? "bg-[var(--color-copper-bg)] text-[var(--color-copper)]"
                             : "text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
                         )}
                         onClick={() => dispatch({ type: "SET_GRANULARITY", payload: "monthly" })}
@@ -511,7 +511,7 @@ export function ResultsContent({
                         className={cn(
                           "px-3 py-1 text-xs font-medium rounded-md transition-colors",
                           viewState.granularity === "source"
-                            ? "bg-amber-700/20 text-amber-700"
+                            ? "bg-[var(--color-copper-bg)] text-[var(--color-copper)]"
                             : "text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
                         )}
                         onClick={() => dispatch({ type: "SET_GRANULARITY", payload: "source" })}

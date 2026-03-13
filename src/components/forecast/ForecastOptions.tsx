@@ -54,7 +54,7 @@ export function ForecastOptions({
             {/* Horizon */}
             <div className="flex items-center justify-between py-3 border-b border-[var(--color-border)]">
               <div className="flex items-center gap-3">
-                <Target size={16} className="text-amber-700" />
+                <Target size={16} className="text-[var(--color-copper)]" />
                 <div>
                   <p className="text-sm text-[var(--color-text)]">Horizon de prévision</p>
                   <p className="text-xs text-[var(--color-text-tertiary)]">
@@ -82,7 +82,7 @@ export function ForecastOptions({
             {/* Gating */}
             <div className="flex items-center justify-between py-3 border-b border-[var(--color-border)]">
               <div className="flex items-center gap-3">
-                <Zap size={16} className="text-amber-400" />
+                <Zap size={16} className="text-[var(--color-copper)]" />
                 <div>
                   <p className="text-sm text-[var(--color-text)]">Mode accéléré</p>
                   <p className="text-xs text-[var(--color-text-tertiary)]">

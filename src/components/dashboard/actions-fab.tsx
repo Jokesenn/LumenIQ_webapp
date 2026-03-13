@@ -26,8 +26,8 @@ export function ActionsFab({ onClick, isOpen }: ActionsFabProps) {
             "fixed bottom-[88px] right-6 z-50",
             "flex items-center justify-center",
             "w-14 h-14 rounded-full",
-            "bg-amber-500 hover:bg-amber-600",
-            "text-white shadow-lg shadow-amber-500/25",
+            "bg-[var(--color-copper)] hover:bg-[var(--color-copper-hover)]",
+            "text-white shadow-lg shadow-[var(--color-copper)]/25",
             "transition-colors cursor-pointer"
           )}
           aria-label="Ouvrir les actions"

@@ -34,9 +34,9 @@ const PRIORITY_CONFIG: Record<
     icon: AlertTriangle,
   },
   warning: {
-    bg: "bg-amber-500/10",
-    border: "border-amber-500/30",
-    text: "text-amber-400",
+    bg: "bg-[var(--color-copper-bg)]",
+    border: "border-[var(--color-copper)]/30",
+    text: "text-[var(--color-copper)]",
     icon: AlertCircle,
   },
   info: {
@@ -81,7 +81,7 @@ export function ActionCard({ action, compact, onDismiss, onNavigate }: ActionCar
         "rounded-xl border p-4",
         config.bg,
         config.border,
-        "transition-colors backdrop-blur-sm"
+        "transition-colors"
       )}
     >
       <div className="flex items-start gap-3">
@@ -125,7 +125,7 @@ export function ActionCard({ action, compact, onDismiss, onNavigate }: ActionCar
           <div className="flex items-center justify-between mt-2">
             <div className="flex items-center gap-3">
               {metricValue !== undefined && (
-                <span className={cn("text-xs font-mono font-medium", config.text)}>
+                <span className={cn("text-xs font-mono font-medium copper-num", config.text)}>
                   {metricLabel || ""}{" "}
                   {typeof metricValue === "number"
                     ? `${(metricValue * 100).toFixed(1)}%`

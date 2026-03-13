@@ -269,9 +269,9 @@ export default function ForecastPage() {
               <div
                 className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold transition-colors ${
                   step > i + 1
-                    ? "bg-amber-700/20 text-amber-700"
+                    ? "bg-[var(--color-copper-bg)] text-[var(--color-copper)]"
                     : step === i + 1
-                    ? "bg-[var(--color-copper)] text-white ring-4 ring-amber-700/20"
+                    ? "bg-[var(--color-copper)] text-white ring-4 ring-[var(--color-copper)]/20"
                     : "bg-[var(--color-bg-surface)] text-[var(--color-text-tertiary)]"
                 }`}
               >
@@ -312,8 +312,8 @@ export default function ForecastPage() {
           onClick={() => document.getElementById("file-input")?.click()}
           className={`dash-empty-hex rounded-2xl border-2 border-dashed p-20 text-center cursor-pointer transition-all ${
             isDragging
-              ? "bg-amber-700/5 border-[var(--color-copper)]"
-              : "bg-[var(--color-bg-surface)] border-[var(--color-border)] hover:border-amber-700/50 hover:bg-[var(--color-bg-surface)]"
+              ? "bg-[var(--color-copper-bg-soft)] border-[var(--color-copper)]"
+              : "bg-[var(--color-bg-surface)] border-[var(--color-border)] hover:border-[var(--color-copper)]/50 hover:bg-[var(--color-bg-surface)]"
           }`}
         >
           <input
@@ -324,9 +324,9 @@ export default function ForecastPage() {
             onChange={handleDrop}
           />
           <div className={`w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 transition-colors ${
-            isDragging ? "bg-amber-700/15" : "bg-amber-700/10"
+            isDragging ? "bg-[var(--color-copper-bg)]" : "bg-[var(--color-copper-bg)]"
           }`}>
-            <Upload size={36} className={`transition-colors ${isDragging ? "text-amber-700" : "text-[var(--color-text-tertiary)]"}`} />
+            <Upload size={36} className={`transition-colors ${isDragging ? "text-[var(--color-copper)]" : "text-[var(--color-text-tertiary)]"}`} />
           </div>
           <h2 className="text-xl font-semibold text-[var(--color-text)] mb-2">
             Glissez votre fichier ici
@@ -343,8 +343,8 @@ export default function ForecastPage() {
       {/* Step 1.5: Analyzing */}
       {step === 1 && analyzing && (
         <div className="dash-card p-16 text-center">
-          <div className="w-20 h-20 rounded-2xl bg-amber-700/10 flex items-center justify-center mx-auto mb-6">
-            <Loader2 size={36} className="text-amber-700 animate-spin" />
+          <div className="w-20 h-20 rounded-2xl bg-[var(--color-copper-bg)] flex items-center justify-center mx-auto mb-6">
+            <Loader2 size={36} className="text-[var(--color-copper)] animate-spin" />
           </div>
           <h2 className="text-xl font-semibold text-[var(--color-text)] mb-2">Analyse en cours...</h2>
           <p className="text-[var(--color-text-secondary)]">
@@ -438,8 +438,8 @@ export default function ForecastPage() {
 
           {/* Warnings if any */}
           {analysis.errors.length > 0 && (
-            <div className="p-4 bg-amber-500/10 rounded-lg mb-6 border-l-[3px] border-amber-500">
-              <p className="text-sm text-amber-400">
+            <div className="p-4 bg-[var(--color-copper-bg)] rounded-lg mb-6 border-l-[3px] border-[var(--color-copper)]">
+              <p className="text-sm text-[var(--color-copper)]">
                 <strong>Attention :</strong> {analysis.errors.join(". ")}
               </p>
             </div>
@@ -486,11 +486,11 @@ export default function ForecastPage() {
         <div className="dash-card p-8">
           {/* Header */}
           <div className="flex items-center gap-4 mb-8">
-            <div className="w-14 h-14 rounded-2xl bg-amber-700/10 flex items-center justify-center">
+            <div className="w-14 h-14 rounded-2xl bg-[var(--color-copper-bg)] flex items-center justify-center">
               {uploadStep === "error" || isFailed ? (
                 <AlertCircle size={28} className="text-red-400" />
               ) : (
-                <Loader2 size={28} className="text-amber-700 animate-spin" />
+                <Loader2 size={28} className="text-[var(--color-copper)] animate-spin" />
               )}
             </div>
             <div>

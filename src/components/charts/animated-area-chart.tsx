@@ -11,9 +11,11 @@ import {
   ResponsiveContainer,
   Legend,
   ReferenceLine,
+  ReferenceArea,
 } from "recharts";
 import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
+import { PulseDot } from "./pulse-dot";
 
 interface DataPoint {
   date: string;
@@ -55,7 +57,7 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (visible.length === 0) return null;
 
   return (
-    <div className="bg-white backdrop-blur-xl border border-[var(--color-border)] rounded-xl p-3 shadow-xl">
+    <div className="bg-white border border-[var(--color-border)] rounded-xl p-3 shadow-[var(--shadow-card)]">
       <p className="text-xs text-[var(--color-text-secondary)] mb-2">{label}</p>
       {visible.map((entry: TooltipEntry, i: number) => (
         <div key={i} className="flex items-center gap-2 text-sm">
@@ -100,6 +102,15 @@ export function AnimatedAreaChart({
   const splitIndex = chartData.findIndex((d) => d.forecast !== undefined && d.actual === undefined);
   const splitDate = splitIndex > 0 ? chartData[splitIndex - 1]?.date : null;
 
+  // Index of last data point with an actual value (for PulseDot)
+  const lastActualIndex = useMemo(() => {
+    let last = -1;
+    for (let i = 0; i < chartData.length; i++) {
+      if (chartData[i].actual != null) last = i;
+    }
+    return last;
+  }, [chartData]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -112,15 +123,15 @@ export function AnimatedAreaChart({
         aria-label="Graphique de tendance des prévisions montrant les valeurs réelles et prévues au fil du temps"
       >
         <span className="sr-only">
-          Graphique de tendance des prévisions. Ce graphique affiche les valeurs historiques réelles en bleu et les prévisions futures en violet, avec des intervalles de confiance optionnels.
+          Graphique de tendance des prévisions. Ce graphique affiche les valeurs historiques réelles et les prévisions futures en cuivre, avec des intervalles de confiance optionnels.
         </span>
         <ResponsiveContainer width="100%" height={height}>
         <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
           <defs>
             {/* Gradient pour actuals */}
             <linearGradient id="actualGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#B45309" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#B45309" stopOpacity={0} />
+              <stop offset="5%" stopColor="#141414" stopOpacity={0.08} />
+              <stop offset="95%" stopColor="#141414" stopOpacity={0} />
             </linearGradient>
             {/* Gradient pour forecast */}
             <linearGradient id="forecastGradient" x1="0" y1="0" x2="0" y2="1">
@@ -132,11 +143,15 @@ export function AnimatedAreaChart({
               <stop offset="5%" stopColor="#B45309" stopOpacity={0.15} />
               <stop offset="95%" stopColor="#B45309" stopOpacity={0.05} />
             </linearGradient>
+            {/* Dot grid — zone de prévision (Brand Device #4) */}
+            <pattern id="forecast-dot-grid" width="12" height="12" patternUnits="userSpaceOnUse">
+              <circle cx="6" cy="6" r="0.5" fill="#8A8A82" opacity="0.35" />
+            </pattern>
           </defs>
 
           <CartesianGrid
-            strokeDasharray="3 3"
-            stroke="rgba(0,0,0,0.06)"
+            stroke="var(--color-chart-grid)"
+            strokeWidth={0.5}
             vertical={false}
           />
 
@@ -144,14 +159,14 @@ export function AnimatedAreaChart({
             dataKey="date"
             axisLine={false}
             tickLine={false}
-            tick={{ fill: "#71717a", fontSize: 12 }}
+            tick={{ fill: "var(--color-text-tertiary)", fontSize: 9, fontFamily: "var(--font-mono)" }}
             dy={10}
           />
 
           <YAxis
             axisLine={false}
             tickLine={false}
-            tick={{ fill: "#71717a", fontSize: 12 }}
+            tick={{ fill: "var(--color-text-tertiary)", fontSize: 9, fontFamily: "var(--font-mono)" }}
             tickFormatter={(value) => value.toLocaleString("fr-FR", { notation: "compact" })}
             dx={-10}
           />
@@ -163,17 +178,30 @@ export function AnimatedAreaChart({
             formatter={(value) => <span className="text-[var(--color-text-secondary)] text-sm">{value}</span>}
           />
 
+          {/* Dot grid — zone de prévision (Brand Device #4) */}
+          {splitDate && (
+            <ReferenceArea
+              x1={splitDate}
+              fill="url(#forecast-dot-grid)"
+              fillOpacity={1}
+              stroke="none"
+              ifOverflow="hidden"
+            />
+          )}
+
           {/* Ligne de séparation actuals/forecast */}
           {splitDate && (
             <ReferenceLine
               x={splitDate}
-              stroke="rgba(0,0,0,0.15)"
-              strokeDasharray="5 5"
+              stroke="var(--color-copper)"
+              strokeWidth={2}
               label={{
-                value: "Prévisions →",
+                value: "RÉFÉRENCE",
                 position: "top",
-                fill: "#71717a",
-                fontSize: 11,
+                fill: "var(--color-copper)",
+                fontSize: 8,
+                fontFamily: "var(--font-mono)",
+                fontWeight: 600,
               }}
             />
           )}
@@ -214,13 +242,13 @@ export function AnimatedAreaChart({
           <Area
             type="monotone"
             dataKey="actual"
-            stroke="#B45309"
+            stroke="var(--color-chart-actual)"
             strokeWidth={2}
             fill="url(#actualGradient)"
             fillOpacity={1}
             name="Réel"
-            dot={false}
-            activeDot={{ r: 6, fill: "#B45309", stroke: "#fff", strokeWidth: 2 }}
+            dot={<PulseDot lastIndex={lastActualIndex} />}
+            activeDot={{ r: 5, fill: "var(--color-copper)", stroke: "#fff", strokeWidth: 2 }}
             onMouseEnter={() => setHoveredArea("actual")}
             onMouseLeave={() => setHoveredArea(null)}
           />
@@ -229,14 +257,14 @@ export function AnimatedAreaChart({
           <Area
             type="monotone"
             dataKey="forecast"
-            stroke="#B45309"
+            stroke="var(--color-chart-forecast)"
             strokeWidth={2}
-            strokeDasharray="5 5"
+            strokeDasharray="6 3"
             fill="url(#forecastGradient)"
             fillOpacity={1}
             name="Prévision"
             dot={false}
-            activeDot={{ r: 6, fill: "#B45309", stroke: "#fff", strokeWidth: 2 }}
+            activeDot={{ r: 5, fill: "var(--color-copper)", stroke: "#fff", strokeWidth: 2 }}
             onMouseEnter={() => setHoveredArea("forecast")}
             onMouseLeave={() => setHoveredArea(null)}
           />

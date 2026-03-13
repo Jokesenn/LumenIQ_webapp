@@ -46,13 +46,13 @@ export function EnrichedWaiting() {
   const tip = TIPS[currentIndex];
 
   return (
-    <div className="mt-6 p-5 bg-amber-700/5 rounded-xl border border-amber-700/10">
+    <div className="mt-6 p-5 bg-[var(--color-copper)]/5 rounded-xl border border-[var(--color-copper)]/10">
       <div className="flex items-start gap-3">
-        <div className="w-8 h-8 rounded-lg bg-amber-700/15 flex items-center justify-center flex-shrink-0 mt-0.5">
-          <Lightbulb className="w-4 h-4 text-amber-700" />
+        <div className="w-8 h-8 rounded-lg bg-[var(--color-copper)]/15 flex items-center justify-center flex-shrink-0 mt-0.5">
+          <Lightbulb className="w-4 h-4 text-[var(--color-copper)]" />
         </div>
         <div className="flex-1 min-h-[60px]">
-          <p className="text-xs text-amber-700/70 uppercase tracking-wide mb-1">
+          <p className="text-xs text-[var(--color-copper)]/70 uppercase tracking-wide mb-1">
             Le saviez-vous ?
           </p>
           <AnimatePresence mode="wait">
@@ -78,7 +78,7 @@ export function EnrichedWaiting() {
             onClick={() => setCurrentIndex(i)}
             className={`h-1.5 rounded-full transition-all ${
               i === currentIndex
-                ? "bg-amber-700 w-4"
+                ? "bg-[var(--color-copper)] w-4"
                 : "bg-[var(--color-border)] hover:bg-[var(--color-text-tertiary)] w-1.5"
             }`}
             aria-label={`Astuce ${i + 1}`}

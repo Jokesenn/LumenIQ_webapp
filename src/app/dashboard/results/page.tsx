@@ -38,8 +38,8 @@ export default async function ResultsPage({ searchParams }: ResultsPageProps) {
       return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] animate-fade">
           <div className="bg-white rounded-2xl border border-[var(--color-border)] p-12 text-center max-w-md">
-            <div className="w-16 h-16 rounded-full bg-amber-700/10 flex items-center justify-center mx-auto mb-6">
-              <Upload size={28} className="text-amber-700" />
+            <div className="w-16 h-16 rounded-full bg-[var(--color-copper-bg)] flex items-center justify-center mx-auto mb-6">
+              <Upload size={28} className="text-[var(--color-copper)]" />
             </div>
             <h2 className="text-xl font-semibold text-[var(--color-text)] mb-3">
               Aucun résultat disponible
